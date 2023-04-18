@@ -1,26 +1,26 @@
 version: '3'
 services:
-  backend:
-    build: ./backend
+  app:
+    build: ./app
     ports:
-      - "8000:9000"
+      - "8008:8000"
     env_file:
       - .env
     volumes:
-      - ./backend:/app
+      - ./app:/app
     depends_on:
       - redis
     networks:
-      - profilr_network
+      - behandelr_network
     command: ["bash", "/app/deploy/docker-entrypoint.development.sh"]
 
   redis:
     image: redis
     networks:
-      - profilr_network
+      - behandelr_network
     ports:
-      - "6379:6379"
+      - "6382:6379"
 
 networks:
-  profilr_network:
+  behandelr_network:
     external: true
