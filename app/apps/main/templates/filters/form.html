@@ -98,7 +98,7 @@
             {% include "snippets/form_departmentfilter.html" %}
         </details>
 
-        {% if filters.afdelingen|length > 0 or not ENABLE_AFDELING_RELATIES_ENDPOINT %}
+        {% if filters.afdelingen|length > 0  %}
         {% if categories %}
         <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_categories"{% if "foldout_categories" in foldout_states %} open{% endif %}>
             <summary>

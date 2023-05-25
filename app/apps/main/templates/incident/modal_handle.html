@@ -2,7 +2,7 @@
 {% load to_date from main_tags %}
 {% load json_encode from main_tags %}
 
-<turbo-frame id="incident_modal_handle_{{ incident.id }}">
+<turbo-frame id="incident_modal_handle_{{ taak.id }}">
 <div class="container__form"
     data-controller="incidentHandleForm"
     data-incidentHandleForm-parent-context-value =  "{{ parent_context|json_encode }}"
@@ -11,7 +11,7 @@
 >
 
     {% if form %}
-    <form action="{% if handled_type %}{% url 'incident_modal_handled_type_part' incident.id handled_type %}{% else %}{% url 'incident_modal_handled_part' incident.id %}{% endif %}" method="post" data-testid="handleIncidentForm" class="form--incident-handle" novalidate>
+    <form action="{% url 'incident_modal_handled_type_part' taak.id handled_type %}" method="post" data-testid="handleIncidentForm" class="form--incident-handle" novalidate>
         {% csrf_token %}
 
         {% if not form.handle_choice.is_hidden %}

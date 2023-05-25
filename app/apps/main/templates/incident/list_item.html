@@ -25,9 +25,9 @@
             <div class="container__flex">
                 <a href="/incident/{{ incident.id }}" aria-label="Bekijk melding {{ incident.id }}">
                     <div class="container__image">
-                        {% if incident.fotos %}
-                        {% with incident.fotos|first as first_foto %}
-                        <div class="background-image" style="background-image: url('{% url 'image_thumbnail' first_foto.id %}')"></div>
+                        {% if melding.bijlagen %}
+                        {% with melding.bijlagen|first as first_foto %}
+                        <div class="background-image" style="background-image: url('{{ first_foto.afbeelding_verkleind_relative_url }}')"></div>
                         {% endwith %}
                         {% else %}
                             <div class="background-image" style="background-image: url('{% webpack_static 'icons/assets/icons/noimage.svg' %}'); background-size: 40%;"></div>
@@ -36,21 +36,21 @@
 
                     <div class="container__info">
                         {# <a href="/incident/{{ incident.id }}/handle"> #}
-                            <div class="incident__header">
+                            <div class="incident__header">Melding: {{melding.id}}
                                 <h2>{{ incident.locatie.adres.straatNaam|lower|capfirst }} {% if incident.locatie.adres.huisnummer %}{{ incident.locatie.adres.huisnummer }}{%endif%}</h2>
                                 {% if incident.spoed %}<span class="icon icon--warning">{% endif %}</span>
                             </div>
 
                             <span class="incident__category">
-                                {{ incident.onderwerp.omschrijving }}
+                                <strong>{{ incident.titel }}</strong>
                             </span>
                             <div class="incident__moment">
-                                <span>{{ incident.status }}</span>
+                                <span>{{ incident.status.naam }}</span>
                             </div>
 
                             <div class="incident__moment">
                                 <span data-incident-target="incidentDate">
-                                    {{ incident.werkdagenSindsRegistratie|floatformat }} werkdagen
+                                    {{ incident.origineel_aangemaakt|to_date }}
                                 </span>
                             </div>
                         {# </a> #}

@@ -22,16 +22,41 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app/
 
 RUN apt-get update \
-    && apt-get dist-upgrade -y \
-    && apt-get install -y \
+ && apt-get dist-upgrade -y \
+ && apt-get autoremove -y \
+ && apt-get install --no-install-recommends -y \
         build-essential \
         python-dev \
+        unzip \
+        curl \
+        wget \
+        dnsutils \
+        vim-tiny \
+        net-tools \
+        netcat \
+        libgeos-c1v5 \
+        gdal-bin \
+        postgresql-client \
+        libgdal28 \
+        libspatialite7 \
+        libfreexl1 \
+        libgeotiff-dev \
+        libwebp6 \
+        proj-bin \
+        mime-support \
+        gettext \
+        libwebpmux3 \
+        libwebpdemux2 \
+        libxml2 \
+        libfreetype6 \
+        libtiff5 \
         libgdk-pixbuf2.0-0 \
         libmagic1 \
         libcairo2 \
-        libpango-1.0-0 \
+        libpango1.0-0 \
         gcc \
         graphviz \
+        graphviz-dev \
         git \
         locales \
     && pip install --upgrade pip \

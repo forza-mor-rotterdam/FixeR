@@ -1,6 +1,16 @@
 Django==3.2.16
+django-filter==22.1
+django-db-schema-renderer==0.1.2
 djangorestframework==3.13.1
+djangorestframework-csv==2.1.1
+djangorestframework-gis==1.0
+djangorestframework-xml==2.0.0
+drf-extensions==0.7.1
+drf-writable-nested==0.7.0
+drf-spectacular==0.26.0
+drf_extra_fields==3.4.1
 uWSGI==2.0.20
+psycopg2-binary==2.9.5
 django-webpack-loader==1.7.0
 requests
 debugpy
