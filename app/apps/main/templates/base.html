@@ -10,6 +10,25 @@
             {% render_bundle 'app' 'css' %}
         {% endblock %}
 
+        {% if DEBUG %}
+        <script>
+            const chatSocket = new WebSocket(
+                "ws://localhost:"
+                + {{DEV_SOCKET_PORT}}
+            );
+
+            chatSocket.onmessage = function(e) {
+                if (e.data === "reload"){
+                    location.reload()
+                }
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error("socket closed unexpectedly");
+            };
+        </script>
+        {% endif %}
+
         {% block javascripts %}
             {% render_bundle 'app' 'js' %}
         {% endblock %}
@@ -23,7 +42,6 @@
 
     </head>
     <body class="{% if profile.ui_settings.fontsize %}{{ profile.ui_settings.fontsize }}{% endif %}">
-    {% if not PROFILE_API_AVAILABLE %}<span class="container">Je filter instellingen kunnen niet worden opgeslagen of opgehaald!</span>{% endif %}
     {% block pageheader %}
         {% include 'snippets/pageheader.html' %}
     {% endblock %}
