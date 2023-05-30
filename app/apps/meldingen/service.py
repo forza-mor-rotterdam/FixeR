@@ -34,7 +34,7 @@ class MeldingenService:
         headers = {"Authorization": f"Token {meldingen_token}"}
         return headers
 
-    def do_request(self, url, method="get", data={}, is_uri=False):
+    def do_request(self, url, method="get", data={}, is_uri=False, raw_response=False):
 
         action: Request = getattr(requests, method)
         action_params: dict = {
@@ -44,6 +44,8 @@ class MeldingenService:
             "timeout": self._timeout,
         }
         response: Response = action(**action_params)
+        if raw_response:
+            return response
         return response.json()
 
     def get_melding_lijst(self, query_string=""):
@@ -53,4 +55,4 @@ class MeldingenService:
         return self.do_request(f"/melding/{id}/?{query_string}")
 
     def get_by_uri(self, uri):
-        return self.do_request(uri, is_uri=True)
+        return self.do_request(uri, is_uri=True, raw_response=True)

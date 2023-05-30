@@ -40,6 +40,8 @@ MELDINGEN_TOKEN_TIMEOUT = 60
 MELDINGEN_USERNAME = os.getenv("MELDINGEN_USERNAME")
 MELDINGEN_PASSWORD = os.getenv("MELDINGEN_PASSWORD")
 
+DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
+
 UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
 
 INSTALLED_APPS = (
@@ -64,7 +66,7 @@ INSTALLED_APPS = (
     "apps.main",
     "apps.health",
     "apps.taken",
-    # "apps.auth",
+    "apps.aliassen",
 )
 
 LOGIN_URL = "/login/"
@@ -187,8 +189,8 @@ REST_FRAMEWORK = dict(
 
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "MOR CORE",
-    "DESCRIPTION": "Voor het organiseren en beheren van Meldingen Openbare Ruimte",
+    "TITLE": "BEHANDELR",
+    "DESCRIPTION": "Voor het afhandelen van taken voor Meldingen Openbare Ruimte",
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }

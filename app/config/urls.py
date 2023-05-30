@@ -64,7 +64,7 @@ urlpatterns = [
         incident_modal_handle,
         name="incident_modal_handled_type_part",
     ),
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/schema/", SpectacularAPIView.as_view(api_version="v1"), name="schema"),
     # Optional UI:
     path(
         "api/schema/swagger-ui/",
