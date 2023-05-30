@@ -1,6 +1,33 @@
+from apps.taken.managers import TaakManager
+from apps.taken.querysets import TaakQuerySet
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 from utils.models import BasisModel
+
+
+class Taakgebeurtenis(BasisModel):
+    """
+    Taakgebeurtenissen bouwen de history op van een taak
+    """
+
+    taakstatus = models.OneToOneField(
+        to="taken.Taakstatus",
+        related_name="taakgebeurtenis_voor_taakstatus",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    omschrijving_intern = models.CharField(max_length=5000, null=True, blank=True)
+    taak = models.ForeignKey(
+        to="taken.Taak",
+        related_name="taakgebeurtenissen_voor_taak",
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        ordering = ("-aangemaakt_op",)
+        verbose_name = "Taakgebeurtenis"
+        verbose_name_plural = "Taakgebeurtenissen"
 
 
 class Taaktype(BasisModel):
@@ -38,9 +65,9 @@ class Taakstatus(BasisModel):
         on_delete=models.CASCADE,
     )
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     self.full_clean()
+    #     return super().save(*args, **kwargs)
 
     def clean(self):
         errors = {}
@@ -69,11 +96,24 @@ class Taakstatus(BasisModel):
 
 
 class Taak(BasisModel):
-    melding = models.URLField()
+    melding = models.ForeignKey(
+        to="aliassen.MeldingAlias",
+        related_name="taken_voor_meldingalias",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
     taaktype = models.ForeignKey(
         to="taken.Taaktype",
         related_name="taken_voor_taaktype",
         on_delete=models.CASCADE,
+    )
+    taakstatus = models.OneToOneField(
+        to="taken.Taakstatus",
+        related_name="taak_voor_taakstatus",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     titel = models.CharField(max_length=100)
     bericht = models.CharField(
@@ -82,6 +122,9 @@ class Taak(BasisModel):
         null=True,
     )
     additionele_informatie = models.JSONField(default=dict)
+
+    objects = TaakQuerySet.as_manager()
+    acties = TaakManager()
 
     def __str__(self) -> str:
         return f"{self.taaktype.omschrijving} - {self.titel}({self.pk})"

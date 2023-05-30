@@ -12,7 +12,6 @@ services:
     ports:
       - 8004:8004
     networks:
-      - behandelr_network
       - mor_bridge_network
     env_file:
       - .env.local
