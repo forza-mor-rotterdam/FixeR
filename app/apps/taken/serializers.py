@@ -29,8 +29,19 @@ class TaaktypeSerializer(serializers.ModelSerializer):
         read_only_fields = ("_links",)
 
 
+class TaakLinksSerializer(serializers.Serializer):
+    self = serializers.SerializerMethodField()
+
+    def get_self(self, obj):
+        return reverse(
+            "v1:taak-detail",
+            kwargs={"uuid": obj.uuid},
+            request=self.context.get("request"),
+        )
+
+
 class TaakSerializer(serializers.ModelSerializer):
-    link = serializers.SerializerMethodField()
+    _links = TaakLinksSerializer(source="*")
     melding = serializers.URLField()
     taaktype = serializers.HyperlinkedRelatedField(
         view_name="taaktype-detail",
@@ -38,17 +49,10 @@ class TaakSerializer(serializers.ModelSerializer):
         queryset=Taaktype.objects.all(),
     )
 
-    def get_link(self, obj):
-        return reverse(
-            "v1:taak-detail",
-            kwargs={"uuid": obj.uuid},
-            request=self.context.get("request"),
-        )
-
     class Meta:
         model = Taak
         fields = (
-            "link",
+            "_links",
             "titel",
             "bericht",
             "additionele_informatie",

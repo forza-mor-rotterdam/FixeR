@@ -1,6 +1,8 @@
 from apps.taken.models import Taak, Taaktype
 from apps.taken.serializers import TaakSerializer, TaaktypeSerializer
+from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 
@@ -12,6 +14,29 @@ class TaaktypeViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = ()
 
     serializer_class = TaaktypeSerializer
+
+    @extend_schema(
+        description="Taaktypes voor melding",
+        responses={status.HTTP_200_OK: TaaktypeSerializer},
+        parameters=None,
+    )
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="voor_melding",
+        serializer_class=TaaktypeSerializer,
+    )
+    def voor_melding(self, request, melding_url):
+        """
+        minimale implementatie: geef alleen taaktypes terug voor deze melding, waar nog geen openstaande taken voor zijn.
+        """
+        taaktypes = (
+            Taak.objects.filter(melding=melding_url)
+            .values_list("taaktype", flat=True)
+            .distinct()
+        )
+        serializer = TaaktypeSerializer(taaktypes)
+        return Response(serializer.data)
 
 
 class TaakViewSet(
