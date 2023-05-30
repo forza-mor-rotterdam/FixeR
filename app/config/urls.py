@@ -29,7 +29,7 @@ router.register(r"taak", TaakViewSet, basename="taak")
 router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 
 urlpatterns = [
-    path("v1/", include((router.urls, "app"), namespace="v1")),
+    path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path("admin/", admin.site.urls),
     path("", root, name="root"),
     path(
