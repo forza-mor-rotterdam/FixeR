@@ -50,7 +50,7 @@ jobs:
           KUBE_CERTIFICATE: ${{ vars.KUBE_CERTIFICATE }}
           KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
         with:
-          args: rollout restart deployment/app --namespace=behandelr-acc
+          args: rollout restart deployment/app --namespace=behandlr-acc
 
       - name: Status rollout on k8s platform
         uses: actions-hub/kubectl@master
@@ -59,4 +59,4 @@ jobs:
           KUBE_CERTIFICATE: ${{ vars.KUBE_CERTIFICATE }}
           KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
         with:
-          args: rollout status deployment/app --namespace=behandelr-acc
+          args: rollout status deployment/app --namespace=behandlr-acc
