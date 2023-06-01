@@ -16,22 +16,50 @@
             </summary>
             <fieldset>
                 <ul class="list-clean">
-                    {% if filters.afdelingen|length > 0 %}
+                    {% if actieve_filters.locatie|length > 0 %}
                     <li>
-                        <h3 class="h5">Afdeling</h3>
+                        <h3 class="h5">Locaties</h3>
                         <ul class="list-filters--active list-clean">
-                            {% for department in filters.afdelingen %}
+                            {% for id in actieve_filters.locatie %}
+                            {% for locatie_id, locatie in filter_opties.begraafplaats.items %}
+                            {% if id == locatie_id%}
                             <li class="js-filter-active">
                                 <button
                                     class="btn btn-secondary btn-filter--active"
                                     data-action="filter--filter#removeFilter"
                                     data-filter--filter-code-param="{{ department.0 }}"
-                                    data-filter--filter-description-param="afdelingen"
+                                    data-filter--filter-description-param="locatie"
                                 >
-                                    <span>{{ department.1 }}</span>
+                                    <span>{{ locatie.0 }}</span>
                                 </button>
 
                             </li>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endif %}
+                    {% if actieve_filters.taken|length > 0 %}
+                    <li>
+                        <h3 class="h5">Taken</h3>
+                        <ul class="list-filters--active list-clean">
+                            {% for id in actieve_filters.taken %}
+                            {% for taak_id, taak in filter_opties.taken.items %}
+                            {% if id == taak_id%}
+                            <li class="js-filter-active">
+                                <button
+                                    class="btn btn-secondary btn-filter--active"
+                                    data-action="filter--filter#removeFilter"
+                                    data-filter--filter-code-param="{{ taak.0 }}"
+                                    data-filter--filter-description-param="taken"
+                                >
+                                    <span>{{ taak.0 }}</span>
+                                </button>
+
+                            </li>
+                            {% endif %}
+                            {% endfor %}
                             {% endfor %}
                         </ul>
                     </li>
@@ -57,27 +85,6 @@
                         </ul>
                     </li>
                     {% endif %}
-
-                    {% if filters.buurten|length > 0 %}
-                    <li>
-                        <h3 class="h5">Buurten</h3>
-                        <ul class="list-filters--active">
-                            {% for buurt in filters.buurten %}
-                            <li class="js-filter-active">
-                                <button
-                                    class="btn btn-secondary btn-filter--active"
-                                    data-action="filter--filter#removeFilter"
-                                    data-filter--filter-code-param="{{ buurt.0 }}"
-                                    data-filter--filter-description-param="buurten"
-                                >
-                                    <span>{{ buurt.1 }}</span>
-                                </button>
-
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    {% endif %}
                 </ul>
                 {% if filters.afdelingen|length > 0 %}
                     <button class="btn-textlink btn-with-icon" data-action="filter--filter#removeAllFilters" style="padding: 8px 0 16px;">
@@ -92,14 +99,21 @@
 
         <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_departments"{% if "foldout_departments" in foldout_states or filters.afdelingen|length == 0 %} open{% endif %}>
             <summary>
-                <span>Afdelingen</span>
-                <span>({{ filters.afdelingen|length }})</span>
+                <span>Locaties</span>
+                <span>({{ actieve_filters.locatie|length }})</span>
             </summary>
-            {% include "snippets/form_departmentfilter.html" %}
+            {% include "filters/form_locatiefilter.html" %}
+        </details>
+        <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_departments"{% if "foldout_departments" in foldout_states or filters.afdelingen|length == 0 %} open{% endif %}>
+            <summary>
+                <span>Taken</span>
+                <span>({{ actieve_filters.taken|length }})</span>
+            </summary>
+            {% include "filters/form_taakfilter.html" %}
         </details>
 
         {% if filters.afdelingen|length > 0  %}
-        {% if categories %}
+        {% if filter_opties.begraafplaats %}
         <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_categories"{% if "foldout_categories" in foldout_states %} open{% endif %}>
             <summary>
                 <span>Groepen/onderwerpen</span>
@@ -143,7 +157,7 @@
                     class="btn btn-action"
                     data-action="filter--filter#onSubmitFilter"
                 >
-                    Toon {{ incident_count }} meldingen
+                    Toon {{ taken_gefilterd.count }} meldingen
                 </button>
             {% endif %}
         </div>

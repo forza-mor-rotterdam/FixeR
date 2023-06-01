@@ -1,0 +1,23 @@
+{% load json_encode from main_tags %}
+<ul
+    class="list-clean"
+    data-controller="filter--filter"
+    data-test-id="incidentFilterDepartment"
+>
+    {% for begraafplaats_id, begraafplaats in filter_opties.begraafplaats.items %}
+        <li class="container__check-department">
+            <div class="form-check">
+                <input
+                    class="form-check-input filter--department"
+                    type="checkbox"
+                    value="{{ begraafplaats_id }}"
+                    {% if begraafplaats_id in actieve_filters.locatie %}checked{% endif %}
+                    name="locatie"
+                    id="begraafplaats_{{ begraafplaats_id }}"
+                    data-action="filter--filter#onChangeFilter"
+                >
+                <label class="form-check-label" for="begraafplaats_{{ begraafplaats_id }}">{{ begraafplaats.0 }}</label>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>

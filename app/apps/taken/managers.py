@@ -1,8 +1,9 @@
 import logging
 
 from django.contrib.gis.db import models
-from django.db import transaction
+from django.db import OperationalError, transaction
 from django.dispatch import Signal
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +13,9 @@ gebeurtenis_toegevoegd = Signal()
 
 
 class TaakManager(models.Manager):
+    class TaakInGebruik(Exception):
+        ...
+
     def aanmaken(self, serializer, db="default"):
         from apps.aliassen.models import MeldingAlias
         from apps.taken.models import Taakgebeurtenis, Taakstatus
@@ -37,4 +41,46 @@ class TaakManager(models.Manager):
                     taak=taak,
                 )
             )
+        return taak
+
+    def status_aanpassen(self, serializer, taak, db="default"):
+        from apps.taken.models import Taak
+
+        with transaction.atomic():
+            try:
+                locked_taak = (
+                    Taak.objects.using(db)
+                    .select_for_update(nowait=True)
+                    .get(pk=taak.pk)
+                )
+            except OperationalError:
+                raise TaakManager.TaakInGebruik
+
+            vorige_status = locked_taak.taakstatus
+            print("status_aanpassen")
+            print(taak)
+            resolutie = serializer.validated_data.pop("resolutie", None)
+            serializer.validated_data.pop("bijlagen", None)
+            print(serializer.validated_data)
+            taakgebeurtenis = serializer.save(
+                taak=locked_taak,
+            )
+
+            locked_taak.taakstatus = taakgebeurtenis.taakstatus
+
+            if not locked_taak.taakstatus.volgende_statussen():
+                locked_taak.afgesloten_op = timezone.now().isoformat()
+                if resolutie in [ro[0] for ro in Taak.ResolutieOpties.choices]:
+                    locked_taak.resolutie = resolutie
+            locked_taak.save()
+
+            transaction.on_commit(
+                lambda: status_aangepast.send_robust(
+                    sender=self.__class__,
+                    taak=locked_taak,
+                    status=taakgebeurtenis.taakstatus,
+                    vorige_status=vorige_status,
+                )
+            )
+
         return taak

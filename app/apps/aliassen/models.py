@@ -42,7 +42,7 @@ class BijlageAlias(BasisModel):
         null=True,
     )
     taak_gebeurtenis = models.ForeignKey(
-        to="taken.Taak",
+        to="taken.Taakgebeurtenis",
         related_name="bijlagen_voor_taak_gebeurtenis",
         on_delete=models.CASCADE,
     )
