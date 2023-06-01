@@ -1,16 +1,16 @@
 from apps.main.views import (
+    actieve_taken,
     config,
     filter,
     http_404,
     http_500,
-    incident_detail,
-    incident_list,
     incident_list_item,
-    incident_list_page,
     incident_modal_handle,
     incident_mutation_lines,
     meldingen_bestand,
     root,
+    taak_detail,
+    taken_overzicht,
     ui_settings_handler,
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
@@ -33,13 +33,13 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", root, name="root"),
     path(
-        "incident/",
-        incident_list_page,
+        "taken/",
+        taken_overzicht,
         name="incident_index",
     ),
-    path("incident/<int:id>/", incident_detail, name="incident_detail"),
+    path("taak/<int:id>/", taak_detail, name="taak_detail"),
     path(
-        "incident/<int:id>/mutation-lines/",
+        "taak/<int:id>/mutation-lines/",
         incident_mutation_lines,
         name="mutation_lines",
     ),
@@ -48,19 +48,19 @@ urlpatterns = [
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
     path("part/filter/", filter, name="filter_part"),
-    path("part/incident-list/", incident_list, name="incident_list_part"),
+    path("part/actieve-taken/", actieve_taken, name="actieve_taken_part"),
     path(
-        "part/incident-list-item/<int:id>/",
+        "part/taak-lijst-item/<int:id>/",
         incident_list_item,
         name="incident_list_item_part",
     ),
     path(
-        "part/incident-modal-handle/<int:id>/",
+        "part/taak-modal-handle/<int:id>/",
         incident_modal_handle,
         name="incident_modal_handle_part",
     ),
     path(
-        "part/incident-modal-handle/<int:id>/<str:handled_type>/",
+        "part/taak-modal-handle/<int:id>/<str:handled_type>/",
         incident_modal_handle,
         name="incident_modal_handled_type_part",
     ),

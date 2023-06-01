@@ -1,6 +1,34 @@
-from apps.taken.models import Taak, Taaktype
+from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus, Taaktype
+from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+
+
+class TaakstatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Taakstatus
+        fields = (
+            "naam",
+            "taak",
+        )
+        # read_only_fields = ("naam", "taak",)
+
+
+class TaakgebeurtenisStatusSerializer(WritableNestedModelSerializer):
+    bijlagen = serializers.ListSerializer(
+        child=serializers.URLField(), required=False, allow_null=True
+    )
+    taakstatus = TaakstatusSerializer(required=True)
+    resolutie = serializers.CharField(required=False, allow_null=True)
+
+    class Meta:
+        model = Taakgebeurtenis
+        fields = (
+            "bijlagen",
+            "taakstatus",
+            "resolutie",
+            "omschrijving_intern",
+        )
 
 
 class TaaktypeLinksSerializer(serializers.Serializer):
@@ -58,4 +86,5 @@ class TaakSerializer(serializers.ModelSerializer):
             "additionele_informatie",
             "taaktype",
             "melding",
+            "taakopdracht",
         )

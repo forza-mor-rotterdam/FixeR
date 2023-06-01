@@ -1,12 +1,13 @@
 from datetime import datetime
+from itertools import chain
 
 import requests
 from apps.main.forms import HANDLED_OPTIONS, HandleForm
+from apps.main.utils import filter_taken, get_filter_options
 from apps.meldingen.service import MeldingenService
 from apps.meldingen.utils import get_meldingen_token
 from apps.taken.models import Taak
 from django.conf import settings
-from django.core.cache import cache
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -46,11 +47,47 @@ def ui_settings_handler(request):
 
 
 def filter(request):
+    taken = Taak.objects.filter(afgesloten_op__isnull=True)
 
+    actieve_filters = {
+        "locatie": [],
+        "taken": [],
+    }
+    actieve_filters.update(request.session.get("actieve_filters", {}))
+
+    if request.POST:
+        actieve_filters["locatie"] = list(chain(*request.POST.getlist("locatie")))
+        actieve_filters["taken"] = [
+            int(t) for t in list(chain(*request.POST.getlist("taken")))
+        ]
+        request.session["actieve_filters"] = actieve_filters
+
+    taken_gefilterd = filter_taken(taken, actieve_filters)
+
+    filter_options_fields = (
+        (
+            "begraafplaats",
+            "melding__response_json__locaties_voor_melding__0__begraafplaats",
+            "melding__response_json__meta_uitgebreid__begraafplaats__choices",
+        ),
+        (
+            "taken",
+            "taaktype__id",
+            "taaktype__omschrijving",
+        ),
+    )
+    filter_opties = get_filter_options(taken_gefilterd, taken, filter_options_fields)
+    print(filter_opties)
+    print(actieve_filters)
     return render(
         request,
         "filters/form.html",
-        {},
+        {
+            "filter_opties": filter_opties,
+            "actieve_filters": actieve_filters,
+            "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
+            "taken_gefilterd": taken_gefilterd,
+        },
     )
 
 
@@ -95,7 +132,7 @@ sort_options = (
 )
 
 
-def incident_list_page(request):
+def taken_overzicht(request):
 
     return render(
         request,
@@ -104,7 +141,7 @@ def incident_list_page(request):
     )
 
 
-def incident_list(request):
+def actieve_taken(request):
 
     sort_by_with_reverse_session = request.session.get("sort_by", f"-{DAYS}")
     sort_by_with_reverse = request.GET.get("sort-by", sort_by_with_reverse_session)
@@ -130,7 +167,7 @@ def incident_list(request):
     groups = []
 
     incidents = MeldingenService().get_melding_lijst().get("results", [])
-    print(incidents)
+
     incidents_sorted = sorted(
         incidents, key=selected_order_option, reverse=sort_reverse
     )
@@ -169,13 +206,11 @@ def incident_list(request):
         if sort_reverse:
             groups.reverse()
 
-    # temp: spoed key only available in list items, set cache for it
-    for i in incidents_sorted:
-        cache_key = f"incident_{i.get('id')}_list_item"
-        cache.set(cache_key, i, 60 * 60 * 24)
+    taken = Taak.objects.filter(afgesloten_op__isnull=True)
 
-    print(grouped_by)
-    print(incidents_sorted)
+    actieve_filters = request.session.get("actieve_filters", {})
+    taken_gefilterd = filter_taken(taken, actieve_filters)
+
     return render(
         request,
         "incident/part_list.html"
@@ -183,26 +218,26 @@ def incident_list(request):
         else "incident/part_list_grouped.html",
         {
             "incidents": incidents_sorted,
-            "filters": [],
             "sort_by": sort_by_with_reverse,
             "sort_options": sort_options,
             "groups": groups,
             "grouped_by": grouped_by,
-            "taken": Taak.objects.all(),
+            "taken": taken_gefilterd,
         },
     )
 
 
-def incident_detail(request, id):
+def taak_detail(request, id):
 
-    incident = MeldingenService().get_melding(id)
+    MeldingenService().get_melding(id)
+    taak = Taak.objects.get(pk=id)
 
     return render(
         request,
         "incident/detail.html",
         {
             "id": id,
-            "incident": incident,
+            "taak": taak,
         },
     )
 

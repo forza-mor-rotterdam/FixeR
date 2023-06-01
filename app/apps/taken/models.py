@@ -65,9 +65,23 @@ class Taakstatus(BasisModel):
         on_delete=models.CASCADE,
     )
 
-    # def save(self, *args, **kwargs):
-    #     self.full_clean()
-    #     return super().save(*args, **kwargs)
+    def volgende_statussen(self):
+        naam_opties = [no[0] for no in Taakstatus.NaamOpties.choices]
+        if self.naam not in naam_opties:
+            return naam_opties
+
+        match self.naam:
+            case Taakstatus.NaamOpties.NIEUW:
+                return [
+                    Taakstatus.NaamOpties.BEZIG,
+                    Taakstatus.NaamOpties.VOLTOOID,
+                ]
+            case Taakstatus.NaamOpties.BEZIG:
+                return [
+                    Taakstatus.NaamOpties.VOLTOOID,
+                ]
+            case _:
+                return []
 
     def clean(self):
         errors = {}
@@ -96,6 +110,11 @@ class Taakstatus(BasisModel):
 
 
 class Taak(BasisModel):
+    class ResolutieOpties(models.TextChoices):
+        OPGELOST = "opgelost", "Opgelost"
+        NIET_OPGELOST = "niet_opgelost", "Niet opgelost"
+
+    afgesloten_op = models.DateTimeField(null=True, blank=True)
     melding = models.ForeignKey(
         to="aliassen.MeldingAlias",
         related_name="taken_voor_meldingalias",
@@ -103,6 +122,7 @@ class Taak(BasisModel):
         blank=True,
         null=True,
     )
+    taakopdracht = models.URLField()
     taaktype = models.ForeignKey(
         to="taken.Taaktype",
         related_name="taken_voor_taaktype",
@@ -114,6 +134,11 @@ class Taak(BasisModel):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+    )
+    resolutie = models.CharField(
+        max_length=50,
+        choices=ResolutieOpties.choices,
+        default=ResolutieOpties.NIET_OPGELOST,
     )
     titel = models.CharField(max_length=100)
     bericht = models.CharField(

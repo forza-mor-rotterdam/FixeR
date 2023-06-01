@@ -2,6 +2,7 @@
 
 {% block list_template%}
     {% for taak in taken %}
-        <turbo-frame id="incident_list_item" src="{% url 'incident_list_item_part' taak.id %}"></turbo-frame>
+        {% include "incident/list_item.html" %}
+        {% comment %} <turbo-frame id="incident_list_item" src="{% url 'incident_list_item_part' taak.id %}"></turbo-frame> {% endcomment %}
     {% endfor %}
 {% endblock %}
