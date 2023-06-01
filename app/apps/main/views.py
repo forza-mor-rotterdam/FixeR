@@ -1,13 +1,18 @@
 from datetime import datetime
-from itertools import chain
 
 import requests
-from apps.main.forms import HANDLED_OPTIONS, HandleForm
-from apps.main.utils import filter_taken, get_filter_options
+from apps.main.forms import (
+    HANDLED_OPTIONS,
+    TAAK_BEHANDEL_RESOLUTIE,
+    TAAK_BEHANDEL_STATUS,
+    TaakBehandelForm,
+)
+from apps.main.utils import filter_taken, get_filter_options, to_base64
 from apps.meldingen.service import MeldingenService
 from apps.meldingen.utils import get_meldingen_token
 from apps.taken.models import Taak
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -56,17 +61,14 @@ def filter(request):
     actieve_filters.update(request.session.get("actieve_filters", {}))
 
     if request.POST:
-        actieve_filters["locatie"] = list(chain(*request.POST.getlist("locatie")))
-        actieve_filters["taken"] = [
-            int(t) for t in list(chain(*request.POST.getlist("taken")))
-        ]
-        request.session["actieve_filters"] = actieve_filters
+        actieve_filters["locatie"] = request.POST.getlist("locatie")
+        actieve_filters["taken"] = request.POST.getlist("taken")
 
     taken_gefilterd = filter_taken(taken, actieve_filters)
 
     filter_options_fields = (
         (
-            "begraafplaats",
+            "locatie",
             "melding__response_json__locaties_voor_melding__0__begraafplaats",
             "melding__response_json__meta_uitgebreid__begraafplaats__choices",
         ),
@@ -79,6 +81,17 @@ def filter(request):
     filter_opties = get_filter_options(taken_gefilterd, taken, filter_options_fields)
     print(filter_opties)
     print(actieve_filters)
+    actieve_filters = {
+        k: [
+            af
+            for af in v
+            if af in [fok for fok, fov in filter_opties.get(k, {}).items()]
+        ]
+        for k, v in actieve_filters.items()
+    }
+    print(actieve_filters)
+
+    request.session["actieve_filters"] = actieve_filters
     return render(
         request,
         "filters/form.html",
@@ -133,7 +146,6 @@ sort_options = (
 
 
 def taken_overzicht(request):
-
     return render(
         request,
         "incident/index.html",
@@ -142,69 +154,7 @@ def taken_overzicht(request):
 
 
 def actieve_taken(request):
-
-    sort_by_with_reverse_session = request.session.get("sort_by", f"-{DAYS}")
-    sort_by_with_reverse = request.GET.get("sort-by", sort_by_with_reverse_session)
-    request.session["sort_by"] = sort_by_with_reverse
-
-    sort_by = sort_by_with_reverse.lstrip("-")
-    sort_reverse = (
-        len(sort_by_with_reverse.split("-", 1)) > 1
-        and sort_by_with_reverse.split("-", 1)[0] == ""
-    )
-
-    grouped_by_session = request.session.get("grouped_by", "false")
-
-    grouped_by = request.GET.get("grouped-by", grouped_by_session)
-    request.session["grouped_by"] = grouped_by
-    grouped_by = grouped_by == "true"
-
-    selected_order_option = sort_function.get(sort_by, sort_function[DAYS])[0]
-
-    # get incidents if we have filters
-    incidents = []
-    incidents_sorted = []
-    groups = []
-
-    incidents = MeldingenService().get_melding_lijst().get("results", [])
-
-    incidents_sorted = sorted(
-        incidents, key=selected_order_option, reverse=sort_reverse
-    )
-    if grouped_by:
-        groups = sorted(
-            [
-                *set(
-                    [
-                        sort_function[sort_by][1](i)
-                        if sort_function[sort_by][1]
-                        else sort_function[sort_by][0](i)
-                        for i in incidents_sorted
-                    ]
-                )
-            ]
-        )
-
-        groups = [
-            {
-                "title": sort_function[sort_by][2](g)
-                if sort_function[sort_by][2]
-                else g,
-                "items": [
-                    i
-                    for i in incidents_sorted
-                    if g
-                    == (
-                        sort_function[sort_by][1](i)
-                        if sort_function[sort_by][1]
-                        else sort_function[sort_by][0](i)
-                    )
-                ],
-            }
-            for g in groups
-        ]
-        if sort_reverse:
-            groups.reverse()
+    grouped_by = False
 
     taken = Taak.objects.filter(afgesloten_op__isnull=True)
 
@@ -217,19 +167,17 @@ def actieve_taken(request):
         if not grouped_by
         else "incident/part_list_grouped.html",
         {
-            "incidents": incidents_sorted,
-            "sort_by": sort_by_with_reverse,
+            # "incidents": incidents_sorted,
+            # "sort_by": sort_by_with_reverse,
+            # "groups": groups,
+            # "grouped_by": grouped_by,
             "sort_options": sort_options,
-            "groups": groups,
-            "grouped_by": grouped_by,
             "taken": taken_gefilterd,
         },
     )
 
 
 def taak_detail(request, id):
-
-    MeldingenService().get_melding(id)
     taak = Taak.objects.get(pk=id)
 
     return render(
@@ -244,22 +192,18 @@ def taak_detail(request, id):
 
 def incident_list_item(request, id):
     taak = Taak.objects.get(pk=id)
-    print(taak.melding)
-    melding = MeldingenService().get_by_uri(taak.melding)
-
     return render(
         request,
         "incident/list_item.html",
         {
             "incident": taak,
-            "melding": melding,
         },
     )
 
 
 def incident_modal_handle(request, id, handled_type="handled"):
     taak = Taak.objects.get(pk=id)
-    form = HandleForm(handled_type=handled_type)
+    form = TaakBehandelForm()
     warnings = []
     errors = []
     messages = []
@@ -267,10 +211,25 @@ def incident_modal_handle(request, id, handled_type="handled"):
     is_handled = False
 
     if request.POST:
-        form = HandleForm(request.POST, handled_type=handled_type)
+        form = TaakBehandelForm(request.POST)
         if form.is_valid():
-            form.cleaned_data.get("handle_choice", 1)
+            bijlagen = request.FILES.getlist("bijlagen", [])
+            bijlagen_base64 = []
+            for f in bijlagen:
+                file_name = default_storage.save(f.name, f)
+                bijlagen_base64.append({"bestand": to_base64(file_name)})
+            taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
+                taakopdracht_url=taak.taakopdracht,
+                status=TAAK_BEHANDEL_STATUS.get(form.cleaned_data.get("status")),
+                resolutie=TAAK_BEHANDEL_RESOLUTIE.get(form.cleaned_data.get("status")),
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                bijlagen=bijlagen_base64,
+            )
+            print(taak_status_aanpassen_response.status_code)
+            print(taak_status_aanpassen_response.text)
 
+            form.cleaned_data.get("handle_choice", 1)
+        print(form.errors)
     return render(
         request,
         "incident/modal_handle.html",

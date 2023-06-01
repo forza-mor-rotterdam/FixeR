@@ -67,6 +67,7 @@ INSTALLED_APPS = (
     "apps.health",
     "apps.taken",
     "apps.aliassen",
+    "apps.rotterdam_formulier_html",
 )
 
 LOGIN_URL = "/login/"

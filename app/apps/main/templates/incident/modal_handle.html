@@ -1,6 +1,7 @@
 {% load webpack_static from webpack_loader %}
 {% load to_date from main_tags %}
 {% load json_encode from main_tags %}
+{% load rotterdam_formulier_html %}
 
 <turbo-frame id="incident_modal_handle_{{ taak.id }}">
 <div class="container__form"
@@ -11,38 +12,17 @@
 >
 
     {% if form %}
-    <form action="{% url 'incident_modal_handled_type_part' taak.id handled_type %}" method="post" data-testid="handleIncidentForm" class="form--incident-handle" novalidate>
+    <form action="{% url 'incident_modal_handled_type_part' taak.id handled_type %}" method="post" data-testid="handleIncidentForm" class="form--incident-handle" novalidate enctype="multipart/form-data">
         {% csrf_token %}
 
-        {% if not form.handle_choice.is_hidden %}
-        <fieldset>
-        {{ form.handle_choice.label_tag }}
-        {% endif %}
-        {{ form.handle_choice }}
-        {{ form.handle_choice.errors }}
-        {% if not form.handle_choice.is_hidden %}
-        </fieldset>
-        {% endif %}
+        {{ form.status|render_rotterdam_formulier }}
 
-        <fieldset>
-            <div class="form-row">
-                <div class="display-flex">
-                    {{ form.external_text.label_tag }}
-                    <button class="btn-textlink" type="button" data-action="incidentHandleForm#clearExternalMessage">Wissen</button>
-
-                </div>
-                {{ form.external_text }}
-                {{ form.external_text.errors }}
-                <button class="btn-textlink" type="button" data-action="incidentHandleForm#defaultExternalMessage">Gebruik de standaard afhandeltekst</button>
-            </div>
-        </fieldset>
-        <fieldset>
-            <div>
-                {{ form.internal_text.label_tag }}
-                {{ form.internal_text }}
-                {{ form.internal_text.errors }}
-            </div>
-        </fieldset>
+        <div data-controller="bijlagen">
+            {{ form.bijlagen|render_rotterdam_formulier }}
+        </div>
+        <div class="form-control__with-helptext">
+            {{ form.omschrijving_intern|render_rotterdam_formulier }}
+        </div>
         <div class="form-row">
             <button
                 type="submit"
