@@ -23,7 +23,7 @@
         </button>
         <div class="wrapper__swipe">
             <div class="container__flex">
-                <a href="{% url 'taak_detail' taak.id %}" aria-label="Bekijk melding {{ taak.id }}">
+                <a href="{% url 'taak_detail' taak.id %}" aria-label="Bekijk taak {{ taak.id }}">
                     <div class="container__image">
                         {% if taak.melding.response_json.bijlagen %}
                         {% with taak.melding.response_json.bijlagen|first as first_foto %}
@@ -36,7 +36,7 @@
 
                     <div class="container__info">
                         {# <a href="/incident/{{ incident.id }}/handle"> #}
-                            <div class="incident__header">Melding: {{melding.id}}
+                            <div class="incident__header">Melding: {{taak.melding.id}}
                                 <h2>{{ taak.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}</h2>
                                 {% if taak.spoed %}<span class="icon icon--warning">{% endif %}</span>
                             </div>

@@ -2,21 +2,21 @@
 <ul
     class="list-clean"
     data-controller="filter--filter"
-    data-test-id="incidentFilterDepartment"
+    data-test-id="incidentFilterLocatie"
 >
-    {% for begraafplaats_id, begraafplaats in filter_opties.begraafplaats.items %}
-        <li class="container__check-department">
+    {% for locatie_id, locatie in filter_opties.locatie.items %}
+        <li class="container__check-locatie">
             <div class="form-check">
                 <input
-                    class="form-check-input filter--department"
+                    class="form-check-input filter--locatie"
                     type="checkbox"
-                    value="{{ begraafplaats_id }}"
-                    {% if begraafplaats_id in actieve_filters.locatie %}checked{% endif %}
+                    value="{{ locatie_id }}"
+                    {% if locatie_id in actieve_filters.locatie %}checked{% endif %}
                     name="locatie"
-                    id="begraafplaats_{{ begraafplaats_id }}"
+                    id="locatie_{{ locatie_id }}"
                     data-action="filter--filter#onChangeFilter"
                 >
-                <label class="form-check-label" for="begraafplaats_{{ begraafplaats_id }}">{{ begraafplaats.0 }}</label>
+                <label class="form-check-label" for="locatie_{{ locatie_id }}">{{ locatie.0 }}</label>
             </div>
         </li>
     {% endfor %}

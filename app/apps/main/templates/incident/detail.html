@@ -35,7 +35,7 @@
                         >
                             {% for foto in taak.melding.response_json.bijlagen %}
                             <li class="container__image" id="{{ foto.afbeelding_relative_url }}">
-                                <img src="" alt="" data-detail-target="selectedImage" />
+                                <img src="{{ foto.afbeelding_relative_url }}" alt="" data-detail-target="selectedImage" />
                             </li>
                             {% endfor %}
                         </ul>
@@ -66,8 +66,13 @@
                     <h1 class="h3">{{ taak.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}</h1>
                     <div class="incident__header">
                         <span>
-                            {{ taak.datumMelding|to_date|date:'d-m-Y' }}
-                            {{ taak.datumMelding|to_date|date:'H:i' }}
+                            aangemaakt op: {{ taak.aangemaakt_op|to_date|date:'d-m-Y H:i' }}
+                        </span>
+                        <span>
+                            aangepast op: {{ taak.aangepast_op|to_date|date:'d-m-Y H:i' }}
+                        </span>
+                        <span>
+                            afgesloten op: {{ taak.afgesloten_op|to_date|date:'d-m-Y H:i' }}
                         </span>
                         {% if taak.spoed %}<span><span class="icon icon--warning"> Spoed</span></span>{% endif %}
                     </div>
@@ -99,11 +104,10 @@
 
                     <h2 class="h5">Melding {{ taak.id }}</h2>
                     <p>
-                        {% if taak.status %}
-                            Status: {{ taak.status }}
-                        {% else %}
-                            Status: -
-                        {% endif %}
+                        Status: {{ taak.taakstatus.naam }}
+                    </p>
+                    <p>
+                        Resolutie: {{ taak.resolutie }}
                     </p>
 
                 </div>
@@ -223,41 +227,8 @@
                             </a>
                         </li>
 
-                        {% comment %} <li>
-                            <a href="#" class="link--file">
-                                <svg width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.25 18H13.75V6V4.5V3.75L10 0H9.25H7.75H0.25V18ZM12.25 4.5L9.25 1.5V4.5H12.25ZM9.25 6H8.5H7.75V1.5H1.75V16.5H12.25V6H9.25Z" fill="#00811F"/>
-                                </svg>
-                                Bestanden
-                            </a>
-                        </li> {% endcomment %}
-                        {% if taak.magInBehandelingNemen %}
-                        <li>
-                            <a href="#" class="link--next">
-                                <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z" fill="#00811F"/>
-                                </svg>
-                                In behandeling nemen
-                            </a>
-                        </li>
-                        {% endif %}
-                        {% if taak.magDoorverwijzen %}
-                        <li>
-                            <button
-                                class="btn-textlink link--next"
-                                data-action="taak#openModal"
-                                data-id="{{ taak.id }}"
-                                data-taak-is-finished-param = false
-                            >
-                                <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z" fill="#00811F"/>
-                                </svg>
-                                Doorsturen
-                        </button>
-                        </li>
-                        {% endif %}
                     </ul>
-                    {% if taak.magAfhandelen %}
+                    {% if not taak.afgesloten_op %}
                     <div class="sticky sticky--bottom">
                         <div class="form-row">
                             <button
@@ -266,15 +237,7 @@
                                 data-taak-is-finished-param = true
                                 data-action="taak#openModal"
                             >
-                                Afhandelen
-                            </button>
-                            <button
-                                class="btn btn-tertiary"
-                                data-id="{{ taak.id }}"
-                                data-taak-is-finished-param = false
-                                data-action="taak#openModal"
-                            >
-                                Niet opgelost
+                                Taak behandelen
                             </button>
                         </div>
                     </div>
@@ -305,8 +268,8 @@
 <turbo-frame
     id="incident_modal_handle_{{ taak.id }}"
     data-taak-target="turboFormHandler"
-    {% comment %} data-src="{% url 'incident_modal_handle_part' taak.id %}" {% endcomment %}
-    {% comment %} src="{% url 'incident_modal_handle_part' taak.id %}" {% endcomment %}
+    data-src="{% url 'incident_modal_handle_part' taak.id %}"
+    src="{% url 'incident_modal_handle_part' taak.id %}"
     laoding="lazy"
 >
 </turbo-frame>

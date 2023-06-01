@@ -60,7 +60,8 @@ class TaakManager(models.Manager):
             print("status_aanpassen")
             print(taak)
             resolutie = serializer.validated_data.pop("resolutie", None)
-            serializer.validated_data.pop("bijlagen", None)
+            bijlagen = serializer.validated_data.pop("bijlagen", None)
+            print(bijlagen)
             print(serializer.validated_data)
             taakgebeurtenis = serializer.save(
                 taak=locked_taak,
