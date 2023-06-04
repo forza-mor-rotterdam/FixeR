@@ -8,14 +8,14 @@
 {% comment %} <turbo-frame id="incident_list_item"> {% endcomment %}
     <div
         class="list-item{% if form_submitted %} form-is-submitted{% endif %}{% if errors and warnings %} has-errors{% endif %}"
-        data-controller="incident"
-        data-action="formHandleIsConnected->incident#formHandleIsConnectedHandler cancelHandle->incident#cancelHandleHandler"
-        data-incident-date-value="{{ incident.datumMelding }}"
-        data-incident-days-value="{{ incident.werkdagenSindsRegistratie }}">
+        data-controller="taak"
+        data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler cancelHandle->taak#cancelHandleHandler"
+        data-taak-date-value="{{ incident.datumMelding }}"
+        data-taak-days-value="{{ incident.werkdagenSindsRegistratie }}">
         <button
             class="container__actions handle--no-success"
             data-id="{{ incident.id }}"
-            data-incident-target="button"
+            data-taak-target="button"
         >
             <div>
                 <span>Niet opgelost</span>
@@ -50,7 +50,7 @@
                             </div>
 
                             <div class="incident__moment">
-                                <span data-incident-target="incidentDate">
+                                <span data-taak-target="incidentDate">
                                     {{ taak.aangemaakt_op|to_date }}
                                 </span>
                             </div>
@@ -62,7 +62,7 @@
         <button
             class="container__actions handle--success"
             data-id="{{ incident.id }}"
-            data-incident-target="button"
+            data-taak-target="button"
         >
             <div>
                 <span>Afhandelen</span>
@@ -79,12 +79,12 @@
     type="button"
     class="btn-close"
     aria-label="Sluit"
-    data-action="incident#closeModal"
+    data-action="taak#closeModal"
 ></button>
 {% endblock %}
 
 {% block modal_body %}
-    {% comment %} <turbo-frame id="incident_modal_handle_{{ incident.id }}" data-incident-target="turboFormHandler" data-handled="handled" data-not-handled="not-handled" data-src="{% url 'incident_modal_handle_part' taak.id %}" src="{% url 'incident_modal_handle_part' taak.id %}" loading="lazy">
+    {% comment %} <turbo-frame id="incident_modal_handle_{{ incident.id }}" data-taak-target="turboFormHandler" data-handled="handled" data-not-handled="not-handled" data-src="{% url 'incident_modal_handle_part' taak.id %}" src="{% url 'incident_modal_handle_part' taak.id %}" loading="lazy">
     </turbo-frame> {% endcomment %}
 {% endblock %}
 

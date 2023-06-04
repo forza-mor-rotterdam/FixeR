@@ -22,3 +22,12 @@ def to_date(value):
 @register.filter
 def json_encode(value):
     return json.dumps(value)
+
+@register.simple_tag
+def vind_in_dict(op_zoek_dict, key):
+    if type(op_zoek_dict) != dict:
+        return key
+    result = op_zoek_dict.get(key, op_zoek_dict.get(str(key), key))
+    if isinstance(result, (list, tuple)):
+        return result[0]
+    return result

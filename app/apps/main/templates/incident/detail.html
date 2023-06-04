@@ -1,6 +1,6 @@
 {% extends 'base_modal_context.html' %}
 {% load webpack_static from webpack_loader %}
-{% load to_date from main_tags %}
+{% load to_date vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
 
 {% block title %}{{ taak.locatie.adres.straatNaam }} {{ taak.locatie.adres.huisnummer }}{% endblock %}
@@ -63,103 +63,154 @@
             <section class="section--seperated"  data-testid="detailAbout">
                 <div class="container__details">
                 {# TODO add optional huisletter and huisnummer_toevoeging  #}
-                    <h1 class="h3">{{ taak.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}</h1>
-                    <div class="incident__header">
-                        <span>
-                            aangemaakt op: {{ taak.aangemaakt_op|to_date|date:'d-m-Y H:i' }}
-                        </span>
-                        <span>
-                            aangepast op: {{ taak.aangepast_op|to_date|date:'d-m-Y H:i' }}
-                        </span>
-                        <span>
-                            afgesloten op: {{ taak.afgesloten_op|to_date|date:'d-m-Y H:i' }}
-                        </span>
-                        {% if taak.spoed %}<span><span class="icon icon--warning"> Spoed</span></span>{% endif %}
-                    </div>
 
-                    <h2 class="h5">Omschrijving</h2>
-                    <p>
-                        {% if taak.omschrijving %}
-                            {{ taak.omschrijving }}
-                        {% else %}
-                            -
+                    {{ taak.melding.response_json }}
+
+                    {% if taak.melding.response_json.locatie.adres %}
+                    <h1 class="h3">{{ taak.melding.response_json.locatie.adres.straatNaam|lower|capfirst }} {% if taak.melding.response_json.locatie.adres.huisnummer %}{{ taak.melding.response_json.locatie.adres.huisnummer }}{%endif%}</h1>
+                    {% endif %}
+
+                    <details>
+                        <summary>
+                            <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7727 3.72704C11.15 1.10433 6.84951 1.10433 4.2268 3.72704C1.60409 6.34975 1.60409 10.6503 4.2268 13.273L8.99977 18.046L13.7727 13.273C16.3955 10.6503 16.3955 6.34975 13.7727 3.72704ZM8.99977 20.1673L3.16614 14.3336C-0.0423586 11.1251 -0.0423585 5.87488 3.16614 2.66638C6.37463 -0.542114 11.6249 -0.542114 14.8334 2.66638C18.0419 5.87488 18.0419 11.1251 14.8334 14.3336L8.99977 20.1673ZM11.9997 8.49999C11.9997 10.1568 10.6565 11.5 8.99966 11.5C7.34281 11.5 5.99966 10.1568 5.99966 8.49999C5.99966 6.84314 7.34281 5.49999 8.99966 5.49999C10.6565 5.49999 11.9997 6.84314 11.9997 8.49999ZM10.4997 8.49999C10.4997 9.32842 9.82809 9.99999 8.99966 9.99999C8.17123 9.99999 7.49966 9.32842 7.49966 8.49999C7.49966 7.67157 8.17123 6.99999 8.99966 6.99999C9.82809 6.99999 10.4997 7.67157 10.4997 8.49999Z" fill="#00811F"/>
+                            </svg>
+                            <h2>Taak</h2>
+                        </summary>
+                        {% comment %} {% if taak. %} {% endcomment %}
+                        <div class="incident__header">
+                            <span>
+                                aangemaakt op: {{ taak.aangemaakt_op|to_date|date:'d-m-Y H:i' }}
+                            </span>
+                            <span>
+                                aangepast op: {{ taak.aangepast_op|to_date|date:'d-m-Y H:i' }}
+                            </span>
+                            <span>
+                                afgesloten op: {{ taak.afgesloten_op|to_date|date:'d-m-Y H:i' }}
+                            </span>
+                            {% if taak.spoed %}<span><span class="icon icon--warning"> Spoed</span></span>{% endif %}
+                            <p>
+                                Status: {{ taak.taakstatus.naam }}
+                            </p>
+                            <p>
+                                Resolutie: {{ taak.resolutie }}
+                            </p>
+
+                        </div>
+                    </details>
+                    
+
+
+                    <details>
+                        <summary>
+                            <h2>Melding</h2>
+                        </summary>
+                        <h2 class="h5">Nummer</h2>
+                        <p>{{ taak.melding.response_json.id }}</p>
+                        <h2 class="h5">Ingediend</h2>
+                        <p>{{ taak.melding.response_json.aangemaakt_op|to_date|date:'d-m-Y H:i' }}</p>
+                        {% if taak.melding.response_json.meta.aannemer %}
+                            <h2 class="h5">Aangenomen door</h2>
+                            <p>{{ taak.melding.response_json.meta.aannemer }}</p>
                         {% endif %}
-                    </p>
-                    <h2 class="h5">Onderwerp</h2>
-                    <p>
-                        {% if taak.onderwerp.omschrijving %}
-                            {{ taak.onderwerp.omschrijving }}
-                        {% else %}
-                            -
+                        {% if taak.melding.response_json.onderwerpen %}
+                        <h2 class="h5">Onderwerp</h2>
+                        <p>
+                            {% for onderwerp in taak.melding.response_json.onderwerpen %}
+                                {{ onderwerp.naam }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
                         {% endif %}
-                    </p>
-                    <h2 class="h5">Afdeling</h2>
-                    <p>
+                        <h2 class="h5">Toelichting</h2>
+                        {% if taak.melding.response_json.omschrijving %}
+                        <p>
+                            {{ taak.melding.response_json.omschrijving }}
+                        </p>
+                        {% endif %}
+                        
                         {% if taak.afdeling.omschrijving %}
+                        <h2 class="h5">Afdeling</h2>
+                        <p>
                             {{ taak.afdeling.omschrijving }}
-                        {% else %}
-                            -
+                        </p>
                         {% endif %}
-                    </p>
-
-                    <h2 class="h5">Melding {{ taak.id }}</h2>
-                    <p>
-                        Status: {{ taak.taakstatus.naam }}
-                    </p>
-                    <p>
-                        Resolutie: {{ taak.resolutie }}
-                    </p>
-
+                    </details>
                 </div>
             </section>
 
             <section class="section--seperated section--location" data-testid="detailLocation">
                 <div class="container__details">
                     <h2 class="h5">Locatie</h2>
+                    {% if taak.melding.response_json.locatie.adres %}
                     <p>
                         <span class="link link--location" data-controller="incidentlist" data-action="click->incidentlist#makeRoute"
                             data-incidentlist-incidents-param="[{{ taak }}]">
                             <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7727 3.72704C11.15 1.10433 6.84951 1.10433 4.2268 3.72704C1.60409 6.34975 1.60409 10.6503 4.2268 13.273L8.99977 18.046L13.7727 13.273C16.3955 10.6503 16.3955 6.34975 13.7727 3.72704ZM8.99977 20.1673L3.16614 14.3336C-0.0423586 11.1251 -0.0423585 5.87488 3.16614 2.66638C6.37463 -0.542114 11.6249 -0.542114 14.8334 2.66638C18.0419 5.87488 18.0419 11.1251 14.8334 14.3336L8.99977 20.1673ZM11.9997 8.49999C11.9997 10.1568 10.6565 11.5 8.99966 11.5C7.34281 11.5 5.99966 10.1568 5.99966 8.49999C5.99966 6.84314 7.34281 5.49999 8.99966 5.49999C10.6565 5.49999 11.9997 6.84314 11.9997 8.49999ZM10.4997 8.49999C10.4997 9.32842 9.82809 9.99999 8.99966 9.99999C8.17123 9.99999 7.49966 9.32842 7.49966 8.49999C7.49966 7.67157 8.17123 6.99999 8.99966 6.99999C9.82809 6.99999 10.4997 7.67157 10.4997 8.49999Z" fill="#00811F"/>
                             </svg>
-                            {{ taak.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}
+                            {{ taak.melding.response_json.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}
                         </span>
                     </p>
-                    <dl>
-                        <div>
-                            <dt>Wijk:</dt>
-                            <dd data-detail-target="area"></dd>
-                        </div>
-                        <div>
-                            <dt>Buurt:</dt>
-                            <dd data-detail-target="district"></dd>
-                        </div>
-                        {% if taak.locatie.subbuurt %}
-                        <div>
-                            <dt>Subbuurt:</dt>
-                            <dd>{{ taak.locatie.subbuurt }}</dd>
-                        </div>
-                        {% endif %}
-                        {% if taak.locatie.plaatsbepaling %}
-                        <div>
-                            <dt>Plaatsbepaling:</dt>
-                            <dd>{{ taak.locatie.plaatsbepaling }}</dd>
-                        </div>
-                        {% endif %}
-                    </dl>
-                    <div class="container__map full-width">
-                        <div
-                            class="map"
-                            id="incidentMap"
-                            data-action="touchstart->detail#onTwoFingerDrag touchend->detail#onTwoFingerDrag"
-                        >
-                            <div class="map__overlay">
-                                <span>
-                                    Gebruik twee vingers om de kaart te verplaatsen
-                                </span>
+                    {% endif %}
+                    {% if taak.melding.response_json.meta.begraafplaats %}
+                        <dl>
+                            <div>
+                                <dt>Begraafplaats:</dt>
+                                <dd>
+                                    {% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices taak.melding.response_json.meta.begraafplaats %}
+                                </dd>
+                            </div>
+                            {% if taak.melding.response_json.meta.grafnummer %}
+                            <div>
+                                <dt>Grafnummer:</dt>
+                                <dd>{{ taak.melding.response_json.meta.grafnummer }}</dd>
+                            </div>
+                            {% endif %}
+                            {% if taak.melding.response_json.meta.vak %}
+                            <div>
+                                <dt>Vak:</dt>
+                                <dd>{{ taak.melding.response_json.meta.vak }}</dd>
+                            </div>
+                            {% endif %}
+
+                        </dl>
+                        {% else %}
+                        <dl>
+                            <div>
+                                <dt>Wijk:</dt>
+                                <dd data-detail-target="area"></dd>
+                            </div>
+                            <div>
+                                <dt>Buurt:</dt>
+                                <dd data-detail-target="district"></dd>
+                            </div>
+                            {% if taak.locatie.subbuurt %}
+                            <div>
+                                <dt>Subbuurt:</dt>
+                                <dd>{{ taak.locatie.subbuurt }}</dd>
+                            </div>
+                            {% endif %}
+                            {% if taak.locatie.plaatsbepaling %}
+                            <div>
+                                <dt>Plaatsbepaling:</dt>
+                                <dd>{{ taak.locatie.plaatsbepaling }}</dd>
+                            </div>
+                            {% endif %}
+                        </dl>
+                        <div class="container__map full-width">
+                            <div
+                                class="map"
+                                id="incidentMap"
+                                data-action="touchstart->detail#onTwoFingerDrag touchend->detail#onTwoFingerDrag"
+                            >
+                                <div class="map__overlay">
+                                    <span>
+                                        Gebruik twee vingers om de kaart te verplaatsen
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
             </section>
 
