@@ -19,4 +19,7 @@ django_redis
 django-permissions-policy==4.14.0
 django-cors-headers==3.13.0
 django-csp==3.6
-profilr-api-services @ git+https://github.com/forza-mor-rotterdam/profilr-api-services.git
+celery==5.2.6
+django-celery-beat==2.2.1
+django-celery-results==2.4.0
+redis==4.5.5

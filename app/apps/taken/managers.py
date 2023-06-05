@@ -44,6 +44,7 @@ class TaakManager(models.Manager):
         return taak
 
     def status_aanpassen(self, serializer, taak, db="default"):
+        from apps.aliassen.tasks import task_maak_bijlagealias
         from apps.taken.models import Taak
 
         with transaction.atomic():
@@ -57,15 +58,13 @@ class TaakManager(models.Manager):
                 raise TaakManager.TaakInGebruik
 
             vorige_status = locked_taak.taakstatus
-            print("status_aanpassen")
-            print(taak)
             resolutie = serializer.validated_data.pop("resolutie", None)
             bijlagen = serializer.validated_data.pop("bijlagen", None)
-            print(bijlagen)
-            print(serializer.validated_data)
             taakgebeurtenis = serializer.save(
                 taak=locked_taak,
             )
+            for bijlage in bijlagen:
+                task_maak_bijlagealias.delay(bijlage, taakgebeurtenis.pk)
 
             locked_taak.taakstatus = taakgebeurtenis.taakstatus
 

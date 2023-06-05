@@ -90,8 +90,6 @@ class MeldingenService:
             "omschrijving_intern": omschrijving_intern,
             "bijlagen": bijlagen,
         }
-        print(data)
-        print(f"{taakopdracht_url}status-aanpassen/")
         return self.do_request(
             f"{taakopdracht_url}status-aanpassen/", method="patch", data=data
         )

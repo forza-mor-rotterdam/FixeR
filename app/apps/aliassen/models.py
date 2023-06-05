@@ -1,4 +1,3 @@
-import requests
 from apps.meldingen.service import MeldingenService
 from django.contrib.gis.db import models
 from utils.models import BasisModel
@@ -55,9 +54,11 @@ class BijlageAlias(BasisModel):
         pass
 
     def valideer_bron_url(self):
-        response = requests.get(self.bron_url)
+        response = MeldingenService().get_by_uri(self.bron_url)
         if response.status_code != 200:
-            raise BijlageAlias.BijlageNietValide
+            raise BijlageAlias.BijlageNietValide(
+                f"Response status_code: {response.status_code}"
+            )
         self.response_json = response.json()
 
     def __str__(self) -> str:
