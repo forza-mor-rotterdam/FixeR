@@ -200,6 +200,10 @@ section {
     }
 }
 
+h1 + .section--seperated {
+    padding-top: 0;
+}
+
 // STICKY
 
 .has-sticky-footer {
@@ -268,4 +272,8 @@ section {
 .display-flex {
     display: flex;
     justify-content: space-between;
+}
+
+.no-padding {
+    padding: 0 !important;
 }
