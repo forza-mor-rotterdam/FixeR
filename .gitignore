@@ -17,3 +17,5 @@ yarn-error.log
 *.py[cod]
 *.pytest_cache*
 **/webpack-stats.json
+media/**/*
+app/*.log

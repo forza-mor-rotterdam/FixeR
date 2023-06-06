@@ -8,5 +8,4 @@ from django.dispatch import receiver
 def ophalen_alias_data(sender, instance, **kwargs):
     if kwargs.get("raw"):
         return
-    if not instance.id:
-        instance.valideer_bron_url()
+    instance.valideer_bron_url()

@@ -3,6 +3,8 @@ import os
 import sys
 from os.path import join
 
+from celery.schedules import crontab
+
 locale.setlocale(locale.LC_ALL, "nl_NL.UTF-8")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -62,6 +64,8 @@ INSTALLED_APPS = (
     "health_check",
     "health_check.cache",
     "health_check.storage",
+    "django_celery_beat",
+    "django_celery_results",
     # Apps
     "apps.main",
     "apps.health",
@@ -133,6 +137,21 @@ DATABASES.update(
     else {}
 )
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BROKER_URL = "redis://redis:6379/0"
+
+BROKER_URL = CELERY_BROKER_URL
+CELERY_TASK_TRACK_STARTED = True
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERYBEAT_SCHEDULE = {
+    "queue_every_five_mins": {
+        "task": "apps.health.tasks.query_every_five_mins",
+        "schedule": crontab(minute=5),
+    },
+}
 
 # AUTHENTICATION_BACKENDS = [
 # "apps.auth.backends.MSBAuthenticationBackend"
@@ -290,12 +309,22 @@ LOGGING = {
             "stream": sys.stdout,
             "formatter": "verbose",
         },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "/app/uwsgi.log",
+            "formatter": "verbose",
+        },
     },
     "loggers": {
         "": {
             "handlers": ["console"],
             "level": "INFO",
             "propagate": True,
+        },
+        "celery": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
         },
     },
 }
