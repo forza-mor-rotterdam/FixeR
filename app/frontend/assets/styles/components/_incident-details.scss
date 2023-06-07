@@ -38,18 +38,18 @@
             margin-top: 0;
             svg {
                 margin-right: 0.5rem;
+                vertical-align: text-top;
             }
         }
     }
 
-    details :not(.timeline){
-        &[open]{
-            summary {
-                &::before {
-                    left: auto;
-                    right: 12px;
-                    transform: rotate(-90deg) scale(1.5);
-                }
+    details[open]{
+        
+        summary {
+            &::before {
+                left: auto;
+                right: 12px;
+                transform: rotate(-90deg) scale(1.5);
             }
         }
     }

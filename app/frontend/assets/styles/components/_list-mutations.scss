@@ -58,7 +58,8 @@
             > summary {
                 flex-direction: row;
                 &::before {
-                    left: -36px;
+                    left: -36px !important;
+                    right: auto !important;
                 }
             }
         }

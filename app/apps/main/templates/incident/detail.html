@@ -30,11 +30,11 @@
             <h1 class="h3 no-padding">{{ taak.melding.response_json.locatie.adres.straatNaam|lower|capfirst }} {% if taak.melding.response_json.locatie.adres.huisnummer %}{{ taak.melding.response_json.locatie.adres.huisnummer }}{%endif%}</h1>
             {% elif taak.melding.response_json.meta.begraafplaats %}
             {% with grafnummer=taak.melding.response_json.meta.grafnummer vak=taak.melding.response_json.meta.vak plaats=taak.melding.response_json.meta.begraafplaats %}
-                    <h1 class="h3">
-                        {% if grafnummer %} Graf {{ grafnummer }}, {% endif %}{% if vak %}Vak {{ vak }}{% endif %}
-                        {% if not grafnummer and not vak and plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
-                    </h1>
-                    {% endwith %}
+            <h1 class="h3">
+                {% if grafnummer %} Graf {{ grafnummer }}, {% endif %}{% if vak %}Vak {{ vak }}{% endif %}
+                {% if not grafnummer and not vak and plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
+            </h1>
+            {% endwith %}
             {% endif %}
 
             <section class="section--seperated" data-testid="detailPhotoviewer" {% if  taak.melding.response_json.bijlagen|length < 2 %}style="border: 0;"{% endif %}>
@@ -117,8 +117,8 @@
                     <details>
                         <summary>
                             <h2>
-                                <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7727 3.72704C11.15 1.10433 6.84951 1.10433 4.2268 3.72704C1.60409 6.34975 1.60409 10.6503 4.2268 13.273L8.99977 18.046L13.7727 13.273C16.3955 10.6503 16.3955 6.34975 13.7727 3.72704ZM8.99977 20.1673L3.16614 14.3336C-0.0423586 11.1251 -0.0423585 5.87488 3.16614 2.66638C6.37463 -0.542114 11.6249 -0.542114 14.8334 2.66638C18.0419 5.87488 18.0419 11.1251 14.8334 14.3336L8.99977 20.1673ZM11.9997 8.49999C11.9997 10.1568 10.6565 11.5 8.99966 11.5C7.34281 11.5 5.99966 10.1568 5.99966 8.49999C5.99966 6.84314 7.34281 5.49999 8.99966 5.49999C10.6565 5.49999 11.9997 6.84314 11.9997 8.49999ZM10.4997 8.49999C10.4997 9.32842 9.82809 9.99999 8.99966 9.99999C8.17123 9.99999 7.49966 9.32842 7.49966 8.49999C7.49966 7.67157 8.17123 6.99999 8.99966 6.99999C9.82809 6.99999 10.4997 7.67157 10.4997 8.49999Z" fill="#00811F"/>
+                                <svg width="20" height="26" viewBox="0 0 20 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.6349 3.61281C16.709 2.48342 15.544 1.57355 14.224 0.948802C12.9039 0.324055 11.4617 0 10.0013 0C8.54084 0 7.09861 0.324055 5.77856 0.948802C4.4585 1.57355 3.29352 2.48342 2.3676 3.61281C0.837677 5.46838 0.000976563 7.79842 0.000976562 10.2034C0.000976563 12.6083 0.837677 14.9384 2.3676 16.7939L10.0013 26.0002L17.6361 16.7939C19.1652 14.938 20.0013 12.608 20.0011 10.2032C20.0009 7.79839 19.1644 5.46853 17.6349 3.61281ZM10.0001 13.9988C9.11016 13.9988 8.24017 13.7348 7.50017 13.2404C6.76018 12.746 6.18343 12.0432 5.84285 11.2209C5.50227 10.3987 5.41316 9.49394 5.58678 8.62106C5.76041 7.74818 6.18898 6.94639 6.81829 6.31708C7.4476 5.68777 8.24939 5.2592 9.12227 5.08557C9.99515 4.91195 10.8999 5.00106 11.7222 5.34164C12.5444 5.68222 13.2472 6.25897 13.7416 6.99897C14.2361 7.73896 14.5 8.60895 14.5 9.49893C14.5 10.6925 14.0259 11.8371 13.1821 12.6812C12.3382 13.5252 11.1937 13.9996 10.0001 13.9999V13.9988Z" fill="#00811F"/>
                                 </svg>
                                 Locatie
                             </h3>
@@ -127,8 +127,8 @@
                             <p>
                                 <span class="link link--location" data-controller="incidentlist" data-action="click->incidentlist#makeRoute"
                                     data-incidentlist-incidents-param="[{{ taak }}]">
-                                    <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7727 3.72704C11.15 1.10433 6.84951 1.10433 4.2268 3.72704C1.60409 6.34975 1.60409 10.6503 4.2268 13.273L8.99977 18.046L13.7727 13.273C16.3955 10.6503 16.3955 6.34975 13.7727 3.72704ZM8.99977 20.1673L3.16614 14.3336C-0.0423586 11.1251 -0.0423585 5.87488 3.16614 2.66638C6.37463 -0.542114 11.6249 -0.542114 14.8334 2.66638C18.0419 5.87488 18.0419 11.1251 14.8334 14.3336L8.99977 20.1673ZM11.9997 8.49999C11.9997 10.1568 10.6565 11.5 8.99966 11.5C7.34281 11.5 5.99966 10.1568 5.99966 8.49999C5.99966 6.84314 7.34281 5.49999 8.99966 5.49999C10.6565 5.49999 11.9997 6.84314 11.9997 8.49999ZM10.4997 8.49999C10.4997 9.32842 9.82809 9.99999 8.99966 9.99999C8.17123 9.99999 7.49966 9.32842 7.49966 8.49999C7.49966 7.67157 8.17123 6.99999 8.99966 6.99999C9.82809 6.99999 10.4997 7.67157 10.4997 8.49999Z" fill="#00811F"/>
+                                    <svg width="20" height="26" viewBox="0 0 20 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17.6349 3.61281C16.709 2.48342 15.544 1.57355 14.224 0.948802C12.9039 0.324055 11.4617 0 10.0013 0C8.54084 0 7.09861 0.324055 5.77856 0.948802C4.4585 1.57355 3.29352 2.48342 2.3676 3.61281C0.837677 5.46838 0.000976563 7.79842 0.000976562 10.2034C0.000976563 12.6083 0.837677 14.9384 2.3676 16.7939L10.0013 26.0002L17.6361 16.7939C19.1652 14.938 20.0013 12.608 20.0011 10.2032C20.0009 7.79839 19.1644 5.46853 17.6349 3.61281ZM10.0001 13.9988C9.11016 13.9988 8.24017 13.7348 7.50017 13.2404C6.76018 12.746 6.18343 12.0432 5.84285 11.2209C5.50227 10.3987 5.41316 9.49394 5.58678 8.62106C5.76041 7.74818 6.18898 6.94639 6.81829 6.31708C7.4476 5.68777 8.24939 5.2592 9.12227 5.08557C9.99515 4.91195 10.8999 5.00106 11.7222 5.34164C12.5444 5.68222 13.2472 6.25897 13.7416 6.99897C14.2361 7.73896 14.5 8.60895 14.5 9.49893C14.5 10.6925 14.0259 11.8371 13.1821 12.6812C12.3382 13.5252 11.1937 13.9996 10.0001 13.9999V13.9988Z" fill="#00811F"/>
                                     </svg>
                                     {{ taak.melding.response_json.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}
                                 </span>
@@ -191,13 +191,18 @@
                     <details>
                         <summary>
                             <h2>
-                                <svg width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M3.25 3.75H10.75V5.25H3.25V3.75Z" fill="#00811F"/>
-                                    <path d="M10.75 6.75H3.25V8.25H10.75V6.75Z" fill="#00811F"/>
-                                    <path d="M3.25 9.75H10.75V11.25H3.25V9.75Z" fill="#00811F"/>
-                                    <path d="M9.25 12.75H3.25V14.25H9.25V12.75Z" fill="#00811F"/>
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.25 0V18H13.75V0H0.25ZM12.25 1.5H1.75V16.5H12.25V1.5Z" fill="#00811F"/>
+                                <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 4H7V6H4V4Z" fill="#00811F"/>
+                                    <path d="M7 8H4V10H7V8Z" fill="#00811F"/>
+                                    <path d="M4 12H7V14H4V12Z" fill="#00811F"/>
+                                    <path d="M7 16H4V18H7V16Z" fill="#00811F"/>
+                                    <path d="M8 4H16V6H8V4Z" fill="#00811F"/>
+                                    <path d="M16 8H8V10H16V8Z" fill="#00811F"/>
+                                    <path d="M8 12H16V14H8V12Z" fill="#00811F"/>
+                                    <path d="M16 16H8V18H16V16Z" fill="#00811F"/>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V22H20V0H0ZM18 2H2V20H18V2Z" fill="#00811F"/>
                                 </svg>
+
                                 Melding
                             </h2>
                         </summary>
