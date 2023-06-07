@@ -1,9 +1,12 @@
+import logging
 from urllib.parse import urlparse
 
 import requests
 from django.conf import settings
 from django.core.cache import cache
 from requests import Request, Response
+
+logger = logging.getLogger(__name__)
 
 
 class MeldingenService:
@@ -12,6 +15,9 @@ class MeldingenService:
     _api_path: str = "/api/v1"
 
     class BasisUrlFout(Exception):
+        ...
+
+    class DataOphalenFout(Exception):
         ...
 
     def __init__(self, *args, **kwargs: dict):
@@ -31,6 +37,12 @@ class MeldingenService:
     def get_headers(self):
         meldingen_token = cache.get("meldingen_token2")
         if not meldingen_token:
+            logger.info(
+                f"MELDINGEN_USERNAME EXISTS: {(settings.MELDINGEN_USERNAME is not None)}"
+            )
+            logger.info(
+                f"MELDINGEN_PASSWORD EXISTS: {(settings.MELDINGEN_PASSWORD is not None)}"
+            )
             token_response = requests.post(
                 settings.MELDINGEN_TOKEN_API,
                 json={
@@ -42,6 +54,10 @@ class MeldingenService:
                 meldingen_token = token_response.json().get("token")
                 cache.set(
                     "meldingen_token", meldingen_token, settings.MELDINGEN_TOKEN_TIMEOUT
+                )
+            else:
+                raise MeldingenService.DataOphalenFout(
+                    f"status code: {token_response.status_code}, response text: {token_response.text}"
                 )
 
         headers = {"Authorization": f"Token {meldingen_token}"}
