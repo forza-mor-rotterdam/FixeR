@@ -43,6 +43,10 @@ header {
     padding: 0 map-get($container-margin, s) 16px;
 }
 
+main {
+    padding-bottom: 100px;
+}
+
 // HEADINGS
 h1, .h1 {
     font-size: $h1-font-size;

@@ -133,7 +133,7 @@
             }
         }
 
-        details {
+        details:not(.timeline) {
             summary {
                 background-color: $gray-tint01;
                 margin: 0 -16px;
@@ -257,7 +257,7 @@ details {
         }
     }
 
-    details {
+    details:not(.timeline) {
         summary {
             background-color: $gray-tint01;
             margin: 0 -16px;

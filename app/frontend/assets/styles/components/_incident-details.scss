@@ -22,7 +22,7 @@
     > *:last-child {
         margin-bottom: 0;
     }
-
+    
     summary {
         padding-left: 0;
         border-top: none;
@@ -42,11 +42,12 @@
         }
     }
 
-    details{
+    details :not(.timeline){
         &[open]{
             summary {
                 &::before {
                     left: auto;
+                    right: 12px;
                     transform: rotate(-90deg) scale(1.5);
                 }
             }

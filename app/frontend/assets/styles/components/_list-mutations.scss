@@ -56,9 +56,20 @@
 
         &[open] {
             > summary {
+                flex-direction: row;
                 &::before {
-                    left: 0;
+                    left: -36px;
                 }
+            }
+        }
+
+        .container__details.taak & {
+
+            padding-left: 24px !important;
+            border-bottom: none;
+
+            summary {
+                border: 0;
             }
         }
     }
@@ -78,5 +89,9 @@
         dd {
             margin-bottom: 0.5em;
         }
+    }
+
+    .container__details.taak & {
+        border-top: 0;
     }
 }
