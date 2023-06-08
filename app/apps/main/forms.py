@@ -56,6 +56,9 @@ TAAK_BEHANDEL_RESOLUTIE = {bo[0]: bo[4] for bo in TAAK_BEHANDEL_OPTIES}
 class RadioSelect(forms.RadioSelect):
     option_template_name = "widgets/radio_option.html"
 
+class RadioSelectSimple(forms.RadioSelect):
+    option_template_name = "widgets/radio_option_simple.html"
+
 
 class HandleForm(forms.Form):
 
@@ -111,7 +114,7 @@ class HandleForm(forms.Form):
 
 class TaakBehandelForm(forms.Form):
     status = forms.ChoiceField(
-        widget=RadioSelect(
+        widget=RadioSelectSimple(
             attrs={
                 "class": "list--form-radio-input",
             }
@@ -125,6 +128,7 @@ class TaakBehandelForm(forms.Form):
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
+                "data-bijlagen-target": "bijlagenExtra",
             }
         ),
         label="Foto's",

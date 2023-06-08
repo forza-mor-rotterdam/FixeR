@@ -8,7 +8,7 @@ export default class extends Controller {
         currentDistrict: String,
         incidentObject: Object
     }
-    static targets = ['area', 'district', 'selectedImage', 'thumbList', 'imageSliderContainer']
+    static targets = ['selectedImage', 'thumbList', 'imageSliderContainer']
 
     Mapping = {
         'fotos': 'media',
@@ -16,29 +16,29 @@ export default class extends Controller {
 
     initialize() {
 
-        if(this.currentDistrictValue) {
-            let currentArea = JSON.parse(this.areaListValue).find(area => area.buurten.some((district) => district.code === this.currentDistrictValue))
-            this.areaTarget.textContent = currentArea.omschrijving
-            this.districtTarget.textContent = currentArea.buurten.find((district) => district.code === this.currentDistrictValue).omschrijving
-        } else {
-            this.areaTarget.textContent = '-'
-            this.districtTarget.textContent = '-'
-        }
+        // if(this.currentDistrictValue) {
+        //     let currentArea = JSON.parse(this.areaListValue).find(area => area.buurten.some((district) => district.code === this.currentDistrictValue))
+        //     this.areaTarget.textContent = currentArea.omschrijving
+        //     this.districtTarget.textContent = currentArea.buurten.find((district) => district.code === this.currentDistrictValue).omschrijving
+        // } else {
+        //     this.areaTarget.textContent = '-'
+        //     this.districtTarget.textContent = '-'
+        // }
 
         if(this.hasThumbListTarget) {
             this.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
         }
 
-        const incidentCoordinates = this.rdToWgs84(Number(this.incidentXValue), Number(this.incidentYValue))
-        const map = L.map('incidentMap', {
-            zoomControl: false,
-            maxZoom: 18,
-            minZoom: 13,
-            dragging: false,
-            tap: false
-        }).setView(incidentCoordinates, 16);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        const marker = L.marker(incidentCoordinates).addTo(map);
+        // const incidentCoordinates = this.rdToWgs84(Number(this.incidentXValue), Number(this.incidentYValue))
+        // const map = L.map('incidentMap', {
+        //     zoomControl: false,
+        //     maxZoom: 18,
+        //     minZoom: 13,
+        //     dragging: false,
+        //     tap: false
+        // }).setView(incidentCoordinates, 16);
+        // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        // const marker = L.marker(incidentCoordinates).addTo(map);
     }
 
     mappingFunction(object) {

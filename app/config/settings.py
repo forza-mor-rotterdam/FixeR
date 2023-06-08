@@ -247,6 +247,7 @@ CSP_SCRIPT_SRC = (
 )
 CSP_IMG_SRC = (
     "'self'",
+    "blob:",
     "data:",
     "unpkg.com",
     "tile.openstreetmap.org",

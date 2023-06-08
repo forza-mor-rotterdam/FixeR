@@ -19,10 +19,6 @@
         <div
             data-controller="detail"
             data-detail-taak-object-value="{{ taak }}"
-            data-detail-taak-x-value="{{ taak.locatie.x }}"
-            data-detail-taak-y-value="{{ taak.locatie.y }}"
-            data-detail-area-list-value="{{ areas|json_encode }}"
-            data-detail-current-district-value="{{ taak.locatie.buurtNummer }}"
             {% if taak.magAfhandelen %} class="has-sticky-footer" {% endif %}
         >
 
@@ -56,8 +52,9 @@
                         <div class="container__thumbs">
                             <ul data-detail-target="thumbList">
                                 {% for foto in taak.melding.response_json.bijlagen %}
+                                
                                 <li data-action="click->detail#selectImage"
-                                    data-detail-image-index-param="{{ foto.volgnummer }}">
+                                    data-detail-image-index-param="{{forloop.counter}}">
                                     <div class="container__image">
                                         <img src="{{ foto.afbeelding_verkleind_relative_url }}" alt="" />
                                     </div>
@@ -154,11 +151,11 @@
                                 <dl>
                                     <div>
                                         <dt>Wijk:</dt>
-                                        <dd data-detail-target="area"></dd>
+                                        {% comment %} <dd data-detail-target="area"></dd> {% endcomment %}
                                     </div>
                                     <div>
                                         <dt>Buurt:</dt>
-                                        <dd data-detail-target="district"></dd>
+                                        {% comment %} <dd data-detail-target="district"></dd> {% endcomment %}
                                     </div>
                                     {% if taak.locatie.subbuurt %}
                                     <div>

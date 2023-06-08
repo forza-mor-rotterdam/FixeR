@@ -229,6 +229,7 @@ def incident_modal_handle(request, id, handled_type="handled"):
             print(taak_status_aanpassen_response.text)
 
             form.cleaned_data.get("handle_choice", 1)
+            return redirect("incident_index")
         print(form.errors)
     return render(
         request,

@@ -221,7 +221,7 @@
                         {% if field.value != None %} value="{{ field.value|stringformat:'s' }}"{% endif %}
                         {% render_attrs field class="file-upload-input" multiple="multiple" %}
                     >
-                    <div id="imagesPreview_{{field.auto_id}}" class="preview"></div>
+                    <div id="imagesPreview" class="preview"></div>
                 </div>
             </div>
         </div>
