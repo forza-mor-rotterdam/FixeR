@@ -38,9 +38,6 @@ class MeldingenService:
         meldingen_token = cache.get("meldingen_token2")
         if not meldingen_token:
             logger.info(
-                f"MELDINGEN_USERNAME EXISTS: {(settings.MELDINGEN_USERNAME is not None)}"
-            )
-            logger.info(
                 f"MELDINGEN_PASSWORD EXISTS: {(settings.MELDINGEN_PASSWORD is not None)}"
             )
             token_response = requests.post(
