@@ -50,6 +50,8 @@ class MeldingenService:
                     "password": settings.MELDINGEN_PASSWORD,
                 },
             )
+            logger.info(settings.MELDINGEN_TOKEN_API)
+            logger.info(settings.MELDINGEN_USERNAME)
             if token_response.status_code == 200:
                 meldingen_token = token_response.json().get("token")
                 cache.set(
