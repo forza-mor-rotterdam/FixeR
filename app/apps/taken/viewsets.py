@@ -15,8 +15,6 @@ class TaaktypeViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "uuid"
     queryset = Taaktype.objects.all()
 
-    permission_classes = ()
-
     serializer_class = TaaktypeSerializer
 
     @extend_schema(
@@ -51,8 +49,6 @@ class TaakViewSet(
 ):
     lookup_field = "uuid"
     queryset = Taak.objects.all()
-
-    permission_classes = ()
 
     serializer_class = TaakSerializer
 
