@@ -152,11 +152,41 @@ def taken_overzicht(request):
         {},
     )
 
+def taken_afgerond_overzicht(request):
+    return render(
+        request,
+        "incident/index_afgerond.html",
+        {},
+    )
+
 
 def actieve_taken(request):
     grouped_by = False
 
     taken = Taak.objects.filter(afgesloten_op__isnull=True)
+
+    actieve_filters = request.session.get("actieve_filters", {})
+    taken_gefilterd = filter_taken(taken, actieve_filters)
+
+    return render(
+        request,
+        "incident/part_list.html"
+        if not grouped_by
+        else "incident/part_list_grouped.html",
+        {
+            # "incidents": incidents_sorted,
+            # "sort_by": sort_by_with_reverse,
+            # "groups": groups,
+            # "grouped_by": grouped_by,
+            "sort_options": sort_options,
+            "taken": taken_gefilterd,
+        },
+    )
+
+def afgeronde_taken(request):
+    grouped_by = False
+
+    taken = Taak.objects.filter(afgesloten_op__isnull=False)
 
     actieve_filters = request.session.get("actieve_filters", {})
     taken_gefilterd = filter_taken(taken, actieve_filters)
