@@ -59,6 +59,7 @@ INSTALLED_APPS = (
     "django.contrib.gis",
     "django.contrib.postgres",
     "rest_framework",
+    "rest_framework.authtoken",
     "drf_spectacular",
     "django_filters",
     "webpack_loader",
@@ -155,9 +156,6 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
-# AUTHENTICATION_BACKENDS = [
-# "apps.auth.backends.MSBAuthenticationBackend"
-# ]
 SITE_ID = 1
 SITE_NAME = os.getenv("SITE_NAME", "BEHANDELR")
 SITE_DOMAIN = os.getenv("SITE_DOMAIN", "localhost")
@@ -206,7 +204,9 @@ REST_FRAMEWORK = dict(
     DEFAULT_SCHEMA_CLASS="drf_spectacular.openapi.AutoSchema",
     DEFAULT_VERSIONING_CLASS="rest_framework.versioning.NamespaceVersioning",
     # DEFAULT_PERMISSION_CLASSES=("rest_framework.permissions.IsAuthenticated",),
-    # DEFAULT_AUTHENTICATION_CLASSES=("apps.auth.authentication.AuthenticationClass",),
+    DEFAULT_AUTHENTICATION_CLASSES=(
+        "rest_framework.authentication.TokenAuthentication",
+    ),
 )
 
 
