@@ -23,6 +23,7 @@ def to_date(value):
 def json_encode(value):
     return json.dumps(value)
 
+
 @register.simple_tag
 def vind_in_dict(op_zoek_dict, key):
     if type(op_zoek_dict) != dict:

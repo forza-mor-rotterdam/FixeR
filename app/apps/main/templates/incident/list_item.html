@@ -12,7 +12,7 @@
         data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler cancelHandle->taak#cancelHandleHandler"
         data-taak-date-value="{{ incident.datumMelding }}"
         data-taak-days-value="{{ incident.werkdagenSindsRegistratie }}" {% endcomment %}>
-        
+
         <div class="wrapper__swipe">
             <div class="container__flex">
                 <a href="{% url 'taak_detail' taak.id %}" aria-label="Bekijk taak {{ taak.id }}">
@@ -52,14 +52,14 @@
                         <div class="incident__header">Melding: {{taak.melding.id}}
                             <h2>{{ taak.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}</h2>
                             {% if taak.spoed %}<span class="icon icon--warning">{% endif %}</span>
-                        </div>  
+                        </div>
                         {% endif %}
                         {# </a> #}
                     </div>
                 </a>
             </div>
         </div>
-    
+
 {% endblock %}
 
 {% block modal_header %}
