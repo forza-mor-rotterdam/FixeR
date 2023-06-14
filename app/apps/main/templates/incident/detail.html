@@ -52,7 +52,7 @@
                         <div class="container__thumbs">
                             <ul data-detail-target="thumbList">
                                 {% for foto in taak.melding.response_json.bijlagen %}
-                                
+
                                 <li data-action="click->detail#selectImage"
                                     data-detail-image-index-param="{{forloop.counter}}">
                                     <div class="container__image">
@@ -71,7 +71,7 @@
 
             <section data-testid="detailTaak">
                 <div class="container__details taak">
-                
+
                     {% comment %} {{ taak.melding.response_json }} {% endcomment %}
                     <details>
                         <summary>
@@ -225,7 +225,7 @@
                             {{ taak.melding.response_json.omschrijving }}
                         </p>
                         {% endif %}
-                        
+
                         {% if taak.afdeling.omschrijving %}
                         <h3 class="h5">Afdeling</h3>
                         <p>
@@ -289,7 +289,7 @@
                 </div>
             </section>
 
-           
+
 
             <section class="section--seperated section--seperated__no-border-bottom" data-testid="detailActions">
                 <div class="container__details">

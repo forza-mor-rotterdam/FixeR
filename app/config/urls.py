@@ -22,6 +22,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -30,6 +31,7 @@ router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 
 urlpatterns = [
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
+    path("api-token-auth/", views.obtain_auth_token),
     path("admin/", admin.site.urls),
     path("", root, name="root"),
     path(

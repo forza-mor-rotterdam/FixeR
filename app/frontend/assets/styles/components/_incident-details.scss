@@ -22,7 +22,7 @@
     > *:last-child {
         margin-bottom: 0;
     }
-    
+
     summary {
         padding-left: 0;
         border-top: none;
@@ -44,7 +44,7 @@
     }
 
     details[open]{
-        
+
         summary {
             &::before {
                 left: auto;
