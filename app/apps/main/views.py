@@ -51,9 +51,9 @@ def ui_settings_handler(request):
     )
 
 
-def filter(request):
-    taken = Taak.objects.filter(afgesloten_op__isnull=True)
-
+def filter(request, openstaand="openstaand"):
+    taken = Taak.objects.filter(afgesloten_op__isnull=(openstaand=="openstaand"))
+    form_url = reverse("filter_part") if (openstaand=="openstaand") else reverse("filter_part", kwargs={"openstaand": "niet_openstaand"})
     actieve_filters = {
         "locatie": [],
         "taken": [],
@@ -100,6 +100,7 @@ def filter(request):
             "actieve_filters": actieve_filters,
             "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
             "taken_gefilterd": taken_gefilterd,
+            "form_url": form_url,
         },
     )
 
@@ -149,14 +150,18 @@ def taken_overzicht(request):
     return render(
         request,
         "incident/index.html",
-        {},
+        {
+            "filter_url": reverse("filter_part"),
+        },
     )
 
 def taken_afgerond_overzicht(request):
     return render(
         request,
         "incident/index_afgerond.html",
-        {},
+        {
+            "filter_url": reverse("filter_part", kwargs={"openstaand":"niet_openstaand"}),
+        },
     )
 
 
@@ -178,6 +183,7 @@ def actieve_taken(request):
             # "sort_by": sort_by_with_reverse,
             # "groups": groups,
             # "grouped_by": grouped_by,
+            "filter_url": reverse("filter_part"),
             "sort_options": sort_options,
             "taken": taken_gefilterd,
         },
@@ -185,7 +191,6 @@ def actieve_taken(request):
 
 def afgeronde_taken(request):
     grouped_by = False
-
     taken = Taak.objects.filter(afgesloten_op__isnull=False)
 
     actieve_filters = request.session.get("actieve_filters", {})
@@ -201,6 +206,7 @@ def afgeronde_taken(request):
             # "sort_by": sort_by_with_reverse,
             # "groups": groups,
             # "grouped_by": grouped_by,
+            
             "sort_options": sort_options,
             "taken": taken_gefilterd,
         },

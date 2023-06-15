@@ -42,7 +42,7 @@ urlpatterns = [
         name="incident_index",
     ),
     path(
-        "afgeronde-taken/",
+        "taken-afgerond/",
         taken_afgerond_overzicht,
         name="taken_afgerond_overzicht",
     ),
@@ -57,6 +57,7 @@ urlpatterns = [
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
     path("part/filter/", filter, name="filter_part"),
+    path("part/filter/<str:openstaand>/", filter, name="filter_part"),
     path("part/actieve-taken/", actieve_taken, name="actieve_taken_part"),
     path("part/afgeronde-taken/", afgeronde_taken, name="afgeronde_taken_part"),
     path(
