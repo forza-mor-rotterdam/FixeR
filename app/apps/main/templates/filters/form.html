@@ -2,7 +2,8 @@
 
 <turbo-frame id="incidents_filters">
     <form
-        action="{% url 'filter_part' %}"
+        action="{{form_url}}"
+        {% comment %} action="{% url 'filter_part' %}" {% endcomment %}
         method="post"
         id="incidentFilterAllForm"
         data-testid="incidentFilterAllForm"

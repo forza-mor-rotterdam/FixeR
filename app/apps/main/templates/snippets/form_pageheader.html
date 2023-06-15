@@ -2,7 +2,8 @@
     <form action="{% url 'pageheader_form_part' %}" method="POST">
         {% csrf_token %}
         <ul class="list-clean list-nav--primary">
-            <li><a href="/" data-turbo-frame="base_frame" data-action="pageHeader#closeModal">Meldingen</a></li>
+            <li><a href="/" data-turbo-frame="base_frame" data-action="pageHeader#closeModal" data-turbo-action="advance">Te doen</a></li>
+            <li><a href="{% url 'taken_afgerond_overzicht' %}" data-turbo-frame="base_frame" data-action="pageHeader#closeModal" data-turbo-action="advance">Afgerond</a></li>
             <li><a href="" data-turbo-frame="_top">Log uit</a></li>
         </ul>
         <ul class="list-clean list-nav--secondary">

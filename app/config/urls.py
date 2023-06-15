@@ -1,5 +1,6 @@
 from apps.main.views import (
     actieve_taken,
+    afgeronde_taken,
     config,
     filter,
     http_404,
@@ -11,6 +12,7 @@ from apps.main.views import (
     root,
     taak_detail,
     taken_overzicht,
+    taken_afgerond_overzicht,
     ui_settings_handler,
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
@@ -39,6 +41,11 @@ urlpatterns = [
         taken_overzicht,
         name="incident_index",
     ),
+    path(
+        "taken-afgerond/",
+        taken_afgerond_overzicht,
+        name="taken_afgerond_overzicht",
+    ),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
     path(
         "taak/<int:id>/mutation-lines/",
@@ -50,7 +57,9 @@ urlpatterns = [
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
     path("part/filter/", filter, name="filter_part"),
+    path("part/filter/<str:openstaand>/", filter, name="filter_part"),
     path("part/actieve-taken/", actieve_taken, name="actieve_taken_part"),
+    path("part/afgeronde-taken/", afgeronde_taken, name="afgeronde_taken_part"),
     path(
         "part/taak-lijst-item/<int:id>/",
         incident_list_item,
