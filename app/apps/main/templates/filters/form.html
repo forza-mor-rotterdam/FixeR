@@ -105,14 +105,7 @@
             </summary>
             {% include "filters/form_locatiefilter.html" %}
         </details>
-        <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_departments"{% if "foldout_departments" in foldout_states or filters.afdelingen|length == 0 %} open{% endif %}>
-            <summary>
-                <span>Taken</span>
-                <span>({{ actieve_filters.taken|length }})</span>
-            </summary>
-            {% include "filters/form_taakfilter.html" %}
-        </details>
-
+        
         {% if filters.afdelingen|length > 0  %}
         {% if filter_opties.begraafplaats %}
         <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_categories"{% if "foldout_categories" in foldout_states %} open{% endif %}>
