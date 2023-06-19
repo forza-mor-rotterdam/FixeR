@@ -3,11 +3,14 @@ from apps.main.views import (
     afgeronde_taken,
     config,
     filter,
+    gebruiker_informatie,
     http_404,
     http_500,
     incident_list_item,
     incident_modal_handle,
     incident_mutation_lines,
+    login_mislukt,
+    login_verplicht,
     meldingen_bestand,
     root,
     taak_detail,
@@ -89,6 +92,16 @@ urlpatterns = [
     ),
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
+
+if settings.OIDC_RP_CLIENT_ID:
+    urlpatterns += [
+        path(
+            "gebruiker-informatie/", gebruiker_informatie, name="gebruiker_informatie"
+        ),
+        path("login-verplicht/", login_verplicht, name="login_verplicht"),
+        path("login-mislukt/", login_mislukt, name="login_mislukt"),
+        path("oidc/", include("mozilla_django_oidc.urls")),
+    ]
 
 if settings.DEBUG:
     urlpatterns += [
