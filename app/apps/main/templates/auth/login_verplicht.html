@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load rotterdam_formulier_html %}
+
+{% block title %}Ingelogd{% endblock %}
+
+{% block header %}
+{% include "snippets/pageheader.html" %}
+{% endblock %}
+
+{% block body %}
+<h1>Met login beschermde pagina</h1>
+<p>Dit kun je zien omdat je bent ingelogd. Als je niet ingelogd bent, en je komt op deze url, dan wordt je eerst naar de login pagina gestuurd.</p>
+
+<p><a href="{% url 'gebruiker_informatie' %}">Naar je profiel</a></p>
+{% endblock %}
