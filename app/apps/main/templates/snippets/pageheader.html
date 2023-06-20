@@ -45,6 +45,10 @@
                 </div>
 
                 <div class="modal-body">
+                    {% if request.user.is_authenticated %}
+                    <strong>{{ request.user.first_name }}</strong>
+                    <a href="{% url 'oidc_logout' %}">Uitloggen</a>
+                    {% endif %}
                     <turbo-frame id="form_pageheader">
                         {% include "snippets/form_pageheader.html" %}
                     </turbo-frame>

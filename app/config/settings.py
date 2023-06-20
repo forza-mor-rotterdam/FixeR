@@ -383,7 +383,7 @@ if OIDC_OP_JWKS_ENDPOINT:
     OIDC_RP_SIGN_ALGO = "RS256"
 
 AUTHENTICATION_BACKENDS = [
-    "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
+    "apps.authenticatie.auth.OIDCAuthenticationBackend",
 ]
 OIDC_OP_LOGOUT_URL_METHOD = "apps.authenticatie.views.provider_logout"
 ALLOW_LOGOUT_GET_METHOD = True
