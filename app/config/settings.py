@@ -75,6 +75,7 @@ INSTALLED_APPS = (
     "django_celery_results",
     # Apps
     "apps.main",
+    "apps.authenticatie",
     "apps.health",
     "apps.taken",
     "apps.aliassen",
@@ -342,8 +343,8 @@ OIDC_RP_CLIENT_SECRET = os.getenv("OIDC_RP_CLIENT_SECRET")
 OIDC_VERIFY_SSL = os.getenv("OIDC_VERIFY_SSL", True) in TRUE_VALUES
 OIDC_USE_NONCE = os.getenv("OIDC_USE_NONCE", True) in TRUE_VALUES
 
-OIDC_REALM = os.getenv("OIDC_REALM", "mor-acc")
-AUTH_BASE_URL = os.getenv("AUTH_BASE_URL", "https://iam.forzamor.nl")
+OIDC_REALM = os.getenv("OIDC_REALM")
+AUTH_BASE_URL = os.getenv("AUTH_BASE_URL")
 OPENID_CONFIG_URI = os.getenv(
     "OPENID_CONFIG_URI",
     f"{AUTH_BASE_URL}/realms{OIDC_REALM}/.well-known/openid-configuration",
@@ -373,14 +374,20 @@ OIDC_RP_SCOPES = os.getenv(
     "OIDC_RP_SCOPES",
     " ".join(OPENID_CONFIG.get("scopes_supported", ["openid", "email", "profile"])),
 )
+OIDC_OP_LOGOUT_ENDPOINT = os.getenv(
+    "OIDC_OP_LOGOUT_ENDPOINT",
+    OPENID_CONFIG.get("end_session_endpoint"),
+)
 
 if OIDC_OP_JWKS_ENDPOINT:
     OIDC_RP_SIGN_ALGO = "RS256"
 
 AUTHENTICATION_BACKENDS = [
-    # "django.contrib.auth.backends.ModelBackend",
     "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
 ]
+OIDC_OP_LOGOUT_URL_METHOD = "apps.authenticatie.views.provider_logout"
+ALLOW_LOGOUT_GET_METHOD = True
+OIDC_STORE_ID_TOKEN = True
 
 LOGIN_REDIRECT_URL = "/gebruiker-informatie/"
 LOGIN_REDIRECT_URL_FAILURE = "/login-mislukt/"

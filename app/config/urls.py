@@ -13,9 +13,10 @@ from apps.main.views import (
     login_verplicht,
     meldingen_bestand,
     root,
+    sso_logout,
     taak_detail,
-    taken_overzicht,
     taken_afgerond_overzicht,
+    taken_overzicht,
     ui_settings_handler,
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
@@ -100,6 +101,7 @@ if settings.OIDC_RP_CLIENT_ID:
         ),
         path("login-verplicht/", login_verplicht, name="login_verplicht"),
         path("login-mislukt/", login_mislukt, name="login_mislukt"),
+        path("sso-logout/", sso_logout, name="sso_logout"),
         path("oidc/", include("mozilla_django_oidc.urls")),
     ]
 
