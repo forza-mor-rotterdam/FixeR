@@ -43,6 +43,7 @@ def root(request):
     return redirect(reverse("incident_index"))
 
 
+@login_required
 def ui_settings_handler(request):
 
     return render(
@@ -52,9 +53,14 @@ def ui_settings_handler(request):
     )
 
 
+@login_required
 def filter(request, openstaand="openstaand"):
-    taken = Taak.objects.filter(afgesloten_op__isnull=(openstaand=="openstaand"))
-    form_url = reverse("filter_part") if (openstaand=="openstaand") else reverse("filter_part", kwargs={"openstaand": "niet_openstaand"})
+    taken = Taak.objects.filter(afgesloten_op__isnull=(openstaand == "openstaand"))
+    form_url = (
+        reverse("filter_part")
+        if (openstaand == "openstaand")
+        else reverse("filter_part", kwargs={"openstaand": "niet_openstaand"})
+    )
     actieve_filters = {
         "locatie": [],
         "taken": [],
@@ -147,6 +153,7 @@ sort_options = (
 )
 
 
+@login_required
 def taken_overzicht(request):
     return render(
         request,
@@ -156,16 +163,21 @@ def taken_overzicht(request):
         },
     )
 
+
+@login_required
 def taken_afgerond_overzicht(request):
     return render(
         request,
         "incident/index_afgerond.html",
         {
-            "filter_url": reverse("filter_part", kwargs={"openstaand":"niet_openstaand"}),
+            "filter_url": reverse(
+                "filter_part", kwargs={"openstaand": "niet_openstaand"}
+            ),
         },
     )
 
 
+@login_required
 def actieve_taken(request):
     grouped_by = False
 
@@ -190,6 +202,8 @@ def actieve_taken(request):
         },
     )
 
+
+@login_required
 def afgeronde_taken(request):
     grouped_by = False
     taken = Taak.objects.filter(afgesloten_op__isnull=False)
@@ -207,13 +221,13 @@ def afgeronde_taken(request):
             # "sort_by": sort_by_with_reverse,
             # "groups": groups,
             # "grouped_by": grouped_by,
-            
             "sort_options": sort_options,
             "taken": taken_gefilterd,
         },
     )
 
 
+@login_required
 def taak_detail(request, id):
     taak = Taak.objects.get(pk=id)
 
@@ -227,6 +241,7 @@ def taak_detail(request, id):
     )
 
 
+@login_required
 def incident_list_item(request, id):
     taak = Taak.objects.get(pk=id)
     return render(
@@ -238,6 +253,7 @@ def incident_list_item(request, id):
     )
 
 
+@login_required
 def incident_modal_handle(request, id, handled_type="handled"):
     taak = Taak.objects.get(pk=id)
     form = TaakBehandelForm()
@@ -289,6 +305,7 @@ def incident_modal_handle(request, id, handled_type="handled"):
     )
 
 
+@login_required
 def incident_mutation_lines(request, id):
 
     return render(
@@ -300,6 +317,7 @@ def incident_mutation_lines(request, id):
     )
 
 
+@login_required
 def config(request):
     return render(
         request,
@@ -307,6 +325,7 @@ def config(request):
     )
 
 
+@login_required
 def meldingen_bestand(request):
     url = f"{settings.MELDINGEN_URL}{request.path}"
     headers = {"Authorization": f"Token {get_meldingen_token()}"}
@@ -335,6 +354,15 @@ def login_verplicht(request):
 
 
 def login_mislukt(request):
+    return render(
+        request,
+        "auth/login_mislukt.html",
+    )
+
+
+def sso_logout(request):
+    print("sso_logout")
+    print(request)
     return render(
         request,
         "auth/login_mislukt.html",
