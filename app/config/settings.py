@@ -384,6 +384,7 @@ if OIDC_OP_JWKS_ENDPOINT:
 
 AUTHENTICATION_BACKENDS = [
     "apps.authenticatie.auth.OIDCAuthenticationBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 OIDC_OP_LOGOUT_URL_METHOD = "apps.authenticatie.views.provider_logout"
 ALLOW_LOGOUT_GET_METHOD = True
