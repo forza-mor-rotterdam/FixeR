@@ -1,16 +1,14 @@
+import logging
 from urllib import parse
 
 import requests
 from django.conf import settings
 
+logger = logging.getLogger(__name__)
+
 
 def provider_logout(request):
-    print("provider_logout")
     logout_url = settings.OIDC_OP_LOGOUT_ENDPOINT
-
-    # If we have the oidc_id_token, we can automatically redirect
-    # the user back to the application.
-
     oidc_id_token = request.session.get("oidc_id_token", None)
     redirect_url = request.build_absolute_uri(location=settings.LOGOUT_REDIRECT_URL)
     if oidc_id_token:
@@ -25,7 +23,8 @@ def provider_logout(request):
             )
         )
     logout_response = requests.get(logout_url)
-    print(logout_response.status_code)
-    print(logout_response.text)
-
+    if logout_response.status_code != 200:
+        logger.error(
+            f"provider_logout: status code: {logout_response.status_code}, logout_url: {logout_url}"
+        )
     return redirect_url

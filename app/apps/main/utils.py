@@ -9,7 +9,6 @@ def get_filter_options(f_qs, qs, fields=[]):
     out = {}
 
     def value_lookup(obj, key, f: list | tuple):
-        print(type(obj))
         if isinstance(obj, dict):
             return obj.get(key, key)
         if isinstance(obj, (str, int)):
@@ -17,7 +16,6 @@ def get_filter_options(f_qs, qs, fields=[]):
         return key
 
     for f in fields:
-        print(f[0])
         f = f if isinstance(f, (list, tuple)) else (f,)
         key = f[1] if len(f) > 1 else f[0]
         value_lookup_str = f[2] if len(f) > 2 else key
