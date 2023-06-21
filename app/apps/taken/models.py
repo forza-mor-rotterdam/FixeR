@@ -18,6 +18,7 @@ class Taakgebeurtenis(BasisModel):
         null=True,
     )
     omschrijving_intern = models.CharField(max_length=5000, null=True, blank=True)
+    gebruiker = models.CharField(max_length=200, null=True, blank=True)
     taak = models.ForeignKey(
         to="taken.Taak",
         related_name="taakgebeurtenissen_voor_taak",

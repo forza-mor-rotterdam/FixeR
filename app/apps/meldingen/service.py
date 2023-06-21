@@ -96,6 +96,7 @@ class MeldingenService:
         resolutie=None,
         omschrijving_intern=None,
         bijlagen=[],
+        gebruiker=None,
     ):
         data = {
             "taakstatus": {
@@ -104,6 +105,7 @@ class MeldingenService:
             "resolutie": resolutie,
             "omschrijving_intern": omschrijving_intern,
             "bijlagen": bijlagen,
+            "gebruiker": gebruiker,
         }
         return self.do_request(
             f"{taakopdracht_url}status-aanpassen/", method="patch", data=data

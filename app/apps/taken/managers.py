@@ -25,6 +25,7 @@ class TaakManager(models.Manager):
                 bron_url=serializer.validated_data.get("melding")
             )
             serializer.validated_data["melding"] = meldingalias
+            gebruiker = serializer.validated_data.pop("gebruiker", None)
             taak = serializer.save()
             taakstatus = Taakstatus.objects.create(
                 taak=taak,
@@ -32,6 +33,7 @@ class TaakManager(models.Manager):
             Taakgebeurtenis.objects.create(
                 taak=taak,
                 taakstatus=taakstatus,
+                gebruiker=gebruiker,
             )
             taak.taakstatus = taakstatus
             taak.save()

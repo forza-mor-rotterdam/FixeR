@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 import requests
@@ -17,6 +18,8 @@ from django.core.files.storage import default_storage
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+
+logger = logging.getLogger(__name__)
 
 
 def http_404(request):
@@ -86,8 +89,6 @@ def filter(request, openstaand="openstaand"):
         ),
     )
     filter_opties = get_filter_options(taken_gefilterd, taken, filter_options_fields)
-    print(filter_opties)
-    print(actieve_filters)
     actieve_filters = {
         k: [
             af
@@ -96,7 +97,6 @@ def filter(request, openstaand="openstaand"):
         ]
         for k, v in actieve_filters.items()
     }
-    print(actieve_filters)
 
     request.session["actieve_filters"] = actieve_filters
     return render(
@@ -206,7 +206,7 @@ def actieve_taken(request):
 @login_required
 def afgeronde_taken(request):
     grouped_by = False
-    taken = Taak.objects.filter(afgesloten_op__isnull=False)
+    taken = Taak.objects.filter(afgesloten_op__isnull=False).order_by("-afgesloten_op")
 
     actieve_filters = request.session.get("actieve_filters", {})
     taken_gefilterd = filter_taken(taken, actieve_filters)
@@ -277,13 +277,14 @@ def incident_modal_handle(request, id, handled_type="handled"):
                 resolutie=TAAK_BEHANDEL_RESOLUTIE.get(form.cleaned_data.get("status")),
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 bijlagen=bijlagen_base64,
+                gebruiker=request.user.email,
             )
-            print(taak_status_aanpassen_response.status_code)
-            print(taak_status_aanpassen_response.text)
-
+            if taak_status_aanpassen_response.status_code != 200:
+                logger.error(
+                    f"taak_status_aanpassen: status code: {taak_status_aanpassen_response.status_code}, taak id: {id}"
+                )
             form.cleaned_data.get("handle_choice", 1)
             return redirect("incident_index")
-        print(form.errors)
     return render(
         request,
         "incident/modal_handle.html",
@@ -362,7 +363,6 @@ def login_mislukt(request):
 
 def sso_logout(request):
     print("sso_logout")
-    print(request)
     return render(
         request,
         "auth/login_mislukt.html",

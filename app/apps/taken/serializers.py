@@ -28,6 +28,7 @@ class TaakgebeurtenisStatusSerializer(WritableNestedModelSerializer):
             "taakstatus",
             "resolutie",
             "omschrijving_intern",
+            "gebruiker",
         )
 
 
@@ -76,6 +77,7 @@ class TaakSerializer(serializers.ModelSerializer):
         lookup_field="uuid",
         queryset=Taaktype.objects.all(),
     )
+    gebruiker = serializers.CharField(required=False, allow_null=True)
 
     class Meta:
         model = Taak
@@ -87,4 +89,5 @@ class TaakSerializer(serializers.ModelSerializer):
             "taaktype",
             "melding",
             "taakopdracht",
+            "gebruiker",
         )

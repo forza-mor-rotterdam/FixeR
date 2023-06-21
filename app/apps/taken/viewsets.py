@@ -72,7 +72,6 @@ class TaakViewSet(
         data = {}
         data.update(request.data)
         data["taakstatus"]["taak"] = taak.id
-        print(data)
         serializer = TaakgebeurtenisStatusSerializer(
             data=data,
             context={"request": request},

@@ -2,6 +2,7 @@
 {% load webpack_static from webpack_loader %}
 {% load to_date vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
+{% load gebruiker_middels_email from gebruikers_tags %}
 
 {% block title %}{{ taak.locatie.adres.straatNaam }} {{ taak.locatie.adres.huisnummer }}{% endblock %}
 
@@ -109,6 +110,10 @@
                         {% if taak.resolutie %}
                         <h3 class="h5">Resolutie</h3>
                         <p>{{ taak.resolutie }}</p>
+                        {% endif %}
+                        {% if taak.taakgebeurtenissen_voor_taak.all.0.gebruiker %}
+                        <h3 class="h5">Gebruiker</h3>
+                        {{ taak.taakgebeurtenissen_voor_taak.all.0.gebruiker|gebruiker_middels_email }}
                         {% endif %}
                     </details>
                     <details>
