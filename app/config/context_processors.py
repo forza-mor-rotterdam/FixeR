@@ -18,6 +18,7 @@ def general_settings(context):
 
     return {
         "MELDINGEN_URL": settings.MELDINGEN_URL,
+        "UI_SETTINGS": settings.UI_SETTINGS,
         "DEBUG": settings.DEBUG,
         "DEV_SOCKET_PORT": settings.DEV_SOCKET_PORT,
         "CHECK_SESSION_IFRAME": settings.CHECK_SESSION_IFRAME,
