@@ -44,7 +44,13 @@
 
                 .wrapper-horizontal {
                     line-height: 1rem;
-                    padding: 1em 0;
+
+                    a {
+                        &:hover,
+                        &:focus {
+                            color: $green-tint01;
+                        }
+                    }
 
                     button,
                     span {
@@ -61,6 +67,7 @@
                     }
 
                     svg {
+                        vertical-align: text-top;
                         path {
                             fill: $gray-tint06;
                         }
