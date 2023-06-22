@@ -2,8 +2,8 @@
     <form action="{% url 'pageheader_form_part' %}" method="POST">
         {% csrf_token %}
         <ul class="list-clean list-nav--primary">
-            <li><a href="/" data-turbo-frame="base_frame" data-action="pageHeader#closeModal" data-turbo-action="advance">Te doen</a></li>
-            <li><a href="{% url 'taken_afgerond_overzicht' %}" data-turbo-frame="base_frame" data-action="pageHeader#closeModal" data-turbo-action="advance">Afgerond</a></li>
+            <li><a href="/" data-turbo-frame="_top" data-action="pageHeader#closeModal" data-turbo-action="advance" class="{% if not 'afgerond' in request.path %}selected{%endif%}">Te doen</a></li>
+            <li><a href="{% url 'taken_afgerond_overzicht' %}" data-turbo-frame="_top" data-action="pageHeader#closeModal" data-turbo-action="advance" class="{% if 'afgerond' in request.path %}selected{%endif%}">Afgerond</a></li>
         </ul>
         <ul class="list-clean list-nav--tertiary">
            {% if request.user.is_authenticated %}

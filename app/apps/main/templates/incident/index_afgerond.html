@@ -5,7 +5,7 @@
 {% block title %}Meldingen{% endblock %}
 
 {% block body %}
-<turbo-frame id="base_frame">
+<turbo-frame id="base_frame" data-turbo-action="advance">
     <turbo-frame id="incidents_list" src="{% url 'afgeronde_taken_part' %}" data-src="{% url 'afgeronde_taken_part' %}"></turbo-frame>
     {% include "snippets/filter.html" %}
 </turbo-frame>

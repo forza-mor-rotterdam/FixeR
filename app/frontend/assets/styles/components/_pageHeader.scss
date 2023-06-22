@@ -30,11 +30,25 @@
             a {
                 line-height: 3.2rem;
                 text-decoration: none;
-                padding: $container-padding-x 0;
+                padding: 1rem 0;
                 color: $gray-tint11;
+                position: relative;
 
-                &:active {
+                &:active,
+                &:hover {
                     color: $green-tint01;
+                }
+
+                &.selected {
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        top: 0;
+                        left: -($container-padding-x);
+                        bottom: 0;
+                        width: 8px;
+                        background-color: $green-tint01;
+                    }
                 }
             }
 
