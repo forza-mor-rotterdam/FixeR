@@ -9,7 +9,7 @@
     >
         <div class="container__header" data-controller="incidentlist">
             <div class="row">
-                <h1 class="h3">{%if 'afgeronde' in request.path %}Afgerond{%else%}Te doen{%endif%} {% if filters_count > 0 %}({{ incidents | length }}){% endif %}</h1>
+                <h1 class="h3">{%if 'afgerond' in request.path %}Afgerond{%else%}Te doen{%endif%} {% if filters_count > 0 %}({{ incidents | length }}){% endif %}</h1>
                 <div class="container__controls">
                     <button
                         type="button"
