@@ -6,3 +6,11 @@ def absolute(request):
     }
 
     return urls
+
+
+def gebruikersnaam(gebruiker):
+    if gebruiker.first_name or gebruiker.last_name:
+        first_name = gebruiker.first_name if gebruiker.first_name else ""
+        last_name = gebruiker.last_name if gebruiker.last_name else ""
+        return f"{first_name} {last_name}".strip()
+    return gebruiker.email
