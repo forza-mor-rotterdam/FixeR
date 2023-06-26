@@ -28,7 +28,7 @@
             {% elif taak.melding.response_json.meta.begraafplaats %}
             {% with grafnummer=taak.melding.response_json.meta.grafnummer vak=taak.melding.response_json.meta.vak plaats=taak.melding.response_json.meta.begraafplaats %}
             <h1 class="h3">
-                {% if grafnummer %} Graf {{ grafnummer }}, {% endif %}{% if vak %}Vak {{ vak }}{% endif %}
+                {% if grafnummer %} Graf {{ grafnummer }}{% endif %}{% if vak %}, Vak {{ vak }}{% endif %}
                 {% if not grafnummer and not vak and plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
             </h1>
             {% endwith %}
