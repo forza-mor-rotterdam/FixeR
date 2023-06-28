@@ -8,7 +8,7 @@ from apps.main.forms import (
     TAAK_BEHANDEL_STATUS,
     TaakBehandelForm,
 )
-from apps.main.utils import filter_taken, get_filter_options, to_base64
+from apps.main.utils import filter_taken, get_filter_options, to_base64, melding_naar_tijdlijn
 from apps.meldingen.service import MeldingenService
 from apps.meldingen.utils import get_meldingen_token
 from apps.taken.models import Taak
@@ -230,6 +230,9 @@ def afgeronde_taken(request):
 @login_required
 def taak_detail(request, id):
     taak = Taak.objects.get(pk=id)
+    melding_response = MeldingenService().get_by_uri(taak.melding.bron_url)
+    melding = melding_response.json()
+    tijdlijn_data = melding_naar_tijdlijn(melding)
 
     return render(
         request,
@@ -237,6 +240,8 @@ def taak_detail(request, id):
         {
             "id": id,
             "taak": taak,
+            "melding": melding,
+            "tijdlijn_data": tijdlijn_data,
         },
     )
 
