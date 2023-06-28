@@ -1,5 +1,7 @@
 {% extends 'base_modal_context.html' %}
 {% load webpack_static from webpack_loader %}
+{% load multiply previous next from list_tags %}
+{% load taakopdracht from melding_tags %}
 {% load to_date vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
 {% load gebruiker_middels_email from gebruikers_tags %}
@@ -23,36 +25,36 @@
             {% if taak.magAfhandelen %} class="has-sticky-footer" {% endif %}
         >
 
-            {% if taak.melding.response_json.locatie.adres %}
-            <h1 class="h3 no-padding">{{ taak.melding.response_json.locatie.adres.straatNaam|lower|capfirst }} {% if taak.melding.response_json.locatie.adres.huisnummer %}{{ taak.melding.response_json.locatie.adres.huisnummer }}{%endif%}</h1>
-            {% elif taak.melding.response_json.meta.begraafplaats %}
-            {% with grafnummer=taak.melding.response_json.meta.grafnummer vak=taak.melding.response_json.meta.vak plaats=taak.melding.response_json.meta.begraafplaats %}
+            {% if melding.locatie.adres %}
+            <h1 class="h3 no-padding">{{ melding.locatie.adres.straatNaam|lower|capfirst }} {% if melding.locatie.adres.huisnummer %}{{ melding.locatie.adres.huisnummer }}{%endif%}</h1>
+            {% elif melding.meta.begraafplaats %}
+            {% with grafnummer=melding.meta.grafnummer vak=melding.meta.vak plaats=melding.meta.begraafplaats %}
             <h1 class="h3">
                 {% if grafnummer %} Graf {{ grafnummer }}{% endif %}{% if vak %}, Vak {{ vak }}{% endif %}
-                {% if not grafnummer and not vak and plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
+                {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
             </h1>
             {% endwith %}
             {% endif %}
 
-            <section class="section--seperated" data-testid="detailPhotoviewer" {% if  taak.melding.response_json.bijlagen|length < 2 %}style="border: 0;"{% endif %}>
+            <section class="section--seperated" data-testid="detailPhotoviewer" {% if melding.bijlagen|length < 2 %}style="border: 0;"{% endif %}>
                 <div class="full-width">
-                {% if taak.melding.response_json.bijlagen %}
+                {% if melding.bijlagen %}
                     <div class="container__imageslider" data-detail-target="imageSliderContainer" data-action="scroll->detail#onScrollSlider">
                         <ul
                             class="list-clean imageslider"
-                            style="width: calc(100% * {{ taak.melding.response_json.bijlagen|length }})"
+                            style="width: calc(100% * {{ melding.bijlagen|length }})"
                         >
-                            {% for foto in taak.melding.response_json.bijlagen %}
+                            {% for foto in melding.bijlagen %}
                             <li class="container__image" id="{{ foto.afbeelding_relative_url }}">
                                 <img src="{{ foto.afbeelding_relative_url }}" alt="" data-detail-target="selectedImage" />
                             </li>
                             {% endfor %}
                         </ul>
                     </div>
-                    {% if taak.melding.response_json.bijlagen|length > 1 %}
+                    {% if melding.bijlagen|length > 1 %}
                         <div class="container__thumbs">
                             <ul data-detail-target="thumbList">
-                                {% for foto in taak.melding.response_json.bijlagen %}
+                                {% for foto in melding.bijlagen %}
 
                                 <li data-action="click->detail#selectImage"
                                     data-detail-image-index-param="{{forloop.counter}}">
@@ -73,7 +75,6 @@
             <section data-testid="detailTaak">
                 <div class="container__details taak">
 
-                    {% comment %} {{ taak.melding.response_json }} {% endcomment %}
                     <details>
                         <summary>
                             <h2>
@@ -125,31 +126,31 @@
                                 Locatie
                             </h3>
                         </summary>
-                            {% if taak.melding.response_json.locatie.adres %}
+                            {% if melding.locatie.adres %}
                             <p>
                                 <span class="link link--location" data-controller="incidentlist" data-action="click->incidentlist#makeRoute"
                                     data-incidentlist-incidents-param="[{{ taak }}]">
                                     <svg width="20" height="26" viewBox="0 0 20 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M17.6349 3.61281C16.709 2.48342 15.544 1.57355 14.224 0.948802C12.9039 0.324055 11.4617 0 10.0013 0C8.54084 0 7.09861 0.324055 5.77856 0.948802C4.4585 1.57355 3.29352 2.48342 2.3676 3.61281C0.837677 5.46838 0.000976563 7.79842 0.000976562 10.2034C0.000976563 12.6083 0.837677 14.9384 2.3676 16.7939L10.0013 26.0002L17.6361 16.7939C19.1652 14.938 20.0013 12.608 20.0011 10.2032C20.0009 7.79839 19.1644 5.46853 17.6349 3.61281ZM10.0001 13.9988C9.11016 13.9988 8.24017 13.7348 7.50017 13.2404C6.76018 12.746 6.18343 12.0432 5.84285 11.2209C5.50227 10.3987 5.41316 9.49394 5.58678 8.62106C5.76041 7.74818 6.18898 6.94639 6.81829 6.31708C7.4476 5.68777 8.24939 5.2592 9.12227 5.08557C9.99515 4.91195 10.8999 5.00106 11.7222 5.34164C12.5444 5.68222 13.2472 6.25897 13.7416 6.99897C14.2361 7.73896 14.5 8.60895 14.5 9.49893C14.5 10.6925 14.0259 11.8371 13.1821 12.6812C12.3382 13.5252 11.1937 13.9996 10.0001 13.9999V13.9988Z" fill="#00811F"/>
                                     </svg>
-                                    {{ taak.melding.response_json.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}
+                                    {{ melding.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}
                                 </span>
                             </p>
                             {% endif %}
-                            {% if taak.melding.response_json.meta.begraafplaats %}
+                            {% if melding.meta.begraafplaats %}
                                 <h3 class="h5">Begraafplaats</h3>
-                                <p>{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices taak.melding.response_json.meta.begraafplaats %}</p>
-                                {% if taak.melding.response_json.meta.grafnummer %}
+                                <p>{% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices melding.meta.begraafplaats %}</p>
+                                {% if melding.meta.grafnummer %}
                                 <h3 class="h5">Grafnummer</h3>
-                                <p>{{ taak.melding.response_json.meta.grafnummer }}</p>
+                                <p>{{ melding.meta.grafnummer }}</p>
                                 {% endif %}
-                                {% if taak.melding.response_json.meta.vak %}
+                                {% if melding.meta.vak %}
                                 <h3 class="h5">Vak</h3>
-                                <p>{{ taak.melding.response_json.meta.vak }}</p>
+                                <p>{{ melding.meta.vak }}</p>
                                 {% endif %}
-                                {% if taak.melding.response_json.meta.naam_overledene %}
+                                {% if melding.meta.naam_overledene %}
                                 <h3 class="h5">Naam overledene</h3>
-                                <p>{{ taak.melding.response_json.meta.naam_overledene }}</p>
+                                <p>{{ melding.meta.naam_overledene }}</p>
                                 {% endif %}
 
                             {% else %}
@@ -209,32 +210,33 @@
                             </h2>
                         </summary>
                         <h3 class="h5">Nummer</h3>
-                        <p>{{ taak.melding.response_json.id }}</p>
+                        <p>{{ melding.id }}</p>
                         <h3 class="h5">Ingediend</h3>
-                        <p>{{ taak.melding.response_json.aangemaakt_op|to_date|date:'d-m-Y H:i' }}</p>
-                        {% if taak.melding.response_json.meta.aannemer %}
+                        <p>{{ melding.aangemaakt_op|to_date|date:'d-m-Y H:i' }}</p>
+                        {% if melding.meta.aannemer %}
                             <h3 class="h5">Aangenomen door</h3>
-                            <p>{{ taak.melding.response_json.meta.aannemer }}</p>
+                            <p>{{ melding.meta.aannemer }}</p>
                         {% endif %}
-                        {% if taak.melding.response_json.onderwerpen %}
+                        {% if melding.onderwerpen %}
                         <h3 class="h5">Onderwerp</h3>
                         <p>
-                            {% for onderwerp in taak.melding.response_json.onderwerpen %}
+                            {% for onderwerp in melding.onderwerpen %}
                                 {{ onderwerp.naam }}{% if not forloop.last %}, {% endif %}
                             {% endfor %}
                         </p>
                         {% endif %}
+                        {% if melding.omschrijving %}
                         <h3 class="h5">Toelichting</h3>
-                        {% if taak.melding.response_json.omschrijving %}
                         <p>
-                            {{ taak.melding.response_json.omschrijving }}
+                            {{ melding.omschrijving }}
                         </p>
                         {% endif %}
 
-                        {% if taak.afdeling.omschrijving %}
+                        {% if melding.afdeling.omschrijving %}
                         <h3 class="h5">Afdeling</h3>
                         <p>
-                            {{ taak.afdeling.omschrijving }}
+                            {{ melding.afdeling.omschrijving }}
+                            {{ melding.afdeling.omschrijving }}
                         </p>
                         {% endif %}
                     </details>
@@ -250,33 +252,87 @@
                             </h2>
                         </summary>
                         <ul class="list__mutations">
-                        {% for melding_gebeurtenis in taak.melding.response_json.melding_gebeurtenissen %}
-                            <li data-controller="datetime" data-datetime-date-object-value="{{ melding_gebeurtenis.aangemaakt_op }}">
-                                <details class="timeline" open>
+                            {% for row_data in tijdlijn_data %}
+                            {% with previous_row_data=tijdlijn_data|previous:forloop.counter0 %}
+                            {% with next_row_data=tijdlijn_data|next:forloop.counter0 %}
+
+                            <li data-controller="datetime">
+                                <details class="timeline">
+                                    {% if not melding.afgesloten_op or not forloop.first %}
+                                    {% for cel in next_row_data.row %}
+                                    {% if cel == 1 or cel == 0 %}
+                                    <span class="line {% if forloop.counter0 == 0 %}line-melding{% else %}line-taak{% endif %} {% if not row_data.afgesloten %}line--dashed{%endif%}"
+                                        style="left: {{ forloop.counter|multiply:20|add:6 }}px"></span>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% endif %}
+
+
                                     <summary>
-                                        {% if melding_gebeurtenis.aangemaakt_op %}
-                                        <strong>{{ melding_gebeurtenis.aangemaakt_op|to_date|date:"d-m-Y" }} <span data-datetime-target="timeHoursMinutes"></span></strong><br>
+                                        {% if not melding.afgesloten_op or not forloop.first %}
+                                        {% for cel in next_row_data.row %}
+                                        {% if cel == 1 or cel == 0 %}
+                                        <span class="line {% if forloop.counter0 == 0 %}line-melding{% else %}line-taak{% endif %} {% if not row_data.afgesloten %}line--dashed{%endif%}" style="left: {{ forloop.counter|multiply:20|add:6 }}px"></span>
                                         {% endif %}
-                                    </summary>
-                                    <dl>
-                                        {% if melding_gebeurtenis.status %}
-                                            <dt class="h5">Status</dt>
-                                            <dd>{{ melding_gebeurtenis.status.naam }}</dd>
-                                        {% endif %}
-                                        {% if melding_gebeurtenis.omschrijving_extern %}
-                                            <dt class="h5">Bericht voor de melder</dt>
-                                            <dd>{{ melding_gebeurtenis.omschrijving_extern }}</dd>
+                                        {% endfor %}
                                         {% endif %}
 
-                                        {% if melding_gebeurtenis.omschrijving_intern %}
-                                            <dt class="h5">Interne opmerking</dt>
-                                            <dd>{{ melding_gebeurtenis.omschrijving_intern }}</dd>
+                                        {% for cel in row_data.row %}
+                                        {% if cel == 1 or cel == 2 %}
+                                        <span class="event {% if forloop.counter0 == 0 %}event-melding{% else %}event-taak{% endif %}" style="left: {{ forloop.counter|multiply:20 }}px"></span>
                                         {% endif %}
+                                        {% endfor %}
+                                        {% if not forloop.first %}
+                                        <strong>
+                                        {% if row_data.mg.taakgebeurtenis %}
+                                        {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
+                                        {{taakopdracht.titel}}: {{row_data.mg.taakgebeurtenis.taakstatus.naam}}
+                                        {% endwith %}
+                                        {% else %}
+                                        melding: {% if row_data.mg.status %}{{row_data.mg.status.naam}}{% else %}communicatie{% endif %}
+                                        {% endif %}
+                                        </strong>
+                                        {% endif %}
+                                    </summary>
+                                    <div class="content">
+                                    <dl>
+                                        {% if row_data.mg.taakgebeurtenis %}
+                                            <dt>Status</dt>
+                                            <dd>{{ row_data.mg.taakgebeurtenis.taakstatus.naam }}</dd>
+                                            <dt>Datum</dt>
+                                            <dd>{{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_date }}</dd>
+                                            {% if row_data.mg.taakgebeurtenis.gebruiker %}
+                                            <dt>Gebruiker</dt>
+                                            <dd>{{ row_data.mg.taakgebeurtenis.gebruiker|gebruiker_middels_email }}</dd>
+                                            {% endif %}
+                                            {% if row_data.mg.taakgebeurtenis.omschrijving_intern %}
+                                            <dt>Interne opmerking</dt>
+                                            <dd>{{ row_data.mg.taakgebeurtenis.omschrijving_intern }}</dd>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if row_data.mg.status %}
+                                            <dt>Status</dt>
+                                            <dd>{{ row_data.mg.status.naam }}</dd>
+                                            {% endif %}
+                                            {% if row_data.mg.omschrijving_intern %}
+                                            <dt>Interne opmerking</dt>
+                                            <dd>{{ row_data.mg.omschrijving_intern }}</dd>
+                                            {% endif %}
+                                            <dt>Datum</dt>
+                                            <dd>{{ row_data.mg.aangemaakt_op|to_date }}</dd>
+                                            {% if row_data.mg.gebruiker %}
+                                            <dt>Gebruiker</dt>
+                                            <dd>{{ row_data.mg.gebruiker|gebruiker_middels_email }}</dd>
+                                            {% endif %}
+                                        {% endif %}
+
                                     </dl>
-                                    {% if melding_gebeurtenis.bijlagen|length %}
+
+                                    {% comment %} {% if row_data.mg.taakgebeurtenis %}
+                                    {% if row_data.mg.taakgebeurtenis.bijlagen|length %}
                                         <div class="container__thumbs">
                                             <ul>
-                                                {% for bijlage in melding_gebeurtenis.bijlagen %}
+                                                {% for bijlage in row_data.mg.taakgebeurtenis.bijlagen %}
                                                 <li>
                                                     <div class="container__image">
                                                         <div class="image" style="background-image:url('{{bijlage.afbeelding_verkleind_relative_url}}');"></div>
@@ -286,9 +342,44 @@
                                             </ul>
                                         </div>
                                     {% endif %}
+                                    {% else %}
+                                    {% if row_data.mg.bijlagen|length %}
+                                        <div class="container__thumbs">
+                                            <ul>
+                                                {% for bijlage in row_data.mg.bijlagen %}
+                                                <li>
+                                                    <div class="container__image">
+                                                        <div class="image" style="background-image:url('{{bijlage.afbeelding_verkleind_relative_url}}');"></div>
+                                                    </div>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% if forloop.last %}
+                                    {% if melding.bijlagen|length %}
+                                        <div class="container__thumbs">
+                                            <ul>
+                                                {% for bijlage in melding.bijlagen %}
+                                                <li>
+                                                    <div class="container__image">
+                                                        <div class="image" style="background-image:url('{{bijlage.afbeelding_verkleind_relative_url}}');"></div>
+                                                    </div>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                    {% endif %} {% endcomment %}
+                                    </div>
+
                                 </details>
                             </li>
-                        {% endfor %}
+                            {% endwith %}
+                            {% endwith %}
+                            {% endfor %}
+
                         </ul>
                     </details>
                 </div>

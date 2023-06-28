@@ -23,33 +23,35 @@
         margin-bottom: 0;
     }
 
-    summary {
-        padding-left: 0;
-        border-top: none;
-        border-bottom: 1px solid $gray-tint04;
+    >details {
+        >summary {
+            padding-left: 0;
+            border-top: none;
+            border-bottom: 1px solid $gray-tint04;
 
-        &::before {
-            left: auto;
-            right: 16px;
-            transform: rotate(90deg) scale(1.5);
-        }
-
-        h2 {
-            margin-top: 0;
-            svg {
-                margin-right: 0.5rem;
-                vertical-align: text-top;
-            }
-        }
-    }
-
-    details[open]{
-
-        summary {
             &::before {
                 left: auto;
-                right: 12px;
-                transform: rotate(-90deg) scale(1.5);
+                right: 16px;
+                transform: rotate(90deg) scale(1.5);
+            }
+
+            h2 {
+                margin-top: 0;
+                svg {
+                    margin-right: 0.5rem;
+                    vertical-align: text-top;
+                }
+            }
+        }
+
+        &[open]{
+
+            >summary {
+                &::before {
+                    left: auto;
+                    right: 12px;
+                    transform: rotate(-90deg) scale(1.5);
+                }
             }
         }
     }
