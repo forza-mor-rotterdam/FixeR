@@ -75,6 +75,7 @@
         cursor: grab;
         display: flex;
         user-select: none;
+        border-bottom: 1px solid $gray-tint04;
 
         .show-modal & {
             cursor: initial;
@@ -156,13 +157,14 @@
 
             h2 {
                 font-size: $h5-font-size;
-                margin: 0;
+                margin: 0 0 4px;
                 text-decoration: none;
             }
 
             .incident__category,
             .incident__moment {
                 color: $gray-tint09;
+                margin-bottom: 2px;
             }
 
             .incident__category {
