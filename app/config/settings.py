@@ -305,6 +305,8 @@ CACHES = {
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
+LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -315,7 +317,7 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "INFO",
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
             "stream": sys.stdout,
             "formatter": "verbose",
@@ -330,7 +332,7 @@ LOGGING = {
     "loggers": {
         "": {
             "handlers": ["console"],
-            "level": "INFO",
+            "level": LOG_LEVEL,
             "propagate": True,
         },
         "celery": {
@@ -391,6 +393,9 @@ AUTHENTICATION_BACKENDS = [
 OIDC_OP_LOGOUT_URL_METHOD = "apps.authenticatie.views.provider_logout"
 ALLOW_LOGOUT_GET_METHOD = True
 OIDC_STORE_ID_TOKEN = True
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = int(
+    os.getenv("OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS", "300")
+)
 
 LOGIN_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL_FAILURE = "/"
