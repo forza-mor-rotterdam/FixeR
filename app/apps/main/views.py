@@ -357,18 +357,6 @@ def incident_modal_handle(request, id, handled_type="handled"):
 
 
 @login_required
-def incident_mutation_lines(request, id):
-
-    return render(
-        request,
-        "incident/mutation_lines.html",
-        {
-            "id": id,
-        },
-    )
-
-
-@login_required
 def config(request):
     return render(
         request,
@@ -376,7 +364,6 @@ def config(request):
     )
 
 
-@login_required
 def meldingen_bestand(request):
     url = f"{settings.MELDINGEN_URL}{request.path}"
     headers = {"Authorization": f"Token {get_meldingen_token()}"}
@@ -386,34 +373,4 @@ def meldingen_bestand(request):
         content_type=response.headers.get("content-type"),
         status=response.status_code,
         reason=response.reason,
-    )
-
-
-def gebruiker_informatie(request):
-    return render(
-        request,
-        "auth/gebruiker_informatie.html",
-    )
-
-
-@login_required
-def login_verplicht(request):
-    return render(
-        request,
-        "auth/login_verplicht.html",
-    )
-
-
-def login_mislukt(request):
-    return render(
-        request,
-        "auth/login_mislukt.html",
-    )
-
-
-def sso_logout(request):
-    print("sso_logout")
-    return render(
-        request,
-        "auth/login_mislukt.html",
     )

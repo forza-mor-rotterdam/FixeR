@@ -3,17 +3,12 @@ from apps.main.views import (
     afgeronde_taken,
     config,
     filter,
-    gebruiker_informatie,
     http_404,
     http_500,
     incident_list_item,
     incident_modal_handle,
-    incident_mutation_lines,
-    login_mislukt,
-    login_verplicht,
     meldingen_bestand,
     root,
-    sso_logout,
     taak_detail,
     taken_afgerond_overzicht,
     taken_overzicht,
@@ -38,6 +33,23 @@ router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 urlpatterns = [
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path("api-token-auth/", views.obtain_auth_token),
+    # path(
+    #     "admin/login/",
+    #     RedirectView.as_view(
+    #         url="/oidc/authenticate/?next=/admin/",
+    #         permanent=False,
+    #     ),
+    #     name="admin_login",
+    # ),
+    # path(
+    #     "admin/logout/",
+    #     RedirectView.as_view(
+    #         url="/oidc/logout/?next=/admin/",
+    #         permanent=False,
+    #     ),
+    #     name="admin_logout",
+    # ),
+    path("oidc/", include("mozilla_django_oidc.urls")),
     path("admin/", admin.site.urls),
     path("", root, name="root"),
     path(
@@ -51,11 +63,6 @@ urlpatterns = [
         name="taken_afgerond_overzicht",
     ),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
-    path(
-        "taak/<int:id>/mutation-lines/",
-        incident_mutation_lines,
-        name="mutation_lines",
-    ),
     path("config/", config, name="config"),
     path("health/", include("health_check.urls")),
     # START partials
@@ -93,17 +100,6 @@ urlpatterns = [
     ),
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
-
-if settings.OIDC_RP_CLIENT_ID:
-    urlpatterns += [
-        path(
-            "gebruiker-informatie/", gebruiker_informatie, name="gebruiker_informatie"
-        ),
-        path("login-verplicht/", login_verplicht, name="login_verplicht"),
-        path("login-mislukt/", login_mislukt, name="login_mislukt"),
-        path("sso-logout/", sso_logout, name="sso_logout"),
-        path("oidc/", include("mozilla_django_oidc.urls")),
-    ]
 
 if settings.DEBUG:
     urlpatterns += [
