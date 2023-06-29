@@ -226,7 +226,7 @@ def actieve_taken(request):
     actieve_filters = request.session.get("actieve_filters", {})
     taken_gefilterd = filter_taken(taken, actieve_filters)
 
-    paginator = Paginator(taken_gefilterd, 3)
+    paginator = Paginator(taken_gefilterd, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
@@ -254,7 +254,7 @@ def afgeronde_taken(request):
     actieve_filters = request.session.get("actieve_filters", {})
     taken_gefilterd = filter_taken(taken, actieve_filters)
 
-    paginator = Paginator(taken_gefilterd, 3)
+    paginator = Paginator(taken_gefilterd, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
