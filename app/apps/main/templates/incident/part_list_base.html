@@ -56,9 +56,8 @@
                 {% endif %}
             </div>
         </div>
-
         <div class="container__list seperated">
-            {% if not filters_count %}
+            {% if taken|length < 25 %}
                 <div
                     class="list__incidents"
                     data-testid="incidentsList"

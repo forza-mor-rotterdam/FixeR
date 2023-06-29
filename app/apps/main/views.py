@@ -99,6 +99,7 @@ def filter(request, openstaand="openstaand"):
     }
 
     request.session["actieve_filters"] = actieve_filters
+    
     return render(
         request,
         "filters/form.html",
@@ -155,11 +156,53 @@ sort_options = (
 
 @login_required
 def taken_overzicht(request):
+
+    taken = Taak.objects.filter(afgesloten_op__isnull=True)
+    form_url = (
+        reverse("filter_part")
+        # if (openstaand == "openstaand")
+        # else reverse("filter_part", kwargs={"openstaand": "niet_openstaand"})
+    )
+    actieve_filters = {
+        "locatie": [],
+        "taken": [],
+    }
+    actieve_filters.update(request.session.get("actieve_filters", {}))
+
+    if request.POST:
+        actieve_filters["locatie"] = request.POST.getlist("locatie")
+        actieve_filters["taken"] = request.POST.getlist("taken")
+
+    taken_gefilterd = filter_taken(taken, actieve_filters)
+
+    filter_options_fields = (
+        (
+            "locatie",
+            "melding__response_json__locaties_voor_melding__0__begraafplaats",
+            "melding__response_json__meta_uitgebreid__begraafplaats__choices",
+        ),
+        (
+            "taken",
+            "taaktype__id",
+            "taaktype__omschrijving",
+        ),
+    )
+    filter_opties = get_filter_options(taken_gefilterd, taken, filter_options_fields)
+    actieve_filters = {
+        k: [
+            af
+            for af in v
+            if af in [fok for fok, fov in filter_opties.get(k, {}).items()]
+        ]
+        for k, v in actieve_filters.items()
+    }
+    
     return render(
         request,
         "incident/index.html",
         {
             "filter_url": reverse("filter_part"),
+            "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
         },
     )
 
@@ -199,6 +242,7 @@ def actieve_taken(request):
             "filter_url": reverse("filter_part"),
             "sort_options": sort_options,
             "taken": taken_gefilterd,
+            "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
         },
     )
 
@@ -223,6 +267,7 @@ def afgeronde_taken(request):
             # "grouped_by": grouped_by,
             "sort_options": sort_options,
             "taken": taken_gefilterd,
+            "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
         },
     )
 
