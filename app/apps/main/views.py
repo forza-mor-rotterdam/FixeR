@@ -160,11 +160,6 @@ sort_options = (
 def taken_overzicht(request):
 
     taken = Taak.objects.filter(afgesloten_op__isnull=True)
-    form_url = (
-        reverse("filter_part")
-        # if (openstaand == "openstaand")
-        # else reverse("filter_part", kwargs={"openstaand": "niet_openstaand"})
-    )
     actieve_filters = {
         "locatie": [],
         "taken": [],
