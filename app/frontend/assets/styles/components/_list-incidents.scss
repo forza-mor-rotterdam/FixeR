@@ -65,6 +65,10 @@
     margin: 0;
     overflow: hidden;
 
+    .container__pagination + .list-item {
+        border-top: 1px solid $gray-tint04;
+    }
+
     .list-item {
         position: relative;
         box-sizing: content-box;
