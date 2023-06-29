@@ -254,6 +254,11 @@ def afgeronde_taken(request):
     actieve_filters = request.session.get("actieve_filters", {})
     taken_gefilterd = filter_taken(taken, actieve_filters)
 
+    paginator = Paginator(taken_gefilterd, 3)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    taken_paginated = page_obj.object_list
     return render(
         request,
         "incident/part_list.html"
@@ -265,7 +270,8 @@ def afgeronde_taken(request):
             # "groups": groups,
             # "grouped_by": grouped_by,
             "sort_options": sort_options,
-            "taken": taken_gefilterd,
+            "taken": taken_paginated,
+            "page_obj": page_obj,
             "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
         },
     )
