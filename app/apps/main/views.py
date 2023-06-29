@@ -18,6 +18,8 @@ from django.core.files.storage import default_storage
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.core.paginator import Paginator
+
 
 logger = logging.getLogger(__name__)
 
@@ -229,23 +231,25 @@ def actieve_taken(request):
     actieve_filters = request.session.get("actieve_filters", {})
     taken_gefilterd = filter_taken(taken, actieve_filters)
 
+    paginator = Paginator(taken_gefilterd, 3)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    taken_paginated = page_obj.object_list
     return render(
         request,
         "incident/part_list.html"
         if not grouped_by
         else "incident/part_list_grouped.html",
         {
-            # "incidents": incidents_sorted,
-            # "sort_by": sort_by_with_reverse,
-            # "groups": groups,
-            # "grouped_by": grouped_by,
+            
             "filter_url": reverse("filter_part"),
             "sort_options": sort_options,
-            "taken": taken_gefilterd,
+            "taken": taken_paginated,
+            "page_obj": page_obj,
             "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
         },
     )
-
 
 @login_required
 def afgeronde_taken(request):
