@@ -358,7 +358,7 @@ OPENID_CONFIG = {}
 try:
     OPENID_CONFIG = requests.get(OPENID_CONFIG_URI).json()
 except Exception as e:
-    logger.error(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
+    logger.warning(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
 
 OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv(
     "OIDC_OP_AUTHORIZATION_ENDPOINT", OPENID_CONFIG.get("authorization_endpoint")
