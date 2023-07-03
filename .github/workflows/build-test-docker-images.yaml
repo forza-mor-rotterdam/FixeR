@@ -20,7 +20,7 @@ jobs:
     - name: Build Docker app image
       run: docker compose -f docker-compose.test.yaml build app --no-cache
     - name: Build Docker all images
-      run: docker compose -f docker-compose.test.yaml build --no-cache
+      run: docker compose -f docker-compose.test.yaml build
     - name: Create Docker network
       run: docker network create behandelr_network
     - name: Start images
