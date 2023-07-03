@@ -6,6 +6,13 @@ services:
       - "8008:8000"
     env_file:
       - .env.test
+    resources:
+        limits:
+          cpus: 0.50
+          memory: 512M
+        reservations:
+          cpus: 0.25
+          memory: 128M
     volumes:
       - ./app:/app
     depends_on:
