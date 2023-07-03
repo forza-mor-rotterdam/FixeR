@@ -1,4 +1,4 @@
-name: Create a Docker image and publish to acceptance
+name: Build an deploy to acc
 
 on:
   push:
@@ -9,8 +9,9 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  apps:
+  build_and_deploy:
     runs-on: ubuntu-latest
+    environment: acc
     permissions:
       contents: read
       packages: write
@@ -33,7 +34,7 @@ jobs:
         id: meta_app
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-app-develop
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-app
 
       - name: Build and push app Docker image
         uses: docker/build-push-action@v3
