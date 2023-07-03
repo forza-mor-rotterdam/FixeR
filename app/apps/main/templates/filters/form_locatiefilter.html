@@ -1,0 +1,23 @@
+{% load json_encode from main_tags %}
+<ul
+    class="list-clean"
+    data-controller="filter--filter"
+    data-test-id="incidentFilterLocatie"
+>
+    {% for locatie_id, locatie in filter_opties.locatie.items %}
+        <li class="container__check-locatie">
+            <div class="form-check">
+                <input
+                    class="form-check-input filter--locatie"
+                    type="checkbox"
+                    value="{{ locatie_id }}"
+                    {% if locatie_id in actieve_filters.locatie %}checked{% endif %}
+                    name="locatie"
+                    id="locatie_{{ locatie_id }}"
+                    data-action="filter--filter#onChangeFilter"
+                >
+                <label class="form-check-label" for="locatie_{{ locatie_id }}">{{ locatie.0 }}</label>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>

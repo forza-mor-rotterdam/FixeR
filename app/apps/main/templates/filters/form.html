@@ -1,0 +1,159 @@
+{% load json_encode from main_tags %}
+
+<turbo-frame id="incidents_filters">
+    <form
+        action="{{form_url}}"
+        {% comment %} action="{% url 'filter_part' %}" {% endcomment %}
+        method="post"
+        id="incidentFilterAllForm"
+        data-testid="incidentFilterAllForm"
+    >
+        {% csrf_token %}
+        <details data-controller="filter--filter" class="filter filter--active" data-action="filter--filter#toggleActiveFilter" id="foldout_active_filters"{% if "foldout_active_filters" in foldout_states %} open{% endif %}>
+            <input type="hidden" value="{{ foldout_states }}" name="foldout_states">
+            <summary>
+                <span>Actieve filters</span>
+                <span class="count count--filter">{{ filters_count }}<span>
+            </summary>
+            <fieldset>
+                <ul class="list-clean">
+                    {% if actieve_filters.locatie|length > 0 %}
+                    <li>
+                        <h3 class="h5">Locaties</h3>
+                        <ul class="list-filters--active list-clean">
+                            {% for id in actieve_filters.locatie %}
+                            {% for locatie_id, locatie in filter_opties.begraafplaats.items %}
+                            {% if id == locatie_id%}
+                            <li class="js-filter-active">
+                                <button
+                                    class="btn btn-secondary btn-filter--active"
+                                    data-action="filter--filter#removeFilter"
+                                    data-filter--filter-code-param="{{ department.0 }}"
+                                    data-filter--filter-description-param="locatie"
+                                >
+                                    <span>{{ locatie.0 }}</span>
+                                </button>
+
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endif %}
+                    {% if actieve_filters.taken|length > 0 %}
+                    <li>
+                        <h3 class="h5">Taken</h3>
+                        <ul class="list-filters--active list-clean">
+                            {% for id in actieve_filters.taken %}
+                            {% for taak_id, taak in filter_opties.taken.items %}
+                            {% if id == taak_id%}
+                            <li class="js-filter-active">
+                                <button
+                                    class="btn btn-secondary btn-filter--active"
+                                    data-action="filter--filter#removeFilter"
+                                    data-filter--filter-code-param="{{ taak.0 }}"
+                                    data-filter--filter-description-param="taken"
+                                >
+                                    <span>{{ taak.0 }}</span>
+                                </button>
+
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endif %}
+
+                    {% if filters.onderwerpItems|length > 0 %}
+                    <li>
+                        <h3 class="h5">Onderwerpen</h3>
+                        <ul class="list-filters--active">
+                            {% for onderwerp in filters.onderwerpItems %}
+                            <li class="js-filter-active">
+                                <button
+                                    class="btn btn-secondary btn-filter--active"
+                                    data-action="filter--filter#removeFilter"
+                                    data-filter--filter-code-param="{{ onderwerp.0 }}"
+                                    data-filter--filter-description-param="onderwerpItems"
+                                >
+                                    <span>{{ onderwerp.1 }}</span>
+                                </button>
+
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+                {% if filters.afdelingen|length > 0 %}
+                    <button class="btn-textlink btn-with-icon" data-action="filter--filter#removeAllFilters" style="padding: 8px 0 16px;">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M22.5 5.9H9.5L8.18103 11H11V8.10001H21V11L23.819 11L22.5 5.9ZM25.8421 11L24.5 5.89999L24 4H23H9H8L7.5 5.89999V5.9L6.15789 11H5V13H6.17073L8 28H9H23H24L25.8293 13H27V11H25.8421ZM22.2125 26L23.8375 13H8.1625L9.7875 26H22.2125Z" fill="#404B4F"/>
+                        </svg>
+                        <span>Verwijder alle filters</span>
+                    </button>
+                {% endif %}
+            </fieldset>
+        </details>
+
+        <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_departments"{% if "foldout_departments" in foldout_states or filters.afdelingen|length == 0 %} open{% endif %}>
+            <summary>
+                <span>Locaties</span>
+                <span>({{ actieve_filters.locatie|length }})</span>
+            </summary>
+            {% include "filters/form_locatiefilter.html" %}
+        </details>
+        
+        {% if filters.afdelingen|length > 0  %}
+        {% if filter_opties.begraafplaats %}
+        <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_categories"{% if "foldout_categories" in foldout_states %} open{% endif %}>
+            <summary>
+                <span>Groepen/onderwerpen</span>
+                <span>({{ filters.onderwerpItems|length }})</span>
+            </summary>
+            {% include "snippets/form_subjectfilter.html" %}
+        </details>
+        {% endif %}
+        {% if areas %}
+        <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_areas"{% if "foldout_areas" in foldout_states %} open{% endif %}>
+            <summary>
+                <span>Wijken/buurten</span>
+                <span>({{ filters.buurten|length }})</span>
+            </summary>
+            {% include "snippets/form_areafilter.html" %}
+        </details>
+        {% endif %}
+        {% endif %}
+
+        <div class="full-page-view__footer">
+            {% if incident_count == 0 %}
+                <button
+                    type="button"
+                    class="btn btn-action"
+                    data-action="filter--filter#hideFilters"
+                    disabled="disabled"
+                >
+                    Er zijn geen meldingen, pas filter aan
+                </button>
+            {% elif incident_count == 1 %}
+                <button
+                    type="submit"
+                    class="btn btn-action"
+                    data-action="filter--filter#onSubmitFilter"
+                >
+                    Toon 1 melding
+                </button>
+            {% else %}
+                <button
+                    type="submit"
+                    class="btn btn-action"
+                    data-action="filter--filter#onSubmitFilter"
+                >
+                    Toon {{ taken_gefilterd.count }} meldingen
+                </button>
+            {% endif %}
+        </div>
+    </form>
+</turbo-frame>

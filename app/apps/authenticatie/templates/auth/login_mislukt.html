@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load rotterdam_formulier_html %}
+
+{% block title %}Login mislukt{% endblock %}
+
+{% block body %}
+<h1>Login mislukt</h1>
+
+{% if user.is_authenticated %}
+    De login is blijkbaar wel gelukt!
+{% else %}
+    Er is iets mis gegaan met de login!
+{% endif %}
+{% endblock %}

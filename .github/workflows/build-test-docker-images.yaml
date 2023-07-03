@@ -1,6 +1,10 @@
 name: 'Install, lint, test & build'
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches:
+    - main
+    - develop
 
 jobs:
   test:
@@ -16,8 +20,8 @@ jobs:
     - name: Build Docker images
       run: docker compose -f docker-compose.test.yaml build
     - name: Create Docker network
-      run: docker network create profilr_network
+      run: docker network create behandelr_network
     - name: Start images
       run: docker compose -f docker-compose.test.yaml up -d
     - name: Run Tests
-      run: docker compose -f docker-compose.test.yaml exec -T backend python manage.py test
+      run: docker compose -f docker-compose.test.yaml exec -T app bash ./deploy/tests.sh

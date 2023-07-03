@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load webpack_static from webpack_loader %}
+{% load to_date from main_tags %}
+{% load json_encode from main_tags %}
+{% block title %}Meldingen{% endblock %}
+
+{% block body %}
+<turbo-frame id="base_frame" data-turbo-action="advance">
+    <turbo-frame id="incidents_list" src="{% url 'actieve_taken_part' %}" data-src="{% url 'actieve_taken_part' %}"></turbo-frame>
+    {% include "snippets/filter.html" %}
+</turbo-frame>
+{% endblock %}

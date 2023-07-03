@@ -1,9 +1,0 @@
-FROM node:18-bullseye
-
-COPY . /srv/web/
-RUN cd /srv/web \
- && npm install
-
-WORKDIR /srv/web/
-
-CMD [ "npm", "run", "watch" ]

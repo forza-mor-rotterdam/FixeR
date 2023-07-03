@@ -1,26 +1,98 @@
 version: '3'
 services:
-  backend:
-    build: ./backend
+  gateway:
+    container_name: behandelr.mor.local
+    build: ./nginx
+    volumes:
+      - ./nginx/nginx-default.development.conf:/etc/nginx/conf.d/default.conf
+      - ./media:/media
+    depends_on:
+      app:
+        condition: service_started
     ports:
-      - "8000:9000"
+      - 8004:8004
+    networks:
+      - mor_bridge_network
+    env_file:
+      - .env.local
+  app:
+    container_name: behandelr.app
+    build: ./app
+    ports:
+      - "8000"
     env_file:
       - .env.local
     volumes:
-      - ./backend:/app
+      - ./media:/media
+      - ./app:/app
     depends_on:
-      - redis
+      redis:
+        condition: service_started
+      database:
+        condition: service_started
     networks:
-      - profilr_network
+      - behandelr_network
+      - mor_bridge_network
     command: ["bash", "/app/deploy/docker-entrypoint.development.sh"]
+
+  database:
+    image: postgis/postgis:11-3.3
+    shm_size: '1024m'
+    ports:
+      - "6004:5432"
+    env_file:
+      - .env.local
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - behandelr_network
 
   redis:
     image: redis
     networks:
-      - profilr_network
+      - behandelr_network
     ports:
-      - "6379:6379"
+      - "6379"
+
+  app_celery_worker:
+    build: ./app
+    command: "celery -A config worker -l info"
+    depends_on:
+      database:
+        condition: service_started
+      redis:
+        condition: service_started
+    volumes:
+      - ./media:/media
+    env_file:
+      - .env.local
+    networks:
+      - behandelr_network
+      - mor_bridge_network
+    restart: on-failure
+
+  app_celery_beat:
+    build: ./app
+    command: "celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    depends_on:
+      database:
+        condition: service_started
+      redis:
+        condition: service_started
+    volumes:
+      - ./media:/media
+    env_file:
+      - .env.local
+    networks:
+      - behandelr_network
+      - mor_bridge_network
+    restart: on-failure
+
+volumes:
+  postgres-data:
 
 networks:
-  profilr_network:
+  behandelr_network:
+    external: true
+  mor_bridge_network:
     external: true

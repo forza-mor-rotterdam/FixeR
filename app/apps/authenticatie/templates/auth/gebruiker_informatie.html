@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load rotterdam_formulier_html %}
+
+{% block title %}Gebruiker informatie{% endblock %}
+
+        {% block header %}
+        {% include "snippets/pageheader.html" %}
+        {% endblock %}
+
+{% block body %}
+<h1>Gebruiker informatie</h1>
+
+{% if user.is_authenticated %}
+  <p>Je bent ingelogd met e-mail adres: <strong>{{ user.email }}</strong></p>
+  <p>Laatste login: <strong>{{user.last_login}}</strong></p>
+
+    <p>Je kan naar de volgende beschermde content pagina: <a href="{% url 'login_verplicht' %}">Beschermde pagina</a></p>
+
+  <a href="{% url 'oidc_logout' %}">Uitloggen</a>
+{% else %}
+  <p>Je bent niet ingelogd.</p>
+
+  <p>Log <a href="{% url 'oidc_authentication_init' %}">hier</a> in, of probeer <a href="{% url 'login_verplicht' %}">deze</a>, met login beschermde, pagina</p>
+{% endif %}
+{% endblock %}
