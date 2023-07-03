@@ -1,4 +1,4 @@
-name: Create a Docker image and publish to production
+name: Build and deploy to prod
 
 on:
   push:
@@ -9,8 +9,9 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  apps:
+  build_and_deploy:
     runs-on: ubuntu-latest
+    environment: prod
     permissions:
       contents: read
       packages: write
