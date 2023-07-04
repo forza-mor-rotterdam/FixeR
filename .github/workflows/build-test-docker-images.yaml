@@ -17,13 +17,11 @@ jobs:
         python-version: 3.10.10
     - name: Linting
       run: bash bin/cleanup_pre_commit.sh
-    - name: Build Docker app image
-      run: docker compose -f docker-compose.test.yaml build app --no-cache
-    - name: Build Docker all images
-      run: docker compose -f docker-compose.test.yaml build
+    - name: Build Docker images
+      run: docker compose -f docker-compose.test.yaml build --no-cache
     - name: Create Docker network
       run: docker network create behandelr_network
     - name: Start images
       run: docker compose -f docker-compose.test.yaml up -d
     - name: Run Tests
-      run: docker compose -f docker-compose.test.yaml exec app bash ./deploy/tests.sh
+      run: docker compose -f docker-compose.test.yaml exec -T app bash ./deploy/tests.sh
