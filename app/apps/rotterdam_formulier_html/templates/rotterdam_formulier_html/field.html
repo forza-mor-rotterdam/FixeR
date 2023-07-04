@@ -31,12 +31,13 @@
         {% if classes.icon %}
             {% include 'rotterdam_formulier_html/field_icon.html' %}
         {% endif %}
-        {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
+        {% if field.auto_id %}
             <h3 class="label">{{ field.label }}</h3>
         {% endif %}
-        <div>
+        <div class="wrapper-horizontal">
             {{ field }}
         </div>
+        <p class="help-block invalid-text"></p>
         {% for error in field.errors %}
             <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
         {% endfor %}

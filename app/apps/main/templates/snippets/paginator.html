@@ -1,8 +1,9 @@
+{% if page_obj.paginator.num_pages > 1 %}
     <div class="container__pagination">
         <div class="pagination">
             <div class="form-row s12  ">
                 <div class="wrapper-horizontal">
-                
+
                     <ul class="list-clean">
                         {% if page_obj.has_previous %}
                         <li>
@@ -48,3 +49,4 @@
             </div>
         </div>
     </div>
+{% endif %}

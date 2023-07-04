@@ -118,10 +118,12 @@ class TaakBehandelForm(forms.Form):
         widget=RadioSelectSimple(
             attrs={
                 "class": "list--form-radio-input",
+                "data-action": "change->bijlagen#updateImageDisplay",
             }
         ),
         label="Is het probleem opgelost?",
         choices=[[x[0], x[1]] for x in TAAK_BEHANDEL_OPTIES],
+        required=True,
     )
 
     bijlagen = forms.FileField(

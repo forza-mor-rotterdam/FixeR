@@ -62,6 +62,7 @@ def to_base64(file):
     base64_message = base64_encoded_data.decode("utf-8")
     return base64_message
 
+
 def melding_naar_tijdlijn(melding: dict):
     tijdlijn_data = []
     t_ids = []

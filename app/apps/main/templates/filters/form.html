@@ -105,7 +105,7 @@
             </summary>
             {% include "filters/form_locatiefilter.html" %}
         </details>
-        
+
         {% if filters.afdelingen|length > 0  %}
         {% if filter_opties.begraafplaats %}
         <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_categories"{% if "foldout_categories" in foldout_states %} open{% endif %}>
@@ -143,7 +143,7 @@
                     class="btn btn-action"
                     data-action="filter--filter#onSubmitFilter"
                 >
-                    Toon 1 melding
+                    Toon 1 taak
                 </button>
             {% else %}
                 <button
@@ -151,7 +151,7 @@
                     class="btn btn-action"
                     data-action="filter--filter#onSubmitFilter"
                 >
-                    Toon {{ taken_gefilterd.count }} meldingen
+                    Toon {{ taken_gefilterd.count }} taken
                 </button>
             {% endif %}
         </div>

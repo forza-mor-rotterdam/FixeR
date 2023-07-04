@@ -8,18 +8,22 @@ from apps.main.forms import (
     TAAK_BEHANDEL_STATUS,
     TaakBehandelForm,
 )
-from apps.main.utils import filter_taken, get_filter_options, to_base64, melding_naar_tijdlijn
+from apps.main.utils import (
+    filter_taken,
+    get_filter_options,
+    melding_naar_tijdlijn,
+    to_base64,
+)
 from apps.meldingen.service import MeldingenService
 from apps.meldingen.utils import get_meldingen_token
 from apps.taken.models import Taak
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
+from django.core.paginator import Paginator
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.core.paginator import Paginator
-
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +105,7 @@ def filter(request, openstaand="openstaand"):
     }
 
     request.session["actieve_filters"] = actieve_filters
-    
+
     return render(
         request,
         "filters/form.html",
@@ -193,7 +197,7 @@ def taken_overzicht(request):
         ]
         for k, v in actieve_filters.items()
     }
-    
+
     return render(
         request,
         "incident/index.html",
@@ -237,7 +241,6 @@ def actieve_taken(request):
         if not grouped_by
         else "incident/part_list_grouped.html",
         {
-            
             "filter_url": reverse("filter_part"),
             "sort_options": sort_options,
             "taken": taken_paginated,
@@ -245,6 +248,7 @@ def actieve_taken(request):
             "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
         },
     )
+
 
 @login_required
 def afgeronde_taken(request):

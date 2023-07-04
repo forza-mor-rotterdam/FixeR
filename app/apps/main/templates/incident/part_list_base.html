@@ -57,7 +57,7 @@
             </div>
         </div>
         <div class="container__list seperated">
-            {% if taken|length < 25 %}
+            {% if taken %}
                 <div
                     class="list__incidents"
                     data-testid="incidentsList"
@@ -76,10 +76,7 @@
                         </svg>
                     </span>
                     <div>
-                        <a
-                            data-controller="filter--filter"
-                            data-action="filter--filter#showFilters"
-                        >Stel de filters</a> in om de juiste meldingen te kunnen bekijken.
+                        Geen taken gevonden. <a data-controller="filter--filter" data-action="filter--filter#showFilters">Open de filters</a> om je instellingen aan te passen.
                     </div>
                 </div>
 

@@ -1,5 +1,10 @@
 import { Controller } from '@hotwired/stimulus';
 
+let form = null
+let inputList = null
+let input = null
+let error = null
+const defaultErrorMessage = "Vul a.u.b. dit veld in."
 export default class extends Controller {
     static values = {
         formIsSubmitted: Boolean,
@@ -10,16 +15,56 @@ export default class extends Controller {
     static targets = ["externalText", "internalText"]
 
     connect() {
-        if(this.hasExternalTextTarget) {
-            if(this.externalTextTarget.textContent.length > 0) {
-                this.externalMessage = this.externalTextTarget.textContent
+
+        form = document.querySelector("form");
+        inputList = document.querySelectorAll('[type="radio"]')
+
+        for (let i=0; i<inputList.length; i++){
+            input = inputList[i]
+            error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
+
+            input.addEventListener("input", (event) => {
+                console.log("input", input)
+                input.closest('.form-row').classList.remove('is-invalid')
+                error.textContent = "";
+            })
+        };
+    }
+
+    onSubmit(event) {
+        const allFieldsValid = this.checkValids()
+
+        if(!(allFieldsValid)){
+            event.preventDefault();
+            
+        } else {
+            form.requestSubmit()
+        }
+    }
+
+    checkValids() {
+        //check all radoofields for validity
+        // if 1 or more fields is invalid, don't send the form (return false)
+        inputList = document.querySelectorAll('[type="radio"]')
+        let count = 0
+        
+        for (let i=0; i<inputList.length; i++){
+            input = inputList[i]
+            error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
+            
+            if (input.checked === true) {
+                count++
             }
         }
-
-        this.element.dispatchEvent(new CustomEvent("formHandleIsConnected", {
-            detail: JSON.parse(this.parentContextValue),
-            bubbles: true
-        }));
+        if (count > 0) {
+            input.closest('.form-row').classList.remove("is-invalid")
+            error.textContent = ""
+            return true
+        }else {
+            error.textContent = defaultErrorMessage
+            input.closest('.form-row').classList.add("is-invalid")
+            return false
+        }
     }
 
     cancelHandle() {

@@ -10,9 +10,16 @@
     data-incidentHandleForm-handled-options-value =  "{{ HANDLED_OPTIONS|json_encode }}"
     data-incidentHandleForm-form-is-submitted-value =  {% if form_submitted %}true{% else %}false{% endif %}
 >
-
     {% if form %}
-    <form action="{% url 'incident_modal_handled_type_part' taak.id handled_type %}" method="post" data-testid="handleIncidentForm" class="form--incident-handle" novalidate enctype="multipart/form-data">
+    <form 
+        action="{% url 'incident_modal_handled_type_part' taak.id handled_type %}"
+        method="post"
+        data-testid="handleIncidentForm"
+        class="form--incident-handle"
+        novalidate
+        enctype="multipart/form-data"
+        data-action="submit->incidentHandleForm#onSubmit"
+    >
         {% csrf_token %}
 
         {{ form.status|render_rotterdam_formulier }}
