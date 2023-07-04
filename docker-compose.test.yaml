@@ -6,8 +6,8 @@ services:
       - "8008:8000"
     env_file:
       - .env.test
-    volumes:
-      - ./app:/app
+    # volumes:
+    #   - ./app:/app
     depends_on:
       redis:
         condition: service_started
@@ -15,7 +15,7 @@ services:
         condition: service_started
     networks:
       - behandelr_network
-    command: ["bash", "/app/deploy/docker-entrypoint.development.sh"]
+    # command: ["bash", "/app/deploy/docker-entrypoint.development.sh"]
 
   database:
     image: postgis/postgis:11-3.3
@@ -39,37 +39,37 @@ services:
     ports:
       - "6382:6379"
 
-  app_celery_worker:
-    build: ./app
-    command: "celery -A config worker -l info"
-    depends_on:
-      database:
-        condition: service_started
-      redis:
-        condition: service_started
-    volumes:
-      - ./media:/media
-    env_file:
-      - .env.test
-    networks:
-      - behandelr_network
-    restart: on-failure
+  # app_celery_worker:
+  #   build: ./app
+  #   command: "celery -A config worker -l info"
+  #   depends_on:
+  #     database:
+  #       condition: service_started
+  #     redis:
+  #       condition: service_started
+  #   # volumes:
+  #   #   - ./media:/media
+  #   env_file:
+  #     - .env.test
+  #   networks:
+  #     - behandelr_network
+  #   restart: on-failure
 
-  app_celery_beat:
-    build: ./app
-    command: "celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
-    depends_on:
-      database:
-        condition: service_started
-      redis:
-        condition: service_started
-    volumes:
-      - ./media:/media
-    env_file:
-      - .env.test
-    networks:
-      - behandelr_network
-    restart: on-failure
+  # app_celery_beat:
+  #   build: ./app
+  #   command: "celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+  #   depends_on:
+  #     database:
+  #       condition: service_started
+  #     redis:
+  #       condition: service_started
+  #   # volumes:
+  #   #   - ./media:/media
+  #   env_file:
+  #     - .env.test
+  #   networks:
+  #     - behandelr_network
+  #   restart: on-failure
 
 networks:
   behandelr_network:
