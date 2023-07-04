@@ -95,6 +95,37 @@ $form-search-indicator-position: left 10px center !default;
   }
 }
 
+.is-invalid{
+    .form-control, .form-select{
+        border-bottom-color: $invalid-color!important;
+        border-bottom-width: 1px;
+        box-shadow: 0 1px 0 $invalid-color;
+        margin-bottom: 0;
+    }
+
+    .invalid-text {
+        margin-top: 0.5rem;
+        padding-left: 1rem;
+        position: relative;
+
+        &:before {
+            content: url('../icons/warning_triangle.svg');
+            position: absolute;
+            left: 0;
+            top: -1px;
+        }
+    }
+}
+.was-validated .form-select:invalid, .form-select.is-invalid{
+    border-color: #404B4F;
+}
+
+.help-block {
+    font-size: $h6-font-size;
+    margin: 0.25rem 0 1.5rem;
+    display: block;
+}
+
 .form-control__with-helptext {
     .form-control {
         margin-bottom: 0.25em;

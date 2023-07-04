@@ -281,3 +281,7 @@ h1 + .section--seperated {
 .no-padding {
     padding: 0 !important;
 }
+
+.invalid-text {
+    color: $invalid-color !important;
+}
