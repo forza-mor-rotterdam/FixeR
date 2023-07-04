@@ -3,7 +3,7 @@ services:
   app:
     build: ./app
     ports:
-      - "8008:8000"
+      - "8004:8000"
     env_file:
       - .env.test
     # volumes:
@@ -37,7 +37,7 @@ services:
     networks:
       - behandelr_network
     ports:
-      - "6382:6379"
+      - "6379"
 
   # app_celery_worker:
   #   build: ./app

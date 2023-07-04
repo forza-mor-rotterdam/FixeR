@@ -7,6 +7,6 @@ class ServicesConfig(AppConfig):
     verbose_name = "Health"
 
     def ready(self):
-        from apps.health.custom_checks import MeldingHealthCheck
+        from apps.health.custom_checks import MeldingenTokenCheck
 
-        plugin_dir.register(MeldingHealthCheck)
+        plugin_dir.register(MeldingenTokenCheck)
