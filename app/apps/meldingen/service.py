@@ -36,7 +36,7 @@ class MeldingenService:
             f"url: {url}, basis_url: {self._api_base_url}"
         )
 
-    def get_headers(self):
+    def haal_token(self):
         meldingen_token = cache.get("meldingen_token2")
         if not meldingen_token:
             logger.info(
@@ -66,7 +66,10 @@ class MeldingenService:
                     f"status code: {token_response.status_code}, response text: {token_response.text}"
                 )
 
-        headers = {"Authorization": f"Token {meldingen_token}"}
+        return meldingen_token
+
+    def get_headers(self):
+        headers = {"Authorization": f"Token {self.haal_token()}"}
         return headers
 
     def do_request(self, url, method="get", data={}, raw_response=True):
