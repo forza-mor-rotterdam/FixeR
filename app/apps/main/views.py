@@ -15,7 +15,6 @@ from apps.main.utils import (
     to_base64,
 )
 from apps.meldingen.service import MeldingenService
-from apps.meldingen.utils import get_meldingen_token
 from apps.taken.models import Taak
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -375,7 +374,7 @@ def config(request):
 
 def meldingen_bestand(request):
     url = f"{settings.MELDINGEN_URL}{request.path}"
-    headers = {"Authorization": f"Token {get_meldingen_token()}"}
+    headers = {"Authorization": f"Token {MeldingenService().haal_token()}"}
     response = requests.get(url, stream=True, headers=headers)
     return StreamingHttpResponse(
         response.raw,
