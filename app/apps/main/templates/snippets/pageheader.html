@@ -10,7 +10,7 @@
             <img src="{% webpack_static 'images/logo-organisatie.svg' %}" alt="Logo organisatie" />
         </a>
         {% if not hide_menu %}
-        <button aria-expanded="false" class="btn btn-togglemenu" data-action="pageHeader#openModal">
+        <button aria-expanded="false" class="btn btn-togglemenu" data-action="pageHeader#openModal" aria-label="Open menu">
             <svg
                 fill="#404B4F"
                 height="32"
@@ -32,7 +32,7 @@
 
     <div class="modal">
         <div class="modal-dialog modal-navigation">
-            <div class="modal-backdrop modal-exit" id="modal-backdrop" data-action="click->pageHeader#closeModal"></div>
+            <div class="modal-backdrop modal-exit" data-action="click->pageHeader#closeModal"></div>
             <div class="modal-content">
                 <div class="modal-header">
                 <button
