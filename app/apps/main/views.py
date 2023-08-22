@@ -21,7 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.http import HttpResponse, StreamingHttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 logger = logging.getLogger(__name__)
@@ -282,7 +282,7 @@ def afgeronde_taken(request):
 
 @login_required
 def taak_detail(request, id):
-    taak = Taak.objects.get(pk=id)
+    taak = get_object_or_404(Taak, pk=id)
     melding_response = MeldingenService().get_by_uri(taak.melding.bron_url)
     melding = melding_response.json()
     tijdlijn_data = melding_naar_tijdlijn(melding)

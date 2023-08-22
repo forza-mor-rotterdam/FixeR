@@ -90,6 +90,7 @@ MIDDLEWARE = (
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django_session_timeout.middleware.SessionTimeoutMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -241,8 +242,8 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_NAME = "__Secure-sessionid" if not DEBUG else "sessionid"
 CSRF_COOKIE_NAME = "__Secure-csrftoken" if not DEBUG else "csrftoken"
-SESSION_COOKIE_SAMESITE = "Strict" if not DEBUG else "Lax"
-CSRF_COOKIE_SAMESITE = "Strict" if not DEBUG else "Lax"
+SESSION_COOKIE_SAMESITE = "Lax" # Strict does not work well together with OIDC
+CSRF_COOKIE_SAMESITE = "Lax" # Strict does not work well together with OIDC
 
 # Settings for Content-Security-Policy header
 CSP_DEFAULT_SRC = ("'self'",)
@@ -306,7 +307,21 @@ CACHES = {
     }
 }
 
+
+# Sessions are managed by django-session-timeout-joinup
+# Django session settings
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Session settings for django-session-timeout-joinup
+SESSION_EXPIRE_MAXIMUM_SECONDS = int(
+    os.getenv("SESSION_EXPIRE_MAXIMUM_SECONDS", "28800")
+)
+SESSION_EXPIRE_SECONDS = int(os.getenv("SESSION_EXPIRE_SECONDS", "3600"))
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
+    os.getenv("SESSION_EXPIRE_SECONDS", "3600")
+)
+
 
 LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
 
@@ -404,5 +419,5 @@ OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = int(
 
 LOGIN_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL_FAILURE = "/"
-LOGOUT_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = OIDC_OP_LOGOUT_ENDPOINT
 LOGIN_URL = "/oidc/authenticate/"

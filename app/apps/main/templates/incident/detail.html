@@ -6,7 +6,16 @@
 {% load json_encode from main_tags %}
 {% load gebruiker_middels_email from gebruikers_tags %}
 
-{% block title %}{{ taak.locatie.adres.straatNaam }} {{ taak.locatie.adres.huisnummer }}{% endblock %}
+{% block title %}
+{% if melding.locatie.adres %}
+    {{ melding.locatie.adres.straatNaam|lower|capfirst }} {% if melding.locatie.adres.huisnummer %}{{ melding.locatie.adres.huisnummer }}{%endif%}
+    {% elif melding.meta.begraafplaats %}
+    {% with grafnummer=melding.meta.grafnummer vak=melding.meta.vak plaats=melding.meta.begraafplaats %}
+        {% if grafnummer %} Graf {{ grafnummer }}{% endif %}{% if vak %}, Vak {{ vak }}{% endif %}
+        {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
+    {% endwith %}
+    {% endif %}
+{% endblock %}
 
 {% block before_modal_content %}
 
