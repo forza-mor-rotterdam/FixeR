@@ -1,8 +1,32 @@
 import base64
 
+from apps.context.constanten import FILTER_NAMEN
 from django.core.files.storage import default_storage
 from django.db.models import Count
 from django.http import QueryDict
+
+
+def get_filters(context):
+    filters = context.filters.get("fields", [])
+    filters = [f for f in filters if f in FILTER_NAMEN]
+    return filters
+
+
+def get_actieve_filters(gebruiker, filters):
+    actieve_filters = {f: [] for f in filters}
+    actieve_filters.update(
+        {k: v for k, v in gebruiker.profiel.filters.items() if k in filters}
+    )
+    return actieve_filters
+
+
+def get_actieve_filters_aantal(actieve_filters):
+    return len([ll for k, v in actieve_filters.items() for ll in v])
+
+
+def set_actieve_filters(gebruiker, actieve_filters):
+    gebruiker.profiel.filters = actieve_filters
+    return gebruiker.profiel.save()
 
 
 def get_filter_options(f_qs, qs, fields=[]):
@@ -36,10 +60,10 @@ def get_filter_options(f_qs, qs, fields=[]):
 
 
 def filter_taken(qs, actieve_filters):
-    if actieve_filters.get("locatie"):
+    if actieve_filters.get("begraafplaats"):
         qs = qs.filter(
             melding__response_json__locaties_voor_melding__0__begraafplaats__in=actieve_filters[
-                "locatie"
+                "begraafplaats"
             ]
         )
     if actieve_filters.get("taken"):

@@ -3,35 +3,37 @@
 <turbo-frame id="incidents_filters">
     <form
         action="{{form_url}}"
-        {% comment %} action="{% url 'filter_part' %}" {% endcomment %}
         method="post"
+        data-controller="filter"
         id="incidentFilterAllForm"
         data-testid="incidentFilterAllForm"
     >
         {% csrf_token %}
-        <details data-controller="filter--filter" class="filter filter--active" data-action="filter--filter#toggleActiveFilter" id="foldout_active_filters"{% if "foldout_active_filters" in foldout_states %} open{% endif %}>
-            <input type="hidden" value="{{ foldout_states }}" name="foldout_states">
+        <details class="filter filter--active">
+            <input data-filter-target="foldoutStatesField" type="hidden" value="{{ foldout_states }}" name="foldout_states">
             <summary>
                 <span>Actieve filters</span>
-                <span class="count count--filter">{{ filters_count }}<span>
+                <span class="count count--filter">{{ actieve_filters_aantal }}<span>
             </summary>
             <fieldset>
                 <ul class="list-clean">
-                    {% if actieve_filters.locatie|length > 0 %}
+
+                    {% for f in filters %}
+                    {% if f.actief %}
                     <li>
-                        <h3 class="h5">Locaties</h3>
+                        <h3 class="h5">{{ f.naam|capfirst }}</h3>
                         <ul class="list-filters--active list-clean">
-                            {% for id in actieve_filters.locatie %}
-                            {% for locatie_id, locatie in filter_opties.begraafplaats.items %}
-                            {% if id == locatie_id%}
+                            {% for id in f.actief %}
+                            {% for optie_id, optie in f.opties.items %}
+                            {% if id == optie_id %}
                             <li class="js-filter-active">
                                 <button
                                     class="btn btn-secondary btn-filter--active"
-                                    data-action="filter--filter#removeFilter"
-                                    data-filter--filter-code-param="{{ department.0 }}"
-                                    data-filter--filter-description-param="locatie"
+                                    data-action="filter#removeFilter"
+                                    data-filter-code-param="{{ optie_id }}"
+                                    data-filter-description-param="{{ f.naam }}"
                                 >
-                                    <span>{{ locatie.0 }}</span>
+                                    <span>{{ optie.0 }}</span>
                                 </button>
 
                             </li>
@@ -41,98 +43,59 @@
                         </ul>
                     </li>
                     {% endif %}
-                    {% if actieve_filters.taken|length > 0 %}
-                    <li>
-                        <h3 class="h5">Taken</h3>
-                        <ul class="list-filters--active list-clean">
-                            {% for id in actieve_filters.taken %}
-                            {% for taak_id, taak in filter_opties.taken.items %}
-                            {% if id == taak_id%}
-                            <li class="js-filter-active">
-                                <button
-                                    class="btn btn-secondary btn-filter--active"
-                                    data-action="filter--filter#removeFilter"
-                                    data-filter--filter-code-param="{{ taak.0 }}"
-                                    data-filter--filter-description-param="taken"
-                                >
-                                    <span>{{ taak.0 }}</span>
-                                </button>
+                    {% endfor %}
 
-                            </li>
-                            {% endif %}
-                            {% endfor %}
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    {% endif %}
-
-                    {% if filters.onderwerpItems|length > 0 %}
-                    <li>
-                        <h3 class="h5">Onderwerpen</h3>
-                        <ul class="list-filters--active">
-                            {% for onderwerp in filters.onderwerpItems %}
-                            <li class="js-filter-active">
-                                <button
-                                    class="btn btn-secondary btn-filter--active"
-                                    data-action="filter--filter#removeFilter"
-                                    data-filter--filter-code-param="{{ onderwerp.0 }}"
-                                    data-filter--filter-description-param="onderwerpItems"
-                                >
-                                    <span>{{ onderwerp.1 }}</span>
-                                </button>
-
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    {% endif %}
                 </ul>
-                {% if filters.afdelingen|length > 0 %}
-                    <button class="btn-textlink btn-with-icon" data-action="filter--filter#removeAllFilters" style="padding: 8px 0 16px;">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M22.5 5.9H9.5L8.18103 11H11V8.10001H21V11L23.819 11L22.5 5.9ZM25.8421 11L24.5 5.89999L24 4H23H9H8L7.5 5.89999V5.9L6.15789 11H5V13H6.17073L8 28H9H23H24L25.8293 13H27V11H25.8421ZM22.2125 26L23.8375 13H8.1625L9.7875 26H22.2125Z" fill="#404B4F"/>
-                        </svg>
-                        <span>Verwijder alle filters</span>
-                    </button>
-                {% endif %}
+                <button class="btn-textlink btn-with-icon" data-action="filter#removeAllFilters" style="padding: 8px 0 16px;">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M22.5 5.9H9.5L8.18103 11H11V8.10001H21V11L23.819 11L22.5 5.9ZM25.8421 11L24.5 5.89999L24 4H23H9H8L7.5 5.89999V5.9L6.15789 11H5V13H6.17073L8 28H9H23H24L25.8293 13H27V11H25.8421ZM22.2125 26L23.8375 13H8.1625L9.7875 26H22.2125Z" fill="#404B4F"/>
+                    </svg>
+                    <span>Verwijder alle filters</span>
+                </button>
             </fieldset>
         </details>
 
-        <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_departments"{% if "foldout_departments" in foldout_states or filters.afdelingen|length == 0 %} open{% endif %}>
-            <summary>
-                <span>Locaties</span>
-                <span>({{ actieve_filters.locatie|length }})</span>
-            </summary>
-            {% include "filters/form_locatiefilter.html" %}
-        </details>
 
-        {% if filters.afdelingen|length > 0  %}
-        {% if filter_opties.begraafplaats %}
-        <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_categories"{% if "foldout_categories" in foldout_states %} open{% endif %}>
+
+        {% for f in filters %}
+        <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{{f.naam}}"{% if not f.folded %} open{% endif %}>
             <summary>
-                <span>Groepen/onderwerpen</span>
-                <span>({{ filters.onderwerpItems|length }})</span>
+                <span>{{ f.naam|capfirst }}</span>
+                <span>({{ f.actief|length }})</span>
             </summary>
-            {% include "snippets/form_subjectfilter.html" %}
+            <ul
+                class="list-clean"
+                data-test-id="incidentFilter{{ f.naam|capfirst }}"
+            >
+                {% for optie_id, optie in f.opties.items %}
+                    <li class="container__check-department">
+                        <div class="form-check">
+                            <input
+                                class="form-check-input filter--taken"
+                                type="checkbox"
+                                value="{{ optie_id }}"
+                                {% if optie_id in f.actief %}checked{% endif %}
+                                name="{{ f.naam }}"
+                                id="{{ f.naam }}_{{ optie_id }}"
+                                data-action="filter#onChangeFilter"
+                                data-filter-target="filterInput"
+                            >
+                            <label class="form-check-label" for="{{ f.naam }}_{{ optie_id }}">{{ optie.0 }}</label>
+                        </div>
+                    </li>
+                {% endfor %}
+                </ul>
         </details>
-        {% endif %}
-        {% if areas %}
-        <details class="filter" data-action="filter--filter#toggleActiveFilter" id="foldout_areas"{% if "foldout_areas" in foldout_states %} open{% endif %}>
-            <summary>
-                <span>Wijken/buurten</span>
-                <span>({{ filters.buurten|length }})</span>
-            </summary>
-            {% include "snippets/form_areafilter.html" %}
-        </details>
-        {% endif %}
-        {% endif %}
+        {% endfor %}
+
+
 
         <div class="full-page-view__footer">
             {% if incident_count == 0 %}
                 <button
                     type="button"
                     class="btn btn-action"
-                    data-action="filter--filter#hideFilters"
+                    data-action="filter#hideFilters"
                     disabled="disabled"
                 >
                     Er zijn geen meldingen, pas filter aan
@@ -141,7 +104,7 @@
                 <button
                     type="submit"
                     class="btn btn-action"
-                    data-action="filter--filter#onSubmitFilter"
+                    data-action="filter#onSubmitFilter"
                 >
                     Toon 1 taak
                 </button>
@@ -149,9 +112,9 @@
                 <button
                     type="submit"
                     class="btn btn-action"
-                    data-action="filter--filter#onSubmitFilter"
+                    data-action="filter#onSubmitFilter"
                 >
-                    Toon {{ taken_gefilterd.count }} taken
+                    Toon {{ taken_aantal }} taken
                 </button>
             {% endif %}
         </div>

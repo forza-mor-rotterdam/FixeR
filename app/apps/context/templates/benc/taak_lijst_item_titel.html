@@ -1,0 +1,26 @@
+{% load to_date vind_in_dict from main_tags %}
+{% if taak.melding.response_json.meta.grafnummer %}
+<div>
+    {% with grafnummer=taak.melding.response_json.meta.grafnummer vak=taak.melding.response_json.meta.vak plaats=taak.melding.response_json.meta.begraafplaats %}
+    <h2 class="h4">B&C tmpl
+        {% if plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}, {% endif %}
+        {% if grafnummer %} Graf {{ grafnummer }}, {% endif %}{% if vak %}Vak {{ vak }}{% endif %}
+        {% if not grafnummer and not vak and plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
+    </h2>
+    <div>
+        <span class="incident__category">{{ taak.titel }}</span>
+        <div class="incident__moment">
+            <span data-taak-target="incidentDate">
+                {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|to_date }}
+            </span>
+        </div>
+    </div>
+    {% endwith %}
+</div>
+
+{% else %}
+<div class="incident__header">Melding: {{taak.melding.id}}
+    <h2>B&C tmpl {{ taak.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}</h2>
+    {% if taak.spoed %}<span class="icon icon--warning">{% endif %}</span>
+</div>
+{% endif %}

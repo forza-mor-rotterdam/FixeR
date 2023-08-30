@@ -1,0 +1,15 @@
+{% load to_date vind_in_dict from main_tags %}
+<div>
+
+    <h2 class="h4">
+        Standaard tmpl: Melding id: {{ taak.melding.response_json.id }}
+    </h2>
+    <div>
+        <span class="incident__category">{{ taak.titel }}</span>
+        <div class="incident__moment">
+            <span data-taak-target="incidentDate">
+                {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|to_date }}
+            </span>
+        </div>
+    </div>
+</div>

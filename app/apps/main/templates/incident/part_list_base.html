@@ -9,13 +9,13 @@
     >
         <div class="container__header" data-controller="incidentlist">
             <div class="row">
-                <h1 class="h3">{%if 'afgerond' in request.path %}Afgerond{%else%}Te doen{%endif%} {% if filters_count > 0 %}({{ incidents | length }}){% endif %}</h1>
+                <h1 class="h3">{%if 'afgerond' in request.path %}Afgerond{%else%}Te doen{%endif%}</h1>
                 <div class="container__controls">
                     <button
                         type="button"
                         class="btn btn-secondary btn-filter--small"
-                        data-controller="filter--filter"
-                        data-action="filter--filter#showFilters"
+                        data-controller="filter"
+                        data-action="filter#showFilters"
                     >
                         <span>
                             <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -77,7 +77,7 @@
                         </svg>
                     </span>
                     <div>
-                        Geen taken gevonden. <a data-controller="filter--filter" data-action="filter--filter#showFilters">Open de filters</a> om je instellingen aan te passen.
+                        Geen taken gevonden. <a data-controller="filter" data-action="filter#showFilters">Open de filters</a> om je instellingen aan te passen.
                     </div>
                 </div>
 

@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
+    static targets = [ "foldoutStatesField", "filterInput" ]
 
     showFilters() {
         document.body.classList.add('show-filters')
@@ -13,11 +14,11 @@ export default class extends Controller {
     removeFilter(e) {
         const input = document.querySelector(`[name="${e.params.description}"][value="${e.params.code}"]`);
         input.checked = false;
-        document.getElementById('incidentFilterAllForm').requestSubmit()
+        this.element.requestSubmit()
     }
     toggleActiveFilter(e) {
         e.preventDefault()
-        const input = document.querySelector(`[name=foldout_states]`);
+        const input = this.foldoutStatesFieldTarget;
         let idArray = JSON.parse(input.value)
         const idAttr = e.target.getAttribute("id")
         const isOpen = e.target.hasAttribute("open")
@@ -32,11 +33,10 @@ export default class extends Controller {
     }
 
     onChangeFilter() {
-        document.getElementById('incidentFilterAllForm').requestSubmit()
+        this.element.requestSubmit()
     }
 
     onSubmitFilter() {
-        console.log('onSubmitFilter')
         const frame = document.getElementById('incidents_list');
         frame.reload()
         this.hideFilters()
@@ -51,19 +51,10 @@ export default class extends Controller {
     }
 
     removeAllFilters(e) {
-        const checkedFilters = Array.from(document.getElementsByClassName(`btn-filter--active`));
-        checkedFilters.forEach(filter => {
-            const input = document.querySelector(`[name="${filter.getAttribute('data-filter--filter-description-param')}"][value="${filter.getAttribute('data-filter--filter-code-param')}"]`);
+        this.filterInputTargets.checked = false
+        this.filterInputTargets.forEach(input => {
             input.checked = false;
         })
-        document.getElementById('foldout_active_filters').removeAttribute('open');
-        document.getElementById('incidentFilterAllForm').requestSubmit();
-        const input = document.querySelector(`[name=foldout_states]`);
-        let idArray = JSON.parse(input.value)
-        let index = idArray.indexOf('foldout_active_filters')
-        if (index > -1) {
-            idArray.splice(index, 1);
-        }
-        input.value = JSON.stringify(idArray)
+        this.element.requestSubmit()
     }
 }
