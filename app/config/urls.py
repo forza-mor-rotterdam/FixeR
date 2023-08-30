@@ -34,22 +34,6 @@ router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 urlpatterns = [
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path("api-token-auth/", views.obtain_auth_token),
-    path(
-        "admin/login/",
-        RedirectView.as_view(
-            url="/oidc/authenticate/?next=/admin/",
-            permanent=False,
-        ),
-        name="admin_login",
-    ),
-    path(
-        "admin/logout/",
-        RedirectView.as_view(
-            url="/oidc/logout/?next=/admin/",
-            permanent=False,
-        ),
-        name="admin_logout",
-    ),
     path("oidc/", include("mozilla_django_oidc.urls")),
     path("admin/", admin.site.urls),
     path("", root, name="root"),
@@ -101,6 +85,26 @@ urlpatterns = [
     ),
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
+
+if settings.OPENID_CONFIG and settings.OIDC_RP_CLIENT_ID:
+    urlpatterns += [
+        path(
+            "admin/login/",
+            RedirectView.as_view(
+                url="/oidc/authenticate/?next=/admin/",
+                permanent=False,
+            ),
+            name="admin_login",
+        ),
+        path(
+            "admin/logout/",
+            RedirectView.as_view(
+                url="/oidc/logout/?next=/admin/",
+                permanent=False,
+            ),
+            name="admin_logout",
+        ),
+    ]
 
 if settings.DEBUG:
     urlpatterns += [
