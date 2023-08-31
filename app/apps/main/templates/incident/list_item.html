@@ -9,16 +9,25 @@
 {% comment %} <turbo-frame id="incident_list_item"> {% endcomment %}
     <div
         class="list-item{% if form_submitted %} form-is-submitted{% endif %}{% if errors and warnings %} has-errors{% endif %}"
-        {% if TEMPLATE_BASIS == "benc" %}
+        {% if TEMPLATE_BASIS != "benc" %}
             data-controller="taak"
             data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler cancelHandle->taak#cancelHandleHandler"
             data-taak-date-value="{{ incident.datumMelding }}"
             data-taak-days-value="{{ incident.werkdagenSindsRegistratie }}"
         {%endif%}>
-
+        {% if TEMPLATE_BASIS != "benc" %}
+        <button
+            class="container__actions handle--no-success"
+            data-id="{{ incident.id }}"
+            data-incident-target="button"
+        >
+            <div>
+                <span>Niet opgelost</span>
+            </div>
+        </button>
+        {% endif %}
         <div class="wrapper__swipe">
             <div class="container__flex">
-            ={{TEMPLATE_BASIS}}=
                 <a href="{% url 'taak_detail' taak.id %}" aria-label="Bekijk taak {{ taak.id }}">
                     <div class="container__image">
                     
@@ -38,7 +47,17 @@
                 </a>
             </div>
         </div>
-
+        {% if TEMPLATE_BASIS != "benc" %}
+        <button
+            class="container__actions handle--success"
+            data-id="{{ incident.id }}"
+            data-incident-target="button"
+        >
+            <div>
+                <span>Afhandelen</span>
+            </div>
+        </button>
+    {% endif %}
 {% endblock %}
 
 {% block modal_header %}
