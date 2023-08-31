@@ -9,15 +9,19 @@
 {% comment %} <turbo-frame id="incident_list_item"> {% endcomment %}
     <div
         class="list-item{% if form_submitted %} form-is-submitted{% endif %}{% if errors and warnings %} has-errors{% endif %}"
-        {% comment %} data-controller="taak"
-        data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler cancelHandle->taak#cancelHandleHandler"
-        data-taak-date-value="{{ incident.datumMelding }}"
-        data-taak-days-value="{{ incident.werkdagenSindsRegistratie }}" {% endcomment %}>
+        {% if TEMPLATE_BASIS == "benc" %}
+            data-controller="taak"
+            data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler cancelHandle->taak#cancelHandleHandler"
+            data-taak-date-value="{{ incident.datumMelding }}"
+            data-taak-days-value="{{ incident.werkdagenSindsRegistratie }}"
+        {%endif%}>
 
         <div class="wrapper__swipe">
             <div class="container__flex">
+            ={{TEMPLATE_BASIS}}=
                 <a href="{% url 'taak_detail' taak.id %}" aria-label="Bekijk taak {{ taak.id }}">
                     <div class="container__image">
+                    
                         {% if taak.melding.response_json.bijlagen %}
                         {% with taak.melding.response_json.bijlagen|first as first_foto %}
                         <div class="background-image" style="background-image: url('{{ first_foto.afbeelding_verkleind_relative_url }}')"></div>
@@ -51,8 +55,14 @@
 {% endblock %}
 
 {% block modal_body %}
-    {% comment %} <turbo-frame id="incident_modal_handle_{{ incident.id }}" data-taak-target="turboFormHandler" data-handled="handled" data-not-handled="not-handled" data-src="{% url 'incident_modal_handle_part' taak.id %}" src="{% url 'incident_modal_handle_part' taak.id %}" loading="lazy">
-    </turbo-frame> {% endcomment %}
+<turbo-frame
+    id="incident_modal_handle_{{ taak.id }}"
+    data-taak-target="turboFormHandler"
+    data-src="{% url 'incident_modal_handle_part' taak.id %}"
+    src="{% url 'incident_modal_handle_part' taak.id %}"
+    laoding="lazy"
+>
+</turbo-frame>
 {% endblock %}
 
 {% block after_modal_content %}
