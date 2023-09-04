@@ -20,6 +20,7 @@ def general_settings(context):
         hasattr(context, "user")
         and hasattr(context.user, "profiel")
         and hasattr(context.user.profiel, "context")
+        and hasattr(context.user.profiel.context, "template")
     ):
         template_basis = context.user.profiel.context.template
 
