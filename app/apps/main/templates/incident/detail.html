@@ -252,6 +252,12 @@
                             {{ melding.omschrijving }}
                         </p>
                         {% endif %}
+                        {% if melding.omschrijving_kort %}
+                        <h3 class="h5">Toelichting kort</h3>
+                        <p>
+                            {{ melding.omschrijving_kort }}
+                        </p>
+                        {% endif %}
 
                         {% if melding.afdeling.omschrijving %}
                         <h3 class="h5">Afdeling</h3>
