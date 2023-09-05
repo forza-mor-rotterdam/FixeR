@@ -73,7 +73,7 @@ body.show-modal--first-filter {
             small {
                 display: block;
                 font-weight: 400;
-                font-size: $font-size-base;
+                font-size: calc(0.75rem + 1vw);
                 margin-top: 0.5rem;
             }
         }

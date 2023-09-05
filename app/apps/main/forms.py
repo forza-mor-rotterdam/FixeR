@@ -42,7 +42,7 @@ TAAK_BEHANDEL_OPTIES = (
     ),
     (
         "nee",
-        "Nee, het probleem kan niet worden opgelost.",
+        "Nee",
         "We zijn met uw melding aan de slag gegaan, maar konden het probleem helaas niet oplossen. Want...",
         "voltooid",
         None,
