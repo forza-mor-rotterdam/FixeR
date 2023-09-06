@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
+    static targets = ["todo", "finished"]
 
     resetFontSize(e) {
         document.body.classList.remove('fz-medium', 'fz-large', 'fz-xlarge')
@@ -15,6 +16,15 @@ export default class extends Controller {
     }
 
     openModal(e) {
+        const currentUrl = window.location.href
+
+        if (currentUrl.includes("/taken/")) {
+            this.todoTarget.classList.add("selected")
+        }
+        if (currentUrl.includes("/taken-afgerond/")) {
+            this.finishedTarget.classList.add("selected")
+        }
+
         const modal = this.element.querySelector('.modal');
         const modalBackdrop = this.element.querySelector('.modal-backdrop');
 
