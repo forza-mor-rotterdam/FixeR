@@ -22,6 +22,12 @@ export default class extends Controller {
                 this.incidentDateTarget.textContent = this.getNumberOfDays(this.dateValue, parseInt(this.daysValue))
             }
         }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+              this.closeModal()
+            }
+        })
     }
 
     disconnect() {
