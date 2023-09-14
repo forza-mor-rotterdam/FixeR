@@ -90,12 +90,6 @@ h6, .h6 {
     }
 }
 
-summary {
-    &:focus {
-        @include focus-outline();
-    }
-}
-
 a,
 .link {
     color: $primary;
