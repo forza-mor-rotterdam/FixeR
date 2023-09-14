@@ -121,7 +121,7 @@ class TaakBehandelForm(forms.Form):
                 "data-action": "change->bijlagen#updateImageDisplay",
             }
         ),
-        label="Is het probleem opgelost?",
+        label="Is de taak afgehandeld?",
         choices=[[x[0], x[1]] for x in TAAK_BEHANDEL_OPTIES],
         required=True,
     )
@@ -147,6 +147,43 @@ class TaakBehandelForm(forms.Form):
                 "data-testid": "information",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "internalText",
+            }
+        ),
+        required=False,
+    )
+
+    nieuwe_taak_toevoegen = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "form-check-input",
+                "data-action": "change->incidentHandleForm#toggleNewTask",
+            }
+        ),
+        label="Er moet nog iets gebeuren.",
+        required=False,
+    )
+
+    nieuwe_taak = forms.ChoiceField(
+        widget=forms.Select(),
+        label="Vervolgtaak",
+        choices=(
+            ("", "Klein afval ophalen"),
+            ("", "Reinigen"),
+            ("", "Matras ophalen"),
+            ("", "Vuil ophalen met knijpwagen"),
+            ("", "Koelkast ophalen"),
+            ("", "Beoordelen midoffice"),
+        ),
+        required=False,
+    )
+
+    omschrijving_nieuwe_taak = forms.CharField(
+        label="Toelichting",
+        help_text='Deze tekst wordt niet naar de melder verstuurd.',
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": "4",
             }
         ),
         required=False,
