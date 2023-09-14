@@ -12,7 +12,7 @@ export default class extends Controller {
         handledOptions: String,
     }
 
-    static targets = ["externalText", "internalText"]
+    static targets = ["externalText", "internalText", "newTask"]
 
     connect() {
 
@@ -72,6 +72,10 @@ export default class extends Controller {
             detail: JSON.parse(this.parentContextValue),
             bubbles: true
         }));
+    }
+
+    toggleNewTask(){
+        this.newTaskTarget.classList.toggle("hidden")
     }
 
     setExternalMessage(evt){

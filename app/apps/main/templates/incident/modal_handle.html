@@ -23,12 +23,26 @@
         {% csrf_token %}
 
         {{ form.status|render_rotterdam_formulier }}
-
+        <div class="form-control__with-helptext">
+            {{ form.omschrijving_intern|render_rotterdam_formulier }}
+        </div>
+        
         <div data-controller="bijlagen">
             {{ form.bijlagen|render_rotterdam_formulier }}
         </div>
-        <div class="form-control__with-helptext">
-            {{ form.omschrijving_intern|render_rotterdam_formulier }}
+        <div class="form-part-seperated">
+            <h3 class="h5">Vervolgtaak <small>(Optioneel)</small></h3>
+            <div class="form-row margin-vertical">
+                {{ form.nieuwe_taak_toevoegen|render_rotterdam_formulier }}
+            </div>
+            <div data-incidentHandleForm-target="newTask" class="container__toggle hidden">
+                <div class="form-row">
+                    {{ form.nieuwe_taak|render_rotterdam_formulier }}
+                </div>
+                <div class="form-control__with-helptext">
+                    {{ form.omschrijving_nieuwe_taak|render_rotterdam_formulier }}
+                </div>
+            </div>
         </div>
         <div class="form-row">
             <button

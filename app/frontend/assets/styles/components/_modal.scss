@@ -10,12 +10,17 @@
 
     .modal-backdrop {
         display: block;
-        opacity: 0.5;
+        opacity: 0;
     }
 }
 
 body.show-modal {
     @include bodyModal();
+
+    .modal-backdrop {
+        display: block;
+        opacity: 0.5;
+    }
 
     .modal.show {
         @include modalVisible()
@@ -92,16 +97,28 @@ body.show-modal--first-filter {
         padding: $modal-inner-padding;
     }
 
-    &-backdrop {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 10;
-        width: 100vw;
-        height: 100vh;
-        background-color: $black;
-        opacity: 0;
-        display: none;
-    }
+    // &-backdrop {
+    //     position: fixed;
+    //     top: 0;
+    //     left: 0;
+    //     z-index: 10;
+    //     width: 100vw;
+    //     height: 100vh;
+    //     background-color: $black;
+    //     opacity: 0;
+    //     display: none;
+    // }
 
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    width: 100vw;
+    height: 100vh;
+    background-color: $black;
+    opacity: 0;
+    display: none;
 }
