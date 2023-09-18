@@ -8,6 +8,7 @@
         data-incidents-filters-value="{{ filters|json_encode }}"
     >
         <div class="container__header" data-controller="incidentlist">
+        <div class="visually-hidden">{{taken_totaal|length}}</div>
             <div class="row">
                 <h1 class="h3">{%if 'afgerond' in request.path %}Afgerond{%else%}Te doen{%endif%}</h1>
                 <div class="container__controls">

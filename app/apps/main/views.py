@@ -242,6 +242,7 @@ def actieve_taken(request):
             "filter_url": reverse("filter_part"),
             "sort_options": sort_options,
             "taken": taken_paginated,
+            "taken_totaal": taken,
             "page_obj": page_obj,
             "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
         },
@@ -287,6 +288,7 @@ def afgeronde_taken(request):
             "sort_options": sort_options,
             "taken": taken_paginated,
             "page_obj": page_obj,
+            "taken_totaal": taken,
             "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
         },
     )

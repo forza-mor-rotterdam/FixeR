@@ -6,13 +6,11 @@ export default class extends Controller {
 
     static targets = [ "sorting" ]
 
-
     initialize() {
         console.log('initialize showSortingContainer', showSortingContainer)
     }
 
     connect(e) {
-
         if(this.hasSortingTarget && showSortingContainer === true ) {
             this.sortingTarget.classList.remove("hidden-vertical")
             this.sortingTarget.classList.add("show-vertical")
