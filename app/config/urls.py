@@ -1,4 +1,5 @@
 from apps.main.views import (
+    account,
     actieve_taken,
     afgeronde_taken,
     config,
@@ -32,11 +33,12 @@ router.register(r"taak", TaakViewSet, basename="taak")
 router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 
 urlpatterns = [
+    path("", root, name="root"),
+    path("account/", account, name="account"),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path("api-token-auth/", views.obtain_auth_token),
-    path("oidc/", include("mozilla_django_oidc.urls")),
     path("admin/", admin.site.urls),
-    path("", root, name="root"),
+    path("oidc/", include("mozilla_django_oidc.urls")),
     path(
         "taken/",
         taken_overzicht,
@@ -86,7 +88,7 @@ urlpatterns = [
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
 
-if settings.OPENID_CONFIG and settings.OIDC_RP_CLIENT_ID:
+if settings.OIDC_ENABLED:
     urlpatterns += [
         path(
             "admin/login/",

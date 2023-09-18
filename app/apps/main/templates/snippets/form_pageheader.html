@@ -2,7 +2,7 @@
 
 <form action="{% url 'pageheader_form_part' %}" method="POST">
     {% csrf_token %}
-    <ul class="list-clean list-nav--primary">    
+    <ul class="list-clean list-nav--primary">
         <li><a href="/" data-turbo-frame="_top" data-action="pageHeader#closeModal" data-turbo-action="advance" data-pageHeader-target="todo">Te doen</a></li>
         <li><a href="{% url 'taken_afgerond_overzicht' %}" data-turbo-frame="_top" data-action="pageHeader#closeModal" data-turbo-action="advance" data-pageHeader-target="finished">Afgerond</a></li>
     </ul>
@@ -17,7 +17,7 @@
             </a>
         </li>
         <li class="wrapper-horizontal">
-            <a href="{% url 'oidc_logout' %}" target="_top">
+            <a href="{{ LOGOUT_URL }}" target="_top">
                 <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" title="">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M17 5H6V27H17V25H8V7H17V5ZM21.207 22.606L27.8633 15.9497L21.207 9.29338L19.7927 10.7076L24.0349 14.9497H12.5496V16.9497H24.0349L19.7927 21.1918L21.207 22.606Z" fill="#9DAFB6"/>
                 </svg>

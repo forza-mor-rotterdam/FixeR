@@ -23,7 +23,7 @@ from apps.main.utils import (
 from apps.meldingen.service import MeldingenService
 from apps.taken.models import Taak
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.http import HttpResponse, StreamingHttpResponse
@@ -52,9 +52,18 @@ def http_response(request):
 
 
 def root(request):
-    if request.user and request.user.is_authenticated:
+    if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
         return redirect(reverse("incident_index"))
-    return redirect(reverse("incident_index"))
+    return redirect(reverse("account"))
+
+
+@login_required
+def account(request):
+    return render(
+        request,
+        "auth/account.html",
+        {},
+    )
 
 
 @login_required
@@ -67,7 +76,7 @@ def ui_settings_handler(request):
     )
 
 
-@login_required
+@permission_required("authorisatie.taken_lijst_bekijken")
 def filter(request, openstaand="openstaand"):
     taaktypes = (
         request.user.profiel.context.taaktypes.all()
@@ -177,7 +186,7 @@ sort_options = (
 )
 
 
-@login_required
+@permission_required("authorisatie.taken_lijst_bekijken")
 def taken_overzicht(request):
     return render(
         request,
@@ -185,7 +194,7 @@ def taken_overzicht(request):
     )
 
 
-@login_required
+@permission_required("authorisatie.taken_lijst_bekijken")
 def taken_afgerond_overzicht(request):
     return render(
         request,
@@ -198,7 +207,7 @@ def taken_afgerond_overzicht(request):
     )
 
 
-@login_required
+@permission_required("authorisatie.taken_lijst_bekijken")
 def actieve_taken(request):
     grouped_by = False
 
@@ -239,7 +248,7 @@ def actieve_taken(request):
     )
 
 
-@login_required
+@permission_required("authorisatie.taken_lijst_bekijken")
 def afgeronde_taken(request):
     grouped_by = False
     taaktypes = (
@@ -283,7 +292,7 @@ def afgeronde_taken(request):
     )
 
 
-@login_required
+@permission_required("authorisatie.taak_bekijken")
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
     melding_response = MeldingenService().get_by_uri(taak.melding.bron_url)
@@ -302,7 +311,7 @@ def taak_detail(request, id):
     )
 
 
-@login_required
+@permission_required("authorisatie.taak_bekijken")
 def incident_list_item(request, id):
     taak = get_object_or_404(Taak, pk=id)
     return render(
@@ -314,7 +323,7 @@ def incident_list_item(request, id):
     )
 
 
-@login_required
+@permission_required("authorisatie.taak_afronden")
 def incident_modal_handle(request, id, handled_type="handled"):
     taak = get_object_or_404(Taak, pk=id)
     form = TaakBehandelForm()
