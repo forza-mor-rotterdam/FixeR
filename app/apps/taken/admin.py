@@ -8,7 +8,10 @@ class TaakAdmin(admin.ModelAdmin):
         "titel",
         "taaktype",
         "melding",
+        "taakstatus",
+        "resolutie",
         "aangemaakt_op",
+        "aangepast_op",
     )
     list_editable = ("melding",)
 

@@ -7,7 +7,7 @@
     <div>
         <span class="incident__category">{{ taak.titel }}</span>
 
-        <div class="incident__header">Melding: {{taak.melding.id}}
+        <div class="incident__header">Melding: {{taak.melding.response_json.id}}
             <h2>{{ taak.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}</h2>
             {% if taak.spoed %}<span class="icon icon--warning">{% endif %}</span>
         </div>

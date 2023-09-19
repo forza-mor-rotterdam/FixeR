@@ -1,6 +1,6 @@
 import base64
 
-from apps.context.constanten import FILTER_NAMEN
+from apps.context.constanten import FILTER_NAMEN, FILTERS_LOOKUP
 from django.core.files.storage import default_storage
 from django.db.models import Count
 from django.http import QueryDict
@@ -60,14 +60,13 @@ def get_filter_options(f_qs, qs, fields=[]):
 
 
 def filter_taken(qs, actieve_filters):
-    if actieve_filters.get("begraafplaats"):
-        qs = qs.filter(
-            melding__response_json__locaties_voor_melding__0__begraafplaats__in=actieve_filters[
-                "begraafplaats"
-            ]
-        )
-    if actieve_filters.get("taken"):
-        qs = qs.filter(taaktype__id__in=actieve_filters["taken"])
+    qs = qs.filter(
+        **{
+            FILTERS_LOOKUP.get(k, [])[3]: v
+            for k, v in actieve_filters.items()
+            if FILTERS_LOOKUP.get(k) and v
+        }
+    )
     return qs
 
 
