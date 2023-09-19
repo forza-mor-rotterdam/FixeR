@@ -69,11 +69,21 @@ def account(request):
 @login_required
 def ui_settings_handler(request):
 
+    profiel = request.user.profiel
+    # request.user.token
+    if request.POST:
+        profiel.ui_instellingen.update({
+            "fontsize": request.POST.get("fontsize", "fz-medium")
+        })
+        profiel.save()
+
+
     return render(
         request,
         "snippets/form_pageheader.html",
-        {},
+        {"profile": profiel},
     )
+
 
 
 @permission_required("authorisatie.taken_lijst_bekijken")

@@ -1,5 +1,5 @@
 {% load gebruikersnaam from gebruikers_tags %}
-
+<turbo-frame id="form_pageheader" >
 <form action="{% url 'pageheader_form_part' %}" method="POST">
     {% csrf_token %}
     <ul class="list-clean list-nav--primary">
@@ -47,3 +47,4 @@
         {% endif %}
     </ul>
 </form>
+</turbo-frame>

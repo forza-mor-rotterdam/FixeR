@@ -140,7 +140,6 @@ class TaakBehandelForm(forms.Form):
 
     omschrijving_intern = forms.CharField(
         label="Interne opmerking",
-        help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
         widget=forms.Textarea(
             attrs={
                 "class": "form-control",
