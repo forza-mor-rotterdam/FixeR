@@ -40,6 +40,11 @@ class Taaktype(BasisModel):
     )
     additionele_informatie = models.JSONField(default=dict)
 
+    volgende_taaktypes = models.ManyToManyField(
+        to="taken.Taaktype",
+        related_name="vorige_taaktypes_voor_taaktype",
+    )
+
     class Meta:
         ordering = ("-aangemaakt_op",)
         verbose_name = "Taaktype"

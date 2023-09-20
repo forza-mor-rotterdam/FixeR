@@ -99,6 +99,28 @@ class MeldingenService:
     def get_by_uri(self, uri):
         return self.do_request(uri)
 
+    def taak_aanmaken(
+        self,
+        melding_uuid,
+        taaktype_url,
+        titel,
+        bericht=None,
+        gebruiker=None,
+        additionele_informatie={},
+    ):
+        data = {
+            "taaktype": taaktype_url,
+            "titel": titel,
+            "bericht": bericht,
+            "gebruiker": gebruiker,
+            "additionele_informatie": additionele_informatie,
+        }
+        return self.do_request(
+            f"{self._api_path}/melding/{melding_uuid}/taakopdracht/",
+            method="post",
+            data=data,
+        )
+
     def taak_status_aanpassen(
         self,
         taakopdracht_url,

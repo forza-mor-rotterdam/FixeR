@@ -21,7 +21,7 @@ from apps.main.utils import (
     to_base64,
 )
 from apps.meldingen.service import MeldingenService
-from apps.taken.models import Taak
+from apps.taken.models import Taak, Taaktype
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.files.storage import default_storage
@@ -29,6 +29,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from rest_framework.reverse import reverse as drf_reverse
 
 logger = logging.getLogger(__name__)
 
@@ -340,7 +341,11 @@ def incident_list_item(request, id):
 @permission_required("authorisatie.taak_afronden")
 def incident_modal_handle(request, id, handled_type="handled"):
     taak = get_object_or_404(Taak, pk=id)
-    form = TaakBehandelForm()
+    form = TaakBehandelForm(
+        volgende_taaktypes=taak.taaktype.volgende_taaktypes.all().exclude(
+            id=taak.taaktype.id
+        )
+    )
     warnings = []
     errors = []
     messages = []
@@ -348,9 +353,26 @@ def incident_modal_handle(request, id, handled_type="handled"):
     is_handled = False
 
     if request.POST:
-        form = TaakBehandelForm(request.POST)
+        form = TaakBehandelForm(
+            request.POST,
+            volgende_taaktypes=taak.taaktype.volgende_taaktypes.all().exclude(
+                id=taak.taaktype.id
+            ),
+        )
         if form.is_valid():
             bijlagen = request.FILES.getlist("bijlagen", [])
+            taaktype = Taaktype.objects.filter(
+                id=form.cleaned_data.get("nieuwe_taak")
+            ).first()
+            taaktype_url = (
+                drf_reverse(
+                    "v1:taaktype-detail",
+                    kwargs={"uuid": taaktype.uuid},
+                    request=request,
+                )
+                if taaktype
+                else None
+            )
             bijlagen_base64 = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
@@ -367,6 +389,19 @@ def incident_modal_handle(request, id, handled_type="handled"):
                 logger.error(
                     f"taak_status_aanpassen: status code: {taak_status_aanpassen_response.status_code}, taak id: {id}"
                 )
+            if taak_status_aanpassen_response.status_code == 200 and taaktype_url:
+                taak_aanmaken_response = MeldingenService().taak_aanmaken(
+                    melding_uuid=taak.melding.response_json.get("uuid"),
+                    taaktype_url=taaktype_url,
+                    titel=taaktype.omschrijving,
+                    bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
+                    gebruiker=request.user.email,
+                )
+                if taak_aanmaken_response.status_code != 200:
+                    logger.error(
+                        f"taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
+                    )
+
             form.cleaned_data.get("handle_choice", 1)
             return redirect("incident_index")
     return render(

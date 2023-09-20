@@ -11,7 +11,7 @@
     data-incidentHandleForm-form-is-submitted-value =  {% if form_submitted %}true{% else %}false{% endif %}
 >
     {% if form %}
-    <form 
+    <form
         action="{% url 'incident_modal_handled_type_part' taak.id handled_type %}"
         method="post"
         data-testid="handleIncidentForm"
@@ -26,10 +26,11 @@
         <div class="form-control__with-helptext">
             {{ form.omschrijving_intern|render_rotterdam_formulier }}
         </div>
-        
+
         <div data-controller="bijlagen">
             {{ form.bijlagen|render_rotterdam_formulier }}
         </div>
+        {% if form.nieuwe_taak %}
         <div class="form-part-seperated">
             <h3 class="h5">Vervolgtaak <small>(Optioneel)</small></h3>
             <div class="form-row margin-vertical">
@@ -44,6 +45,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         <div class="form-row">
             <button
                 type="submit"
