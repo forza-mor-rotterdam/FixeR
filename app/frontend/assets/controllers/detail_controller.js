@@ -29,16 +29,20 @@ export default class extends Controller {
             this.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
         }
 
-        // const incidentCoordinates = this.rdToWgs84(Number(this.incidentXValue), Number(this.incidentYValue))
-        // const map = L.map('incidentMap', {
-        //     zoomControl: false,
-        //     maxZoom: 18,
-        //     minZoom: 13,
-        //     dragging: false,
-        //     tap: false
-        // }).setView(incidentCoordinates, 16);
-        // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        // const marker = L.marker(incidentCoordinates).addTo(map);
+        console.log("incidentXValue", this.incidentXValue)
+        console.log("incidentYValue", this.incidentYValue)
+
+        const incidentCoordinates = this.rdToWgs84(Number(this.incidentXValue), Number(this.incidentYValue))
+        // const incidentCoordinates = [Number(this.incidentXValue), Number(this.incidentYValue)]
+        const map = L.map('incidentMap', {
+            zoomControl: false,
+            maxZoom: 18,
+            minZoom: 13,
+            dragging: false,
+            tap: false
+        }).setView(incidentCoordinates, 16);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        const marker = L.marker(incidentCoordinates).addTo(map);
     }
 
     mappingFunction(object) {
