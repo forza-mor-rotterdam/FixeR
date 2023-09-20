@@ -72,18 +72,16 @@ def ui_settings_handler(request):
     profiel = request.user.profiel
     # request.user.token
     if request.POST:
-        profiel.ui_instellingen.update({
-            "fontsize": request.POST.get("fontsize", "fz-medium")
-        })
+        profiel.ui_instellingen.update(
+            {"fontsize": request.POST.get("fontsize", "fz-medium")}
+        )
         profiel.save()
-
 
     return render(
         request,
         "snippets/form_pageheader.html",
         {"profile": profiel},
     )
-
 
 
 @permission_required("authorisatie.taken_lijst_bekijken")
@@ -270,6 +268,10 @@ def afgeronde_taken(request):
     taken = Taak.objects.filter(
         afgesloten_op__isnull=False,
         taaktype__in=taaktypes,
+        resolutie__in=[
+            Taak.ResolutieOpties.NIET_OPGELOST,
+            Taak.ResolutieOpties.OPGELOST,
+        ],
     ).order_by("-afgesloten_op")
 
     filters = (
