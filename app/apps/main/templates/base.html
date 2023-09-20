@@ -47,15 +47,16 @@
             crossorigin="">
         </script>
     </head>
-    <body class="{% if profile.ui_settings.fontsize %}{{ profile.ui_settings.fontsize }}{% endif %}">
+    <body class="{% if user.profiel.ui_instellingen.fontsize %}{{ user.profiel.ui_instellingen.fontsize }}{% endif %}">
     {% block pageheader %}
         {% include 'snippets/pageheader.html' %}
     {% endblock %}
-        <main>
+        <main data-controller="main">
             <div class="container">
                 {% block body %}{% endblock %}
             </div>
         </main>
+        <div class="modal-backdrop"></div>
         <div class="spinner"></div>
         {% include "auth/session_timer.html" %}
     </body>

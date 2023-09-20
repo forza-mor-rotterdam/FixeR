@@ -42,10 +42,10 @@ TAAK_BEHANDEL_OPTIES = (
     ),
     (
         "nee",
-        "Nee, het probleem kan niet worden opgelost.",
+        "Nee",
         "We zijn met uw melding aan de slag gegaan, maar konden het probleem helaas niet oplossen. Want...",
         "voltooid",
-        None,
+        "niet_opgelost",
     ),
 )
 
@@ -121,7 +121,7 @@ class TaakBehandelForm(forms.Form):
                 "data-action": "change->bijlagen#updateImageDisplay",
             }
         ),
-        label="Is het probleem opgelost?",
+        label="Is de taak afgehandeld?",
         choices=[[x[0], x[1]] for x in TAAK_BEHANDEL_OPTIES],
         required=True,
     )
@@ -140,7 +140,6 @@ class TaakBehandelForm(forms.Form):
 
     omschrijving_intern = forms.CharField(
         label="Interne opmerking",
-        help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
         widget=forms.Textarea(
             attrs={
                 "class": "form-control",
@@ -151,3 +150,51 @@ class TaakBehandelForm(forms.Form):
         ),
         required=False,
     )
+
+    omschrijving_nieuwe_taak = forms.CharField(
+        label="Toelichting",
+        help_text="Deze tekst wordt niet naar de melder verstuurd.",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": "4",
+            }
+        ),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        volgende_taaktypes = kwargs.pop("volgende_taaktypes", None)
+        super().__init__(*args, **kwargs)
+
+        if volgende_taaktypes:
+            self.fields["nieuwe_taak"] = forms.ChoiceField(
+                widget=forms.Select(),
+                label="Vervolgtaak",
+                choices=[
+                    (taaktype.id, taaktype.omschrijving)
+                    for taaktype in volgende_taaktypes
+                ],
+                required=False,
+            )
+            self.fields["nieuwe_taak_toevoegen"] = forms.BooleanField(
+                widget=forms.CheckboxInput(
+                    attrs={
+                        "class": "form-check-input",
+                        "data-action": "change->incidentHandleForm#toggleNewTask",
+                    }
+                ),
+                label="Er moet nog iets gebeuren.",
+                required=False,
+            )
+            self.fields["omschrijving_nieuwe_taak"] = forms.CharField(
+                label="Toelichting",
+                help_text="Deze tekst wordt niet naar de melder verstuurd.",
+                widget=forms.Textarea(
+                    attrs={
+                        "class": "form-control",
+                        "rows": "4",
+                    }
+                ),
+                required=False,
+            )

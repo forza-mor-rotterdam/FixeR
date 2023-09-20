@@ -11,7 +11,7 @@
     data-incidentHandleForm-form-is-submitted-value =  {% if form_submitted %}true{% else %}false{% endif %}
 >
     {% if form %}
-    <form 
+    <form
         action="{% url 'incident_modal_handled_type_part' taak.id handled_type %}"
         method="post"
         data-testid="handleIncidentForm"
@@ -23,19 +23,35 @@
         {% csrf_token %}
 
         {{ form.status|render_rotterdam_formulier }}
+        <div class="form-control__with-helptext">
+            {{ form.omschrijving_intern|render_rotterdam_formulier }}
+        </div>
 
         <div data-controller="bijlagen">
             {{ form.bijlagen|render_rotterdam_formulier }}
         </div>
-        <div class="form-control__with-helptext">
-            {{ form.omschrijving_intern|render_rotterdam_formulier }}
+        {% if form.nieuwe_taak %}
+        <div class="form-part-seperated">
+            <h3 class="h5">Vervolgtaak <small>(Optioneel)</small></h3>
+            <div class="form-row margin-vertical">
+                {{ form.nieuwe_taak_toevoegen|render_rotterdam_formulier }}
+            </div>
+            <div data-incidentHandleForm-target="newTask" class="container__toggle hidden">
+                <div class="form-row">
+                    {{ form.nieuwe_taak|render_rotterdam_formulier }}
+                </div>
+                <div class="form-control__with-helptext">
+                    {{ form.omschrijving_nieuwe_taak|render_rotterdam_formulier }}
+                </div>
+            </div>
         </div>
+        {% endif %}
         <div class="form-row">
             <button
                 type="submit"
                 class="btn btn-action"
             >
-                <span>Afhandelen</span>
+                <span>OK</span>
             </button>
             <button
                 type="reset"

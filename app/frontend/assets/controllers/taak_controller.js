@@ -22,6 +22,12 @@ export default class extends Controller {
                 this.incidentDateTarget.textContent = this.getNumberOfDays(this.dateValue, parseInt(this.daysValue))
             }
         }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+              this.closeModal()
+            }
+        })
     }
 
     disconnect() {
@@ -242,14 +248,20 @@ export default class extends Controller {
         this.turboFormHandlerTarget.setAttribute("src", this.turboFormHandlerTarget.dataset.src + (isFinished ? "handled/": "not-handled/"))
 
         this.removeAllListeners()
-        const modalHeader = this.element.querySelector('.modal-header h1 span');
-        modalHeader.textContent = isFinished ? "Afhandelen" : "Niet opgelost";
         const modal = this.element.querySelector('.modal');
         const modalBackdrop = this.element.querySelector('.modal-backdrop');
 
         modal.classList.add('show');
         modalBackdrop.classList.add('show');
         document.body.classList.add('show-modal');
+        
+        setTimeout(function (){
+            if(isFinished) {
+                modal.querySelector("#id_status_0").checked = true
+            }else if(isFinished === false){
+                modal.querySelector("#id_status_1").checked = true
+            }
+        }.bind(this), 700)
 
         // TODO only used for modal backdrop, try to get rid of it
         const exits = modal.querySelectorAll('.modal-exit');

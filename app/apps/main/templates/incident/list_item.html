@@ -2,21 +2,45 @@
 {% load webpack_static from webpack_loader %}
 {% load to_date vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
+{% load context_template from context_tags %}
 {% with incident_id=incident.id|stringformat:"s" %}
 
 {% block before_modal_content %}
 {% comment %} <turbo-frame id="incident_list_item"> {% endcomment %}
+
     <div
         class="list-item{% if form_submitted %} form-is-submitted{% endif %}{% if errors and warnings %} has-errors{% endif %}"
-        {% comment %} data-controller="taak"
-        data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler cancelHandle->taak#cancelHandleHandler"
-        data-taak-date-value="{{ incident.datumMelding }}"
-        data-taak-days-value="{{ incident.werkdagenSindsRegistratie }}" {% endcomment %}>
-
+        {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}
+            data-controller="taak"
+            data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler cancelHandle->taak#cancelHandleHandler"
+            data-taak-date-value="{{ incident.datumMelding }}"
+            data-taak-days-value="{{ incident.werkdagenSindsRegistratie }}"
+        {%endif%}>
+        {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}
+        <button
+            class="container__actions handle--no-success"
+            data-id="{{ incident.id }}"
+            data-incident-target="button"
+        >
+            <div>
+                <span>Niet opgelost</span>
+            </div>
+        </button>
+        <button
+            class="container__actions handle--success"
+            data-id="{{ incident.id }}"
+            data-incident-target="button"
+        >
+            <div>
+                <span>Afhandelen</span>
+            </div>
+        </button>
+        {% endif %}
         <div class="wrapper__swipe">
             <div class="container__flex">
                 <a href="{% url 'taak_detail' taak.id %}" aria-label="Bekijk taak {{ taak.id }}">
                     <div class="container__image">
+                    
                         {% if taak.melding.response_json.bijlagen %}
                         {% with taak.melding.response_json.bijlagen|first as first_foto %}
                         <div class="background-image" style="background-image: url('{{ first_foto.afbeelding_verkleind_relative_url }}')"></div>
@@ -27,44 +51,18 @@
                     </div>
 
                     <div class="container__info">
-                        {# <a href="/incident/{{ incident.id }}/handle"> #}
-                        {% if taak.melding.response_json.meta.grafnummer %}
-                        <div>
-                            {% with grafnummer=taak.melding.response_json.meta.grafnummer vak=taak.melding.response_json.meta.vak plaats=taak.melding.response_json.meta.begraafplaats %}
-                            <h2 class="h4">
-                                {% if plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}, {% endif %}
-                                {% if grafnummer %} Graf {{ grafnummer }}, {% endif %}{% if vak %}Vak {{ vak }}{% endif %}
-                                {% if not grafnummer and not vak and plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
-                            </h2>
-                            <div>
-                                <span class="incident__category">{{ taak.titel }}</span>
-                                <div class="incident__moment">
-                                    <span data-taak-target="incidentDate">
-                                        {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|to_date }}
-                                    </span>
-                                </div>
-                            </div>
-                            {% endwith %}
-                        </div>
-
-                        {% else %}
-                        <div class="incident__header">Melding: {{taak.melding.id}}
-                            <h2>{{ taak.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}</h2>
-                            {% if taak.spoed %}<span class="icon icon--warning">{% endif %}</span>
-                        </div>
-                        {% endif %}
-                        {# </a> #}
+                        {% context_template "taak_lijst_item_titel.html" as title_template %}
+                        {% include title_template %}
                     </div>
                 </a>
             </div>
         </div>
-
 {% endblock %}
 
 {% block modal_header %}
 <h1>
-    <span>Afhandelen</span><br>
-    <small data-address>{{ incident.locatie.adres.straatNaam|lower|capfirst }} {{ incident.locatie.adres.huisnummer }}</small>
+    <span>Taak behandelen</span><br>
+    <small>{{ taak.titel }}</small>
 </h1>
 <button
     type="button"
@@ -75,8 +73,14 @@
 {% endblock %}
 
 {% block modal_body %}
-    {% comment %} <turbo-frame id="incident_modal_handle_{{ incident.id }}" data-taak-target="turboFormHandler" data-handled="handled" data-not-handled="not-handled" data-src="{% url 'incident_modal_handle_part' taak.id %}" src="{% url 'incident_modal_handle_part' taak.id %}" loading="lazy">
-    </turbo-frame> {% endcomment %}
+<turbo-frame
+    id="incident_modal_handle_{{ taak.id }}"
+    data-taak-target="turboFormHandler"
+    data-src="{% url 'incident_modal_handle_part' taak.id %}"
+    src="{% url 'incident_modal_handle_part' taak.id %}"
+    laoding="lazy"
+>
+</turbo-frame>
 {% endblock %}
 
 {% block after_modal_content %}

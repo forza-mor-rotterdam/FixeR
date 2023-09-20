@@ -1,0 +1,18 @@
+{% load to_date vind_in_dict from main_tags %}
+<div>
+    {% with grafnummer=taak.melding.response_json.meta.grafnummer vak=taak.melding.response_json.meta.vak plaats=taak.melding.response_json.meta.begraafplaats %}
+    <h2 class="h4">
+        {% if plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}, {% endif %}
+        {% if vak %}Vak {{ vak }}, {% endif %}{% if grafnummer %} Graf {{ grafnummer }}{% endif %}
+        {% if not grafnummer and not vak and plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
+    </h2>
+    <div>
+        <span class="incident__category">{{ taak.titel }}</span>
+        <div class="incident__moment">
+            <span data-taak-target="incidentDate">
+                {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|to_date }}
+            </span>
+        </div>
+    </div>
+    {% endwith %}
+</div>

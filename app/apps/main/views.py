@@ -1,7 +1,9 @@
+import json
 import logging
 from datetime import datetime
 
 import requests
+from apps.context.constanten import FILTERS
 from apps.main.forms import (
     HANDLED_OPTIONS,
     TAAK_BEHANDEL_RESOLUTIE,
@@ -10,19 +12,24 @@ from apps.main.forms import (
 )
 from apps.main.utils import (
     filter_taken,
+    get_actieve_filters,
+    get_actieve_filters_aantal,
     get_filter_options,
+    get_filters,
     melding_naar_tijdlijn,
+    set_actieve_filters,
     to_base64,
 )
 from apps.meldingen.service import MeldingenService
-from apps.taken.models import Taak
+from apps.taken.models import Taak, Taaktype
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from rest_framework.reverse import reverse as drf_reverse
 
 logger = logging.getLogger(__name__)
 
@@ -46,54 +53,72 @@ def http_response(request):
 
 
 def root(request):
-    if request.user and request.user.is_authenticated:
+    if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
         return redirect(reverse("incident_index"))
-    return redirect(reverse("incident_index"))
+    return redirect(reverse("account"))
 
 
 @login_required
-def ui_settings_handler(request):
-
+def account(request):
     return render(
         request,
-        "snippets/form_pageheader.html",
+        "auth/account.html",
         {},
     )
 
 
 @login_required
+def ui_settings_handler(request):
+
+    profiel = request.user.profiel
+    # request.user.token
+    if request.POST:
+        profiel.ui_instellingen.update(
+            {"fontsize": request.POST.get("fontsize", "fz-medium")}
+        )
+        profiel.save()
+
+    return render(
+        request,
+        "snippets/form_pageheader.html",
+        {"profile": profiel},
+    )
+
+
+@permission_required("authorisatie.taken_lijst_bekijken")
 def filter(request, openstaand="openstaand"):
-    taken = Taak.objects.filter(afgesloten_op__isnull=(openstaand == "openstaand"))
+    taaktypes = (
+        request.user.profiel.context.taaktypes.all()
+        if request.user.profiel.context
+        else []
+    )
+    filters = (
+        get_filters(request.user.profiel.context)
+        if request.user.profiel.context
+        else []
+    )
+    actieve_filters = get_actieve_filters(request.user, filters)
+
+    foldout_states = []
+    if request.POST:
+        actieve_filters = {f: request.POST.getlist(f) for f in filters}
+        foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
+
     form_url = (
         reverse("filter_part")
         if (openstaand == "openstaand")
         else reverse("filter_part", kwargs={"openstaand": "niet_openstaand"})
     )
-    actieve_filters = {
-        "locatie": [],
-        "taken": [],
-    }
-    actieve_filters.update(request.session.get("actieve_filters", {}))
 
-    if request.POST:
-        actieve_filters["locatie"] = request.POST.getlist("locatie")
-        actieve_filters["taken"] = request.POST.getlist("taken")
-
-    taken_gefilterd = filter_taken(taken, actieve_filters)
-
-    filter_options_fields = (
-        (
-            "locatie",
-            "melding__response_json__locaties_voor_melding__0__begraafplaats",
-            "melding__response_json__meta_uitgebreid__begraafplaats__choices",
-        ),
-        (
-            "taken",
-            "taaktype__id",
-            "taaktype__omschrijving",
-        ),
+    taken = Taak.objects.filter(
+        afgesloten_op__isnull=(openstaand == "openstaand"),
+        taaktype__in=taaktypes,
     )
-    filter_opties = get_filter_options(taken_gefilterd, taken, filter_options_fields)
+    taken = filter_taken(taken, actieve_filters)
+
+    filter_options_fields = [f for f in FILTERS if f[0] in actieve_filters]
+    filter_opties = get_filter_options(taken, taken, filter_options_fields)
+
     actieve_filters = {
         k: [
             af
@@ -103,16 +128,27 @@ def filter(request, openstaand="openstaand"):
         for k, v in actieve_filters.items()
     }
 
-    request.session["actieve_filters"] = actieve_filters
+    # sla actieve filters op in profiel
+    set_actieve_filters(request.user, actieve_filters)
+
+    filters = [
+        {
+            "naam": f,
+            "opties": filter_opties.get(f, {}),
+            "actief": actieve_filters.get(f, {}),
+            "folded": f"foldout_{f}" not in foldout_states,
+        }
+        for f in filters
+    ]
 
     return render(
         request,
         "filters/form.html",
         {
-            "filter_opties": filter_opties,
-            "actieve_filters": actieve_filters,
-            "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
-            "taken_gefilterd": taken_gefilterd,
+            "filters": filters,
+            "actieve_filters_aantal": get_actieve_filters_aantal(actieve_filters),
+            "taken_aantal": taken.count(),
+            "foldout_states": json.dumps(foldout_states),
             "form_url": form_url,
         },
     )
@@ -159,55 +195,15 @@ sort_options = (
 )
 
 
-@login_required
+@permission_required("authorisatie.taken_lijst_bekijken")
 def taken_overzicht(request):
-
-    taken = Taak.objects.filter(afgesloten_op__isnull=True)
-    actieve_filters = {
-        "locatie": [],
-        "taken": [],
-    }
-    actieve_filters.update(request.session.get("actieve_filters", {}))
-
-    if request.POST:
-        actieve_filters["locatie"] = request.POST.getlist("locatie")
-        actieve_filters["taken"] = request.POST.getlist("taken")
-
-    taken_gefilterd = filter_taken(taken, actieve_filters)
-
-    filter_options_fields = (
-        (
-            "locatie",
-            "melding__response_json__locaties_voor_melding__0__begraafplaats",
-            "melding__response_json__meta_uitgebreid__begraafplaats__choices",
-        ),
-        (
-            "taken",
-            "taaktype__id",
-            "taaktype__omschrijving",
-        ),
-    )
-    filter_opties = get_filter_options(taken_gefilterd, taken, filter_options_fields)
-    actieve_filters = {
-        k: [
-            af
-            for af in v
-            if af in [fok for fok, fov in filter_opties.get(k, {}).items()]
-        ]
-        for k, v in actieve_filters.items()
-    }
-
     return render(
         request,
         "incident/index.html",
-        {
-            "filter_url": reverse("filter_part"),
-            "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
-        },
     )
 
 
-@login_required
+@permission_required("authorisatie.taken_lijst_bekijken")
 def taken_afgerond_overzicht(request):
     return render(
         request,
@@ -220,16 +216,28 @@ def taken_afgerond_overzicht(request):
     )
 
 
-@login_required
+@permission_required("authorisatie.taken_lijst_bekijken")
 def actieve_taken(request):
     grouped_by = False
 
-    taken = Taak.objects.filter(afgesloten_op__isnull=True)
-
-    actieve_filters = request.session.get("actieve_filters", {})
+    taaktypes = (
+        request.user.profiel.context.taaktypes.all()
+        if request.user.profiel.context
+        else []
+    )
+    taken = Taak.objects.filter(
+        afgesloten_op__isnull=True,
+        taaktype__in=taaktypes,
+    )
+    filters = (
+        get_filters(request.user.profiel.context)
+        if request.user.profiel.context
+        else []
+    )
+    actieve_filters = get_actieve_filters(request.user, filters)
     taken_gefilterd = filter_taken(taken, actieve_filters)
 
-    paginator = Paginator(taken_gefilterd, 20)
+    paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
@@ -243,21 +251,39 @@ def actieve_taken(request):
             "filter_url": reverse("filter_part"),
             "sort_options": sort_options,
             "taken": taken_paginated,
+            "taken_totaal": taken,
             "page_obj": page_obj,
             "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
         },
     )
 
 
-@login_required
+@permission_required("authorisatie.taken_lijst_bekijken")
 def afgeronde_taken(request):
     grouped_by = False
-    taken = Taak.objects.filter(afgesloten_op__isnull=False).order_by("-afgesloten_op")
+    taaktypes = (
+        request.user.profiel.context.taaktypes.all()
+        if request.user.profiel.context
+        else []
+    )
+    taken = Taak.objects.filter(
+        afgesloten_op__isnull=False,
+        taaktype__in=taaktypes,
+        resolutie__in=[
+            Taak.ResolutieOpties.NIET_OPGELOST,
+            Taak.ResolutieOpties.OPGELOST,
+        ],
+    ).order_by("-afgesloten_op")
 
-    actieve_filters = request.session.get("actieve_filters", {})
+    filters = (
+        get_filters(request.user.profiel.context)
+        if request.user.profiel.context
+        else []
+    )
+    actieve_filters = get_actieve_filters(request.user, filters)
     taken_gefilterd = filter_taken(taken, actieve_filters)
 
-    paginator = Paginator(taken_gefilterd, 20)
+    paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
@@ -275,12 +301,13 @@ def afgeronde_taken(request):
             "sort_options": sort_options,
             "taken": taken_paginated,
             "page_obj": page_obj,
+            "taken_totaal": taken,
             "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
         },
     )
 
 
-@login_required
+@permission_required("authorisatie.taak_bekijken")
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
     melding_response = MeldingenService().get_by_uri(taak.melding.bron_url)
@@ -299,9 +326,9 @@ def taak_detail(request, id):
     )
 
 
-@login_required
+@permission_required("authorisatie.taak_bekijken")
 def incident_list_item(request, id):
-    taak = Taak.objects.get(pk=id)
+    taak = get_object_or_404(Taak, pk=id)
     return render(
         request,
         "incident/list_item.html",
@@ -311,10 +338,14 @@ def incident_list_item(request, id):
     )
 
 
-@login_required
+@permission_required("authorisatie.taak_afronden")
 def incident_modal_handle(request, id, handled_type="handled"):
-    taak = Taak.objects.get(pk=id)
-    form = TaakBehandelForm()
+    taak = get_object_or_404(Taak, pk=id)
+    form = TaakBehandelForm(
+        volgende_taaktypes=taak.taaktype.volgende_taaktypes.all().exclude(
+            id=taak.taaktype.id
+        )
+    )
     warnings = []
     errors = []
     messages = []
@@ -322,9 +353,26 @@ def incident_modal_handle(request, id, handled_type="handled"):
     is_handled = False
 
     if request.POST:
-        form = TaakBehandelForm(request.POST)
+        form = TaakBehandelForm(
+            request.POST,
+            volgende_taaktypes=taak.taaktype.volgende_taaktypes.all().exclude(
+                id=taak.taaktype.id
+            ),
+        )
         if form.is_valid():
             bijlagen = request.FILES.getlist("bijlagen", [])
+            taaktype = Taaktype.objects.filter(
+                id=form.cleaned_data.get("nieuwe_taak")
+            ).first()
+            taaktype_url = (
+                drf_reverse(
+                    "v1:taaktype-detail",
+                    kwargs={"uuid": taaktype.uuid},
+                    request=request,
+                )
+                if taaktype
+                else None
+            )
             bijlagen_base64 = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
@@ -341,6 +389,19 @@ def incident_modal_handle(request, id, handled_type="handled"):
                 logger.error(
                     f"taak_status_aanpassen: status code: {taak_status_aanpassen_response.status_code}, taak id: {id}"
                 )
+            if taak_status_aanpassen_response.status_code == 200 and taaktype_url:
+                taak_aanmaken_response = MeldingenService().taak_aanmaken(
+                    melding_uuid=taak.melding.response_json.get("uuid"),
+                    taaktype_url=taaktype_url,
+                    titel=taaktype.omschrijving,
+                    bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
+                    gebruiker=request.user.email,
+                )
+                if taak_aanmaken_response.status_code != 200:
+                    logger.error(
+                        f"taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
+                    )
+
             form.cleaned_data.get("handle_choice", 1)
             return redirect("incident_index")
     return render(
