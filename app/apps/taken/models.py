@@ -43,6 +43,7 @@ class Taaktype(BasisModel):
     volgende_taaktypes = models.ManyToManyField(
         to="taken.Taaktype",
         related_name="vorige_taaktypes_voor_taaktype",
+        blank=True,
     )
 
     class Meta:
