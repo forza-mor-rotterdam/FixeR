@@ -45,7 +45,7 @@ TAAK_BEHANDEL_OPTIES = (
         "Nee",
         "We zijn met uw melding aan de slag gegaan, maar konden het probleem helaas niet oplossen. Want...",
         "voltooid",
-        None,
+        "niet_opgelost",
     ),
 )
 
@@ -178,7 +178,7 @@ class TaakBehandelForm(forms.Form):
 
     omschrijving_nieuwe_taak = forms.CharField(
         label="Toelichting",
-        help_text='Deze tekst wordt niet naar de melder verstuurd.',
+        help_text="Deze tekst wordt niet naar de melder verstuurd.",
         widget=forms.Textarea(
             attrs={
                 "class": "form-control",

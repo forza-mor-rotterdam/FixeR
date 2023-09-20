@@ -114,6 +114,7 @@ class Taak(BasisModel):
     class ResolutieOpties(models.TextChoices):
         OPGELOST = "opgelost", "Opgelost"
         NIET_OPGELOST = "niet_opgelost", "Niet opgelost"
+        GEANNULEERD = "geannuleerd", "Geannuleerd"
 
     afgesloten_op = models.DateTimeField(null=True, blank=True)
     melding = models.ForeignKey(
@@ -139,7 +140,8 @@ class Taak(BasisModel):
     resolutie = models.CharField(
         max_length=50,
         choices=ResolutieOpties.choices,
-        default=ResolutieOpties.NIET_OPGELOST,
+        blank=True,
+        null=True,
     )
     titel = models.CharField(max_length=100)
     bericht = models.CharField(
