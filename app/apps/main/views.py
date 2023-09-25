@@ -389,7 +389,11 @@ def incident_modal_handle(request, id, handled_type="handled"):
                 logger.error(
                     f"taak_status_aanpassen: status code: {taak_status_aanpassen_response.status_code}, taak id: {id}"
                 )
-            if taak_status_aanpassen_response.status_code == 200 and taaktype_url:
+            if (
+                taak_status_aanpassen_response.status_code == 200
+                and taaktype_url
+                and form.cleaned_data.get("nieuwe_taak_toevoegen")
+            ):
                 taak_aanmaken_response = MeldingenService().taak_aanmaken(
                     melding_uuid=taak.melding.response_json.get("uuid"),
                     taaktype_url=taaktype_url,
