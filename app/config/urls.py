@@ -1,3 +1,9 @@
+from apps.beheer.views import (
+    GebruikerAanmakenView,
+    GebruikerAanpassenView,
+    GebruikerLijstView,
+    beheer,
+)
 from apps.main.views import (
     account,
     actieve_taken,
@@ -72,6 +78,18 @@ urlpatterns = [
         "part/taak-modal-handle/<int:id>/<str:handled_type>/",
         incident_modal_handle,
         name="incident_modal_handled_type_part",
+    ),
+    path("beheer/", beheer, name="beheer"),
+    path("beheer/gebruiker/", GebruikerLijstView.as_view(), name="gebruiker_lijst"),
+    path(
+        "beheer/gebruiker/aanmaken/",
+        GebruikerAanmakenView.as_view(),
+        name="gebruiker_aanmaken",
+    ),
+    path(
+        "beheer/gebruiker/<int:pk>/aanpassen/",
+        GebruikerAanpassenView.as_view(),
+        name="gebruiker_aanpassen",
     ),
     path("api/schema/", SpectacularAPIView.as_view(api_version="v1"), name="schema"),
     # Optional UI:
