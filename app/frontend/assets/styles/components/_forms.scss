@@ -232,7 +232,9 @@ textarea {
         line-height: 3rem;
         font-weight: 400;
         display: inline-block;
-        width: calc(100% - 40px);
+        width: 100%;
+        padding-left: 45px;
+        box-sizing: border-box;
     }
 
     &[type="checkbox"]{
@@ -385,11 +387,24 @@ textarea {
 .list--form-check-input,
 .list--form-radio-input {
     @include list-clean();
+    display: flex;
+    
     li {
-        margin-bottom: 0.25em;
+        margin: 0 0 0 0.25rem;
+        flex: 1;
+        border: 1px solid $gray-tint04;
+        position: relative;
+
+        &:first-child {
+            margin: 0 0.25rem 0 0;
+        }
+        
     }
     input {
         @include form-check-input();
+        position: absolute;
+        top: 25%;
+        left: 10px;
     }
 }
 
