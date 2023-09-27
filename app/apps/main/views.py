@@ -55,6 +55,8 @@ def http_response(request):
 def root(request):
     if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
         return redirect(reverse("incident_index"))
+    if request.user.has_perms(["authorisatie.beheer_bekijken"]):
+        return redirect(reverse("beheer"))
     return redirect(reverse("account"))
 
 
