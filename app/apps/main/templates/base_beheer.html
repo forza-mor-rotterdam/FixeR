@@ -1,65 +1,11 @@
-{% load render_bundle from webpack_loader %}
-{% load webpack_static from webpack_loader %}
-<!DOCTYPE html>
-<html lang="nl">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Forza-MOR{% endblock %}</title>
-        <link rel="apple-touch-icon" sizes="180x180" href="{{base_url}}{%webpack_static 'images/apple-touch-icon.png' %}"/>
-        <link rel="icon" type="image/png" sizes="32x32" href="{{base_url}}{%webpack_static 'images/favicon-32x32.png' %}"/>
-        <link rel="icon" type="image/png" sizes="16x16" href="{{base_url}}{%webpack_static 'images/favicon-16x16.png' %}"/>
-        <link rel="mask-icon" href="{{base_url}}{%webpack_static 'images/safari-pinned-tab.svg' %}" color="#00811f"/>
-        <link rel="manifest" href="{{base_url}}{%webpack_static 'manifest.json' %}"/>
-        <link rel="shortcut icon" href="{{base_url}}{%webpack_static 'images/favicon.ico' %}"/>
-        <link rel="icon" href="{{base_url}}{%webpack_static 'images/favicon.ico' %}"/>
-        {% block stylesheets %}
-            {% render_bundle 'app' 'css' %}
-        {% endblock %}
+{% extends "base.html" %}
 
-        {% if DEBUG %}
-        <script>
-            const chatSocket = new WebSocket(
-                "ws://localhost:"
-                + {{DEV_SOCKET_PORT}}
-            );
+{% block title %}FixeR beheer{% endblock %}
 
-            chatSocket.onmessage = function(e) {
-                if (e.data === "reload"){
-                    location.reload()
-                }
-            };
+{% block pageheader %}
+    {% with hide_menu=True screen_wide=True %}
+    {{ block.super }}
+    {% endwith %}
+{% endblock %}
 
-            chatSocket.onclose = function(e) {
-                console.error("socket closed unexpectedly");
-            };
-        </script>
-        {% endif %}
-
-        {% block javascripts %}
-            {% render_bundle 'app' 'js' %}
-        {% endblock %}
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-            integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
-            crossorigin=""/>
-        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-            integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
-            crossorigin="">
-        </script>
-    </head>
-    <body class="{% if user.profiel.ui_instellingen.fontsize %}{{ user.profiel.ui_instellingen.fontsize }}{% endif %}">
-    {% block pageheader %}
-        {% with hide_menu=True screen_wide=True %}
-            {% include 'snippets/pageheader.html' %}
-        {% endwith %}
-    {% endblock %}
-        <main data-controller="main">
-            <div class="container container--wide">
-                {% block body %}{% endblock %}
-            </div>
-        </main>
-        <div class="modal-backdrop"></div>
-        <div class="spinner"></div>
-        {% include "auth/session_timer.html" %}
-    </body>
-</html>
+{% block container_class %}container container--wide{% endblock %}
