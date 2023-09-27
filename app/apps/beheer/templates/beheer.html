@@ -1,10 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_beheer.html" %}
 
 {% block body %}
 <h1>PlanR: Beheer</h1>
 
 <ul>
-<li><a href="{% url 'gebruiker_lijst' %}">Gebruikers</a></li>
+    <li><a href="{% url 'gebruiker_lijst' %}">Gebruikers</a></li>
 </ul>
-
 {% endblock %}
