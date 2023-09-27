@@ -232,9 +232,6 @@ textarea {
         line-height: 3rem;
         font-weight: 400;
         display: inline-block;
-        width: 100%;
-        padding-left: 45px;
-        box-sizing: border-box;
     }
 
     &[type="checkbox"]{
@@ -397,14 +394,19 @@ textarea {
 
         &:first-child {
             margin: 0 0.25rem 0 0;
-        }
-        
+        }        
     }
     input {
         @include form-check-input();
         position: absolute;
         top: 25%;
         left: 10px;
+
+        ~ .form-check-label {
+            width: 100%;
+            padding-left: 45px;
+            box-sizing: border-box;
+        }
     }
 }
 
