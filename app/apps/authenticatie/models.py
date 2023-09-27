@@ -9,6 +9,7 @@ from utils.models import BasisModel
 class Gebruiker(AbstractUser):
     username = None
     email = models.EmailField(unique=True)
+    telefoonnummer = models.CharField(max_length=17, blank=True, null=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

@@ -26,6 +26,11 @@ class TaakAfrondenPermissie(BasisPermissie):
     codenaam = "taak_afronden"
 
 
+class GebruikerLijstBekijkenPermissie(BasisPermissie):
+    naam = "Gebruiker lijst bekijken"
+    codenaam = "gebruiker_lijst_bekijken"
+
+
 class GebruikerAanmakenPermissie(BasisPermissie):
     naam = "Gebruiker aanmaken"
     codenaam = "gebruiker_aanmaken"
@@ -34,6 +39,11 @@ class GebruikerAanmakenPermissie(BasisPermissie):
 class GebruikerBekijkenPermissie(BasisPermissie):
     naam = "Gebruiker bekijken"
     codenaam = "gebruiker_bekijken"
+
+
+class GebruikerAanpassenPermissie(BasisPermissie):
+    naam = "Gebruiker aanpassen"
+    codenaam = "gebruiker_aanpassen"
 
 
 class GebruikerVerwijderenPermissie(BasisPermissie):
@@ -61,9 +71,9 @@ class GebruikersgroepVerwijderenPermissie(BasisPermissie):
     codenaam = "gebruikersgroep_verwijderen"
 
 
-class MSBPermissie(BasisPermissie):
-    naam = "MSB toegang"
-    codenaam = "msb_toegang"
+class BeheerBekijkenPermissie(BasisPermissie):
+    naam = "Beheer bekijken"
+    codenaam = "beheer_bekijken"
 
 
 gebruikersgroep_permissies = (
@@ -71,6 +81,7 @@ gebruikersgroep_permissies = (
     TaakBekijkenPermissie,
     TaakAanmakenPermissie,
     TaakAfrondenPermissie,
+    GebruikerLijstBekijkenPermissie,
     GebruikerAanmakenPermissie,
     GebruikerBekijkenPermissie,
     GebruikerVerwijderenPermissie,
@@ -78,6 +89,7 @@ gebruikersgroep_permissies = (
     GebruikersgroepAanmakenPermissie,
     GebruikersgroepBekijkenPermissie,
     GebruikersgroepVerwijderenPermissie,
+    BeheerBekijkenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [

@@ -82,6 +82,7 @@ INSTALLED_APPS = (
     "apps.aliassen",
     "apps.rotterdam_formulier_html",
     "apps.context",
+    "apps.beheer",
 )
 
 LOGIN_URL = "/login/"
