@@ -110,14 +110,14 @@ def filter(request, openstaand="openstaand"):
         else reverse("filter_part", kwargs={"openstaand": "niet_openstaand"})
     )
 
-    taken = Taak.objects.filter(
+    standaard_taken = Taak.objects.filter(
         afgesloten_op__isnull=(openstaand == "openstaand"),
         taaktype__in=taaktypes,
     )
-    taken = filter_taken(taken, actieve_filters)
+    taken = filter_taken(standaard_taken, actieve_filters)
 
     filter_options_fields = [f for f in FILTERS if f[0] in actieve_filters]
-    filter_opties = get_filter_options(taken, taken, filter_options_fields)
+    filter_opties = get_filter_options(taken, standaard_taken, filter_options_fields)
 
     actieve_filters = {
         k: [
