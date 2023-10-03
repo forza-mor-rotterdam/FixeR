@@ -6,18 +6,16 @@ from apps.beheer.views import (
 )
 from apps.main.views import (
     account,
-    actieve_taken,
-    afgeronde_taken,
     config,
     filter,
     http_404,
     http_500,
-    incident_list_item,
     incident_modal_handle,
     meldingen_bestand,
     root,
     taak_detail,
     taken_afgerond_overzicht,
+    taken_lijst,
     taken_overzicht,
     ui_settings_handler,
 )
@@ -45,6 +43,9 @@ urlpatterns = [
     path("api-token-auth/", views.obtain_auth_token),
     path("admin/", admin.site.urls),
     path("oidc/", include("mozilla_django_oidc.urls")),
+    path("config/", config, name="config"),
+    path("health/", include("health_check.urls")),
+    # START taken
     path(
         "taken/",
         taken_overzicht,
@@ -56,29 +57,18 @@ urlpatterns = [
         name="taken_afgerond_overzicht",
     ),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
-    path("config/", config, name="config"),
-    path("health/", include("health_check.urls")),
+    # END taken
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
-    path("part/filter/", filter, name="filter_part"),
-    path("part/filter/<str:openstaand>/", filter, name="filter_part"),
-    path("part/actieve-taken/", actieve_taken, name="actieve_taken_part"),
-    path("part/afgeronde-taken/", afgeronde_taken, name="afgeronde_taken_part"),
-    path(
-        "part/taak-lijst-item/<int:id>/",
-        incident_list_item,
-        name="incident_list_item_part",
-    ),
+    path("part/filter/<str:status>/", filter, name="filter_part"),
+    path("part/taken/<str:status>/", taken_lijst, name="taken_lijst_part"),
     path(
         "part/taak-modal-handle/<int:id>/",
         incident_modal_handle,
         name="incident_modal_handle_part",
     ),
-    path(
-        "part/taak-modal-handle/<int:id>/<str:handled_type>/",
-        incident_modal_handle,
-        name="incident_modal_handled_type_part",
-    ),
+    # END partials
+    # START beheer
     path("beheer/", beheer, name="beheer"),
     path("beheer/gebruiker/", GebruikerLijstView.as_view(), name="gebruiker_lijst"),
     path(
@@ -91,6 +81,7 @@ urlpatterns = [
         GebruikerAanpassenView.as_view(),
         name="gebruiker_aanpassen",
     ),
+    # END beheer
     path("api/schema/", SpectacularAPIView.as_view(api_version="v1"), name="schema"),
     # Optional UI:
     path(

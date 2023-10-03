@@ -1,8 +1,8 @@
 {% load json_encode from main_tags %}
 
-<turbo-frame id="incidents_filters">
+<turbo-frame id="taken_filters">
     <form
-        action="{{form_url}}"
+        action="{{this_url}}"
         method="post"
         data-controller="filter"
         id="incidentFilterAllForm"

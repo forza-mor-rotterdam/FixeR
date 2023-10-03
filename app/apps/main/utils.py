@@ -12,11 +12,14 @@ def get_filters(context):
     return filters
 
 
-def get_actieve_filters(gebruiker, filters):
+def get_actieve_filters(gebruiker, filters, status="nieuw"):
     actieve_filters = {f: [] for f in filters}
-    actieve_filters.update(
-        {k: v for k, v in gebruiker.profiel.filters.items() if k in filters}
+    profiel_filters = (
+        gebruiker.profiel.filters.get(status, {})
+        if isinstance(gebruiker.profiel.filters.get("status", {}), dict)
+        else {}
     )
+    actieve_filters.update({k: v for k, v in profiel_filters.items() if k in filters})
     return actieve_filters
 
 
@@ -24,8 +27,8 @@ def get_actieve_filters_aantal(actieve_filters):
     return len([ll for k, v in actieve_filters.items() for ll in v])
 
 
-def set_actieve_filters(gebruiker, actieve_filters):
-    gebruiker.profiel.filters = actieve_filters
+def set_actieve_filters(gebruiker, actieve_filters, status="nieuw"):
+    gebruiker.profiel.filters.update({status: actieve_filters})
     return gebruiker.profiel.save()
 
 

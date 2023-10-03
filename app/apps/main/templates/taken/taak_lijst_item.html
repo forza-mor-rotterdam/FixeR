@@ -6,7 +6,6 @@
 {% with incident_id=incident.id|stringformat:"s" %}
 
 {% block before_modal_content %}
-{% comment %} <turbo-frame id="incident_list_item"> {% endcomment %}
 
     <div
         class="list-item{% if form_submitted %} form-is-submitted{% endif %}{% if errors and warnings %} has-errors{% endif %}"
@@ -38,9 +37,9 @@
         {% endif %}
         <div class="wrapper__swipe">
             <div class="container__flex">
-                <a href="{% url 'taak_detail' taak.id %}" aria-label="Bekijk taak {{ taak.id }}">
+                <a href="{% url 'taak_detail' taak.id %}" data-turbo-frame="taak_basis" aria-label="Bekijk taak {{ taak.id }}">
                     <div class="container__image">
-                    
+
                         {% if taak.melding.response_json.bijlagen %}
                         {% with taak.melding.response_json.bijlagen|first as first_foto %}
                         <div class="background-image" style="background-image: url('{{ first_foto.afbeelding_verkleind_relative_url }}')"></div>
@@ -78,13 +77,12 @@
     data-taak-target="turboFormHandler"
     data-src="{% url 'incident_modal_handle_part' taak.id %}"
     src="{% url 'incident_modal_handle_part' taak.id %}"
-    laoding="lazy"
+    loading="lazy"
 >
 </turbo-frame>
 {% endblock %}
 
 {% block after_modal_content %}
     </div>
-{% comment %} </turbo-frame> {% endcomment %}
 {% endblock %}
 {% endwith %}

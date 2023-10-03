@@ -8,9 +8,9 @@
                 <span>{{ group.title }}</span>
                 <span>({{ group.items|length }})</span>
             </summary>
-        {% for incident in group.items %}
-        <turbo-frame id="incident_list_item" src="{% url 'incident_list_item_part' incident.id %}"></turbo-frame>
-        {% endfor %}
+            {% for taak in group.items %}
+            {% include "taken/taak_lijst_item.html" %}
+            {% endfor %}
         </details>
     {% endfor %}
 {% endblock %}

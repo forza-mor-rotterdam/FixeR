@@ -12,17 +12,16 @@
 >
     {% if form %}
     <form
-        action="{% url 'incident_modal_handled_type_part' taak.id handled_type %}"
+        action="{% url 'incident_modal_handle_part' taak.id %}"
         method="post"
         data-testid="handleIncidentForm"
         class="form--incident-handle"
         novalidate
         enctype="multipart/form-data"
-        data-action="submit->incidentHandleForm#onSubmit"
     >
         {% csrf_token %}
 
-        {{ form.status|render_rotterdam_formulier }}
+        {{ form.resolutie|render_rotterdam_formulier }}
         <div class="form-control__with-helptext">
             {{ form.omschrijving_intern|render_rotterdam_formulier }}
         </div>
