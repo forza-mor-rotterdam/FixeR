@@ -20,7 +20,7 @@
 
 {% block before_modal_content %}
 
-<turbo-frame id="base_frame" data-turbo-action="advance">
+<turbo-frame id="taak_basis">
     <div>
         {% if taak.taakstatus.naam != "voltooid" %}
         <a href="{% url 'incident_index' %}" data-turbo-action="advance" class="link--back" aria-label="Terug">
@@ -259,7 +259,7 @@
                             {{ melding.omschrijving }}
                         </p>
                         {% endif %}
-                        
+
                         {% if melding.afdeling.omschrijving %}
                         <h3 class="h5">Afdeling</h3>
                         <p>

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load json_encode from main_tags %}
+
+{% block title %}Taken{% endblock %}
+
+{% block body %}
+<turbo-frame id="taak_basis">
+    <turbo-frame id="taken_lijst" src="{{ taken_lijst_url }}"></turbo-frame>
+    <div
+        class="full-page-view full-page-view__filters"
+        tabindex="0"
+        data-controller="filter"
+        data-filter--filter-filters-value="{{ filters|json_encode }}"
+        data-testid="incidentFilterAll"
+    >
+        <div class="full-page-view__main">
+            <div class="full-page-view__header">
+                <div class="full-page-view__action_container">
+                    <h2 class="full-page-view__title">Filters</h2>
+                    <button
+                        type="button"
+                        class="btn btn-close"
+                        aria-label="Sluit"
+                        data-action="filter#hideFilters"
+                    ></button>
+                </div>
+            </div>
+            <div class="full-page-view__scroll-pane">
+                <div class="full-page-view__content">
+                    <turbo-frame id="taken_filters" src="{{ filter_url }}">
+                    </turbo-frame>
+                </div>
+            </div>
+        </div>
+    </div>
+</turbo-frame>
+{% endblock %}

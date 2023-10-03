@@ -3,7 +3,7 @@
 {% block list_template%}
     {% include "snippets/paginator.html" with page_obj=page_obj %}
     {% for taak in taken %}
-        {% include "incident/list_item.html" %}
+        {% include "taken/taak_lijst_item.html" %}
     {% endfor %}
     {% include "snippets/paginator.html" with page_obj=page_obj %}
 {% endblock %}
