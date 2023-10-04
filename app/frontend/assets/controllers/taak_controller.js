@@ -245,7 +245,7 @@ export default class extends Controller {
             return
         }
 
-        this.turboFormHandlerTarget.setAttribute("src", this.turboFormHandlerTarget.dataset.src + (isFinished ? "handled/": "not-handled/"))
+        this.turboFormHandlerTarget.setAttribute("src", this.turboFormHandlerTarget.dataset.src + (isFinished ? "?resolutie=opgelost": "?resolutie=niet_opgelost"))
 
         this.removeAllListeners()
         const modal = this.element.querySelector('.modal');
@@ -254,14 +254,6 @@ export default class extends Controller {
         modal.classList.add('show');
         modalBackdrop.classList.add('show');
         document.body.classList.add('show-modal');
-        
-        setTimeout(function (){
-            if(isFinished) {
-                modal.querySelector("#id_status_0").checked = true
-            }else if(isFinished === false){
-                modal.querySelector("#id_status_1").checked = true
-            }
-        }.bind(this), 700)
 
         // TODO only used for modal backdrop, try to get rid of it
         const exits = modal.querySelectorAll('.modal-exit');

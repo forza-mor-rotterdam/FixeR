@@ -52,7 +52,7 @@
         {% include 'snippets/pageheader.html' %}
     {% endblock %}
         <main data-controller="main">
-            <div class="container">
+            <div class="{% block container_class %}container{% endblock %}">
                 {% block body %}{% endblock %}
             </div>
         </main>

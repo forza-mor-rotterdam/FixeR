@@ -8,6 +8,8 @@ export default class extends Controller {
     }
 
     hideFilters() {
+        const frame = document.getElementById('taken_lijst');
+        frame.reload()
         document.body.classList.remove('show-filters')
     }
 
@@ -37,8 +39,6 @@ export default class extends Controller {
     }
 
     onSubmitFilter() {
-        const frame = document.getElementById('incidents_list');
-        frame.reload()
         this.hideFilters()
     }
 

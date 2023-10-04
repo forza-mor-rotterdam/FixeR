@@ -20,7 +20,7 @@
 
 {% block before_modal_content %}
 
-<turbo-frame id="base_frame" data-turbo-action="advance">
+<turbo-frame id="taak_basis">
     <div>
         {% if taak.taakstatus.naam != "voltooid" %}
         <a href="{% url 'incident_index' %}" data-turbo-action="advance" class="link--back" aria-label="Terug">
@@ -246,16 +246,17 @@
                             {% endfor %}
                         </p>
                         {% endif %}
-                        {% if melding.omschrijving %}
-                        <h3 class="h5">Toelichting</h3>
-                        <p>
-                            {{ melding.omschrijving }}
-                        </p>
-                        {% endif %}
                         {% if melding.omschrijving_kort %}
                         <h3 class="h5">Toelichting kort</h3>
                         <p>
                             {{ melding.omschrijving_kort }}
+                        </p>
+                        {% endif %}
+
+                        {% if melding.omschrijving %}
+                        <h3 class="h5">Toelichting</h3>
+                        <p>
+                            {{ melding.omschrijving }}
                         </p>
                         {% endif %}
 
@@ -312,6 +313,13 @@
     <span>Taak behandelen</span><br>
     <small>{{ taak.titel }}</small>
 </h1>
+{% if TEMPLATE_BASIS != "benc" %}
+<p>
+    <span class="">
+        {{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }} {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}{{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}{%endif%}
+    </span>
+</p>
+{% endif %}
 <button
     type="button"
     class="btn-close"

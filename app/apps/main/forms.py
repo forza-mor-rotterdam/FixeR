@@ -61,60 +61,8 @@ class RadioSelectSimple(forms.RadioSelect):
     option_template_name = "widgets/radio_option_simple.html"
 
 
-class HandleForm(forms.Form):
-
-    handle_choice = forms.ChoiceField(
-        label="Waarom kan de melding niet worden opgelost?",
-        widget=RadioSelect(attrs={"class": "list--form-check-input"}),
-        choices=[[x, HANDLED_OPTIONS[x][1]] for x in range(len(HANDLED_OPTIONS))],
-        initial=0,
-    )
-    external_text = forms.CharField(
-        label="Bericht voor de melder",
-        widget=forms.Textarea(
-            attrs={
-                "class": "form-control",
-                "data-testid": "message",
-                "rows": "4",
-                "data-incidentHandleForm-target": "externalText",
-            }
-        ),
-        required=False,
-    )
-    internal_text = forms.CharField(
-        label="Interne informatie",
-        widget=forms.Textarea(
-            attrs={
-                "class": "form-control",
-                "data-testid": "information",
-                "rows": "4",
-                "data-incidentHandleForm-target": "internalText",
-            }
-        ),
-        required=False,
-    )
-
-    def __init__(self, *args, **kwargs):
-        handled_type = kwargs.pop("handled_type", None)
-        kwargs.setdefault("label_suffix", "")
-        super().__init__(*args, **kwargs)
-        if handled_type == "handled":
-            self.fields["handle_choice"].widget = forms.HiddenInput()
-            self.fields["external_text"].initial = HANDLED_OPTIONS[0][2]
-        else:
-            self.fields["handle_choice"].choices = [
-                [x, HANDLED_OPTIONS[x][1]]
-                for x in range(len(HANDLED_OPTIONS))
-                if HANDLED_OPTIONS[x][0] == "N"
-            ]
-
-        if self.data.get("handle_choice", False) == "3":
-            self.fields["external_text"].widget = forms.HiddenInput()
-            self.fields["external_text"].required = False
-
-
 class TaakBehandelForm(forms.Form):
-    status = forms.ChoiceField(
+    resolutie = forms.ChoiceField(
         widget=RadioSelectSimple(
             attrs={
                 "class": "list--form-radio-input",
@@ -122,7 +70,7 @@ class TaakBehandelForm(forms.Form):
             }
         ),
         label="Is de taak afgehandeld?",
-        choices=[[x[0], x[1]] for x in TAAK_BEHANDEL_OPTIES],
+        choices=[[x[4], x[1]] for x in TAAK_BEHANDEL_OPTIES],
         required=True,
     )
 
@@ -146,18 +94,6 @@ class TaakBehandelForm(forms.Form):
                 "data-testid": "information",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "internalText",
-            }
-        ),
-        required=False,
-    )
-
-    omschrijving_nieuwe_taak = forms.CharField(
-        label="Toelichting",
-        help_text="Deze tekst wordt niet naar de melder verstuurd.",
-        widget=forms.Textarea(
-            attrs={
-                "class": "form-control",
-                "rows": "4",
             }
         ),
         required=False,

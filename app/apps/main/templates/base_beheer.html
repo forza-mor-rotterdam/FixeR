@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}FixeR beheer{% endblock %}
+
+{% block pageheader %}
+    {% with hide_menu=True screen_wide=True %}
+    {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block container_class %}container container--wide{% endblock %}
