@@ -40,15 +40,12 @@
         <div
             data-controller="detail"
             data-detail-taak-object-value="{{ taak }}"
-            data-detail-incident-x-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.0 }}"
-            data-detail-incident-y-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.1 }}"
+            data-detail-incident-y-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.0 }}"
+            data-detail-incident-x-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.1 }}"
             
             {% if taak.magAfhandelen %} class="has-sticky-footer" {% endif %}
         >
-        +{{ taak.locatie.x }}-
-        +{{ taak.locatie.y }}-
-        +{{ taak.magAfhandelen }}-
-
+        
             {% if TEMPLATE_BASIS != "benc" %}
             <h1 class="h3 no-padding">{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }} {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}{{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}{%endif%}</h1>
             {% else %}
@@ -188,7 +185,6 @@
                                 {% endif %}
                             </dl>
                             <div class="container__map full-width">
-                                {{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates }}
                                 <div
                                     class="map"
                                     id="incidentMap"
