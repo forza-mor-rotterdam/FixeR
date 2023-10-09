@@ -24,7 +24,6 @@ export default class extends Controller {
             error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
 
             input.addEventListener("input", (event) => {
-                console.log("input", input)
                 input.closest('.form-row').classList.remove('is-invalid')
                 error.textContent = "";
             })
@@ -36,7 +35,7 @@ export default class extends Controller {
 
         if(!(allFieldsValid)){
             event.preventDefault();
-            
+
         } else {
             form.requestSubmit()
         }
@@ -47,11 +46,11 @@ export default class extends Controller {
         // if 1 or more fields is invalid, don't send the form (return false)
         inputList = document.querySelectorAll('[type="radio"]')
         let count = 0
-        
+
         for (let i=0; i<inputList.length; i++){
             input = inputList[i]
             error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
-            
+
             if (input.checked === true) {
                 count++
             }
