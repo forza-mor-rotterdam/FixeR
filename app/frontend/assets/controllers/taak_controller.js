@@ -233,16 +233,15 @@ export default class extends Controller {
         modalBackdrop.classList.remove('show');
         document.body.classList.remove('show-modal');
         this.addInitialListeners()
+        this.turboFormHandlerTarget.innerHTML = ""
     }
 
     openModal(event) {
-        let isFinished = false
+        let isFinished = true
         if (typeof(event) === 'boolean' ){
             isFinished = event
-        } else if( typeof(event) === 'object') {
+        } else if( typeof(event) === 'object' && event.params.isFinished) {
             isFinished = event.params.isFinished
-        } else {
-            return
         }
 
         this.turboFormHandlerTarget.setAttribute("src", this.turboFormHandlerTarget.dataset.src + (isFinished ? "?resolutie=opgelost": "?resolutie=niet_opgelost"))

@@ -83,6 +83,7 @@ gebruikersgroep_permissies = (
     TaakAfrondenPermissie,
     GebruikerLijstBekijkenPermissie,
     GebruikerAanmakenPermissie,
+    GebruikerAanpassenPermissie,
     GebruikerBekijkenPermissie,
     GebruikerVerwijderenPermissie,
     GebruikersgroepToekennenPermissie,
