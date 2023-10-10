@@ -4,10 +4,42 @@ let showSortingContainer = false;
 let sortDirectionReversed = false;
 export default class extends Controller {
 
+    static values = {
+        kaart: Object,
+    }
     static targets = [ "sorting" ]
 
     initialize() {
-        console.log('initialize showSortingContainer', showSortingContainer)
+        const coordinatenlijst = this.kaartValue.kaart_taken_lijst
+        
+        const map = L.map('incidentMap').setView([coordinatenlijst[0].geometrie.coordinates[1],coordinatenlijst[0].geometrie.coordinates[0]], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            minZoom: 13,
+            maxZoom: 18,
+            attribution: ''
+        }).addTo(map);
+        for (var i=0; i<coordinatenlijst.length; i++) {
+        
+            var lon = coordinatenlijst[i].geometrie.coordinates[0];
+            var lat = coordinatenlijst[i].geometrie.coordinates[1];
+            var popupText = coordinatenlijst[i].adres;
+            var afbeelding = coordinatenlijst[i].afbeelding;
+            let showImage = false
+
+            console.log('afb',typeof(afbeelding))
+            if(typeof(afbeelding) === 'string') showImage = true
+                var markerLocation = new L.LatLng(lat, lon);
+                var marker = new L.Marker(markerLocation);
+                console.log('markerLocation', markerLocation)
+                console.log('marker', marker)
+                map.addLayer(marker);
+            if (showImage) {
+                marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content">${popupText}</div>`);
+            }else{
+                marker.bindPopup(`<div>${popupText}</div>`);
+            }
+                
+        }
     }
 
     connect(e) {
@@ -35,6 +67,10 @@ export default class extends Controller {
         const frame = document.getElementById('incidents_list');
         const url = `${frame.dataset.src}?sort-by=${e.target.value}`
         frame.setAttribute('src', url);
+    }
+
+    bekijkTakenOpKaart(e) {
+        
     }
 
     makeRoute(e) {

@@ -267,6 +267,7 @@ CSP_IMG_SRC = (
     "data:",
     "unpkg.com",
     "tile.openstreetmap.org",
+    "*.tile.openstreetmap.org",
     "mor-core-acc.forzamor.nl",
     "cdn.jsdelivr.net",
 )
