@@ -10,7 +10,7 @@ EXEC_IN_WEB_CMD = $(EXEC_IN_WEB) python manage.py
 
 initial_install: create_docker_networks build run
 
-build:
+build: ## build the stack
 	@echo Building from file. './docker-compose.yml.'
 	docker compose build
 
@@ -22,7 +22,7 @@ run_and_build: ## Build and then start the stack
 	@echo Building containers and running from file. './docker-compose.yml.'
 	docker-compose up --build
 
-run_frontend:
+run_frontend: ## Run the frontend
 	cd app/frontend && \
 	npm install && \
 	npm run watch
