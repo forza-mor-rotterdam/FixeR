@@ -2,6 +2,8 @@ import { Controller } from '@hotwired/stimulus';
 
 let showSortingContainer = false;
 let sortDirectionReversed = false;
+let mapHasBeenLoaded = false
+let markers = null
 export default class extends Controller {
 
     static values = {
@@ -10,36 +12,7 @@ export default class extends Controller {
     static targets = [ "sorting" ]
 
     initialize() {
-        const coordinatenlijst = this.kaartValue.kaart_taken_lijst
         
-        const map = L.map('incidentMap').setView([coordinatenlijst[0].geometrie.coordinates[1],coordinatenlijst[0].geometrie.coordinates[0]], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            minZoom: 13,
-            maxZoom: 18,
-            attribution: ''
-        }).addTo(map);
-        for (var i=0; i<coordinatenlijst.length; i++) {
-        
-            var lon = coordinatenlijst[i].geometrie.coordinates[0];
-            var lat = coordinatenlijst[i].geometrie.coordinates[1];
-            var popupText = coordinatenlijst[i].adres;
-            var afbeelding = coordinatenlijst[i].afbeelding;
-            let showImage = false
-
-            console.log('afb',typeof(afbeelding))
-            if(typeof(afbeelding) === 'string') showImage = true
-                var markerLocation = new L.LatLng(lat, lon);
-                var marker = new L.Marker(markerLocation);
-                console.log('markerLocation', markerLocation)
-                console.log('marker', marker)
-                map.addLayer(marker);
-            if (showImage) {
-                marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content">${popupText}</div>`);
-            }else{
-                marker.bindPopup(`<div>${popupText}</div>`);
-            }
-                
-        }
     }
 
     connect(e) {
@@ -47,6 +20,61 @@ export default class extends Controller {
             this.sortingTarget.classList.remove("hidden-vertical")
             this.sortingTarget.classList.add("show-vertical")
         }
+    }
+
+    toggleMapView(e) {
+        console.log('kllik', document.getElementById('taken_lijst'))
+        document.getElementById('taken_lijst').classList.toggle('showMap')
+
+        if(!mapHasBeenLoaded){
+            mapHasBeenLoaded = true
+            const coordinatenlijst = this.kaartValue.kaart_taken_lijst
+
+            console.log('coordinatenlijst', coordinatenlijst)
+                        
+            const map = L.map('incidentMap')
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                minZoom: 13,
+                maxZoom: 18,
+                attribution: ''
+            }).addTo(map);
+
+            //create the marker group
+            markers = new L.featureGroup();
+            this.plotMarkers(coordinatenlijst);
+            //add the markers to the map
+            map.addLayer(markers);
+            //fit the map to the markers
+            map.fitBounds(markers.getBounds());
+        }
+    }
+
+    plotMarkers(coordinatenlijst) {
+        if(coordinatenlijst){
+            var len = coordinatenlijst.length;
+            for(var i = 0; i<len; i++)
+            {
+                var lat = coordinatenlijst[i].geometrie.coordinates[1]
+                var long = coordinatenlijst[i].geometrie.coordinates[0]
+                var marker =  L.marker(new L.LatLng(lat,long))
+
+                const popupText = coordinatenlijst[i].adres;
+                const afbeelding = coordinatenlijst[i].afbeelding;
+                let showImage = false
+
+                if(typeof(afbeelding) === 'string') showImage = true
+                    var markerLocation = new L.LatLng(lat, long);
+                    var marker = new L.Marker(markerLocation);
+                if (showImage) {
+                    marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content">${popupText}</div>`);
+                }else{
+                    marker.bindPopup(`<div>${popupText}</div>`);
+                }
+
+                markers.addLayer(marker);
+            }
+        }
+
     }
 
     onGroup(e) {

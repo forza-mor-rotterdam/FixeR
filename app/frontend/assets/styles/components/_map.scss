@@ -1,3 +1,23 @@
+.container__map {
+    display: none;
+}
+.showMap {
+    .container__map {
+        display: block;
+    }
+
+    .list__incidents {
+        display: none;
+    }
+}
+
+.container__map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
 .leaflet-popup-content-wrapper {
 
     .leaflet-popup-content {

@@ -54,7 +54,7 @@
 }
 
 .container__list {
-
+    position: relative;
     &.seperated {
         border-top: 1px solid $gray-tint04;
     }
