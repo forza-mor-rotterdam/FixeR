@@ -58,17 +58,19 @@ export default class extends Controller {
                 var long = coordinatenlijst[i].geometrie.coordinates[0]
                 var marker =  L.marker(new L.LatLng(lat,long))
 
-                const popupText = coordinatenlijst[i].adres;
+                const adres = coordinatenlijst[i].adres;
                 const afbeelding = coordinatenlijst[i].afbeelding;
+                const omschrijving = coordinatenlijst[i].omschrijving;
+                const taakId = coordinatenlijst[i].taak_id
                 let showImage = false
 
                 if(typeof(afbeelding) === 'string') showImage = true
                     var markerLocation = new L.LatLng(lat, long);
                     var marker = new L.Marker(markerLocation);
                 if (showImage) {
-                    marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content">${popupText}</div>`);
+                    marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p></div>`);
                 }else{
-                    marker.bindPopup(`<div>${popupText}</div>`);
+                    marker.bindPopup(`<div>${adres}</div>`);
                 }
 
                 markers.addLayer(marker);

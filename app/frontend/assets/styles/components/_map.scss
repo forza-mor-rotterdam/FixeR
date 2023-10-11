@@ -22,22 +22,31 @@
 
     .leaflet-popup-content {
         display: flex;
+        gap: 12px;
+        margin: 12px 20px 12px 12px;
+        // min-width: 250px;
         .container__image,
         .container__content {
             flex: 0 1 100%;
         }
 
         .container__image {
-            flex: 1 1 40%;
+            flex: 1;
             img {
                 width: auto;
-                height: 70px;
+                height: 65px;
                 min-width: 53px;
             }
         }
         .container__content {
-            flex: 1 1 60%;
+            flex: 1 0 75%;
             font-size: 16px;
+            a {
+                color: $green-tint01;
+            }
+            p {
+                margin: 0;
+            }
         }
     }
 }

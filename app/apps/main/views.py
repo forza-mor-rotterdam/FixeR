@@ -250,6 +250,9 @@ def taken_lijst(request, status="nieuw"):
             ,
             "afbeelding": taak.melding.response_json.get("bijlagen", [])[0].get("afbeelding_verkleind_relative_url")
                 if taak.melding.response_json.get("bijlagen", []) else {}
+                ,
+            "omschrijving": taak.melding.response_json.get("onderwerpen", [])[0].get("naam")
+                if taak.melding.response_json.get("onderwerpen", []) else {}
         }
         for taak in taken
     ]}
