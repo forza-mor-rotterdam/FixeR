@@ -46,6 +46,7 @@ export default class extends Controller {
             
             var url = "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}";
             // var url = "https://service.pdok.nl/cbs/wijkenbuurten/2022/wfs/v1_0?request=GetCapabilities&service=WFS"
+    
             var config = {
                 crs: "EPSG:3857",
                 format: "png",
@@ -59,8 +60,14 @@ export default class extends Controller {
             }
             const mapDiv = document.getElementById('incidentMap')
             const map = L.map('incidentMap')
+            
             L.tileLayer(url, config).addTo(map);
-
+            L.tileLayer.wms('https://service.pdok.nl/cbs/wijkenbuurten/2022/wms/v1_0?request=GetCapabilities', {
+                layers: 'buurten',
+                format:'image/png',
+                transparent: true
+            }).addTo(map);
+            
             const resizeObserver = new ResizeObserver(() => {
                 console.log('resizeObserver')
                 // map.invalidateSize();
