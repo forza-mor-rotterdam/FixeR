@@ -19,10 +19,15 @@ export default class extends Controller {
     }
 
     connect(e) {
+        mapHasBeenLoaded = false
         if(this.hasSortingTarget && showSortingContainer === true ) {
             this.sortingTarget.classList.remove("hidden-vertical")
             this.sortingTarget.classList.add("show-vertical")
         }
+    }
+
+    drawMap() {
+        console.log("draw map")
     }
 
     toggleMapView(e) {
@@ -30,7 +35,7 @@ export default class extends Controller {
         this.toggleMapViewTarget.classList.toggle("active")
 
         if(!mapHasBeenLoaded){
-            mapHasBeenLoaded = true
+            console.log("draw map")
             const coordinatenlijst = this.kaartValue.kaart_taken_lijst
 
             markerIcon = L.Icon.extend({
@@ -84,6 +89,9 @@ export default class extends Controller {
             map.addLayer(markers);
             //fit the map to the markers
             map.fitBounds(markers.getBounds());
+
+            mapHasBeenLoaded = true
+        
         }
     }
     handleCurrentLocation(pos) {
@@ -128,7 +136,6 @@ export default class extends Controller {
                     const markerLocation = new L.LatLng(lat, long);
                     const marker = new L.Marker(markerLocation, {icon: markerGreen});
                     const distance = `Afstand: ${(Math.round(markerLocation.distanceTo(currentLocation)))} meter`
-                    console.log("__distance__", distance)
                 if (showImage) {
                     marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p><p>${distance}</p></div>`);
                 }else{
