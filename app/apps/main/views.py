@@ -245,7 +245,7 @@ def taken_lijst(request, status="nieuw"):
             "geometrie": taak.melding.response_json.get("locaties_voor_melding", [])[0].get("geometrie")
                 if taak.melding.response_json.get("locaties_voor_melding", []) else {}
             ,
-            "adres": taak.melding.response_json.get("locaties_voor_melding", [])[0].get("straatnaam") + " " + str(taak.melding.response_json.get("locaties_voor_melding", [])[0].get("huisnummer"))
+            "adres": f'{taak.melding.response_json.get("locaties_voor_melding", [])[0].get("straatnaam")} {str(taak.melding.response_json.get("locaties_voor_melding", [])[0].get("huisnummer"))}'
                 if taak.melding.response_json.get("locaties_voor_melding", []) else {}
             ,
             "afbeelding": taak.melding.response_json.get("bijlagen", [])[0].get("afbeelding_verkleind_relative_url")
