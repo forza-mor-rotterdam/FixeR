@@ -96,10 +96,15 @@
 
         .container__image {
             flex: 1;
+            min-width: 86px;
+            height: 65px;
+            background-color: $gray-tint02;
+            text-align: center;
             img {
                 width: auto;
                 height: 65px;
                 min-width: 53px;
+                margin: 0;
             }
         }
         .container__content {
