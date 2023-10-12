@@ -254,7 +254,7 @@ def taken_lijst(request, status="nieuw"):
             "omschrijving": taak.melding.response_json.get("onderwerpen", [])[0].get("naam")
                 if taak.melding.response_json.get("onderwerpen", []) else {}
         }
-        for taak in taken
+        for taak in taken_gefilterd
     ]}
 
     taken_paginated = page_obj.object_list
