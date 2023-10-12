@@ -64,7 +64,7 @@
         left: 0;
         width: 100%;
         height: calc(100vh - 113px);
-        // display: none;
+        display: none;
         padding-bottom: 0;
 
         .map {
@@ -118,3 +118,22 @@
     }
 }
 
+button.toggle-view {
+    padding: 0 5px;
+    svg.list {
+        display: none;
+    }
+    svg.map {
+        display: block;
+    }
+
+    &.active {
+        svg.list {
+            display: block;
+        }
+        svg.map {
+            display: none;
+        }
+        
+    }
+}

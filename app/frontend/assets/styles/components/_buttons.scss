@@ -155,6 +155,16 @@ button {
             background-color: $gray-tint11;
             border-color: $gray-tint11;
         }
+
+        &.active {
+            background-color: $magenta-tint01;
+            border-color: $magenta-tint01;
+
+            &:focus {
+                border-color: $magenta-tint01;
+                outline-color: $magenta-tint01 !important;
+            }
+        }
     }
 
     &-close {

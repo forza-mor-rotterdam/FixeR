@@ -12,7 +12,7 @@ export default class extends Controller {
     static values = {
         kaart: Object,
     }
-    static targets = [ "sorting" ]
+    static targets = [ "sorting", "toggleMapView" ]
 
     initialize() {
         
@@ -27,6 +27,7 @@ export default class extends Controller {
 
     toggleMapView(e) {
         document.getElementById('taken_lijst').classList.toggle('showMap')
+        this.toggleMapViewTarget.classList.toggle("active")
 
         if(!mapHasBeenLoaded){
             mapHasBeenLoaded = true
@@ -62,11 +63,11 @@ export default class extends Controller {
             const map = L.map('incidentMap')
             
             L.tileLayer(url, config).addTo(map);
-            L.tileLayer.wms('https://service.pdok.nl/cbs/wijkenbuurten/2022/wms/v1_0?request=GetCapabilities', {
-                layers: 'buurten',
-                format:'image/png',
-                transparent: true
-            }).addTo(map);
+            // L.tileLayer.wms('https://service.pdok.nl/cbs/wijkenbuurten/2022/wms/v1_0?request=GetCapabilities', {
+            //     layers: 'buurten',
+            //     format:'image/png',
+            //     transparent: true
+            // }).addTo(map);
             
             const resizeObserver = new ResizeObserver(() => {
                 console.log('resizeObserver')
