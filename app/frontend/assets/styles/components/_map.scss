@@ -1,5 +1,5 @@
 .showMap {
-    
+
     .list__incidents {
         display: none;
     }
@@ -132,13 +132,13 @@ button.toggle-view {
         display: block;
     }
 
-    &.active {
+    .showMap & {
         svg.list {
             display: block;
         }
         svg.map {
             display: none;
         }
-        
+
     }
 }

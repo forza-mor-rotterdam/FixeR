@@ -112,7 +112,7 @@ PERMISSIONS_POLICY = {
     "document-domain": [],
     "encrypted-media": [],
     "fullscreen": [],
-    "geolocation": ['self'],
+    "geolocation": ["self"],
     "gyroscope": [],
     "interest-cohort": [],
     "magnetometer": [],
