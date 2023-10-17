@@ -132,7 +132,7 @@ button.toggle-view {
         display: block;
     }
 
-    &.active {
+    .showMap & {
         svg.list {
             display: block;
         }

@@ -123,8 +123,7 @@ export default class extends Controller {
 
     toggleMapView(e) {
         document.getElementById('taken_lijst').classList.toggle('showMap')
-        this.toggleMapViewTarget.classList.toggle("active")
-
+        
         const frame = document.getElementById('taken_lijst');
         console.log("frame", frame)
         frame.reload()
@@ -132,7 +131,10 @@ export default class extends Controller {
     }
     handleCurrentLocation(pos) {
         const crd = pos.coords;
-        console.log("handleCurrentLocation, crd:",crd)
+        console.log("handleCurrentLocation, pos.coords:", pos.coords)
+        if(pos.coords){
+            currentLocation = [pos.coords.latitude, pos.coords.longitude]
+        }
     }
 
     handleNoCurrentLocation(error) {
