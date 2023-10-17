@@ -1,7 +1,7 @@
 {% extends 'base_modal_context.html' %}
 {% load webpack_static from webpack_loader %}
 {% load multiply previous next from list_tags %}
-{% load taakopdracht from melding_tags %}
+{% load taakopdracht render_onderwerp from melding_tags %}
 {% load to_date vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
 {% load context_template from context_tags %}
@@ -245,7 +245,7 @@
                         <h3 class="h5">Onderwerp</h3>
                         <p>
                             {% for onderwerp in melding.onderwerpen %}
-                                {{ onderwerp.naam }}{% if not forloop.last %}, {% endif %}
+                            {% render_onderwerp onderwerp %}{% if not forloop.last %}, {% endif %}
                             {% endfor %}
                         </p>
                         {% endif %}
