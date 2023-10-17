@@ -112,7 +112,7 @@ PERMISSIONS_POLICY = {
     "document-domain": [],
     "encrypted-media": [],
     "fullscreen": [],
-    "geolocation": [],
+    "geolocation": ["self"],
     "gyroscope": [],
     "interest-cohort": [],
     "magnetometer": [],
@@ -266,7 +266,7 @@ CSP_IMG_SRC = (
     "blob:",
     "data:",
     "unpkg.com",
-    "tile.openstreetmap.org",
+    "service.pdok.nl",
     "mor-core-acc.forzamor.nl",
     "cdn.jsdelivr.net",
 )
