@@ -385,7 +385,7 @@ textarea {
 .list--form-radio-input {
     @include list-clean();
     display: flex;
-    
+
     li {
         margin: 0 0 0 0.25rem;
         flex: 1;
@@ -394,7 +394,7 @@ textarea {
 
         &:first-child {
             margin: 0 0.25rem 0 0;
-        }        
+        }
     }
     input {
         @include form-check-input();

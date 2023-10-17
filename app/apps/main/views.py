@@ -234,28 +234,37 @@ def taken_lijst(request, status="nieuw"):
     )
     actieve_filters = get_actieve_filters(request.user, filters, status)
     taken_gefilterd = filter_taken(taken, actieve_filters)
-   
+
     paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    kaart_taken = {"kaart_taken_lijst":[
-        {
-            "taak_id": taak.id,
-            "geometrie": taak.melding.response_json.get("locaties_voor_melding", [])[0].get("geometrie")
-                if taak.melding.response_json.get("locaties_voor_melding", []) else {}
-            ,
-            "adres": f'{taak.melding.response_json.get("locaties_voor_melding", [])[0].get("straatnaam")} {str(taak.melding.response_json.get("locaties_voor_melding", [])[0].get("huisnummer"))}'
-                if taak.melding.response_json.get("locaties_voor_melding", []) else {}
-            ,
-            "afbeelding": taak.melding.response_json.get("bijlagen", [])[0].get("afbeelding_verkleind_relative_url")
-                if taak.melding.response_json.get("bijlagen", []) else {}
-                ,
-            "omschrijving": taak.melding.response_json.get("onderwerpen", [])[0].get("naam")
-                if taak.melding.response_json.get("onderwerpen", []) else {}
-        }
-        for taak in taken_gefilterd
-    ]}
+    kaart_taken = {
+        "kaart_taken_lijst": [
+            {
+                "taak_id": taak.id,
+                "geometrie": taak.melding.response_json.get(
+                    "locaties_voor_melding", []
+                )[0].get("geometrie")
+                if taak.melding.response_json.get("locaties_voor_melding", [])
+                else {},
+                "adres": f'{taak.melding.response_json.get("locaties_voor_melding", [])[0].get("straatnaam")} {str(taak.melding.response_json.get("locaties_voor_melding", [])[0].get("huisnummer"))}'
+                if taak.melding.response_json.get("locaties_voor_melding", [])
+                else {},
+                "afbeelding": taak.melding.response_json.get("bijlagen", [])[0].get(
+                    "afbeelding_verkleind_relative_url"
+                )
+                if taak.melding.response_json.get("bijlagen", [])
+                else {},
+                "omschrijving": taak.melding.response_json.get("onderwerpen", [])[
+                    0
+                ].get("naam")
+                if taak.melding.response_json.get("onderwerpen", [])
+                else {},
+            }
+            for taak in taken_gefilterd
+        ]
+    }
 
     taken_paginated = page_obj.object_list
     return render(
