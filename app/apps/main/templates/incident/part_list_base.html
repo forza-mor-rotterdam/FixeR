@@ -14,7 +14,7 @@
             data-incidentlist-kaart-value="{{ kaart_taken|json_encode }}"
         >
             <div class="row">
-                <h1 class="h3">{%if 'voltooid' in request.path %}Afgerond{%else%}Te doen{%endif%} ({{taken|length}})</h1>
+                <h1 class="h3">{%if 'voltooid' in request.path %}Afgerond{%else%}Te doen{%endif%} ({{taken_aantal}})</h1>
                 <div class="container__controls">
                     {% context_template "taak_toggle_kaart_button.html" as button_template %}
                     {% include button_template %}

@@ -21,6 +21,7 @@ from apps.main.utils import (
     to_base64,
 )
 from apps.meldingen.service import MeldingenService
+from apps.services.onderwerpen import render_onderwerp
 from apps.taken.models import Taak, Taaktype
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -234,7 +235,7 @@ def taken_lijst(request, status="nieuw"):
     )
     actieve_filters = get_actieve_filters(request.user, filters, status)
     taken_gefilterd = filter_taken(taken, actieve_filters)
-
+    taken_aantal = len(taken_gefilterd)
     paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -256,11 +257,14 @@ def taken_lijst(request, status="nieuw"):
                 )
                 if taak.melding.response_json.get("bijlagen", [])
                 else {},
-                "omschrijving": taak.melding.response_json.get("onderwerpen", [])[
-                    0
-                ].get("naam")
-                if taak.melding.response_json.get("onderwerpen", [])
-                else {},
+                "omschrijving": ", ".join(
+                    [
+                        render_onderwerp(onderwerp_url)
+                        for onderwerp_url in taak.melding.response_json.get(
+                            "onderwerpen", []
+                        )
+                    ]
+                ),
             }
             for taak in taken_gefilterd
         ]
@@ -276,7 +280,7 @@ def taken_lijst(request, status="nieuw"):
             "this_url": reverse("taken_lijst_part", kwargs={"status": status}),
             "sort_options": sort_options,
             "taken": taken_paginated,
-            "taken_totaal": taken,
+            "taken_aantal": taken_aantal,
             "page_obj": page_obj,
             "kaart_taken": kaart_taken,
             "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
