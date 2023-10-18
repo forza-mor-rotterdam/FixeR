@@ -118,7 +118,7 @@ module.exports = (env, argv) => {
     }
 
     config.plugins = [
-      new MiniCssExtractPlugin(),
+      new MiniCssExtractPlugin({filename:"[name]-[hash].css"}),
       new CopyPlugin({
         patterns: [
             {
