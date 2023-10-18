@@ -86,7 +86,6 @@ export default class extends Controller {
 
     disconnect() {
         console.log("disconnect")
-        // mapHasBeenLoaded = false
     }
 
     plotMarkers(coordinatenlijst) {
