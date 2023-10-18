@@ -1,4 +1,8 @@
 from apps.authenticatie.forms import GebruikerAanmakenForm, GebruikerAanpassenForm
+from apps.context.forms import ContextAanmakenForm, ContextAanpassenForm
+from apps.context.models import Context
+from apps.taken.forms import TaaktypeAanmakenForm, TaaktypeAanpassenForm
+from apps.taken.models import Taaktype
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
@@ -80,3 +84,83 @@ class GebruikerAanpassenView(GebruikerAanmakenAanpassenView, UpdateView):
 class GebruikerAanmakenView(GebruikerAanmakenAanpassenView, CreateView):
     template_name = "authenticatie/gebruiker_aanmaken.html"
     form_class = GebruikerAanmakenForm
+
+
+@method_decorator(permission_required("authorisatie.context_bekijken"), name="dispatch")
+class ContextView(View):
+    model = Context
+    success_url = reverse_lazy("context_lijst")
+
+
+@method_decorator(
+    permission_required("authorisatie.context_lijst_bekijken"), name="dispatch"
+)
+class ContextLijstView(ContextView, ListView):
+    ...
+
+
+class ContextAanmakenAanpassenView(ContextView):
+    def form_valid(self, form):
+        form.instance.filters = {"fields": form.cleaned_data.get("filters")}
+        return super().form_valid(form)
+
+
+@method_decorator(
+    permission_required("authorisatie.context_aanpassen"), name="dispatch"
+)
+class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
+    form_class = ContextAanpassenForm
+    template_name = "context/context_aanpassen.html"
+
+    def get_initial(self):
+        initial = self.initial.copy()
+        obj = self.get_object()
+        initial["filters"] = obj.filters.get("fields", [])
+        return initial
+
+
+@method_decorator(permission_required("authorisatie.context_aanmaken"), name="dispatch")
+class ContextAanmakenView(ContextAanmakenAanpassenView, CreateView):
+    template_name = "context/context_aanmaken.html"
+    form_class = ContextAanmakenForm
+
+
+@method_decorator(
+    permission_required("authorisatie.taaktype_bekijken"), name="dispatch"
+)
+class TaaktypeView(View):
+    model = Taaktype
+    success_url = reverse_lazy("taaktype_lijst")
+
+
+@method_decorator(
+    permission_required("authorisatie.taaktype_lijst_bekijken"), name="dispatch"
+)
+class TaaktypeLijstView(TaaktypeView, ListView):
+    ...
+
+
+class TaaktypeAanmakenAanpassenView(TaaktypeView):
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+
+@method_decorator(
+    permission_required("authorisatie.taaktype_aanpassen"), name="dispatch"
+)
+class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
+    form_class = TaaktypeAanpassenForm
+    template_name = "taken/taaktype_aanpassen.html"
+
+    def get_initial(self):
+        initial = self.initial.copy()
+        self.get_object()
+        return initial
+
+
+@method_decorator(
+    permission_required("authorisatie.taaktype_aanmaken"), name="dispatch"
+)
+class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
+    template_name = "taken/taaktype_aanmaken.html"
+    form_class = TaaktypeAanmakenForm

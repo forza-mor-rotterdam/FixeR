@@ -76,6 +76,46 @@ class BeheerBekijkenPermissie(BasisPermissie):
     codenaam = "beheer_bekijken"
 
 
+class TaaktypeLijstBekijkenPermissie(BasisPermissie):
+    naam = "Taaktype lijst bekijken"
+    codenaam = "taaktype_lijst_bekijken"
+
+
+class TaaktypeAanmakenPermissie(BasisPermissie):
+    naam = "Taaktype aanmaken"
+    codenaam = "taaktype_aanmaken"
+
+
+class TaaktypeBekijkenPermissie(BasisPermissie):
+    naam = "Taaktype bekijken"
+    codenaam = "taaktype_bekijken"
+
+
+class TaaktypeAanpassenPermissie(BasisPermissie):
+    naam = "Taaktype aanpassen"
+    codenaam = "taaktype_aanpassen"
+
+
+class ContextLijstBekijkenPermissie(BasisPermissie):
+    naam = "Context lijst bekijken"
+    codenaam = "context_lijst_bekijken"
+
+
+class ContextAanmakenPermissie(BasisPermissie):
+    naam = "Context aanmaken"
+    codenaam = "context_aanmaken"
+
+
+class ContextBekijkenPermissie(BasisPermissie):
+    naam = "Context bekijken"
+    codenaam = "context_bekijken"
+
+
+class ContextAanpassenPermissie(BasisPermissie):
+    naam = "Context aanpassen"
+    codenaam = "context_aanpassen"
+
+
 gebruikersgroep_permissies = (
     TakenLijstBekijkenPermissie,
     TaakBekijkenPermissie,
@@ -91,6 +131,14 @@ gebruikersgroep_permissies = (
     GebruikersgroepBekijkenPermissie,
     GebruikersgroepVerwijderenPermissie,
     BeheerBekijkenPermissie,
+    TaaktypeLijstBekijkenPermissie,
+    TaaktypeAanmakenPermissie,
+    TaaktypeBekijkenPermissie,
+    TaaktypeAanpassenPermissie,
+    ContextLijstBekijkenPermissie,
+    ContextAanmakenPermissie,
+    ContextBekijkenPermissie,
+    ContextAanpassenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [

@@ -45,6 +45,7 @@ class Taaktype(BasisModel):
         related_name="vorige_taaktypes_voor_taaktype",
         blank=True,
     )
+    actief = models.BooleanField(default=True)
 
     class Meta:
         ordering = ("-aangemaakt_op",)
@@ -52,7 +53,7 @@ class Taaktype(BasisModel):
         verbose_name_plural = "Taaktypes"
 
     def __str__(self) -> str:
-        return f"{self.omschrijving}({self.pk})"
+        return f"{self.omschrijving}"
 
 
 class Taakstatus(BasisModel):

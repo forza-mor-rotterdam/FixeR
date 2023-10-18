@@ -1,7 +1,13 @@
 from apps.beheer.views import (
+    ContextAanmakenView,
+    ContextAanpassenView,
+    ContextLijstView,
     GebruikerAanmakenView,
     GebruikerAanpassenView,
     GebruikerLijstView,
+    TaaktypeAanmakenView,
+    TaaktypeAanpassenView,
+    TaaktypeLijstView,
     beheer,
 )
 from apps.main.views import (
@@ -80,6 +86,28 @@ urlpatterns = [
         "beheer/gebruiker/<int:pk>/aanpassen/",
         GebruikerAanpassenView.as_view(),
         name="gebruiker_aanpassen",
+    ),
+    path("beheer/context/", ContextLijstView.as_view(), name="context_lijst"),
+    path(
+        "beheer/context/aanmaken/",
+        ContextAanmakenView.as_view(),
+        name="context_aanmaken",
+    ),
+    path(
+        "beheer/context/<int:pk>/aanpassen/",
+        ContextAanpassenView.as_view(),
+        name="context_aanpassen",
+    ),
+    path("beheer/taaktype/", TaaktypeLijstView.as_view(), name="taaktype_lijst"),
+    path(
+        "beheer/taaktype/aanmaken/",
+        TaaktypeAanmakenView.as_view(),
+        name="taaktype_aanmaken",
+    ),
+    path(
+        "beheer/taaktype/<int:pk>/aanpassen/",
+        TaaktypeAanpassenView.as_view(),
+        name="taaktype_aanpassen",
     ),
     # END beheer
     path("api/schema/", SpectacularAPIView.as_view(api_version="v1"), name="schema"),
