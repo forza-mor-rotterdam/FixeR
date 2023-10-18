@@ -12,6 +12,7 @@ class MeldingAliasAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "bron_url",
+        "aangepast_op",
     )
     actions = (action_update_meldingen,)
 

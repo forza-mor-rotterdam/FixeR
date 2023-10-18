@@ -143,5 +143,4 @@ def melding_naar_tijdlijn(melding: dict):
 
 def update_meldingen(meldingen_qs):
     for melding_alias in meldingen_qs:
-        melding_alias.valideer_bron_url()
         melding_alias.save()
