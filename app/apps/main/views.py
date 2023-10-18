@@ -267,6 +267,10 @@ def taken_lijst(request, status="nieuw"):
                 ),
             }
             for taak in taken_gefilterd
+            if taak.melding.response_json.get("locaties_voor_melding", [])
+            and taak.melding.response_json.get("locaties_voor_melding", [])[0].get(
+                "geometrie"
+            )
         ]
     }
 
