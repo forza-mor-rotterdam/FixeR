@@ -20,6 +20,8 @@ class MeldingAlias(BasisModel):
 
     def valideer_bron_url(self):
         response = MeldingenService().get_by_uri(self.bron_url)
+        if response.status_code == 404:
+            return
         if response.status_code != 200:
             raise MeldingAlias.MeldingNietValide(
                 f"Response status_code: {response.status_code}"
