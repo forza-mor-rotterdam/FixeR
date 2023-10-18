@@ -1,6 +1,10 @@
+import logging
+
 from apps.meldingen.service import MeldingenService
 from django.contrib.gis.db import models
 from utils.models import BasisModel
+
+logger = logging.getLogger(__name__)
 
 
 class MeldingAlias(BasisModel):
@@ -20,12 +24,12 @@ class MeldingAlias(BasisModel):
 
     def valideer_bron_url(self):
         response = MeldingenService().get_by_uri(self.bron_url)
-        if response.status_code == 404:
-            return
         if response.status_code != 200:
-            raise MeldingAlias.MeldingNietValide(
-                f"Response status_code: {response.status_code}"
+            self.response_json = {}
+            logger.error(
+                f"Melding ophalen fout: status code: {response.status_code}, melding_alias id: {self.id}"
             )
+            return
         self.response_json = response.json()
 
     def __str__(self) -> str:

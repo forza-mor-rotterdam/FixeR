@@ -13,8 +13,12 @@ class MeldingAliasAdmin(admin.ModelAdmin):
         "id",
         "bron_url",
         "aangepast_op",
+        "geen_data",
     )
     actions = (action_update_meldingen,)
+
+    def geen_data(self, obj):
+        return bool(not obj.response_json)
 
 
 class BijlageAliasAdmin(admin.ModelAdmin):
