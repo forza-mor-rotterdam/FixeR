@@ -5,7 +5,7 @@ let sortDirectionReversed = false;
 let mapHasBeenLoaded = false
 let markers = null
 let markerIcon, markerBlue, markerGreen, markerMagenta = null
-let currentLocation = [51.924421, 4.477727] //hofplein
+let currentLocation = null
 
 export default class extends Controller {
 
@@ -104,19 +104,22 @@ export default class extends Controller {
                 let showImage = false
 
                 if(typeof(afbeelding) === 'string') showImage = true
-                    const markerLocation = new L.LatLng(lat, long);
-                    const marker = new L.Marker(markerLocation, {icon: markerGreen});
-                    const distance = `Afstand: ${(Math.round(markerLocation.distanceTo(currentLocation)))} meter`
+                const markerLocation = new L.LatLng(lat, long);
+                const marker = new L.Marker(markerLocation, {icon: markerGreen});
+                const paragraphDistance = currentLocation ? `<p>Afstand: ${(Math.round(markerLocation.distanceTo(currentLocation)))} meter</p>` : ""
+
                 if (showImage) {
-                    marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p><p>${distance}</p></div>`);
+                    marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
                 }else{
-                    marker.bindPopup(`<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p><p>${distance}</p></div>`);
+                    marker.bindPopup(`<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
                 }
                 markers.addLayer(marker);
             }
 
-            const markerCurrent = new L.Marker(currentLocation, {icon: markerBlue});
-            markers.addLayer(markerCurrent)
+            if(currentLocation) {
+                const markerCurrent = new L.Marker(currentLocation, {icon: markerBlue});
+                markers.addLayer(markerCurrent)
+            }
         }
     }
 
