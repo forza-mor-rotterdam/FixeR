@@ -9,7 +9,6 @@ export default class extends Controller {
 
     hideFilters() {
         const frame = document.getElementById('taken_lijst');
-        // if(!frame.classList.contains('showMap')) frame.reload()
         frame.reload()
         document.body.classList.remove('show-filters')
     }

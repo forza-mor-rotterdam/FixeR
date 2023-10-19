@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ["button", "turboFormHandler", "incidentDate"]
+    static targets = ["turboFormHandler", "incidentDate"]
     static values = {
         date: String,
         days: String
@@ -9,8 +9,6 @@ export default class extends Controller {
 
     connect() {
         if(this.element.classList.contains('list-item')) {
-
-            // const frame = this.element.closest("turbo-frame")
             this.initialTouchPos = null
             this.bindStart = this.handleGestureStart.bind(this);
             this.bindMove = this.handleGestureMove.bind(this);
