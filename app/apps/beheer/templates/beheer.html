@@ -1,15 +1,15 @@
 {% extends "base_beheer.html" %}
 
 {% block body %}
-<h1>FixeR: Beheer</h1>
+<h1>Beheer</h1>
 
-<ul>
+<ul class="list--blocks-horizontal">
     <li><a href="{% url 'gebruiker_lijst' %}">Gebruikers</a></li>
     <li><a href="{% url 'context_lijst' %}">UI-groepen</a></li>
     <li><a href="{% url 'taaktype_lijst' %}">Taaktypes</a></li>
 </ul>
 <h2>Andere Forzamor beheer productie omgevingen</h2>
-<ul>
+<ul class="list--blocks-horizontal">
     <li><a href="https://regie.forzamor.nl/beheer">PlanR</a></li>
     <li><a href="https://onderwerpen.forzamor.nl/beheer">Onderwerpen</a></li>
 </ul>

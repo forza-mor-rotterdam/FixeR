@@ -14,25 +14,31 @@
             </a>
         </div>
 
-        <h1>FixeR: Taaktype: {{object.omschrijving}}</h1>
+        <h1>Taaktype: {{object.omschrijving}}</h1>
         {% if object.contexten_voor_taaktypes.all %}
-        <h2>UI-groepen die gebruikmaken van dit taaktype</h2>
-        <ul>
-            {% for context in object.contexten_voor_taaktypes.all %}
-            <li>
-                <strong>{{context.naam}}</strong>
-            </li>
-            {% endfor%}
-        </ul>
-        {% endif %}
+            <div class="padding-bottom-2x">
+                <h2 class="h3">UI-groepen die gebruikmaken van dit taaktype</h2>
+                <ul>
+                    {% for context in object.contexten_voor_taaktypes.all %}
+                    <li>
+                        <strong>{{context.naam}}</strong>
+                    </li>
+                    {% endfor%}
+                </ul>
+            </div>
+            {% endif %}
 
 
-        <form action="." method="post">
+        <form action="." method="post" class="form--beheer">
             {% csrf_token %}
+
             <fieldset>
             {{ form.omschrijving|render_rotterdam_formulier }}
             {{ form.volgende_taaktypes|render_rotterdam_formulier }}
-            {{ form.actief|render_rotterdam_formulier }}
+            <div class="container__checkbox--single">
+                <h3 class="label">Actief?</h3>
+                {{ form.actief|render_rotterdam_formulier }}
+            </div>
             </fieldset>
 
             <div class="form-row container__button">
