@@ -13,15 +13,19 @@
                 Taaktypes
             </a>
         </div>
-        <h1>FixeR: Taaktype aanmaken</h1>
+        <h1>Taaktype aanmaken</h1>
 
-        <form action="." method="post">
+        <form action="." method="post" class="form--beheer">
         {{ form.non_field_errors }}
             {% csrf_token %}
             <fieldset>
                 {{ form.omschrijving|render_rotterdam_formulier }}
                 {{ form.volgende_taaktypes|render_rotterdam_formulier }}
-                {{ form.actief|render_rotterdam_formulier }}
+                <div class="form-row s12  ">
+                <div class="container__checkbox--single">
+                    <h3 class="label">Actief?</h3>
+                    {{ form.actief|render_rotterdam_formulier }}
+                </div>
             </fieldset>
             <div class="form-row btn-row">
                 <button type="reset" class="btn btn-tertiary">

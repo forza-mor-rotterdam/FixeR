@@ -6,9 +6,13 @@
 >
 
     <div class="container{% if screen_wide %} container--wide{% endif %}">
-        <a href="{% url 'root' %}">
-            <img src="{% webpack_static 'images/logo-organisatie.svg' %}" alt="Logo organisatie" />
-        </a>
+        <div class="container__logo">
+            <a href="{% url 'root' %}">
+                <img src="{% webpack_static 'images/logo-organisatie.svg' %}" alt="Logo organisatie" class="logo logo--large" />
+                <img src="{% webpack_static 'images/logo-organisatie-klein.svg' %}" alt="Logo organisatie" class="logo logo--small" />
+            </a>
+            {% if pageTitle %}<h1 class="pagetitle h2">{{ pageTitle }}</h1>{% endif %}
+        </div>
         {% if not hide_menu %}
         <button aria-expanded="false" class="btn btn-togglemenu" data-action="pageHeader#openModal" aria-label="Open menu">
             <svg

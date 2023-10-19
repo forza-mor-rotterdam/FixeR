@@ -50,7 +50,9 @@
     </head>
     <body class="{% if user.profiel.ui_instellingen.fontsize %}{{ user.profiel.ui_instellingen.fontsize }}{% endif %}">
     {% block pageheader %}
+    {% with pageTitle="FixeR" %}
         {% include 'snippets/pageheader.html' %}
+    {% endwith %}
     {% endblock %}
         <main data-controller="main">
             <div class="{% block container_class %}container{% endblock %}">

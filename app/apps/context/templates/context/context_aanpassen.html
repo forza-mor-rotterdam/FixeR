@@ -14,7 +14,7 @@
             </a>
         </div>
 
-        <h1>FixeR: UI groep {{object.naam}}</h1>
+        <h1>UI groep {{object.naam}}</h1>
         {% if object.profielen_voor_context.all %}
         <h2>Gebruikers die gebruikmaken van deze UI-groep</h2>
         <ul>
@@ -31,7 +31,7 @@
         {% endif %}
 
 
-        <form action="." method="post">
+        <form action="." method="post" class="form--beheer">
             {% csrf_token %}
             <fieldset>
             {{ form.naam|render_rotterdam_formulier }}
