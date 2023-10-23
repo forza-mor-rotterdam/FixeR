@@ -266,3 +266,13 @@
         margin: 8px 0 0;
     }
 }
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+    .container__header {
+        .container__controls {
+            .btn-navigate--small.toggle-view {
+                display: none;
+            }
+        }
+    }
+}

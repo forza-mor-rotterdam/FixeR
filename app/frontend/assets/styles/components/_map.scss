@@ -4,7 +4,6 @@
         display: none;
     }
 }
-
 .container__map {
     height: 0;
     padding-bottom: 100%;
@@ -140,5 +139,16 @@ button.toggle-view {
             display: none;
         }
 
+    }
+}
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+    .container__list {
+        .list__incidents,
+        .container__map {
+            display: block;
+            width: 50%;
+            left: 50%;
+        }
     }
 }
