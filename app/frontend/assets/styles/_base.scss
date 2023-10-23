@@ -244,6 +244,12 @@ ul {
     &.list-clean {
         @include list-clean();
     }
+
+    &.list--readable {
+        li {
+            margin-bottom: 0.25rem;
+        }
+    }
 }
 
 dl {

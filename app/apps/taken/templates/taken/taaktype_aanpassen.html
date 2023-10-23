@@ -13,11 +13,8 @@
                 Taaktypes
             </a>
         </div>
-        {% if object %}
-        <h1>Taaktype '{{object.omschrijving}}' aanpassen</h1>
-        {% else %}
-        <h1>Taaktype aanmaken</h1>
-        {% endif %}
+
+        <h1>Taaktype: {{object.omschrijving}}</h1>
         {% if object.contexten_voor_taaktypes.all %}
             <div class="padding-bottom-2x">
                 <h2 class="h3">Rollen die gebruikmaken van dit taaktype</h2>
