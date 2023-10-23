@@ -29,7 +29,7 @@ header {
 
     > .container {
         display: block;
-        max-width: map-get($container-max-widths , sm );
+        max-width: map-get($container-max-widths , xxl );
         margin: 0 auto;
 
         &.container--wide {
