@@ -427,6 +427,9 @@ textarea {
             }
         }
     }
+    .form--beheer.columns--two & {
+        columns: 2;
+    }
 }
 
 .list--form-radio-input {

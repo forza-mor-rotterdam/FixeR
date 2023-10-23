@@ -35,7 +35,7 @@
         {% endif %}
 
 
-        <form action="." method="post">
+        <form action="." method="post" class="form--beheer columns--two">
             {% csrf_token %}
             <fieldset>
             {{ form.name|render_rotterdam_formulier }}
