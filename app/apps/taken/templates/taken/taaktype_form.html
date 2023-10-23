@@ -21,7 +21,7 @@
         {% if object.contexten_voor_taaktypes.all %}
             <div class="padding-bottom-2x">
                 <h2 class="h3">Rollen die gebruikmaken van dit taaktype</h2>
-                <ul>
+                <ul class="list--readable">
                     {% for context in object.contexten_voor_taaktypes.all %}
                     <li>
                         <strong>{{context.naam}}</strong>
