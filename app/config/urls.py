@@ -1,14 +1,20 @@
-from apps.beheer.views import (
-    ContextAanmakenView,
-    ContextAanpassenView,
-    ContextLijstView,
+from apps.authenticatie.views import (
     GebruikerAanmakenView,
     GebruikerAanpassenView,
     GebruikerLijstView,
-    TaaktypeAanmakenView,
-    TaaktypeAanpassenView,
-    TaaktypeLijstView,
-    beheer,
+)
+from apps.authorisatie.views import (
+    RechtengroepAanmakenView,
+    RechtengroepAanpassenView,
+    RechtengroepLijstView,
+    RechtengroepVerwijderenView,
+)
+from apps.beheer.views import beheer
+from apps.context.views import (
+    ContextAanmakenView,
+    ContextAanpassenView,
+    ContextLijstView,
+    ContextVerwijderenView,
 )
 from apps.main.views import (
     account,
@@ -24,6 +30,11 @@ from apps.main.views import (
     taken_lijst,
     taken_overzicht,
     ui_settings_handler,
+)
+from apps.taken.views import (
+    TaaktypeAanmakenView,
+    TaaktypeAanpassenView,
+    TaaktypeLijstView,
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
 from django.conf import settings
@@ -98,6 +109,11 @@ urlpatterns = [
         ContextAanpassenView.as_view(),
         name="context_aanpassen",
     ),
+    path(
+        "beheer/context/<int:pk>/verwijderen/",
+        ContextVerwijderenView.as_view(),
+        name="context_verwijderen",
+    ),
     path("beheer/taaktype/", TaaktypeLijstView.as_view(), name="taaktype_lijst"),
     path(
         "beheer/taaktype/aanmaken/",
@@ -108,6 +124,26 @@ urlpatterns = [
         "beheer/taaktype/<int:pk>/aanpassen/",
         TaaktypeAanpassenView.as_view(),
         name="taaktype_aanpassen",
+    ),
+    path(
+        "beheer/rechtengroep/",
+        RechtengroepLijstView.as_view(),
+        name="rechtengroep_lijst",
+    ),
+    path(
+        "beheer/rechtengroep/aanmaken/",
+        RechtengroepAanmakenView.as_view(),
+        name="rechtengroep_aanmaken",
+    ),
+    path(
+        "beheer/rechtengroep/<int:pk>/aanpassen/",
+        RechtengroepAanpassenView.as_view(),
+        name="rechtengroep_aanpassen",
+    ),
+    path(
+        "beheer/rechtengroep/<int:pk>/verwijderen/",
+        RechtengroepVerwijderenView.as_view(),
+        name="rechtengroep_verwijderen",
     ),
     # END beheer
     path("api/schema/", SpectacularAPIView.as_view(api_version="v1"), name="schema"),

@@ -11,8 +11,8 @@
         </a>
     </div>
     <div class="container__flex">
-        <h1>Rollen</h1>
-        <a class="btn btn-action" href="{% url 'context_aanmaken' %}">Nieuwe rol</a>
+        <h1>Rechtengroepen</h1>
+        <a class="btn btn-action" href="{% url 'rechtengroep_aanmaken' %}">Nieuwe rechtengroep</a>
     </div>
 
     <!-- <form>
@@ -28,23 +28,20 @@
         <thead>
             <tr>
                 <th>Naam</th>
-                <th>Taaktypes</th>
-                <th>Filters</th>
-                <th>Sjabloon</th>
+                <th>Aantal rechten</th>
                 <th>Aantal gebruikers</th>
+                <th></th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             {% for object in object_list %}
             <tr data-row-search-target="row">
-                <td data-row-search-target="searchable">{{object.naam}}</td>
-                <td data-row-search-target="searchable">{% if object.taaktypes.all %}{% for taaktype in object.taaktypes.all %}{{taaktype.omschrijving}}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
-                <td data-row-search-target="searchable">{% if object.filters.fields %}{% for filter in object.filters.fields %}{{filter}}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
-                <td data-row-search-target="searchable">{{object.template}}</td>
-                <td data-row-search-target="searchable">{{object.profielen_voor_context.all|length}}</td>
-                <td><a href="{% url 'context_aanpassen' object.pk %}">Aanpassen</a></td>
-                <td>{% if not object.profielen_voor_context.all %}<a href="{% url 'context_verwijderen' object.pk %}"  onclick="return confirm('Weet je zeker dat je dez rol wil verwijderen?')">Verwijderen</a>{% endif %}</td>
+                <td data-row-search-target="searchable">{{object.name}}</td>
+                <td data-row-search-target="searchable">{% if object.permissions.all %}{{object.permissions.all|length}}{% else %}-{% endif %}</td>
+                <td data-row-search-target="searchable">{{object.user_set.all|length}}</td>
+                <td><a href="{% url 'rechtengroep_aanpassen' object.pk %}">Aanpassen</a></td>
+                <td>{% if not object.user_set.all %}<a href="{% url 'rechtengroep_aanpassen' object.pk %}"  onclick="return confirm('Weet je zeker dat je deze rechtengroep wil verwijderen?')">Verwijderen</a>{% endif %}</td>
             </tr>
             {% endfor %}
         </tbody>
