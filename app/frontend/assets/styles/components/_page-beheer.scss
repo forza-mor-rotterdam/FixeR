@@ -35,6 +35,19 @@
             padding-left: 0.5rem;
             padding-right: 0.5rem;
         }
+
+        .icon--close {
+            path {
+                fill: $danger;
+            }
+        }
+        .icon--checkmark {
+            width: 20px;
+            height: 20px;
+            path {
+                fill: $green-tint01;
+            }
+        }
     }
 
     form {
