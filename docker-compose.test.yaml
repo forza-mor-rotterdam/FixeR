@@ -12,7 +12,7 @@ services:
       database:
         condition: service_started
     networks:
-      - behandelr_network
+      - fixer_network
 
   database:
     image: postgis/postgis:11-3.3
@@ -27,12 +27,12 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - behandelr_network
+      - fixer_network
 
   redis:
     image: redis
     networks:
-      - behandelr_network
+      - fixer_network
     ports:
       - "6379"
 
@@ -49,7 +49,7 @@ services:
   #   env_file:
   #     - .env.test
   #   networks:
-  #     - behandelr_network
+  #     - fixer_network
   #   restart: on-failure
 
   # app_celery_beat:
@@ -65,9 +65,9 @@ services:
   #   env_file:
   #     - .env.test
   #   networks:
-  #     - behandelr_network
+  #     - fixer_network
   #   restart: on-failure
 
 networks:
-  behandelr_network:
+  fixer_network:
     external: true
