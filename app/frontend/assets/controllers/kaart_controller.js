@@ -1,7 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
 
-let showSortingContainer = false;
-let sortDirectionReversed = false;
 let markers = null
 let markerIcon, markerBlue, markerGreen, markerMagenta = null
 let currentLocation = null
@@ -13,19 +11,29 @@ const url = "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/
 export default class extends Controller {
 
     static values = {
-        kaart: Object,
+        kaarttaken: Object,
     }
-    static targets = [ "sorting", "toggleMapView" ]
+    static targets = [ "toggleMapView" ]
 
     initialize() {
 
+        screen.orientation.addEventListener("change", (event) => {
+            screenWidth = screen.orientation
+            console.log('screen', screen)
+            const type = event.target.type;
+            const angle = event.target.angle;
+            this.drawMap()
+        });
+
+        mapDiv = document.getElementById('incidentMap')
+        map = L.map('incidentMap')
+        if(mapDiv){
+            this.drawMap()
+        }
     }
 
     connect() {
-        if(this.hasSortingTarget && showSortingContainer === true ) {
-            this.sortingTarget.classList.remove("hidden-vertical")
-            this.sortingTarget.classList.add("show-vertical")
-        }
+
     }
 
     disconnect() {
@@ -33,7 +41,7 @@ export default class extends Controller {
     }
 
     drawMap() {
-        const coordinatenlijst = this.kaartValue.kaart_taken_lijst
+        const coordinatenlijst = this.kaarttakenValue.kaart_taken_lijst
 
         markerIcon = L.Icon.extend({
             options: {
@@ -79,7 +87,6 @@ export default class extends Controller {
         //add the markers to the map
         map.addLayer(markers);
         //fit the map to the markers
-        console.log(" _ _ _ fitBounds, map", map)
         setTimeout(function() {
             map.fitBounds(markers.getBounds());
         }, 200);
@@ -120,6 +127,7 @@ export default class extends Controller {
     }
 
     toggleMapView(e) {
+        console.log("toggleMapView")
         document.getElementById('taken_lijst').classList.toggle('showMap')
         const frame = document.getElementById('taken_lijst');
         frame.reload()
@@ -148,26 +156,6 @@ export default class extends Controller {
             case error.UNKNOWN_ERROR:
               console.log("An unknown error occurred.")
               break;
-          }
-    }
-
-    onGroup(e) {
-        console.log("onGroup", e.target.checked)
-        const frame = document.getElementById('incidents_list');
-        const url = `${frame.dataset.src}?grouped-by=${e.target.checked}`
-        frame.setAttribute('src', url);
-    }
-
-    onToggleSortingContainer() {
-        this.sortingTarget.classList.toggle("hidden-vertical")
-        this.sortingTarget.classList.toggle("show-vertical")
-        showSortingContainer = !showSortingContainer
-        sortDirectionReversed = sortDirectionReversed === undefined ? false : true
-    }
-
-    onSort(e) {
-        const frame = document.getElementById('incidents_list');
-        const url = `${frame.dataset.src}?sort-by=${e.target.value}`
-        frame.setAttribute('src', url);
+        }
     }
 }

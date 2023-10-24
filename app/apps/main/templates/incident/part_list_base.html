@@ -11,7 +11,6 @@
         <div
             class="container__header"
             data-controller="incidentlist"
-            data-incidentlist-kaart-value="{{ kaart_taken|json_encode }}"
         >
             <div class="row">
                 <h1 class="h3">{%if 'voltooid' in request.path %}Afgerond{%else%}Te doen{%endif%} ({{taken_aantal}})</h1>
