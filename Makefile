@@ -1,8 +1,8 @@
 # Build scripts to run commands within the Docker container or create local environments
 
 # Docker variables
-RUN_IN_NEW_WEBCONTEXT = docker-compose run -it behandelr_app
-EXEC_IN_WEB = docker-compose run behandelr_app
+RUN_IN_NEW_WEBCONTEXT = docker-compose run -it fixer_app
+EXEC_IN_WEB = docker-compose run fixer_app
 EXEC_IN_WEB_CMD = $(EXEC_IN_WEB) python manage.py
 
 #  General
@@ -47,7 +47,7 @@ format: ## Use pre-commit config to format files
 	pre-commit run --all-files
 
 create_docker_networks:
-	docker network create behandelr_network && \
+	docker network create fixer_network && \
     docker network create mor_bridge_network
 
 # Static files
