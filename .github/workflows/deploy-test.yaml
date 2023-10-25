@@ -1,4 +1,4 @@
-name: Production release
+name: Test release
 
 on:
   push:
