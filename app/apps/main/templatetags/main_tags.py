@@ -26,7 +26,7 @@ def json_encode(value):
 
 @register.simple_tag
 def vind_in_dict(op_zoek_dict, key):
-    if type(op_zoek_dict) != dict:
+    if not isinstance(op_zoek_dict, dict):
         return key
     result = op_zoek_dict.get(key, op_zoek_dict.get(str(key), key))
     if isinstance(result, (list, tuple)):

@@ -72,7 +72,6 @@ def account(request):
 
 @login_required
 def ui_settings_handler(request):
-
     profiel = request.user.profiel
     if request.POST:
         profiel.ui_instellingen.update(

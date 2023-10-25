@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("taken", "0003_taaktype_volgende_taaktypes"),
     ]
