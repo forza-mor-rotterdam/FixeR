@@ -18,43 +18,47 @@
         {% else %}
         <h1>Taaktype aanmaken</h1>
         {% endif %}
-        {% if object.contexten_voor_taaktypes.all %}
-            <div class="padding-bottom-2x">
-                <h2 class="h3">Rollen die gebruikmaken van dit taaktype</h2>
-                <ul class="list--readable">
-                    {% for context in object.contexten_voor_taaktypes.all %}
-                    <li>
-                        <strong>{{context.naam}}</strong>
-                    </li>
-                    {% endfor%}
-                </ul>
-            </div>
-            {% endif %}
+        <div class="grid-container">
+            <div class="grid-item">
+                <form action="." method="post" class="form--beheer">
+                    {% csrf_token %}
 
+                    <fieldset>
+                    {{ form.omschrijving|render_rotterdam_formulier }}
+                    {{ form.volgende_taaktypes|render_rotterdam_formulier }}
+                    <div class="container__checkbox--single">
+                        <h3 class="label">Actief?</h3>
+                        {{ form.actief|render_rotterdam_formulier }}
+                    </div>
+                    </fieldset>
 
-        <form action="." method="post" class="form--beheer">
-            {% csrf_token %}
-
-            <fieldset>
-            {{ form.omschrijving|render_rotterdam_formulier }}
-            {{ form.volgende_taaktypes|render_rotterdam_formulier }}
-            <div class="container__checkbox--single">
-                <h3 class="label">Actief?</h3>
-                {{ form.actief|render_rotterdam_formulier }}
+                    <div class="form-row container__button">
+                        <div class="form-row btn-row">
+                        <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
+                            <span>Annuleren</span>
+                        </button>
+                        <button type="submit" class="btn btn-action">
+                            <span>Aanpassen</span>
+                        </button>
+                    </div>
+                    </div>
+                </form>
             </div>
-            </fieldset>
-
-            <div class="form-row container__button">
-                <div class="form-row btn-row">
-                <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
-                    <span>Annuleren</span>
-                </button>
-                <button type="submit" class="btn btn-action">
-                    <span>Aanpassen</span>
-                </button>
+            <div>
+                {% if object.contexten_voor_taaktypes.all %}
+                <div class="container__userlist">
+                    <h2 class="h3">Rollen die gebruikmaken van dit taaktype</h2>
+                    <ul class="list-clean">
+                        {% for context in object.contexten_voor_taaktypes.all %}
+                        <li>
+                            {{context.naam}}
+                        </li>
+                        {% endfor%}
+                    </ul>
+                </div>
+                {% endif %}
             </div>
-            </div>
-        </form>
+        </div>
     </div>
 </turbo-frame>
 {% endblock %}

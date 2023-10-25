@@ -14,45 +14,50 @@
         </div>
 
         <h1>Rechtengroep: {{object.name}}</h1>
+        <div class="grid-container">
+            <div class="grid-item">
+                <form action="." method="post" class="form--beheer columns--two">
+                    {% csrf_token %}
+                    <fieldset>
+                    {{ form.name|render_rotterdam_formulier }}
+                    {{ form.permissions|render_rotterdam_formulier }}
+                    </fieldset>
 
-        {% if object.user_set.all %}
-        <h2>Gebruikers die gebruikmaken van deze rechtengroep</h2>
-        <ul class="list--readable">
-            {% for gebruiker in object.user_set.all %}
-            <li>
-                <strong>{{gebruiker.email}}</strong>
-                {% if gebruiker.first_name or profiel.gebruiker.last_name %}
-                ({{gebruiker.first_name}}
-                {% if gebruiker.last_name %} {{gebruiker.last_name}}{% endif %})
+                    <div class="form-row container__button">
+                        <div class="form-row btn-row">
+                        <button type="reset" class="btn btn-tertiary">
+                            <span>Annuleren</span>
+                        </button>
+                        <button type="submit" class="btn btn-action">
+                            <span>Aanpassen</span>
+                        </button>
+                    </div>
+                    </div>
+                </form>
+            </div>
+            <div>
+                {% if object.user_set.all %}
+                <div class="container__userlist">
+                    <h2 class="h3">Gebruikers die gebruikmaken van deze rechtengroep</h2>
+                    <ul class="list-clean">
+                        {% for gebruiker in object.user_set.all %}
+                        <li>
+                            <a href="{% url 'gebruiker_aanpassen' gebruiker.id %}">{{gebruiker.email}}</a>
+                            {% comment %} {% if gebruiker.first_name or profiel.gebruiker.last_name %}
+                            ({{gebruiker.first_name}}
+                            {% if gebruiker.last_name %} {{gebruiker.last_name}}{% endif %})
+                            {% endif %} {% endcomment %}
+
+                        </li>
+                        {% endfor%}
+                    </ul>
+                    <p>
+                        Let op: De rechtengroep kan niet worden verwijderd. Als de bovenstaande gebruikers in een andere rechtengroep worden gezet, kan deze rechtengroep wel verwijderd worden
+                    </p>
+                </div>
                 {% endif %}
-                <a href="{% url 'gebruiker_aanpassen' gebruiker.id %}">Aanpassen</a>
-            </li>
-            {% endfor%}
-        </ul>
-        <p>
-            Let op: De rechtengroep kan niet worden verwijderd. Als de bovenstaande gebruikers in een andere rechtengroep worden gezet, kan deze rechtengroep wel verwijderd worden
-        </p>
-        {% endif %}
-
-
-        <form action="." method="post" class="form--beheer columns--two">
-            {% csrf_token %}
-            <fieldset>
-            {{ form.name|render_rotterdam_formulier }}
-            {{ form.permissions|render_rotterdam_formulier }}
-            </fieldset>
-
-            <div class="form-row container__button">
-                <div class="form-row btn-row">
-                <button type="reset" class="btn btn-tertiary">
-                    <span>Annuleren</span>
-                </button>
-                <button type="submit" class="btn btn-action">
-                    <span>Aanpassen</span>
-                </button>
             </div>
-            </div>
-        </form>
+        </div>
     </div>
 </turbo-frame>
 {% endblock %}

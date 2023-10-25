@@ -15,42 +15,48 @@
         </div>
 
         <h1>UI groep {{object.naam}}</h1>
-        {% if object.profielen_voor_context.all %}
-        <h2>Gebruikers die gebruikmaken van deze rol</h2>
-        <ul class="list--readable">
-            {% for profiel in object.profielen_voor_context.all %}
-            <li>
-                <strong>{{profiel.gebruiker.email}}</strong>
-                {% if profiel.gebruiker.first_name or profiel.gebruiker.last_name %}
-                    ({{profiel.gebruiker.first_name}}
-                    {% if profiel.gebruiker.last_name %} {{profiel.gebruiker.last_name}}{% endif %})
+        <div class="grid-container">
+            <div class="grid-item">
+                <form action="." method="post" class="form--beheer">
+                    {% csrf_token %}
+                    <fieldset>
+                    {{ form.naam|render_rotterdam_formulier }}
+                    {{ form.taaktypes|render_rotterdam_formulier }}
+                    {{ form.filters|render_rotterdam_formulier }}
+                    {{ form.template|render_rotterdam_formulier }}
+                    </fieldset>
+
+                    <div class="form-row container__button">
+                        <div class="form-row btn-row">
+                        <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
+                            <span>Annuleren</span>
+                        </button>
+                        <button type="submit" class="btn btn-action">
+                            <span>Aanpassen</span>
+                        </button>
+                    </div>
+                    </div>
+                </form>
+            </div>
+            <div>
+                {% if object.profielen_voor_context.all %}
+                <div class="container__userlist">
+                    <h2 class="h3">Gebruikers met deze rol</h2>
+                    <ul class="list--clean">
+                        {% for profiel in object.profielen_voor_context.all %}
+                        <li>
+                            <strong>{{profiel.gebruiker.email}}</strong>
+                            {% if profiel.gebruiker.first_name or profiel.gebruiker.last_name %}
+                                ({{profiel.gebruiker.first_name}}
+                                {% if profiel.gebruiker.last_name %} {{profiel.gebruiker.last_name}}{% endif %})
+                            {% endif %}
+                        </li>
+                        {% endfor%}
+                    </ul>
+                </div>
                 {% endif %}
-            </li>
-            {% endfor%}
-        </ul>
-        {% endif %}
-
-
-        <form action="." method="post" class="form--beheer">
-            {% csrf_token %}
-            <fieldset>
-            {{ form.naam|render_rotterdam_formulier }}
-            {{ form.taaktypes|render_rotterdam_formulier }}
-            {{ form.filters|render_rotterdam_formulier }}
-            {{ form.template|render_rotterdam_formulier }}
-            </fieldset>
-
-            <div class="form-row container__button">
-                <div class="form-row btn-row">
-                <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
-                    <span>Annuleren</span>
-                </button>
-                <button type="submit" class="btn btn-action">
-                    <span>Aanpassen</span>
-                </button>
             </div>
-            </div>
-        </form>
+        </div>
     </div>
 </turbo-frame>
 {% endblock %}
