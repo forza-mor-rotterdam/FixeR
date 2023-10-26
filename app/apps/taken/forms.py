@@ -40,3 +40,12 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
             "volgende_taaktypes",
             "actief",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields[
+            "omschrijving"
+        ].help_text = "Omschrijf het taaktype zo concreet mogelijk. Formuleer de gewenste actie, bijvoorbeeld ‘Grofvuil ophalen’."
+        self.fields[
+            "volgende_taaktypes"
+        ].help_text = "Dit zijn taken die mogelijk uitgevoerd moeten worden nadat de taak is afgerond."
