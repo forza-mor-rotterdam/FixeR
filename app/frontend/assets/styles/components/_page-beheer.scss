@@ -84,4 +84,12 @@
         }
     }
 
+    .form-row {
+
+        input + p,
+        select + p,
+        .list--form-check-input + p {
+            margin-top: -16px;
+        }
+    }
 }
