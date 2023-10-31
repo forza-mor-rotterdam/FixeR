@@ -9,7 +9,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("context", "0002_auto_20230829_1938"),
         ("authenticatie", "0001_initial"),

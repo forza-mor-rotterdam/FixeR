@@ -18,43 +18,59 @@
         {% else %}
         <h1>Taaktype aanmaken</h1>
         {% endif %}
-        {% if object.contexten_voor_taaktypes.all %}
-            <div class="padding-bottom-2x">
-                <h2 class="h3">Rollen die gebruikmaken van dit taaktype</h2>
-                <ul class="list--readable">
-                    {% for context in object.contexten_voor_taaktypes.all %}
-                    <li>
-                        <strong>{{context.naam}}</strong>
-                    </li>
-                    {% endfor%}
-                </ul>
-            </div>
-            {% endif %}
+        <div class="grid-container">
+            <div class="grid-item">
+                {% if object.contexten_voor_taaktypes.all %}
+                <div class="alert alert--warning">
+                    <span>
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.0001 6.21851L26.6516 26L5.34849 26L16.0001 6.21851ZM14.2391 5.2703C14.9943 3.8679 17.0059 3.86791 17.761 5.27031L28.4126 25.0518C29.13 26.3843 28.165 28 26.6516 28H5.34849C3.83514 28 2.87007 26.3842 3.58755 25.0518L14.2391 5.2703ZM15.0001 12H17.0001V20H15.0001V12ZM15.0001 24V22H17.0001V24H15.0001Z" fill="#A65600"/>
+                        </svg>
+                    </span>
+                    <div>
+                        Let op: het wijzigen van dit taaktype heeft gevolgen voor alle rollen die gebruik maken van dit taaktype.
+                    </div>
+                </div>
+                {% endif %}
+                <form action="." method="post" class="form--beheer">
+                    {% csrf_token %}
 
+                    <fieldset>
+                    {{ form.omschrijving|render_rotterdam_formulier }}
+                    {{ form.volgende_taaktypes|render_rotterdam_formulier }}
+                    <div class="container__checkbox--single">
+                        <h3 class="label">Is dit taaktype actief?</h3>
+                        {{ form.actief|render_rotterdam_formulier }}
+                    </div>
+                    </fieldset>
 
-        <form action="." method="post" class="form--beheer">
-            {% csrf_token %}
-
-            <fieldset>
-            {{ form.omschrijving|render_rotterdam_formulier }}
-            {{ form.volgende_taaktypes|render_rotterdam_formulier }}
-            <div class="container__checkbox--single">
-                <h3 class="label">Actief?</h3>
-                {{ form.actief|render_rotterdam_formulier }}
+                    <div class="form-row container__button">
+                        <div class="form-row btn-row">
+                        <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
+                            <span>Annuleren</span>
+                        </button>
+                        <button type="submit" class="btn btn-action">
+                            <span>Aanpassen</span>
+                        </button>
+                    </div>
+                    </div>
+                </form>
             </div>
-            </fieldset>
-
-            <div class="form-row container__button">
-                <div class="form-row btn-row">
-                <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
-                    <span>Annuleren</span>
-                </button>
-                <button type="submit" class="btn btn-action">
-                    <span>Aanpassen</span>
-                </button>
+            <div>
+                {% if object.contexten_voor_taaktypes.all %}
+                <div class="container__userlist">
+                    <h2 class="h3">Rollen die gebruikmaken van dit taaktype</h2>
+                    <ul class="list-clean">
+                        {% for context in object.contexten_voor_taaktypes.all %}
+                        <li>
+                            {{context.naam}}
+                        </li>
+                        {% endfor%}
+                    </ul>
+                </div>
+                {% endif %}
             </div>
-            </div>
-        </form>
+        </div>
     </div>
 </turbo-frame>
 {% endblock %}

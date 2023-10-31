@@ -38,6 +38,16 @@ header {
     }
 }
 
+.grid-container {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 32px;
+
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        grid-template-columns: 66fr 34fr;
+    }
+}
+
 .fz-medium {
     font-size: 1em !important;
 }
@@ -366,6 +376,18 @@ h1 + .section--seperated {
 
 .no-padding {
     padding: 0 !important;
+}
+
+.no-margin {
+    margin: 0 !important;
+}
+
+.no-margin-top {
+    margin-top: 0 !important;
+}
+
+.no-margin-bottom {
+    margin-bottom: 0 !important;
 }
 
 .invalid-text {
