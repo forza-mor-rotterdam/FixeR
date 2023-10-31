@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("taken", "0001_initial"),
         ("aliassen", "0001_initial"),

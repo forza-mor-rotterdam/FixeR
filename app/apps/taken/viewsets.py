@@ -11,7 +11,6 @@ from rest_framework.response import Response
 
 
 class TaaktypeViewSet(viewsets.ReadOnlyModelViewSet):
-
     lookup_field = "uuid"
     queryset = Taaktype.objects.all()
 

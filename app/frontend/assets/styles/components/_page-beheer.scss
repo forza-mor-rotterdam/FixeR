@@ -1,7 +1,14 @@
 .page__beheer {
     padding-top: 2rem;
+
+    .alert {
+        margin-bottom: 2rem;
+    }
     .btn {
         height: 48px;
+        svg {
+            vertical-align: sub;
+        }
     }
 
     a.link--back {
@@ -27,6 +34,10 @@
             max-width: 200px;
             height: 48px;
         }
+
+        + .alert {
+            margin-top: -32px;
+        }
     }
 
     table tbody {
@@ -34,6 +45,19 @@
             text-align: left;
             padding-left: 0.5rem;
             padding-right: 0.5rem;
+        }
+
+        .icon--close {
+            path {
+                fill: $danger;
+            }
+        }
+        .icon--checkmark {
+            width: 20px;
+            height: 20px;
+            path {
+                fill: $green-tint01;
+            }
         }
     }
 
@@ -48,6 +72,24 @@
         .btn {
             flex: 0 1;
             margin-left: 1rem;
+        }
+    }
+
+    .container__userlist {
+        background-color: $gray-tint02;
+        padding: $alert-padding-x;
+
+        h2 {
+            margin-top: 0;
+        }
+    }
+
+    .form-row {
+
+        input + p,
+        select + p,
+        .list--form-check-input + p {
+            margin-top: -16px;
         }
     }
 }

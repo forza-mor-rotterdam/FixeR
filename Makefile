@@ -1,8 +1,8 @@
 # Build scripts to run commands within the Docker container or create local environments
 
 # Docker variables
-RUN_IN_NEW_WEBCONTEXT = docker-compose run -it behandelr_app
-EXEC_IN_WEB = docker-compose run behandelr_app
+RUN_IN_NEW_WEBCONTEXT = docker-compose run -it fixer_app
+EXEC_IN_WEB = docker-compose run fixer_app
 EXEC_IN_WEB_CMD = $(EXEC_IN_WEB) python manage.py
 
 #  General
@@ -40,6 +40,10 @@ create_superuser: ## create superuser for public tenant
 	@echo Create superuser. You will be prompted for email and password
 	$(EXEC_IN_WEB_CMD) createsuperuser
 
+createusers: ## create user for mor-core
+	@echo Create user for more-core
+	$(EXEC_IN_WEB_CMD) createusers
+
 check_clean_db: ## clear docker vols
 	@echo -n "This will clear local docker volumes before running tests. Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
 
@@ -47,7 +51,7 @@ format: ## Use pre-commit config to format files
 	pre-commit run --all-files
 
 create_docker_networks:
-	docker network create behandelr_network && \
+	docker network create fixer_network && \
     docker network create mor_bridge_network
 
 # Static files

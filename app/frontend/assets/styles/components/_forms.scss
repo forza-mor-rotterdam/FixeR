@@ -408,6 +408,49 @@ textarea {
             box-sizing: border-box;
         }
     }
+
+    .form--beheer & {
+        display: block;
+        margin-bottom: 50px;
+
+        li {
+            border: 0;
+            &:first-child {
+                margin: 0 0 0 0.25rem;
+            }
+
+            label {
+                line-height: 1.25rem;
+            }
+            input {
+                top: -2px;
+            }
+        }
+    }
+    .form--beheer.columns--two & {
+        columns: 2;
+    }
+}
+
+.list--form-radio-input {
+    .form--beheer & {
+        li,
+        li:first-child {
+            margin-bottom: 0.5rem;
+        }
+    }
+}
+
+.container__checkbox--single {
+    position: relative;
+    label {
+        padding-left: 15px;
+    }
+}
+.form--beheer {
+    .btn-row {
+        margin-top: 40px;
+    }
 }
 
 .form-check-input {

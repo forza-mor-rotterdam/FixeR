@@ -167,7 +167,7 @@ CELERYBEAT_SCHEDULE = {
 }
 
 SITE_ID = 1
-SITE_NAME = os.getenv("SITE_NAME", "BEHANDELR")
+SITE_NAME = os.getenv("SITE_NAME", "FixeR")
 SITE_DOMAIN = os.getenv("SITE_DOMAIN", "localhost")
 
 STATICFILES_DIRS = (
@@ -221,7 +221,7 @@ REST_FRAMEWORK = dict(
 
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "BEHANDELR",
+    "TITLE": "FixeR",
     "DESCRIPTION": "Voor het afhandelen van taken voor Meldingen Openbare Ruimte",
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,

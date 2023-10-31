@@ -18,7 +18,7 @@ class GebruikerAdmin(UserAdmin):
         "is_superuser",
     )
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
+        (None, {"fields": ("email", "password", "first_name", "last_name")}),
         ("MOR permissies", {"fields": ("groups",)}),
         ("Permissions", {"fields": ("is_staff", "is_active", "is_superuser")}),
     )
@@ -31,6 +31,8 @@ class GebruikerAdmin(UserAdmin):
                     "email",
                     "password1",
                     "password2",
+                    "first_name",
+                    "last_name",
                     "is_staff",
                     "is_active",
                     "is_superuser",

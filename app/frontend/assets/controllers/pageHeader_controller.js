@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ["todo", "finished"]
+    static targets = ["todo", "finished", "modalMenu"]
 
     connect() {
         document.addEventListener('keydown', (event) => {
@@ -33,18 +33,15 @@ export default class extends Controller {
             this.finishedTarget.classList.add("selected")
         }
 
-        const modal = this.element.querySelector('.modal');
         const modalBackdrop = this.element.querySelector('.modal-backdrop');
-
-        modal.classList.add('show');
+        this.modalMenuTarget.classList.add('show');
         modalBackdrop.classList.add('show');
         document.body.classList.add('show-modal');
     }
 
     closeModal() {
-        const modal = this.element.querySelector('.modal');
         const modalBackdrop = this.element.querySelector('.modal-backdrop');
-        modal.classList.remove('show');
+        this.modalMenuTarget.classList.remove('show');
         modalBackdrop.classList.remove('show');
         document.body.classList.remove('show-modal');
     }
