@@ -15,13 +15,21 @@ export default class extends Controller {
     static values = {
         kaart: Object,
     }
-    static targets = [ "sorting", "toggleMapView" ]
+    static targets = [ "sorting", "toggleMapView", "taakMarker", "taakAfstand"]
 
     initialize() {
 
     }
-
-    connect() {
+    taakAfstandTargetConnected(element) {
+        console.log("taakAfstand connected")
+        console.log(element)
+    }
+    taakAfstandTargetDisconnected(element) {
+        console.log("taakAfstand Disconnected")
+        console.log(element)
+    }
+    connect(e) {
+        // mapHasBeenLoaded = false
         if(this.hasSortingTarget && showSortingContainer === true ) {
             this.sortingTarget.classList.remove("hidden-vertical")
             this.sortingTarget.classList.add("show-vertical")
@@ -102,12 +110,12 @@ export default class extends Controller {
                 if(typeof(afbeelding) === 'string') showImage = true
                 const markerLocation = new L.LatLng(lat, long);
                 const marker = new L.Marker(markerLocation, {icon: markerGreen});
-                const paragraphDistance = currentLocation ? `<p>Afstand: ${(Math.round(markerLocation.distanceTo(currentLocation)))} meter</p>` : ""
+                const paragraphDistance = currentLocation ? `<p>Afstand: <span data-incidentlist-target="taakAfstand">${(Math.round(markerLocation.distanceTo(currentLocation)))}</span> meter</p>` : ""
 
                 if (showImage) {
-                    marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
+                    marker.bindPopup(`<div data-incidentlist-target="taakMarker" class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
                 }else{
-                    marker.bindPopup(`<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
+                    marker.bindPopup(`<div data-incidentlist-target="taakMarker" class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
                 }
                 markers.addLayer(marker);
             }
@@ -150,7 +158,11 @@ export default class extends Controller {
               break;
           }
     }
-
+    onTaakMarkers(e){
+        console.log("e")
+        console.log(e)
+        console.log(this.taakMarkerTargets)
+    }
     onGroup(e) {
         console.log("onGroup", e.target.checked)
         const frame = document.getElementById('incidents_list');
