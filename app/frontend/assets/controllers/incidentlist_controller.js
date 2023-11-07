@@ -11,7 +11,7 @@ const positionWatchOptions = {
     maximumAge: 0,
 };
 const orderOptions = [
-    "TaakAangemaakt",
+    "Datum",
     "Adres",
     "Afstand",
     "Postcode",
@@ -84,17 +84,14 @@ export default class extends Controller {
     }
     sorterenOp(e){
         let directionStyle = "column"
-        if (e.params.action == activeOrder){
-            if (self.taakItemLijstTarget.style.flexDirection == "column"){
-                directionStyle = "column-reverse"
-            }else{
-                directionStyle = "column"
-            }
-        } else {
-            directionStyle = "column"
-            self.setStyleOrder(e.params.action)
+        if (e.target.value.includes("Reverse")){
+            directionStyle = "column-reverse"
         }
-        activeOrder = e.params.action
+        // } else {
+        //     directionStyle = "column"
+        //     self.setStyleOrder(e.target.value)
+        // }
+        activeOrder = e.target.value
         self.taakItemLijstTarget.style.flexDirection = directionStyle
     }
     positionWatchError(error){
