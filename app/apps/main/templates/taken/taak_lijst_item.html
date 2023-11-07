@@ -1,13 +1,24 @@
 {% extends 'snippets/modal_context.html' %}
+{% load l10n %}
 {% load webpack_static from webpack_loader %}
-{% load to_date vind_in_dict from main_tags %}
-{% load json_encode from main_tags %}
+{% load to_date vind_in_dict to_timestamp from main_tags %}
+{% load json_encode replace_comma_by_dot adres_order_nummer from main_tags %}
 {% load context_template from context_tags %}
 {% with incident_id=incident.id|stringformat:"s" %}
 
 {% block before_modal_content %}
 
     <div
+        data-incidentlist-target="taakItem"
+        data-id="{{ taak.id }}"
+        data-onderwerpen="{{ taak.render_onderwerpen }}"
+        data-adres="{{ taak.adres }}"
+        data-geometrie="{{ taak.geometrie|json_encode }}"
+        data-afbeelding-url="{{ taak.afbeelding_url }}"
+        data-order-taak-aangemaakt="{{ taak.aangemaakt_op|to_date|to_timestamp }}"
+        data-order-adres="{{ taak|adres_order_nummer:taken_sorted_by_adres }}"
+        data-order-afstand="0"
+        data-order-postcode="{{ taak.postcode_digits }}"
         class="list-item{% if form_submitted %} form-is-submitted{% endif %}{% if errors and warnings %} has-errors{% endif %}"
         {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}
             data-controller="taak"
@@ -48,6 +59,9 @@
                     </div>
 
                     <div class="container__info">
+                        {% with taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates as geo %}
+                        <p>Afstand: <span data-incidentlist-target="taakAfstand"  data-latitude="{{geo.1|replace_comma_by_dot}}" data-longitude="{{geo.0|replace_comma_by_dot}}" ></span> meter</p>
+                        {% endwith %}
                         {% context_template "taak_lijst_item_titel.html" as title_template %}
                         {% include title_template %}
                     </div>

@@ -7,11 +7,11 @@
     <div
         class="page-incidents"
         data-incidents-filters-value="{{ filters|json_encode }}"
+        data-controller="incidentlist"
+        data-incidentlist-kaart-outlet="#incidentMap"
     >
         <div
             class="container__header"
-            data-controller="incidentlist"
-            data-incidentlist-kaart-value="{{ kaart_taken|json_encode }}"
         >
             <div class="row">
                 <h1 class="h3">{%if 'voltooid' in request.path %}Afgerond{%else%}Te doen{%endif%} ({{taken_aantal}})</h1>
@@ -19,19 +19,6 @@
                     {% context_template "taak_toggle_kaart_button.html" as button_template %}
                     {% include button_template %}
 
-                    {% comment %} <button
-                        type="button"
-                        class="btn btn-secondary btn-navigate--small"
-                        data-action="incidentlist#makeRoute"
-                        data-incidentlist-taken-param="{{ taken }}"
-                        aria-label="Maak route"
-                    >
-                        <span>
-                            <svg width="13" height="13" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M26.2196 0.280273L15.921 26.0267L11.63 14.8699L0.473145 10.5789L26.2196 0.280273ZM5.94958 10.5424L13.1775 13.3223L15.9575 20.5503L22.6295 3.87038L5.94958 10.5424Z" fill="white"/>
-                            </svg>
-                        </span>
-                    </button> {% endcomment %}
                     <button
                         type="button"
                         class="btn btn-secondary btn-filter--small"
@@ -48,6 +35,10 @@
                     </button>
                 </div>
             </div>
+            <a data-incidentlist-action-param="TaakAangemaakt" data-action="click->incidentlist#sorterenOp">Taak aangemaakt</a>
+            <a data-incidentlist-action-param="Afstand" data-action="click->incidentlist#sorterenOp">Afstand</a>
+            <a data-incidentlist-action-param="Straatnaam" data-action="click->incidentlist#sorterenOp">Straatnaam</a>
+            <a data-incidentlist-action-param="Postcode" data-action="click->incidentlist#sorterenOp">Postcode</a>
             <div class="container__sorting hidden-vertical" data-incidentlist-target="sorting">
                 {% if sort_options %}
                 <div class="wrapper">
@@ -81,6 +72,7 @@
         <div class="container__list seperated">
             {% if taken %}
                 <div
+                    data-incidentlist-target="taakItemLijst"
                     class="list__incidents"
                     data-testid="incidentsList"
                     >
