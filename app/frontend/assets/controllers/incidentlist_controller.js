@@ -59,10 +59,10 @@ export default class extends Controller {
     }
     positionWatchSuccess(position){
         currentPosition = [position.coords.latitude, position.coords.longitude]
-        this.kaartOutlet.positionChangeEvent(position)
-        this.taakItemLijstTarget.style.display = "flex"
-        for(let i = 0; i < this.taakAfstandTargets.length; i++){
-            const elem = this.taakAfstandTargets[i]
+        self.kaartOutlet.positionChangeEvent(position)
+        self.taakItemLijstTarget.style.display = "flex"
+        for(let i = 0; i < self.taakAfstandTargets.length; i++){
+            const elem = self.taakAfstandTargets[i]
             const markerLocation = new L.LatLng(elem.dataset.latitude, elem.dataset.longitude);
             const afstand = Math.round(markerLocation.distanceTo(currentPosition))
             elem.textContent = afstand
