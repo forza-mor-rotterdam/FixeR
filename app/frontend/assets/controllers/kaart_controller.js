@@ -2,6 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 
 let markers = null
 let markerIcon, markerBlue, markerGreen, markerMagenta = null
+let markerMe = null
 let currentLocation = null
 let mapDiv = null
 let map = null
@@ -9,14 +10,9 @@ let screenWidth = 0
 const url = "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}";
 
 export default class extends Controller {
-
-    static values = {
-        kaarttaken: Object,
-    }
     static targets = [ "toggleMapView" ]
 
     initialize() {
-
         screen.orientation.addEventListener("change", (event) => {
             screenWidth = screen.orientation
             console.log('screen', screen)
@@ -31,9 +27,17 @@ export default class extends Controller {
             this.drawMap()
         }
     }
-
+    positionChangeEvent(position){
+        if(!markerMe) {
+            markerMe = new L.Marker([position.coords.latitude, position.coords.longitude], {icon: markerBlue});
+            markers.addLayer(markerMe)
+        }else{
+            markerMe.setLatLng([position.coords.latitude, position.coords.longitude]);
+        }
+    }
     connect() {
-
+        const self = this
+        self.element[self.identifier] = self
     }
 
     disconnect() {
@@ -41,7 +45,6 @@ export default class extends Controller {
     }
 
     drawMap() {
-        const coordinatenlijst = this.kaarttakenValue.kaart_taken_lijst
 
         markerIcon = L.Icon.extend({
             options: {
@@ -83,7 +86,7 @@ export default class extends Controller {
 
         //create the marker group
         markers = new L.featureGroup();
-        this.plotMarkers(coordinatenlijst);
+        // this.plotMarkers(coordinatenlijst);
         //add the markers to the map
         map.addLayer(markers);
         //fit the map to the markers
@@ -95,21 +98,19 @@ export default class extends Controller {
     plotMarkers(coordinatenlijst) {
         console.log("plot markers, coordinatenlijst", coordinatenlijst)
         if(coordinatenlijst){
-            navigator.geolocation.getCurrentPosition(this.handleCurrentLocation, this.handleNoCurrentLocation);
-
             for(let i = 0; i<coordinatenlijst.length; i++){
                 const lat = coordinatenlijst[i].geometrie.coordinates[1]
                 const long = coordinatenlijst[i].geometrie.coordinates[0]
                 const adres = coordinatenlijst[i].adres;
-                const afbeelding = coordinatenlijst[i].afbeelding;
-                const omschrijving = coordinatenlijst[i].omschrijving;
-                const taakId = coordinatenlijst[i].taak_id
+                const afbeelding = coordinatenlijst[i].afbeeldingUrl;
+                const omschrijving = coordinatenlijst[i].onderwerpen;
+                const taakId = coordinatenlijst[i].taakId
                 let showImage = false
 
                 if(typeof(afbeelding) === 'string') showImage = true
                 const markerLocation = new L.LatLng(lat, long);
                 const marker = new L.Marker(markerLocation, {icon: markerGreen});
-                const paragraphDistance = currentLocation ? `<p>Afstand: ${(Math.round(markerLocation.distanceTo(currentLocation)))} meter</p>` : ""
+                const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
 
                 if (showImage) {
                     marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
@@ -119,10 +120,7 @@ export default class extends Controller {
                 markers.addLayer(marker);
             }
 
-            if(currentLocation) {
-                const markerCurrent = new L.Marker(currentLocation, {icon: markerBlue});
-                markers.addLayer(markerCurrent)
-            }
+
         }
     }
 
@@ -131,31 +129,5 @@ export default class extends Controller {
         document.getElementById('taken_lijst').classList.toggle('showMap')
         const frame = document.getElementById('taken_lijst');
         frame.reload()
-    }
-
-    handleCurrentLocation(pos) {
-        const crd = pos.coords;
-        console.log("handleCurrentLocation, pos.coords:", pos.coords)
-        if(pos.coords){
-            currentLocation = [pos.coords.latitude, pos.coords.longitude]
-        }
-    }
-
-    handleNoCurrentLocation(error) {
-        console.log("handleNoCurrentLocation, error: ", error)
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-              console.log("User denied the request for Geolocation.")
-              break;
-            case error.POSITION_UNAVAILABLE:
-              console.log("Location information is unavailable.")
-              break;
-            case error.TIMEOUT:
-              console.log("The request to get user location timed out.")
-              break;
-            case error.UNKNOWN_ERROR:
-              console.log("An unknown error occurred.")
-              break;
-        }
     }
 }

@@ -21,7 +21,6 @@ from apps.main.utils import (
     to_base64,
 )
 from apps.meldingen.service import MeldingenService
-from apps.services.onderwerpen import render_onderwerp
 from apps.taken.models import Taak, Taaktype
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -239,38 +238,14 @@ def taken_lijst(request, status="nieuw"):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    kaart_taken = {
-        "kaart_taken_lijst": [
-            {
-                "taak_id": taak.id,
-                "geometrie": taak.melding.response_json.get(
-                    "locaties_voor_melding", []
-                )[0].get("geometrie")
-                if taak.melding.response_json.get("locaties_voor_melding", [])
-                else {},
-                "adres": f'{taak.melding.response_json.get("locaties_voor_melding", [])[0].get("straatnaam")} {str(taak.melding.response_json.get("locaties_voor_melding", [])[0].get("huisnummer"))}'
-                if taak.melding.response_json.get("locaties_voor_melding", [])
-                else {},
-                "afbeelding": taak.melding.response_json.get("bijlagen", [])[0].get(
-                    "afbeelding_verkleind_relative_url"
-                )
-                if taak.melding.response_json.get("bijlagen", [])
-                else {},
-                "omschrijving": ", ".join(
-                    [
-                        render_onderwerp(onderwerp_url)
-                        for onderwerp_url in taak.melding.response_json.get(
-                            "onderwerpen", []
-                        )
-                    ]
-                ),
-            }
-            for taak in taken_gefilterd
-            if taak.melding.response_json.get("locaties_voor_melding", [])
-            and taak.melding.response_json.get("locaties_voor_melding", [])[0].get(
-                "geometrie"
-            )
-        ]
+    # get css order numbers for adres of taak
+    taken_sorted_by_adres = {
+        id: i
+        for i, id in enumerate(
+            taken_gefilterd.order_by(
+                "melding__response_json__locaties_voor_melding__straatnaam"
+            ).values_list("id", flat=True)
+        )
     }
 
     taken_paginated = page_obj.object_list
@@ -285,8 +260,8 @@ def taken_lijst(request, status="nieuw"):
             "taken": taken_paginated,
             "taken_aantal": taken_aantal,
             "page_obj": page_obj,
-            "kaart_taken": kaart_taken,
             "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
+            "taken_sorted_by_adres": taken_sorted_by_adres,
         },
     )
 

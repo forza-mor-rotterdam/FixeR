@@ -147,6 +147,8 @@ button.toggle-view {
         .list__incidents,
         .container__map {
             display: block;
+            display: flex;
+            flex-direction: column;
             width: 50%;
             left: 50%;
         }
