@@ -26,6 +26,9 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
+from django.db import models
+from django.db.models import Value
+from django.db.models.functions import Concat
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -242,9 +245,16 @@ def taken_lijst(request, status="nieuw"):
     taken_sorted_by_adres = {
         id: i
         for i, id in enumerate(
-            taken_gefilterd.order_by(
-                "melding__response_json__locaties_voor_melding__straatnaam"
-            ).values_list("id", flat=True)
+            taken_gefilterd.annotate(
+                adres=Concat(
+                    "melding__response_json__locaties_voor_melding__0__straatnaam",
+                    Value(" "),
+                    "melding__response_json__locaties_voor_melding__0__huisnummer",
+                    output_field=models.CharField(),
+                )
+            )
+            .order_by("adres")
+            .values_list("id", flat=True)
         )
     }
 
