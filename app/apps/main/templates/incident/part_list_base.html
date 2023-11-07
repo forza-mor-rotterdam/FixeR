@@ -35,35 +35,6 @@
                     </button>
                 </div>
             </div>
-            <div class="container__sorting hidden-vertical" data-incidentlist-target="sorting">
-                {% if sort_options %}
-                <div class="wrapper">
-                    <label class="visually-hidden" for="select_ordering">Sorteren</label>
-                    <select class="form-select" data-action="change->incidentlist#onSort" id="select_ordering">
-                        {% for option in sort_options %}
-                        <option value="{{option.0}}" {% if option.0 == sort_by %} selected{% endif %}>{{ option.1 }}</option>
-                        {% endfor %}
-                    </select>
-                    <div class="form-check form-switch">
-                        <label class="form-switch-label" for="grouped">
-                            <span>Groeperen</span>
-                            <input
-                                class="form-switch-input"
-                                type="checkbox"
-                                value="group"
-                                {% if grouped_by %}checked{% endif %}
-                                name="grouped"
-                                id="grouped"
-                                data-action="incidentlist#onGroup"
-                            >
-                            <div class="container__slider">
-                                <span class="slider"></span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
         </div>
         <div class="container__list seperated">
             {% if taken %}
@@ -72,11 +43,12 @@
                     <div class="wrapper">
                         <select data-action="incidentlist#sorterenOp">
                             <option value="Datum" >Datum (nieuwste bovenaan)</option>
-                            <option value="DatumReverse" >Datum (oudste bovenaan)</option>
-                            <option value="Afstand">Afstand oplopend</option>
-                            <option value="AfstandReverse">Afstand aflopend</option>
-                            <option value="Adres">Adres</option>
-                            <option value="Postcode">Postcode</option>
+                            <option value="Datum-reverse" >Datum (oudste bovenaan)</option>
+                            <option value="Afstand">Afstand</option>
+                            <option value="Adres">Adres (a-z)</option>
+                            <option value="Adres-reverse">Adres (z-a)</option>
+                            <option value="Postcode">Postcode (1000-9999)</option>
+                            <option value="Postcode-reverse">Postcode (9999-1000)</option>
                         </select>
                     </div>
                 </div>
