@@ -83,16 +83,12 @@ export default class extends Controller {
         }
     }
     sorterenOp(e){
-        let directionStyle = "column"
-        if (e.target.value.includes("Reverse")){
-            directionStyle = "column-reverse"
+        let selectedOrder = e.target.value.split("-")[0]
+        if (selectedOrder != activeOrder){
+            self.setStyleOrder(selectedOrder)
         }
-        // } else {
-        //     directionStyle = "column"
-        //     self.setStyleOrder(e.target.value)
-        // }
-        activeOrder = e.target.value
-        self.taakItemLijstTarget.style.flexDirection = directionStyle
+        activeOrder = selectedOrder
+        self.taakItemLijstTarget.style.flexDirection = e.target.value.replace(e.target.value.split("-")[0], "column")
     }
     positionWatchError(error){
         console.log("handleNoCurrentLocation, error: ", error)
