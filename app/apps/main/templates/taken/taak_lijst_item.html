@@ -59,11 +59,18 @@
                     </div>
 
                     <div class="container__info">
-                        {% with taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates as geo %}
-                        <p>Afstand: <span data-incidentlist-target="taakAfstand"  data-latitude="{{geo.1|replace_comma_by_dot}}" data-longitude="{{geo.0|replace_comma_by_dot}}" ></span> meter</p>
-                        {% endwith %}
                         {% context_template "taak_lijst_item_titel.html" as title_template %}
                         {% include title_template %}
+                        <div class="incident__moment">
+                            <span data-taak-target="incidentDate">
+                                {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|to_date }}<br>
+                            </span>
+                        </div>
+                        <div class="incident__distance">
+                            {% with taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates as geo %}
+                            <span><span data-incidentlist-target="taakAfstand"  data-latitude="{{geo.1|replace_comma_by_dot}}" data-longitude="{{geo.0|replace_comma_by_dot}}" ></span> meter</span>
+                            {% endwith %}
+                        </div>
                     </div>
                 </a>
             </div>

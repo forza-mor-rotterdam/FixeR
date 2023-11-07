@@ -35,10 +35,6 @@
                     </button>
                 </div>
             </div>
-            <a data-incidentlist-action-param="TaakAangemaakt" data-action="click->incidentlist#sorterenOp">Taak aangemaakt</a>
-            <a data-incidentlist-action-param="Afstand" data-action="click->incidentlist#sorterenOp">Afstand</a>
-            <a data-incidentlist-action-param="Adres" data-action="click->incidentlist#sorterenOp">Adres</a>
-            <a data-incidentlist-action-param="Postcode" data-action="click->incidentlist#sorterenOp">Postcode</a>
             <div class="container__sorting hidden-vertical" data-incidentlist-target="sorting">
                 {% if sort_options %}
                 <div class="wrapper">
@@ -71,6 +67,19 @@
         </div>
         <div class="container__list seperated">
             {% if taken %}
+
+                <div class="container__sorting">
+                    <div class="wrapper">
+                        <select data-action="incidentlist#sorterenOp">
+                            <option value="Datum" >Datum (nieuwste bovenaan)</option>
+                            <option value="DatumReverse" >Datum (oudste bovenaan)</option>
+                            <option value="Afstand">Afstand oplopend</option>
+                            <option value="AfstandReverse">Afstand aflopend</option>
+                            <option value="Adres">Adres</option>
+                            <option value="Postcode">Postcode</option>
+                        </select>
+                    </div>
+                </div>
                 <div
                     data-incidentlist-target="taakItemLijst"
                     class="list__incidents"

@@ -1,26 +1,10 @@
 {% load to_date vind_in_dict from main_tags %}
 <div>
 
-    <h2 class="h4">
+    <h2 class="h5">
         {{ taak.melding.response_json.locaties_voor_melding.0.straatnaam }} {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
     </h2>
     <div>
         <span class="incident__category">{{ taak.titel }}</span>
-
-        <div class="incident__header">Melding: {{taak.melding.response_json.id}}
-            <h2>{{ taak.locatie.adres.straatNaam|lower|capfirst }} {% if taak.locatie.adres.huisnummer %}{{ taak.locatie.adres.huisnummer }}{%endif%}</h2>
-            {% if taak.spoed %}<span class="icon icon--warning">{% endif %}</span>
-        </div>
-        <span class="incident__category">
-            {{ taak.locatie.onderwerp.omschrijving }}
-        </span>
-        <div class="incident__moment">
-            <span>{{ taak.locatie.status }}</span>
-        </div>
-        <div class="incident__moment">
-            <span data-taak-target="incidentDate">
-                {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|to_date }}
-            </span>
-        </div>
     </div>
 </div>
