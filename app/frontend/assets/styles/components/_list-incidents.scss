@@ -185,6 +185,10 @@
             h2 {
                 margin: 0 0 4px;
                 text-decoration: none;
+                span {
+                    color: $gray-tint09;
+                    font-weight: 400;
+                }
             }
 
             .incident__category,

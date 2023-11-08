@@ -2,7 +2,7 @@
 <div>
 
     <h2 class="h5">
-        {{ taak.melding.response_json.locaties_voor_melding.0.straatnaam }} {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
+        {{ taak.melding.response_json.locaties_voor_melding.0.straatnaam }} {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}{% if taak.melding.response_json.locaties_voor_melding.0.postcode %}<span> ({{ taak.melding.response_json.locaties_voor_melding.0.postcode }})</span>{% endif %}
     </h2>
     <div>
         <span class="incident__category">{{ taak.titel }}</span>
