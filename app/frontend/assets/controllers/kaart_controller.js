@@ -3,14 +3,12 @@ import { Controller } from '@hotwired/stimulus';
 let markers = null
 let markerIcon, markerBlue, markerGreen, markerMagenta = null
 let markerMe = null
-let currentLocation = null
 let mapDiv = null
 let map = null
 let screenWidth = 0
 const url = "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}";
 
 export default class extends Controller {
-    static targets = [ "toggleMapView" ]
 
     initialize() {
         screen.orientation.addEventListener("change", (event) => {
@@ -34,6 +32,7 @@ export default class extends Controller {
         }else{
             markerMe.setLatLng([position.coords.latitude, position.coords.longitude]);
         }
+        map.fitBounds(markers.getBounds());
     }
     connect() {
         const self = this
@@ -90,9 +89,6 @@ export default class extends Controller {
         //add the markers to the map
         map.addLayer(markers);
         //fit the map to the markers
-        setTimeout(function() {
-            map.fitBounds(markers.getBounds());
-        }, 200);
     }
 
     plotMarkers(coordinatenlijst) {
@@ -105,14 +101,12 @@ export default class extends Controller {
                 const afbeelding = coordinatenlijst[i].afbeeldingUrl;
                 const omschrijving = coordinatenlijst[i].onderwerpen;
                 const taakId = coordinatenlijst[i].taakId
-                let showImage = false
 
-                if(typeof(afbeelding) === 'string') showImage = true
                 const markerLocation = new L.LatLng(lat, long);
                 const marker = new L.Marker(markerLocation, {icon: markerGreen});
                 const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
 
-                if (showImage) {
+                if (afbeelding) {
                     marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
                 }else{
                     marker.bindPopup(`<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
@@ -122,12 +116,6 @@ export default class extends Controller {
 
 
         }
-    }
-
-    toggleMapView(e) {
-        console.log("toggleMapView")
-        document.getElementById('taken_lijst').classList.toggle('showMap')
-        const frame = document.getElementById('taken_lijst');
-        frame.reload()
+        map.fitBounds(markers.getBounds());
     }
 }
