@@ -4,6 +4,7 @@ let showSortingContainer = false;
 let sortDirectionReversed = false;
 let currentPosition = [51.919489, 4.465413]
 let positionWatchId = null
+let kaartMarkers = []
 self = null
 const positionWatchOptions = {
     enableHighAccuracy: false,
@@ -26,10 +27,7 @@ export default class extends Controller {
     initialize() {
 
     }
-    taakAfstandTargetConnected(element) {
-        const markerLocation = new L.LatLng(element.dataset.latitude, element.dataset.longitude);
-        element.textContent = Math.round(markerLocation.distanceTo(currentPosition))
-    }
+
     connect(e) {
         this.element[this.identifier] = this
         self = this
@@ -42,7 +40,6 @@ export default class extends Controller {
 
         self.setStyleOrder(activeOrder)
         self.taakItemLijstTarget.style.flexDirection = "column"
-        let kaartMarkers = []
         for (let i = 0; i < self.taakItemTargets.length; i++){
             const taakItem = self.taakItemTargets[i]
             if (taakItem.dataset.geometrie != ""){
@@ -57,6 +54,12 @@ export default class extends Controller {
         }
         this.kaartOutlet.plotMarkers(kaartMarkers)
     }
+
+    taakAfstandTargetConnected(element) {
+        const markerLocation = new L.LatLng(element.dataset.latitude, element.dataset.longitude);
+        element.textContent = Math.round(markerLocation.distanceTo(currentPosition))
+    }
+
     positionWatchSuccess(position){
         currentPosition = [position.coords.latitude, position.coords.longitude]
         self.kaartOutlet.positionChangeEvent(position)
@@ -118,9 +121,11 @@ export default class extends Controller {
     }
 
     toggleMapView(e) {
+        console.log('_ _ _ toggleMapView _ _ _ ')
         document.getElementById('taken_lijst').classList.toggle('showMap')
-        const frame = document.getElementById('taken_lijst');
-        frame.reload()
+        this.kaartOutlet.drawMap()
+        // const frame = document.getElementById('taken_lijst');
+        // frame.reload()
     }
     onGroup(e) {
         console.log("onGroup", e.target.checked)

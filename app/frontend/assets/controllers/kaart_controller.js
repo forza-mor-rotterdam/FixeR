@@ -45,7 +45,7 @@ export default class extends Controller {
     }
 
     drawMap() {
-
+        console.log("drawMap")
         markerIcon = L.Icon.extend({
             options: {
                 iconSize:     [26, 26],
@@ -125,9 +125,9 @@ export default class extends Controller {
     }
 
     toggleMapView(e) {
-        console.log("toggleMapView")
+        console.log("_____toggleMapView_____")
         document.getElementById('taken_lijst').classList.toggle('showMap')
         const frame = document.getElementById('taken_lijst');
-        frame.reload()
+        // frame.reload()
     }
 }
