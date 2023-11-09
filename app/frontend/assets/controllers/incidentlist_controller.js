@@ -41,7 +41,7 @@ export default class extends Controller {
         }
 
         self.setStyleOrder(activeOrder)
-        self.taakItemLijstTarget.style.flexDirection = "column"
+        // self.taakItemLijstTarget.style.flexDirection = "column-reverse"
         let kaartMarkers = []
         for (let i = 0; i < self.taakItemTargets.length; i++){
             const taakItem = self.taakItemTargets[i]
@@ -56,11 +56,35 @@ export default class extends Controller {
             }
         }
         this.kaartOutlet.plotMarkers(kaartMarkers)
+
+        this.element.addEventListener("markerSelectedEvent", function(e){
+            console.log("markerSelectedEvent")
+            console.log(e)
+            self.selecteerTaakItem(e.detail.taakId)
+        });
+        this.element.addEventListener("markerDeselectedEvent", function(e){
+            self.deselecteerTaakItem(e.detail.taakId)
+        });
+
+    }
+    selecteerTaakItem(taakId) {
+        for(let i =0; i < self.taakItemTargets.length; i++){
+            if (self.taakItemTargets[i].dataset.id == taakId){
+                self.taakItemTargets[i].classList.add("selected")
+                self.taakItemTargets[i].scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" })
+            } else {
+                self.taakItemTargets[i].classList.remove("selected")
+            }
+        }
+    }
+    deselecteerTaakItem(taakId){
+        for(let i =0; i < self.taakItemTargets.length; i++){
+            self.taakItemTargets[i].classList.remove("selected")
+        }
     }
     positionWatchSuccess(position){
         currentPosition = [position.coords.latitude, position.coords.longitude]
         self.kaartOutlet.positionChangeEvent(position)
-        self.taakItemLijstTarget.style.display = "flex"
         for(let i = 0; i < self.taakAfstandTargets.length; i++){
             const elem = self.taakAfstandTargets[i]
             const markerLocation = new L.LatLng(elem.dataset.latitude, elem.dataset.longitude);
@@ -88,7 +112,8 @@ export default class extends Controller {
             self.setStyleOrder(selectedOrder)
         }
         activeOrder = selectedOrder
-        self.taakItemLijstTarget.style.flexDirection = e.target.value.replace(e.target.value.split("-")[0], "column")
+        self.taakItemLijstTarget.classList[(e.target.value.split("-").length > 1) ? "remove" : "add"]("reverse")
+        self.taakItemLijstTarget.scrollTop = 0;
     }
     positionWatchError(error){
         console.log("handleNoCurrentLocation, error: ", error)

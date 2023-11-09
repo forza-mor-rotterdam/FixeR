@@ -5,25 +5,45 @@ let markerIcon, markerBlue, markerGreen, markerMagenta = null
 let markerMe = null
 let mapDiv = null
 let map = null
-let screenWidth = 0
+let self = null
 const url = "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}";
 
 export default class extends Controller {
 
     initialize() {
-        screen.orientation.addEventListener("change", (event) => {
-            screenWidth = screen.orientation
-            console.log('screen', screen)
-            const type = event.target.type;
-            const angle = event.target.angle;
-            this.drawMap()
-        });
+        self = this
+
+        // screen.orientation.addEventListener("change", (event) => {
+        //     screenWidth = screen.orientation
+        //     console.log('screen', screen)
+        //     const type = event.target.type;
+        //     const angle = event.target.angle;
+        //     this.drawMap()
+        // });
 
         mapDiv = document.getElementById('incidentMap')
         map = L.map('incidentMap')
         if(mapDiv){
             this.drawMap()
         }
+
+        map.on('popupopen', ({ popup }) => {
+            if (popup instanceof L.Popup) {
+                const marker = popup._source;
+                console.log(marker.options)
+                let markerSelectedEvent = new CustomEvent('markerSelectedEvent', { bubbles: true, cancelable: false, detail: {taakId:marker.options.taakId}});
+                self.element.dispatchEvent(markerSelectedEvent);
+            }
+        });
+        map.on('popupclose', ({ popup }) => {
+            if (popup instanceof L.Popup) {
+                const marker = popup._source;
+                let markerSelectedEvent = new CustomEvent('markerDeselectedEvent', { bubbles: true, cancelable: false, detail: {taakId:marker.options.taakId}});
+                self.element.dispatchEvent(markerSelectedEvent);
+
+            }
+        });
+
     }
     positionChangeEvent(position){
         if(!markerMe) {
@@ -103,7 +123,7 @@ export default class extends Controller {
                 const taakId = coordinatenlijst[i].taakId
 
                 const markerLocation = new L.LatLng(lat, long);
-                const marker = new L.Marker(markerLocation, {icon: markerGreen});
+                const marker = new L.Marker(markerLocation, {icon: markerGreen, taakId: taakId});
                 const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
 
                 if (afbeelding) {

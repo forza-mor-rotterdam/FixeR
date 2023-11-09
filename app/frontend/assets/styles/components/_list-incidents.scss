@@ -52,7 +52,7 @@
         > .container__flex {
             display: flex;
             flex-direction: column;
-            width: 50%;
+            width: 35%;
 
             .list__incidents {
                 overflow-y: auto;
@@ -98,9 +98,19 @@
     padding: 0;
     margin: 0;
     overflow: hidden;
-
+    .list__incidents__scroll-wrapper {
+        overflow: hidden;
+        flex: 1;
+        display: flex;
+        flex-direction: column-reverse;
+        justify-content: safe flex-end;
+    }
     .container__pagination + .list-item {
         border-top: 1px solid $gray-tint04;
+    }
+    &.reverse .list__incidents__scroll-wrapper{
+        flex-direction: column;
+        justify-content: safe flex-start;
     }
 
     .list-item {
@@ -115,6 +125,10 @@
         user-select: none;
         border-bottom: 1px solid $gray-tint04;
 
+        &.selected a {
+            outline-offset: 0px;
+            outline: 2px solid $primary-active;
+        }
         .show-modal & {
             cursor: initial;
         }
@@ -306,6 +320,13 @@
         .container__controls {
             .btn-navigate--small.toggle-view {
                 display: none;
+            }
+        }
+    }
+    .showMap {
+        .container__flex {
+            .list__incidents {
+                display: block !important;
             }
         }
     }

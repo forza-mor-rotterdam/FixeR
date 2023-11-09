@@ -261,7 +261,7 @@ def taken_lijst(request, status="nieuw"):
     taken_paginated = page_obj.object_list
     return render(
         request,
-        "incident/part_list.html"
+        "incident/part_list_base.html"
         if not grouped_by
         else "incident/part_list_grouped.html",
         {
