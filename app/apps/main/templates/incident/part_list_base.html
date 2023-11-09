@@ -38,28 +38,29 @@
         </div>
         <div class="container__list seperated">
             {% if taken %}
-
-                <div class="container__sorting">
-                    <div class="wrapper">
-                        <select data-action="incidentlist#sorterenOp">
-                            <option value="Datum" >Datum (nieuwste bovenaan)</option>
-                            <option value="Datum-reverse" >Datum (oudste bovenaan)</option>
-                            <option value="Afstand">Afstand</option>
-                            <option value="Adres">Adres (a-z)</option>
-                            <option value="Adres-reverse">Adres (z-a)</option>
-                            <option value="Postcode">Postcode (1000-9999)</option>
-                            <option value="Postcode-reverse">Postcode (9999-1000)</option>
-                        </select>
+                <div class="container__flex">
+                    <div class="container__sorting">
+                        <div class="wrapper">
+                            <select data-action="incidentlist#sorterenOp">
+                                <option value="Datum" >Datum (nieuwste bovenaan)</option>
+                                <option value="Datum-reverse" >Datum (oudste bovenaan)</option>
+                                <option value="Afstand">Afstand</option>
+                                <option value="Adres">Adres (a-z)</option>
+                                <option value="Adres-reverse">Adres (z-a)</option>
+                                <option value="Postcode">Postcode (1000-9999)</option>
+                                <option value="Postcode-reverse">Postcode (9999-1000)</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div
-                    data-incidentlist-target="taakItemLijst"
-                    class="list__incidents"
-                    data-testid="incidentsList"
-                    >
-                    {% block list_template%}
+                    <div
+                        data-incidentlist-target="taakItemLijst"
+                        class="list__incidents"
+                        data-testid="incidentsList"
+                        >
+                        {% block list_template%}
 
-                    {% endblock %}
+                        {% endblock %}
+                    </div>
                 </div>
 
                 {% context_template "taak_kaart.html" as kaart_template %}

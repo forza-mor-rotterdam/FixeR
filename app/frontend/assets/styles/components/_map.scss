@@ -144,7 +144,6 @@ button.toggle-view {
 
 @media (min-width: map-get($grid-breakpoints, lg)) {
     .container__list {
-        .list__incidents,
         .container__map {
             display: block;
             display: flex;
