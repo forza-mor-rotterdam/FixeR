@@ -15,7 +15,7 @@
         data-adres="{{ taak.adres }}"
         data-geometrie="{{ taak.geometrie|json_encode }}"
         data-afbeelding-url="{{ taak.afbeelding_url }}"
-        data-order-taak-aangemaakt="{{ taak.aangemaakt_op|to_date|to_timestamp }}"
+        data-order-datum="{{ taak.aangemaakt_op|to_date|to_timestamp }}"
         data-order-adres="{{ taak|adres_order_nummer:taken_sorted_by_adres }}"
         data-order-afstand="0"
         data-order-postcode="{{ taak.postcode_digits }}"
@@ -63,7 +63,9 @@
                         {% include title_template %}
                         <div class="incident__moment">
                             <span data-taak-target="incidentDate">
-                                {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|to_date }}<br>
+                                {% localize on %}
+                                {% if taak.taakstatus.naam != "nieuw" %}{{ taak.taakstatus.naam }}: {% endif %}{{ taak.taakstatus.aangemaakt_op|to_date|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|to_date|time:"H:i" }}<br>
+                                {% endlocalize %}
                             </span>
                         </div>
                         <div class="incident__distance">

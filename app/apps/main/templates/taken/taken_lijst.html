@@ -4,7 +4,7 @@
 {% block title %}Taken{% endblock %}
 
 {% block body %}
-<turbo-frame id="taak_basis">
+<turbo-frame id="taak_basis" data-turbo-action="advance">
     <turbo-frame id="taken_lijst" src="{{ taken_lijst_url }}" data-incidentlist-target="takenLijst"></turbo-frame>
     <div
         class="full-page-view full-page-view__filters"

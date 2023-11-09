@@ -42,8 +42,8 @@
                     <div class="container__sorting">
                         <div class="wrapper">
                             <select data-action="incidentlist#sorterenOp">
-                                <option value="Datum" >Datum (nieuwste bovenaan)</option>
-                                <option value="Datum-reverse" >Datum (oudste bovenaan)</option>
+                                <option value="Datum-reverse" >Datum (nieuwste bovenaan)</option>
+                                <option value="Datum" >Datum (oudste bovenaan)</option>
                                 <option value="Afstand">Afstand</option>
                                 <option value="Adres">Adres (a-z)</option>
                                 <option value="Adres-reverse">Adres (z-a)</option>
@@ -57,9 +57,13 @@
                         class="list__incidents"
                         data-testid="incidentsList"
                         >
-                        {% block list_template%}
-
-                        {% endblock %}
+                        {% include "snippets/paginator.html" with page_obj=page_obj %}
+                        <div class="list__incidents__scroll-wrapper">
+                            {% for taak in taken %}
+                                {% include "taken/taak_lijst_item.html" %}
+                            {% endfor %}
+                        </div>
+                        {% include "snippets/paginator.html" with page_obj=page_obj %}
                     </div>
                 </div>
 

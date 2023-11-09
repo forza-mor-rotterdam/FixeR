@@ -63,7 +63,9 @@
         left: 0;
         width: 100%;
         height: calc(100vh - 113px);
-        display: none;
+        // display: none;
+        visibility: hidden;
+        pointer-events: none;
         padding-bottom: 0;
 
         .map {
@@ -76,6 +78,8 @@
 .showMap {
     .container__map {
         display: block;
+        visibility: visible;
+        pointer-events: all;
     }
 }
 
@@ -146,10 +150,12 @@ button.toggle-view {
     .container__list {
         .container__map {
             display: block;
+            visibility: visible;
+            pointer-events: all;
             display: flex;
             flex-direction: column;
-            width: 50%;
-            left: 50%;
+            width: 65%;
+            left: 35%;
         }
     }
 }
