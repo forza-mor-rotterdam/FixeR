@@ -1,7 +1,6 @@
 .showMap {
-
-    .list__incidents {
-        display: none !important;
+    .container__flex {
+        display: none;
     }
 }
 .container__map {
@@ -53,6 +52,10 @@
         width: 100%;
     };
 }
+.container__map-tools {
+    height: 76px;
+    background-color: $gray-tint02;
+}
 
 .container__list {
     position: relative;
@@ -62,14 +65,13 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: calc(100vh - 113px);
-        // display: none;
+        height: 0;
         visibility: hidden;
         pointer-events: none;
         padding-bottom: 0;
 
         .map {
-            height: 100%;
+            height: calc(100vh - 188px); // hoogte van de header
             padding-bottom: 0;
         }
     }
@@ -77,9 +79,11 @@
 
 .showMap {
     .container__map {
+        height: calc(100vh - 113px);
         display: block;
         visibility: visible;
         pointer-events: all;
+        width: 100%;
     }
 }
 
@@ -149,6 +153,7 @@ button.toggle-view {
 @media (min-width: map-get($grid-breakpoints, lg)) {
     .container__list {
         .container__map {
+            height: calc(100vh - 113px);
             display: block;
             visibility: visible;
             pointer-events: all;

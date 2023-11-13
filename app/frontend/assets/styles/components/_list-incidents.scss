@@ -75,6 +75,9 @@
         justify-content: space-between;
 
     }
+    form {
+        width: 100%;
+    }
     select {
         background-color: white;
         border: 1px solid $gray-tint08;
@@ -325,9 +328,7 @@
     }
     .showMap {
         .container__flex {
-            .list__incidents {
-                display: block !important;
-            }
+            display: block !important;
         }
     }
 }

@@ -23,8 +23,10 @@ from apps.main.views import (
     http_404,
     http_500,
     incident_modal_handle,
+    kaart_modus,
     meldingen_bestand,
     root,
+    sorteer_filter,
     taak_detail,
     taken_afgerond_overzicht,
     taken_lijst,
@@ -73,6 +75,8 @@ urlpatterns = [
         taken_afgerond_overzicht,
         name="taken_afgerond_overzicht",
     ),
+    path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
+    path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
     # END taken
     # START partials

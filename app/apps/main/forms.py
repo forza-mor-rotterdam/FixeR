@@ -134,3 +134,38 @@ class TaakBehandelForm(forms.Form):
                 ),
                 required=False,
             )
+
+
+class SorteerFilterForm(forms.Form):
+    sorteer_opties = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={
+                "data-action": "sorteerFilter#onChangeHandler",
+                "data-sorteerFilter-target": "sorteerField",
+            }
+        ),
+        choices=(
+            ("Datum-reverse", "Datum (nieuwste bovenaan)"),
+            ("Datum", "Datum (oudste bovenaan)"),
+            ("Afstand", "Afstand"),
+            ("Adres", "Adres (a-z)"),
+            ("Adres-reverse", "Adres (z-a)"),
+            ("Postcode", "Postcode (1000-9999)"),
+            ("Postcode-reverse", "Postcode (9999-1000)"),
+        ),
+    )
+
+
+class KaartModusForm(forms.Form):
+    kaart_modus = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-action": "click->kaartModus#kaartModusOptionClickHandler",
+            }
+        ),
+        choices=(
+            ("volgen", "Volg mij"),
+            ("toon_alles", "Toon alle taken"),
+        ),
+    )

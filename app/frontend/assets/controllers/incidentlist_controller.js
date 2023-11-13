@@ -24,16 +24,22 @@ export default class extends Controller {
     static targets = [ "sorting", "toggleMapView", "taakAfstand", "taakItem", "taakItemLijst"]
 
     initialize() {
-
+        console.log("initialize")
+        this.element[this.identifier] = this
+        self = this
+        positionWatchId = navigator.geolocation.watchPosition(this.positionWatchSuccess, this.positionWatchError, positionWatchOptions);
+        this.element.addEventListener("orderChangeEvent", function(e){
+            self.sorterenOp(e.detail.order)
+        });
+        self.element.addEventListener("kaartModusChangeEvent", function(e){
+            self.kaartOutlet.kaartModusChangeHandler(e.detail.kaartModus)
+        });
     }
     taakAfstandTargetConnected(element) {
         const markerLocation = new L.LatLng(element.dataset.latitude, element.dataset.longitude);
         element.textContent = Math.round(markerLocation.distanceTo(currentPosition))
     }
     connect(e) {
-        this.element[this.identifier] = this
-        self = this
-        positionWatchId = navigator.geolocation.watchPosition(this.positionWatchSuccess, this.positionWatchError, positionWatchOptions);
 
         if(this.hasSortingTarget && showSortingContainer === true ) {
             this.sortingTarget.classList.remove("hidden-vertical")
@@ -41,7 +47,6 @@ export default class extends Controller {
         }
 
         self.setStyleOrder(activeOrder)
-        // self.taakItemLijstTarget.style.flexDirection = "column-reverse"
         let kaartMarkers = []
         for (let i = 0; i < self.taakItemTargets.length; i++){
             const taakItem = self.taakItemTargets[i]
@@ -58,8 +63,6 @@ export default class extends Controller {
         this.kaartOutlet.plotMarkers(kaartMarkers)
 
         this.element.addEventListener("markerSelectedEvent", function(e){
-            console.log("markerSelectedEvent")
-            console.log(e)
             self.selecteerTaakItem(e.detail.taakId)
         });
         this.element.addEventListener("markerDeselectedEvent", function(e){
@@ -106,13 +109,13 @@ export default class extends Controller {
             taakItem.style.order = taakItem.dataset[`order${order}`]
         }
     }
-    sorterenOp(e){
-        let selectedOrder = e.target.value.split("-")[0]
+    sorterenOp(order){
+        let selectedOrder = order.split("-")[0]
         if (selectedOrder != activeOrder){
             self.setStyleOrder(selectedOrder)
         }
         activeOrder = selectedOrder
-        self.taakItemLijstTarget.classList[(e.target.value.split("-").length > 1) ? "remove" : "add"]("reverse")
+        self.taakItemLijstTarget.classList[(order.split("-").length > 1) ? "remove" : "add"]("reverse")
         self.taakItemLijstTarget.scrollTop = 0;
     }
     positionWatchError(error){
