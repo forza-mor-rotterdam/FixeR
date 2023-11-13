@@ -6,7 +6,7 @@ let markerMe = null
 let mapDiv = null
 let map = null
 let self = null
-let kaartModus = "toon_alles"
+let kaartModus = "volgen"
 let zoomLevel = 16
 const url = "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}";
 
@@ -23,6 +23,11 @@ export default class extends Controller {
             this.drawMap()
         }
 
+        map.on('zoom', () => {
+            if (kaartModus == "volgen"){
+                zoomLevel = map.getZoom()
+            }
+        })
         map.on('popupopen', ({ popup }) => {
             if (popup instanceof L.Popup) {
                 const marker = popup._source;
@@ -39,12 +44,8 @@ export default class extends Controller {
             }
         });
 
-
     }
     kaartModusChangeHandler(_kaartModus){
-        if (kaartModus != _kaartModus && _kaartModus == "toon_alles") {
-            zoomLevel = map.getZoom()
-        }
         kaartModus = _kaartModus
         switch(kaartModus){
             case "volgen":

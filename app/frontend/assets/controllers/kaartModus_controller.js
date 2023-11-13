@@ -4,17 +4,13 @@ export default class extends Controller {
 
     static targets = [ "form" ]
 
-    connect() {
-        const field = this.formTarget.querySelector("[name='kaart_modus']:checked")
-        let kaartModusChangeEvent = new CustomEvent('kaartModusChangeEvent', { bubbles: true, cancelable: false, detail: {kaartModus:field.value}});
-        this.element.dispatchEvent(kaartModusChangeEvent);
-    }
+    connect() {}
+
     onChangeHandler(e){
         this.formTarget.requestSubmit()
     }
     kaartModusOptionClickHandler(e){
         let kaartModusChangeEvent = new CustomEvent('kaartModusChangeEvent', { bubbles: true, cancelable: false, detail: {kaartModus:e.target.value}});
         this.element.dispatchEvent(kaartModusChangeEvent);
-
     }
 }
