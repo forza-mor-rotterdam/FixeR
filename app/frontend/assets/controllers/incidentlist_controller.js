@@ -24,7 +24,6 @@ export default class extends Controller {
     static targets = [ "sorting", "toggleMapView", "taakAfstand", "taakItem", "taakItemLijst"]
 
     initialize() {
-        console.log("initialize")
         this.element[this.identifier] = this
         self = this
         positionWatchId = navigator.geolocation.watchPosition(this.positionWatchSuccess, this.positionWatchError, positionWatchOptions);
