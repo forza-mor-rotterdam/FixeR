@@ -6,20 +6,16 @@ let markerMe = null
 let mapDiv = null
 let map = null
 let self = null
+let kaartModus = "toon_alles"
+let zoomLevel = 16
 const url = "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}";
 
 export default class extends Controller {
 
     initialize() {
+        markerMe = null
         self = this
-
-        // screen.orientation.addEventListener("change", (event) => {
-        //     screenWidth = screen.orientation
-        //     console.log('screen', screen)
-        //     const type = event.target.type;
-        //     const angle = event.target.angle;
-        //     this.drawMap()
-        // });
+        self.element[self.identifier] = self
 
         mapDiv = document.getElementById('incidentMap')
         map = L.map('incidentMap')
@@ -30,7 +26,6 @@ export default class extends Controller {
         map.on('popupopen', ({ popup }) => {
             if (popup instanceof L.Popup) {
                 const marker = popup._source;
-                console.log(marker.options)
                 let markerSelectedEvent = new CustomEvent('markerSelectedEvent', { bubbles: true, cancelable: false, detail: {taakId:marker.options.taakId}});
                 self.element.dispatchEvent(markerSelectedEvent);
             }
@@ -44,6 +39,23 @@ export default class extends Controller {
             }
         });
 
+
+    }
+    kaartModusChangeHandler(_kaartModus){
+        if (kaartModus != _kaartModus && _kaartModus == "toon_alles") {
+            zoomLevel = map.getZoom()
+        }
+        kaartModus = _kaartModus
+        switch(kaartModus){
+            case "volgen":
+                map.flyTo(markerMe.getLatLng(), zoomLevel)
+            break;
+
+            case "toon_alles":
+                map.fitBounds(markers.getBounds());
+            break;
+        }
+
     }
     positionChangeEvent(position){
         if(!markerMe) {
@@ -52,16 +64,15 @@ export default class extends Controller {
         }else{
             markerMe.setLatLng([position.coords.latitude, position.coords.longitude]);
         }
-        map.fitBounds(markers.getBounds());
+        if (kaartModus == "volgen"){
+            map.setView(markerMe.getLatLng(), map.getZoom() || zoomLevel)
+        }else{
+            map.fitBounds(markers.getBounds());
+        }
     }
-    connect() {
-        const self = this
-        self.element[self.identifier] = self
-    }
+    connect() {}
 
-    disconnect() {
-        console.log("disconnect")
-    }
+    disconnect() {}
 
     drawMap() {
 
@@ -105,7 +116,6 @@ export default class extends Controller {
 
         //create the marker group
         markers = new L.featureGroup();
-        // this.plotMarkers(coordinatenlijst);
         //add the markers to the map
         map.addLayer(markers);
         //fit the map to the markers
@@ -133,9 +143,6 @@ export default class extends Controller {
                 }
                 markers.addLayer(marker);
             }
-
-
         }
-        map.fitBounds(markers.getBounds());
     }
 }

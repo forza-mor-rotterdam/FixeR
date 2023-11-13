@@ -8,6 +8,8 @@ from apps.main.forms import (
     HANDLED_OPTIONS,
     TAAK_BEHANDEL_RESOLUTIE,
     TAAK_BEHANDEL_STATUS,
+    KaartModusForm,
+    SorteerFilterForm,
     TaakBehandelForm,
 )
 from apps.main.utils import (
@@ -16,8 +18,12 @@ from apps.main.utils import (
     get_actieve_filters_aantal,
     get_filter_options,
     get_filters,
+    get_kaart_modus,
+    get_sortering,
     melding_naar_tijdlijn,
     set_actieve_filters,
+    set_kaart_modus,
+    set_sortering,
     to_base64,
 )
 from apps.meldingen.service import MeldingenService
@@ -273,6 +279,40 @@ def taken_lijst(request, status="nieuw"):
             "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
             "taken_sorted_by_adres": taken_sorted_by_adres,
         },
+    )
+
+
+@login_required
+def sorteer_filter(request):
+    sortering = get_sortering(request.user)
+    form = SorteerFilterForm({"sorteer_opties": sortering})
+
+    if request.POST:
+        form = SorteerFilterForm(request.POST)
+        if form.is_valid():
+            sortering = form.cleaned_data.get("sorteer_opties")
+            set_sortering(request.user, sortering)
+    return render(
+        request,
+        "snippets/sorteer_filter_form.html",
+        {"form": form},
+    )
+
+
+@login_required
+def kaart_modus(request):
+    kaart_modus = get_kaart_modus(request.user)
+    form = KaartModusForm({"kaart_modus": kaart_modus})
+
+    if request.POST:
+        form = KaartModusForm(request.POST, {"kaart_modus": kaart_modus})
+        if form.is_valid():
+            kaart_modus = form.cleaned_data.get("kaart_modus")
+            set_kaart_modus(request.user, kaart_modus)
+    return render(
+        request,
+        "snippets/kaart_modus_form.html",
+        {"form": form},
     )
 
 
