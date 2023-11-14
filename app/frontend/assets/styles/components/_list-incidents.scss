@@ -18,8 +18,7 @@
         flex: 0 1 25%;
         display: flex;
         flex-direction: row;
-        align-items: flex-end;
-        justify-content: center;
+        justify-content: flex-end;
 
         .btn {
             display: flex;
@@ -37,6 +36,23 @@
 
             span {
                 display: inline-block;
+            }
+
+            @media (min-width: map-get($grid-breakpoints, md)) {
+                height: 48px !important;
+                max-width: 48px;
+
+                .map,
+                .list {
+                    width: 32px;
+                    height: 32px;
+                }
+            }
+        }
+
+        .showMap & {
+            .btn-sort--small {
+                display: none;
             }
         }
     }
@@ -73,6 +89,10 @@
         padding: $input-padding-x;
         display: flex;
         justify-content: space-between;
+
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            background-color: transparent;
+        }
 
     }
     form {
@@ -321,7 +341,8 @@
 @media (min-width: map-get($grid-breakpoints, lg)) {
     .container__header {
         .container__controls {
-            .btn-navigate--small.toggle-view {
+            .btn-navigate--small.toggle-view,
+            .btn-sort--small {
                 display: none;
             }
         }
