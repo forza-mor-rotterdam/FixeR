@@ -335,7 +335,6 @@ h1 + .section--seperated {
 
 .show-vertical {
     max-height: 100%;
-    padding-top: 16px;
     transition: all 0.25s ease-in;
 
     &.container__sorting {
@@ -350,9 +349,15 @@ h1 + .section--seperated {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.25s ease-in;
-    &.container__sorting {
-        transition: all 0.25s ease-in;
-    }
+
+        &.container__sorting {
+            transition: all 0.25s ease-in;
+
+            @media (min-width: map-get($grid-breakpoints, lg)) {
+                max-height: 100px;
+                overflow: hidden;
+            }
+        }
 }
 
 .visually-hidden {

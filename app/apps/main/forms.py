@@ -162,10 +162,11 @@ class KaartModusForm(forms.Form):
             attrs={
                 "class": "list--form-radio-input",
                 "data-action": "click->kaartModus#kaartModusOptionClickHandler",
+                "hideLabel": True,
             }
         ),
         choices=(
-            ("volgen", "Volg mij"),
+            ("volgen", "Volg mijn locatie"),
             ("toon_alles", "Toon alle taken"),
         ),
     )

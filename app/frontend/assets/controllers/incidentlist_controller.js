@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 
 let showSortingContainer = false;
 let sortDirectionReversed = false;
-let currentPosition = [51.919489, 4.465413]
+let currentPosition = [51.9247772, 4.4780972]
 let positionWatchId = null
 self = null
 const positionWatchOptions = {

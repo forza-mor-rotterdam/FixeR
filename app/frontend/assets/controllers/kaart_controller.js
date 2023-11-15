@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 let markers = null
+const markerList = []
 let markerIcon, markerBlue, markerGreen, markerMagenta = null
 let markerMe = null
 let mapDiv = null
@@ -44,6 +45,8 @@ export default class extends Controller {
             }
         });
 
+        window.addEventListener("taakIsSelected", this.selectMarker, false);
+
     }
     kaartModusChangeHandler(_kaartModus){
         kaartModus = _kaartModus
@@ -74,6 +77,12 @@ export default class extends Controller {
     connect() {}
 
     disconnect() {}
+
+
+    selectMarker(e) {
+        let obj = markerList.find(obj => obj.options.taakId == e.detail.id);
+        obj.openPopup();
+    }
 
     drawMap() {
 
@@ -111,6 +120,10 @@ export default class extends Controller {
         const resizeObserver = new ResizeObserver(() => {
             console.log('resizeObserver')
             map.invalidateSize();
+
+            let markerSelectedEvent = new CustomEvent('markerDeselectedEvent', { bubbles: true, cancelable: false, detail: {}});
+            self.element.dispatchEvent(markerSelectedEvent);
+            map.closePopup()
         });
 
         resizeObserver.observe(mapDiv);
@@ -142,7 +155,8 @@ export default class extends Controller {
                 }else{
                     marker.bindPopup(`<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
                 }
-                markers.addLayer(marker);
+                markers.addLayer(marker)
+                markerList.push(marker)
             }
         }
     }
