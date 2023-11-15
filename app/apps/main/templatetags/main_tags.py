@@ -7,6 +7,11 @@ register = template.Library()
 
 
 @register.filter
+def replace_comma_by_dot(value):
+    return str(value).replace(",", ".")
+
+
+@register.filter
 def to_date(value):
     try:
         return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f%z")
@@ -17,6 +22,14 @@ def to_date(value):
     except Exception as e:
         print(e)
     return value
+
+
+@register.filter
+def to_timestamp(value):
+    try:
+        return int(value.timestamp())
+    except Exception:
+        print("No datatime instance")
 
 
 @register.filter
@@ -32,3 +45,8 @@ def vind_in_dict(op_zoek_dict, key):
     if isinstance(result, (list, tuple)):
         return result[0]
     return result
+
+
+@register.filter
+def adres_order_nummer(taak, taken_sorted):
+    return taken_sorted.get(taak.id, taak.id)

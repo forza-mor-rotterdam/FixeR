@@ -28,7 +28,17 @@
         padding-left: 4px;
         padding-right: 4px;
         min-width: 77px;
+
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            height: 48px !important;
+            padding-left: 6px;
+            padding-right: 6px;
+            min-width: 81px;
+        }
     }
+
+
+
 }
 
 .full-page-view__filters {
