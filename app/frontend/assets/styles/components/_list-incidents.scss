@@ -61,11 +61,11 @@
 
 .container__list {
     position: relative;
-    &.seperated {
-        border-top: 1px solid $gray-tint04;
-    }
+    border-top: 1px solid $gray-tint04;
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
+        border-top: none;
+
         > .container__flex {
             display: flex;
             flex-direction: column;
@@ -208,6 +208,32 @@
                 margin: 0;
                 min-height: 100px;
             }
+
+            .btn-icon--clean {
+                display: none;
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                z-index: 200;
+                margin-bottom: 0;
+                width: auto;
+                height: auto;
+                background-color: transparent;
+                .map {
+                    width: 24px;
+                    height: 24px;
+                    path {
+                        fill: $green-tint01;
+                    }
+                }
+            }
+
+            @media (min-width: map-get($grid-breakpoints, lg)) {
+                .btn-icon--clean {
+                    display: inline-block;
+
+                }
+            }
         }
 
         .container__image {
@@ -220,6 +246,15 @@
                 background-position: center;
                 background-color: $gray-tint02;
                 box-sizing: border-box;
+
+                @media (min-width: map-get($grid-breakpoints, md)) {
+                    width: calc(173px + 2vw);
+                    height: calc(130px + 1vw);
+                }
+                @media (min-width: map-get($grid-breakpoints, lg)) {
+                    width: calc(94px + 2vw);
+                    height: calc(70px + 1vw);
+                }
             }
         }
 
