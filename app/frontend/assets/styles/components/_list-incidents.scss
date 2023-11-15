@@ -84,14 +84,23 @@
 
 .container__sorting {
     box-sizing: content-box;
-    // padding-top: 16px;
+
+    @media (min-width: map-get($grid-breakpoints, md)) and (max-width: 1023px) {
+        position: absolute;
+        top: -79px;
+        height: 100px;
+        width: 400px;
+        right: 140px;
+        z-index: 20;
+    }
+
     .wrapper {
         background-color: $gray-tint02;
         padding: $input-padding-x;
         display: flex;
         justify-content: space-between;
 
-        @media (min-width: map-get($grid-breakpoints, lg)) {
+        @media (min-width: map-get($grid-breakpoints, md)) {
             background-color: transparent;
         }
 
@@ -373,12 +382,19 @@
         margin: 8px 0 0;
     }
 }
-
+@media (min-width: map-get($grid-breakpoints, md)) {
+    .container__header {
+        .container__controls {
+            .btn-sort--small {
+                display: none;
+            }
+        }
+    }
+}
 @media (min-width: map-get($grid-breakpoints, lg)) {
     .container__header {
         .container__controls {
-            .btn-navigate--small.toggle-view,
-            .btn-sort--small {
+            .btn-navigate--small.toggle-view {
                 display: none;
             }
         }
