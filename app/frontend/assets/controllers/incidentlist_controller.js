@@ -26,19 +26,11 @@ export default class extends Controller {
     initialize() {
         this.element[this.identifier] = this
         self = this
+        navigator.geolocation.getCurrentPosition(this.getCurrentPositionSuccess, this.positionWatchError);
         positionWatchId = navigator.geolocation.watchPosition(this.positionWatchSuccess, this.positionWatchError, positionWatchOptions);
         this.element.addEventListener("orderChangeEvent", function(e){
             self.sorterenOp(e.detail.order)
         });
-        self.element.addEventListener("kaartModusChangeEvent", function(e){
-            self.kaartOutlet.kaartModusChangeHandler(e.detail.kaartModus)
-        });
-    }
-    taakAfstandTargetConnected(element) {
-        const markerLocation = new L.LatLng(element.dataset.latitude, element.dataset.longitude);
-        element.textContent = Math.round(markerLocation.distanceTo(currentPosition))
-    }
-    connect(e) {
 
         if(this.hasSortingTarget && showSortingContainer === true ) {
             this.sortingTarget.classList.remove("hidden-vertical")
@@ -67,7 +59,11 @@ export default class extends Controller {
         this.element.addEventListener("markerDeselectedEvent", function(e){
             self.deselecteerTaakItem(e.detail.taakId)
         });
-
+    }
+    connect() {}
+    taakAfstandTargetConnected(element) {
+        const markerLocation = new L.LatLng(element.dataset.latitude, element.dataset.longitude);
+        element.textContent = Math.round(markerLocation.distanceTo(currentPosition))
     }
     selecteerTaakItem(taakId) {
         for(let i =0; i < self.taakItemTargets.length; i++){
@@ -84,7 +80,15 @@ export default class extends Controller {
             self.taakItemTargets[i].classList.remove("selected")
         }
     }
+    getCurrentPositionSuccess(position){
+        console.log("getCurrentPositionSuccess")
+        self.element.addEventListener("kaartModusChangeEvent", function(e){
+            self.kaartOutlet.kaartModusChangeHandler(e.detail.kaartModus)
+        });
+        self.positionWatchSuccess(position)
+    }
     positionWatchSuccess(position){
+        console.log("positionWatchSuccess")
         currentPosition = [position.coords.latitude, position.coords.longitude]
         self.kaartOutlet.positionChangeEvent(position)
         for(let i = 0; i < self.taakAfstandTargets.length; i++){
@@ -133,7 +137,7 @@ export default class extends Controller {
               console.log("An unknown error occurred.")
               break;
         }
-        self.positionWatchSuccess({
+        self.getCurrentPositionSuccess({
             coords: {
                 latitude: currentPosition[0],
                 longitude: currentPosition[1],

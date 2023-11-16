@@ -50,6 +50,7 @@ export default class extends Controller {
 
     }
     kaartModusChangeHandler(_kaartModus){
+        console.log("kaartModusChangeHandler")
         kaartModus = _kaartModus
         switch(kaartModus){
             case "volgen":
