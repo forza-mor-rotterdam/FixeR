@@ -10,6 +10,7 @@ let self = null
 let kaartModus = "volgen"
 let zoomLevel = 16
 const url = "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}";
+let buurten = null;
 
 export default class extends Controller {
 
@@ -104,18 +105,13 @@ export default class extends Controller {
             name: "standaard",
             layerName: "standaard",
             type: "wmts",
-            minZoom: 6,
+            minZoom: 10,
             maxZoom: 19,
             tileSize: 256,
             attribution: "",
         }
 
         L.tileLayer(url, config).addTo(map);
-        // L.tileLayer.wms('https://service.pdok.nl/cbs/wijkenbuurten/2022/wms/v1_0?request=GetCapabilities', {
-        //     layers: 'buurten',
-        //     format:'image/png',
-        //     transparent: true
-        // }).addTo(map);
 
         const resizeObserver = new ResizeObserver(() => {
             console.log('resizeObserver')
@@ -133,6 +129,32 @@ export default class extends Controller {
         //add the markers to the map
         map.addLayer(markers);
         //fit the map to the markers
+
+        buurten =  L.tileLayer.wms('https://service.pdok.nl/cbs/wijkenbuurten/2022/wms/v1_0?request=GetCapabilities&service=WMS', {
+            layers: 'buurten',
+            format:'image/png',
+            transparent: true,
+            minZoom: 10,
+            maxZoom: 19,
+            srsName: "EPSG:4326",
+            bbox: "51.9247770, 4.4780970, 51.9247774, 4.4780974",
+        })
+    }
+
+    toggleBuurten(e) {
+        console.log("toggle buurten", e)
+        e.target.classList.toggle("active")
+        if(map.hasLayer(buurten)) {
+            map.removeLayer(buurten)
+
+        }else {
+            buurten.addTo(map)
+        }
+
+    }
+
+    verbergBuurten() {
+        map.removeLayer(buurten)
     }
 
     plotMarkers(coordinatenlijst) {
