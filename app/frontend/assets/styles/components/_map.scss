@@ -59,9 +59,8 @@
         padding: 16px 0;
         ul {
             margin: 0;
-            justify-content: flex-end;
-            align-items: flex-end;
         }
+
         li {
             flex: 0;
             align-self: flex-end;
@@ -96,25 +95,40 @@
             @extend .btn;
             text-align: center;
             line-height: 44px;
-            padding: 0 12px;
-            font-size: 1rem;
+            padding: 0 12px 0 40px;
+            font-size: 0.9rem;
             height: 40px;
             display: inline-block;
             background-color: $white;
             white-space: nowrap;
             box-sizing: border-box;
             position: relative;
-            padding-left: 40px;
             border: 1px solid $gray-tint08;
+            box-sizing: border-box;
 
             &.active {
                 height: 38px;
                 line-height: 42px;
-                border: 2px solid $gray-tint11;
+                border: 3px solid $gray-tint11;
+                padding: 0 10px 0 38px;
             }
         }
         input[type="radio"] {
             @extend .visually-hidden;
+        }
+
+
+    }
+
+    @media (min-width: map-get($grid-breakpoints, sm)) {
+        .form__kaart-modus {
+            ul {
+                justify-content: flex-end;
+                align-items: flex-end;
+            }
+            label {
+                font-size: 1rem;
+            }
         }
     }
 }
@@ -149,6 +163,9 @@
     }
 }
 
+.leaflet-container a.leaflet-popup-close-button {
+    top: -4px;
+}
 
 .leaflet-popup-content-wrapper {
     border-radius: 0;
