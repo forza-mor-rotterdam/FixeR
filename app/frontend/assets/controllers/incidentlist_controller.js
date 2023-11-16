@@ -26,8 +26,8 @@ export default class extends Controller {
     initialize() {
         this.element[this.identifier] = this
         self = this
-        navigator.geolocation.getCurrentPosition(this.getCurrentPositionSuccess, this.positionWatchError);
-        positionWatchId = navigator.geolocation.watchPosition(this.positionWatchSuccess, this.positionWatchError, positionWatchOptions);
+        // navigator.geolocation.getCurrentPosition(this.getCurrentPositionSuccess, this.positionWatchError);
+        // positionWatchId = navigator.geolocation.watchPosition(this.positionWatchSuccess, this.positionWatchError, positionWatchOptions);
         this.element.addEventListener("orderChangeEvent", function(e){
             self.sorterenOp(e.detail.order)
         });
@@ -59,6 +59,19 @@ export default class extends Controller {
         this.element.addEventListener("markerDeselectedEvent", function(e){
             self.deselecteerTaakItem(e.detail.taakId)
         });
+        window.addEventListener("positionChangeEvent", function(e){
+            console.log("positionChangeEvent")
+            console.log(e.detail)
+            self.positionWatchSuccess(e.detail.position)
+        });
+        self.element.addEventListener("kaartModusChangeEvent", function(e){
+            self.kaartOutlet.kaartModusChangeHandler(e.detail.kaartModus)
+        });
+        let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', { bubbles: true, cancelable: false, detail: {
+            controller: self
+        }});
+
+        window.dispatchEvent(childControllerConnectedEvent);
     }
     connect() {}
     taakAfstandTargetConnected(element) {
@@ -82,13 +95,13 @@ export default class extends Controller {
     }
     getCurrentPositionSuccess(position){
         console.log("getCurrentPositionSuccess")
-        self.element.addEventListener("kaartModusChangeEvent", function(e){
-            self.kaartOutlet.kaartModusChangeHandler(e.detail.kaartModus)
-        });
+
         self.positionWatchSuccess(position)
     }
     positionWatchSuccess(position){
         console.log("positionWatchSuccess")
+        let fromParentToChildEvent = new CustomEvent('fromParentToChildEvent', { bubbles: true, cancelable: false, detail: {}});
+        window.dispatchEvent(fromParentToChildEvent);
         currentPosition = [position.coords.latitude, position.coords.longitude]
         self.kaartOutlet.positionChangeEvent(position)
         for(let i = 0; i < self.taakAfstandTargets.length; i++){

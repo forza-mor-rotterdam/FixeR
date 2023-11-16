@@ -54,7 +54,7 @@
         {% include 'snippets/pageheader.html' %}
     {% endwith %}
     {% endblock %}
-        <main data-controller="main">
+        <main data-controller="main" data-main-taken-outlet="#taken">
             <div class="{% block container_class %}container{% endblock %}">
                 {% block body %}{% endblock %}
             </div>

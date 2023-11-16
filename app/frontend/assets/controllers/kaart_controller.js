@@ -45,12 +45,14 @@ export default class extends Controller {
 
             }
         });
-
         window.addEventListener("taakIsSelected", this.selectMarker, false);
-
     }
+    connect() {}
     kaartModusChangeHandler(_kaartModus){
         console.log("kaartModusChangeHandler")
+        if (!markerMe){
+            return
+        }
         kaartModus = _kaartModus
         switch(kaartModus){
             case "volgen":
@@ -76,7 +78,6 @@ export default class extends Controller {
             map.fitBounds(markers.getBounds());
         }
     }
-    connect() {}
 
     disconnect() {}
 
@@ -87,7 +88,8 @@ export default class extends Controller {
     }
 
     drawMap() {
-
+        console.log("this.drawMap")
+        // console.log(this.drawMap)
         markerIcon = L.Icon.extend({
             options: {
                 iconSize:     [36, 36],
@@ -182,5 +184,6 @@ export default class extends Controller {
                 markerList.push(marker)
             }
         }
+        map.fitBounds(markers.getBounds());
     }
 }
