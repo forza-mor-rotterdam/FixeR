@@ -19,7 +19,7 @@
             <fieldset>
                 <ul class="list-clean">
 
-                    {% for f in filters %}
+                    {% for f in filter_options %}
                     {% if f.actief %}
                     <li>
                         <h3 class="h5">{{ f.naam|capfirst }}</h3>
@@ -60,35 +60,25 @@
 
 
 
-        {% for f in filters %}
-        <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{{f.naam}}"{% if not f.folded %} open{% endif %}>
-            <summary>
-                <span>{{ f.naam|capfirst }}</span>
-                <span>({{ f.actief|length }})</span>
-            </summary>
-            <ul
-                class="list-clean"
-                data-test-id="incidentFilter{{ f.naam|capfirst }}"
-            >
-                {% for optie_id, optie in f.opties.items %}
-                    <li class="container__check-department">
-                        <div class="form-check">
-                            <input
-                                class="form-check-input filter--taken"
-                                type="checkbox"
-                                value="{{ optie_id }}"
-                                {% if optie_id in f.actief %}checked{% endif %}
-                                name="{{ f.naam }}"
-                                id="{{ f.naam }}_{{ optie_id }}"
-                                data-action="filter#onChangeFilter"
-                                data-filter-target="filterInput"
-                            >
-                            <label class="form-check-label" for="{{ f.naam }}_{{ optie_id }}">{{ optie.0 }}</label>
-                        </div>
-                    </li>
-                {% endfor %}
-                </ul>
-        </details>
+        {% for v in filters.filter_options %}
+        {% comment %} {{v.grouped_options}} {% endcomment %}
+            {% if v.grouped_options %}
+                <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{{ v.grouped_options.key }}"{% if not f.folded %} open{% endif %}>
+                    <summary>
+                        <span>{{ v.grouped_options.label }}</span>
+                        {% comment %} <span>({{ v }})</span> {% endcomment %}
+                    </summary>
+                    <ul class="list-clean">
+                        {% for vv in v.grouped_options.groups %}
+                        <li>
+                            {% include "filters/options.html" with v=vv grouped=True %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </details>
+            {% else %}
+                {% include "filters/options.html" %}
+            {% endif %}
         {% endfor %}
 
 

@@ -21,6 +21,7 @@ export default class extends Controller {
     toggleActiveFilter(e) {
         e.preventDefault()
         const input = this.foldoutStatesFieldTarget;
+        console.log(input.value)
         let idArray = JSON.parse(input.value)
         const idAttr = e.target.getAttribute("id")
         const isOpen = e.target.hasAttribute("open")

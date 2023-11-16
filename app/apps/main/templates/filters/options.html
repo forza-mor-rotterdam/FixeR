@@ -1,0 +1,53 @@
+            <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{{ v.id }}"{% if not f.folded %} open{% endif %}>
+                <summary>
+                    <span>{{ v.name|capfirst }}</span>
+                    <span>({{ v.active|length }})</span>
+                </summary>
+                {% if grouped %}
+                <div class="container__list--districts foldout">
+                    <div class="container__list--header">
+                        <h3 class="h5">{{ v.label }}</h3>
+                        <div>
+                            <button
+                                class="btn btn-textlink"
+                                data-action="filter--filter#selectAll"
+                                data-filter--filter-filter-type-param="all"
+                            >
+                                Selecteer alles
+                            </button>
+                            <button
+                                class="btn btn-textlink"
+                                data-action="filter--filter#selectAll"
+                            >
+                                / niets
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+                <ul
+                    class="list-clean"
+                    data-test-id="incidentFilter{{ f.naam|capfirst }}"
+                >
+                    {% for optie in v.options %}
+                        <li class="container__check-department">
+                            {{optie}}
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input filter--taken"
+                                    type="checkbox"
+                                    value="{{ optie.id }}"
+                                    {% if optie.checked %}checked{% endif %}
+                                    name="{{ k }}"
+                                    id="{{ k }}_{{ optie.id }}"
+                                    data-action="filter#onChangeFilter"
+                                    data-filter-target="filterInput"
+                                >
+                                <label class="form-check-label" for="{{ k }}_{{ optie.id }}">{{ optie.label }}</label>
+                            </div>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% if grouped %}
+                    </div>
+                {% endif %}
+            </details>

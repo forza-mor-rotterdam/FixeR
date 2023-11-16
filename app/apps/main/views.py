@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 
 import requests
-from apps.context.constanten import FILTERS
+from apps.context.constanten import FilterManager
 from apps.main.forms import (
     HANDLED_OPTIONS,
     TAAK_BEHANDEL_RESOLUTIE,
@@ -102,6 +102,8 @@ def filter(request, status="nieuw"):
         else []
     )
     actieve_filters = get_actieve_filters(request.user, filters, status)
+    # print("actieve_filters")
+    # print(actieve_filters)
 
     foldout_states = []
     request_type = "get"
@@ -109,44 +111,51 @@ def filter(request, status="nieuw"):
         request_type = "post"
         actieve_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
+    # print(actieve_filters)
 
     try:
         standaard_taken = getattr(Taak.objects, f"get_taken_{status}")(request.user)
     except Exception as e:
         raise Exception(e)
 
-    taken = filter_taken(standaard_taken, actieve_filters)
+    filter_manager = FilterManager(standaard_taken, actieve_filters)
 
-    filter_options_fields = [f for f in FILTERS if f[0] in actieve_filters]
-    filter_opties = get_filter_options(taken, standaard_taken, filter_options_fields)
+    taken = filter_manager.filter()
 
-    actieve_filters = {
-        k: [
-            af
-            for af in v
-            if af in [fok for fok, fov in filter_opties.get(k, {}).items()]
-        ]
-        for k, v in actieve_filters.items()
-    }
+    # taken = filter_taken(standaard_taken, actieve_filters)
+
+    # filter_options_fields = [f for f in FILTERS if f.key() in actieve_filters]
+    # filter_opties = get_filter_options(taken, standaard_taken, filter_options_fields)
+    # filter_opties = filter_manager.filter_options(foldout_states)
+
+    # actieve_filters = {
+    #     k: [
+    #         af
+    #         for af in v
+    #         if af in [fok for fok, fov in filter_opties.get(k, {}).items()]
+    #     ]
+    #     for k, v in actieve_filters.items()
+    # }
 
     # sla actieve filters op in profiel
-    set_actieve_filters(request.user, actieve_filters, status)
+    # set_actieve_filters(request.user, filter_manager.validated_selected_options(), status)
 
-    filters = [
-        {
-            "naam": f,
-            "opties": filter_opties.get(f, {}),
-            "actief": actieve_filters.get(f, {}),
-            "folded": f"foldout_{f}" not in foldout_states,
-        }
-        for f in filters
-    ]
+    # filters = [
+    #     {
+    #         "naam": f,
+    #         "opties": filter_opties.get(f, {}),
+    #         "actief": actieve_filters.get(f, {}),
+    #         "folded": f"foldout_{f}" not in foldout_states,
+    #     }
+    #     for f in filters
+    # ]
+    print(taken)
 
     return render(
         request,
         "filters/form.html",
         {
-            "filters": filters,
+            "filters": filter_manager,
             "this_url": reverse("filter_part", kwargs={"status": status}),
             "actieve_filters_aantal": get_actieve_filters_aantal(actieve_filters),
             "taken_aantal": taken.count(),
@@ -231,6 +240,7 @@ def taken_afgerond_overzicht(request):
 
 @permission_required("authorisatie.taken_lijst_bekijken")
 def taken_lijst(request, status="nieuw"):
+    # print("taken_lijst")
     grouped_by = False
 
     try:
@@ -243,8 +253,15 @@ def taken_lijst(request, status="nieuw"):
         if request.user.profiel.context
         else []
     )
+    # print("taken_lijst filters")
+    # print(filters)
     actieve_filters = get_actieve_filters(request.user, filters, status)
-    taken_gefilterd = filter_taken(taken, actieve_filters)
+    # print(actieve_filters)
+    filter_manager = FilterManager(taken, actieve_filters)
+
+    taken_gefilterd = filter_manager.filter()
+
+    # taken_gefilterd = filter_taken(taken, actieve_filters)
     taken_aantal = len(taken_gefilterd)
     paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")

@@ -2,7 +2,6 @@ import base64
 
 from apps.context.constanten import FILTER_NAMEN, FILTERS_LOOKUP
 from django.core.files.storage import default_storage
-from django.db.models import Count
 from django.http import QueryDict
 
 
@@ -51,39 +50,13 @@ def set_actieve_filters(gebruiker, actieve_filters, status="nieuw"):
 
 
 def get_filter_options(f_qs, qs, fields=[]):
-    out = {}
-
-    def value_lookup(obj, key, f: list | tuple):
-        if isinstance(obj, dict):
-            return obj.get(key, key)
-        if isinstance(obj, (str, int)):
-            return obj
-        return key
-
-    for f in fields:
-        f = f if isinstance(f, (list, tuple)) else (f,)
-        key = f[1] if len(f) > 1 else f[0]
-        value_lookup_str = f[2] if len(f) > 2 else key
-        f_dict = {
-            ll[0]: (value_lookup(ll[1], ll[0], f), 0)
-            for ll in qs.order_by(key).values_list(key, value_lookup_str).distinct(key)
-        }
-        ff_dict = {
-            fl[0]: (value_lookup(fl[1], fl[0], f), fl[2])
-            for fl in f_qs.order_by(key)
-            .values_list(key, value_lookup_str)
-            .annotate(count=Count(key))
-        }
-        f_dict.update(ff_dict)
-        f_dict = {str(k): v for k, v in f_dict.items() if k}
-        out[f[0]] = f_dict
-    return out
+    return {f.key(): f(qs, f_qs).get_options(qs, f_qs) for f in fields}
 
 
 def filter_taken(qs, actieve_filters):
     qs = qs.filter(
         **{
-            FILTERS_LOOKUP.get(k, [])[3]: v
+            FILTERS_LOOKUP.get(k)().get_filter_lookup(): v
             for k, v in actieve_filters.items()
             if FILTERS_LOOKUP.get(k) and v
         }
