@@ -57,4 +57,12 @@ export default class extends Controller {
         }
         self.getCurrentPositionSuccess(currentPosition)
     }
+    showFilters() {
+        document.body.classList.add('show-filters')
+    }
+
+    hideFilters() {
+
+        document.body.classList.remove('show-filters')
+    }
 }

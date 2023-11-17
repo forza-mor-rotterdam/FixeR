@@ -1,4 +1,9 @@
 
+.container__details {
+    &--sticky-bottom {
+        min-height: 90px;
+    }
+}
 .container__details.taak {
     > *:first-child {
         margin-top: 0;

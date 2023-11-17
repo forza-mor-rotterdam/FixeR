@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 let markers = null
-const markerList = []
+let markerList = []
 let markerIcon, markerBlue, markerGreen, markerMagenta = null
 let markerMe = null
 let mapDiv = null
@@ -16,6 +16,7 @@ export default class extends Controller {
 
     initialize() {
         markerMe = null
+        markerList = []
         self = this
         self.element[self.identifier] = self
 
@@ -45,9 +46,7 @@ export default class extends Controller {
 
             }
         });
-        window.addEventListener("taakIsSelected", this.selectMarker, false);
     }
-    connect() {}
     kaartModusChangeHandler(_kaartModus){
         console.log("kaartModusChangeHandler")
         if (!markerMe){
@@ -81,15 +80,12 @@ export default class extends Controller {
 
     disconnect() {}
 
-
-    selectMarker(e) {
-        let obj = markerList.find(obj => obj.options.taakId == e.detail.id);
-        obj.openPopup();
+    selectTaakMarker(taakId) {
+        let obj = markerList.find(obj => obj.options.taakId == taakId);
+        obj.openPopup()
     }
 
     drawMap() {
-        console.log("this.drawMap")
-        // console.log(this.drawMap)
         markerIcon = L.Icon.extend({
             options: {
                 iconSize:     [36, 36],
@@ -175,15 +171,15 @@ export default class extends Controller {
                 const marker = new L.Marker(markerLocation, {icon: markerGreen, taakId: taakId});
                 const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
 
+                let popupContent = `<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
                 if (afbeelding) {
-                    marker.bindPopup(`<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
-                }else{
-                    marker.bindPopup(`<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`);
+                    popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
                 }
+                marker.bindPopup(popupContent)
+
                 markers.addLayer(marker)
                 markerList.push(marker)
             }
         }
-        map.fitBounds(markers.getBounds());
     }
 }

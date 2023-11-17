@@ -104,7 +104,9 @@ def filter(request, status="nieuw"):
     actieve_filters = get_actieve_filters(request.user, filters, status)
 
     foldout_states = []
+    request_type = "get"
     if request.POST:
+        request_type = "post"
         actieve_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
 
@@ -149,6 +151,7 @@ def filter(request, status="nieuw"):
             "actieve_filters_aantal": get_actieve_filters_aantal(actieve_filters),
             "taken_aantal": taken.count(),
             "foldout_states": json.dumps(foldout_states),
+            "request_type": request_type,
         },
     )
 

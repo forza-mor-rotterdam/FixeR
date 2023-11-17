@@ -6,7 +6,7 @@
 turbo-frame {
     position: relative;
     display: block;
-    &[busy] {
+    &:not([data-spinner="hide"])[busy] {
         &::before {
             content: "";
             z-index: 2000;

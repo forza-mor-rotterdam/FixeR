@@ -2,14 +2,8 @@ import { Controller } from '@hotwired/stimulus';
 
 let showSortingContainer = false;
 let sortDirectionReversed = false;
-let currentPosition = [51.9247772, 4.4780972]
-let positionWatchId = null
+let currentPosition = null
 self = null
-const positionWatchOptions = {
-    enableHighAccuracy: false,
-    timeout: 5000,
-    maximumAge: 0,
-};
 const orderOptions = [
     "Datum",
     "Adres",
@@ -26,8 +20,6 @@ export default class extends Controller {
     initialize() {
         this.element[this.identifier] = this
         self = this
-        // navigator.geolocation.getCurrentPosition(this.getCurrentPositionSuccess, this.positionWatchError);
-        // positionWatchId = navigator.geolocation.watchPosition(this.positionWatchSuccess, this.positionWatchError, positionWatchOptions);
         this.element.addEventListener("orderChangeEvent", function(e){
             self.sorterenOp(e.detail.order)
         });
@@ -36,7 +28,6 @@ export default class extends Controller {
             this.sortingTarget.classList.remove("hidden-vertical")
             this.sortingTarget.classList.add("show-vertical")
         }
-
         self.setStyleOrder(activeOrder)
         let kaartMarkers = []
         for (let i = 0; i < self.taakItemTargets.length; i++){
@@ -93,31 +84,31 @@ export default class extends Controller {
             self.taakItemTargets[i].classList.remove("selected")
         }
     }
-    getCurrentPositionSuccess(position){
-        console.log("getCurrentPositionSuccess")
-
-        self.positionWatchSuccess(position)
-    }
     positionWatchSuccess(position){
         console.log("positionWatchSuccess")
-        let fromParentToChildEvent = new CustomEvent('fromParentToChildEvent', { bubbles: true, cancelable: false, detail: {}});
-        window.dispatchEvent(fromParentToChildEvent);
         currentPosition = [position.coords.latitude, position.coords.longitude]
-        self.kaartOutlet.positionChangeEvent(position)
-        for(let i = 0; i < self.taakAfstandTargets.length; i++){
-            const elem = self.taakAfstandTargets[i]
-            const markerLocation = new L.LatLng(elem.dataset.latitude, elem.dataset.longitude);
-            const afstand = Math.round(markerLocation.distanceTo(currentPosition))
-            elem.textContent = afstand
-            const listItem = elem.closest(".list-item")
+        if (self.hasKaartOutlet){
+            self.kaartOutlet.positionChangeEvent(position)
+        }
+        if (self.hasTaakAfstandTarget){
+            for(let i = 0; i < self.taakAfstandTargets.length; i++){
+                const elem = self.taakAfstandTargets[i]
+                const markerLocation = new L.LatLng(elem.dataset.latitude, elem.dataset.longitude);
+                const afstand = Math.round(markerLocation.distanceTo(currentPosition))
+                elem.textContent = afstand
+                const listItem = elem.closest(".list-item")
 
-            if (listItem){
-                listItem.dataset.orderAfstand = afstand
-                if (activeOrder == "Afstand"){
-                    listItem.style.order = parseInt(afstand)
+                if (listItem){
+                    listItem.dataset.orderAfstand = afstand
+                    if (activeOrder == "Afstand"){
+                        listItem.style.order = parseInt(afstand)
+                    }
                 }
             }
         }
+    }
+    selectTaakMarker(e) {
+        self.kaartOutlet.selectTaakMarker(e.params.taakId)
     }
     setStyleOrder(order){
         for(let i = 0; i < self.taakItemTargets.length; i++){
@@ -133,29 +124,6 @@ export default class extends Controller {
         activeOrder = selectedOrder
         self.taakItemLijstTarget.classList[(order.split("-").length > 1) ? "remove" : "add"]("reverse")
         self.taakItemLijstTarget.scrollTop = 0;
-    }
-    positionWatchError(error){
-        console.log("handleNoCurrentLocation, error: ", error)
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-              console.log("User denied the request for Geolocation.")
-              break;
-            case error.POSITION_UNAVAILABLE:
-              console.log("Location information is unavailable.")
-              break;
-            case error.TIMEOUT:
-              console.log("The request to get user location timed out.")
-              break;
-            case error.UNKNOWN_ERROR:
-              console.log("An unknown error occurred.")
-              break;
-        }
-        self.getCurrentPositionSuccess({
-            coords: {
-                latitude: currentPosition[0],
-                longitude: currentPosition[1],
-            }
-        })
     }
     disconnect() {
         console.log("disconnect")

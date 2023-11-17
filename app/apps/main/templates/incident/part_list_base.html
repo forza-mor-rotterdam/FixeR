@@ -36,8 +36,7 @@
                     <button
                         type="button"
                         class="btn btn-secondary btn-filter--small"
-                        data-controller="filter"
-                        data-action="filter#showFilters"
+                        data-action="main#showFilters"
                     >
                         <span>
                             <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,7 +53,7 @@
             {% if taken %}
                 <div class="container__flex">
                     <div class="container__sorting hidden-vertical" data-incidentlist-target="sorting">
-                        <turbo-frame id="sorteer_filter" src="{% url 'sorteer_filter' %}">
+                        <turbo-frame id="sorteer_filter" src="{% url 'sorteer_filter' %}" data-spinner="hide">
                         </turbo-frame>
                     </div>
                     <div
@@ -85,7 +84,7 @@
                         </svg>
                     </span>
                     <div>
-                        Geen taken gevonden. <a data-controller="filter" data-action="filter#showFilters">Open de filters</a> om je instellingen aan te passen.
+                        Geen taken gevonden. <a data-action="main#showFilters">Open de filters</a> om je instellingen aan te passen.
                     </div>
                 </div>
 
