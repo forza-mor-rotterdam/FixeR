@@ -306,8 +306,9 @@ def sorteer_filter(request):
 def kaart_modus(request):
     kaart_modus = get_kaart_modus(request.user)
     form = KaartModusForm({"kaart_modus": kaart_modus})
-
+    request_type = "get"
     if request.POST:
+        request_type = "post"
         form = KaartModusForm(request.POST, {"kaart_modus": kaart_modus})
         if form.is_valid():
             kaart_modus = form.cleaned_data.get("kaart_modus")
@@ -315,7 +316,10 @@ def kaart_modus(request):
     return render(
         request,
         "snippets/kaart_modus_form.html",
-        {"form": form},
+        {
+            "form": form,
+            "request_type": request_type,
+        },
     )
 
 

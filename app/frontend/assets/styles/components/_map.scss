@@ -155,7 +155,7 @@
 
 .showMap {
     .container__map {
-        height: calc(100vh - 113px);
+        height: calc(100vh - 145px);
         display: block;
         visibility: visible;
         pointer-events: all;
@@ -253,7 +253,7 @@ button.btn-on-map {
 @media (min-width: map-get($grid-breakpoints, lg)) {
     .container__list {
         .container__map {
-            height: calc(100vh - 113px);
+            height: calc(100vh - 145px);
             display: block;
             visibility: visible;
             pointer-events: all;

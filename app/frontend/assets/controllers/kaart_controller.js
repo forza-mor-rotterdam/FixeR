@@ -7,29 +7,41 @@ let markerMe = null
 let mapDiv = null
 let map = null
 let self = null
-let kaartModus = "volgen"
 let zoomLevel = 16
 const url = "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}";
 let buurten = null;
+let kaartStatus = null
 
 export default class extends Controller {
-
+    static outlets = [ "main" ]
     initialize() {
         markerMe = null
+        kaartStatus = {}
         markerList = []
         self = this
         self.element[self.identifier] = self
 
         mapDiv = document.getElementById('incidentMap')
-        map = L.map('incidentMap')
+        map = L.map('incidentMap', self.mainOutlet.getKaartStatus())
         if(mapDiv){
             this.drawMap()
         }
 
-        map.on('zoom', () => {
-            if (kaartModus == "volgen"){
-                zoomLevel = map.getZoom()
-            }
+        map.on('moveend', () => {
+            self.mainOutlet.setKaartStatus(
+                {
+                    zoom: map.getZoom(),
+                    center: map.getCenter(),
+                }
+            )
+        })
+        map.on('zoomend', () => {
+            self.mainOutlet.setKaartStatus(
+                {
+                    zoom: map.getZoom(),
+                    center: map.getCenter(),
+                }
+            )
         })
         map.on('popupopen', ({ popup }) => {
             if (popup instanceof L.Popup) {
@@ -47,22 +59,22 @@ export default class extends Controller {
             }
         });
     }
-    kaartModusChangeHandler(_kaartModus){
+    kaartModusChangeHandler(_kaartModus, _requestType){
         console.log("kaartModusChangeHandler")
         if (!markerMe){
             return
         }
-        kaartModus = _kaartModus
-        switch(kaartModus){
+        self.mainOutlet.setKaartModus(_kaartModus)
+        switch(_kaartModus){
             case "volgen":
-                map.flyTo(markerMe.getLatLng(), zoomLevel)
-            break;
+                map.flyTo(markerMe.getLatLng(), self.mainOutlet.getKaartStatus().zoom)
+                break;
 
             case "toon_alles":
                 map.fitBounds(markers.getBounds());
-            break;
-        }
+                break;
 
+        }
     }
     positionChangeEvent(position){
         if(!markerMe) {
@@ -71,10 +83,11 @@ export default class extends Controller {
         }else{
             markerMe.setLatLng([position.coords.latitude, position.coords.longitude]);
         }
-        if (kaartModus == "volgen"){
-            map.setView(markerMe.getLatLng(), map.getZoom() || zoomLevel)
-        }else{
-            map.fitBounds(markers.getBounds());
+        if (self.mainOutlet.getKaartModus() == "volgen"){
+            map.setView(
+                markerMe.getLatLng(),
+                self.mainOutlet.getKaartStatus().zoom
+            )
         }
     }
 
