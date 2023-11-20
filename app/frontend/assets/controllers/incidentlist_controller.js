@@ -56,7 +56,7 @@ export default class extends Controller {
             self.positionWatchSuccess(e.detail.position)
         });
         self.element.addEventListener("kaartModusChangeEvent", function(e){
-            self.kaartOutlet.kaartModusChangeHandler(e.detail.kaartModus)
+            self.kaartOutlet.kaartModusChangeHandler(e.detail.kaartModus, e.detail.requestType)
         });
         let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', { bubbles: true, cancelable: false, detail: {
             controller: self

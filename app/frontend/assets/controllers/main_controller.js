@@ -9,6 +9,8 @@ const positionWatchOptions = {
     timeout: 5000,
     maximumAge: 0,
 };
+let kaartModus = null
+let kaartStatus = null
 
 export default class extends Controller {
     static outlets = [ "taken" ]
@@ -16,6 +18,19 @@ export default class extends Controller {
     initialize() {
         this.element[this.identifier] = this
         self = this
+        const status = {
+            zoom: 16,
+            center: [currentPosition.coords.latitude, currentPosition.coords.longitude],
+        }
+        kaartModus = "volgen"
+        kaartStatus = {
+            "volgen": status,
+            "toon_alles": status,
+        }
+        if(!sessionStorage.getItem("kaartStatus")){
+            sessionStorage.setItem("kaartStatus", JSON.stringify(kaartStatus));
+        }
+
         navigator.geolocation.getCurrentPosition(this.getCurrentPositionSuccess, this.positionWatchError);
         positionWatchId = navigator.geolocation.watchPosition(this.positionWatchSuccess, this.positionWatchError, positionWatchOptions);
         window.addEventListener("childControllerConnectedEvent", function(e){
@@ -64,5 +79,25 @@ export default class extends Controller {
     hideFilters() {
 
         document.body.classList.remove('show-filters')
+    }
+    setKaartModus(_kaartModus){
+        kaartModus = _kaartModus
+    }
+    getCurrentPosition(){
+        return currentPosition
+    }
+    getKaartModus(){
+        return kaartModus
+    }
+    setKaartStatus(_kaartStatus){
+        kaartStatus[kaartModus] = _kaartStatus
+        let sessionState = JSON.parse(sessionStorage.getItem("kaartStatus"))
+        sessionState[kaartModus] = _kaartStatus
+        const sessionStateString = JSON.stringify(sessionState)
+        sessionStorage.setItem("kaartStatus", sessionStateString);
+    }
+    getKaartStatus(){
+        const sessionState = JSON.parse(sessionStorage.getItem("kaartStatus"))
+        return sessionState[kaartModus];
     }
 }
