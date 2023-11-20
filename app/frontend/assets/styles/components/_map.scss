@@ -196,8 +196,10 @@
         .container__content {
             flex: 1 0 75%;
             font-size: 16px;
-            a {
+            .link {
                 color: $green-tint01;
+                text-decoration: underline;
+                cursor: pointer;
             }
             p {
                 margin: 0;
