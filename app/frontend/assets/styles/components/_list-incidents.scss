@@ -125,6 +125,10 @@
         background-repeat: no-repeat;
         background-position: right 10px center;
         background-size: 24px 24px;
+
+        &:focus {
+            border-width: 3px;
+        }
     }
 }
 

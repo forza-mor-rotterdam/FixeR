@@ -144,6 +144,7 @@ class SorteerFilterForm(forms.Form):
                 "data-sorteerFilter-target": "sorteerField",
             }
         ),
+        label="Sorteer de taken",
         choices=(
             ("Datum-reverse", "Datum (nieuwste bovenaan)"),
             ("Datum", "Datum (oudste bovenaan)"),
