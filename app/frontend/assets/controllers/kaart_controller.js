@@ -175,6 +175,7 @@ export default class extends Controller {
         let routeUrl = "https://www.google.com/maps/dir"
 
         function handleCurrentLocation(pos) {
+            console.log("handleCurrentLocation, pos", pos)
             const crd = pos.coords;
             routeUrl += `/${crd.latitude}+${crd.longitude}`
             getRoute(event)
