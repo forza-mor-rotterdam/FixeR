@@ -182,6 +182,7 @@ export default class extends Controller {
         }
 
         function handleNoCurrentLocation(error) {
+            console.log("handleNoCurrentLocation")
             switch(error.code) {
                 case error.PERMISSION_DENIED:
                   console.log("User denied the request for Geolocation.")
@@ -204,7 +205,7 @@ export default class extends Controller {
             let long = event.params.long
 
             routeUrl += `/${lat}+${long}`
-
+            console.log('getRoute: ', routeUrl)
             window.open(routeUrl, "_blank")
         }
 
@@ -229,7 +230,7 @@ export default class extends Controller {
                 // let popupContent = `<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
                 let popupContent = `<div class="container__content"><span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" aria-label="Bekijk taak ${taakId}">${adres}</span><p>${omschrijving}</p>${paragraphDistance}</div>`
                 if (afbeelding) {
-                    popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><span class="link" data-action="click->kaart#makeRoute" data-action="kaart.makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" target="_blank" aria-label="Bekijk taak ${taakId}">${adres}</span><p>${omschrijving}</p>${paragraphDistance}</div>`
+                    popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" target="_blank" aria-label="Bekijk taak ${taakId}">${adres}</span><p>${omschrijving}</p>${paragraphDistance}</div>`
                 }
                 marker.bindPopup(popupContent)
 
