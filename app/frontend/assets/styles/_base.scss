@@ -29,7 +29,7 @@ header {
 
     > .container {
         display: block;
-        max-width: map-get($container-max-widths , sm );
+        max-width: map-get($container-max-widths , xxl );
         margin: 0 auto;
 
         &.container--wide {
@@ -64,7 +64,6 @@ header {
 }
 
 main {
-    padding-bottom: 100px;
 }
 
 // HEADINGS
@@ -336,7 +335,6 @@ h1 + .section--seperated {
 
 .show-vertical {
     max-height: 100%;
-    padding-top: 16px;
     transition: all 0.25s ease-in;
 
     &.container__sorting {
@@ -346,14 +344,19 @@ h1 + .section--seperated {
 }
 
 .hidden-vertical {
-    // display: none;
     padding-top: 0;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.25s ease-in;
-    &.container__sorting {
-        transition: all 0.25s ease-in;
-    }
+
+        &.container__sorting {
+            transition: all 0.25s ease-in;
+
+            @media (min-width: map-get($grid-breakpoints, md)) {
+                max-height: 100px;
+                overflow: hidden;
+            }
+        }
 }
 
 .visually-hidden {

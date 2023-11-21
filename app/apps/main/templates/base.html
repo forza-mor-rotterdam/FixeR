@@ -4,7 +4,7 @@
 <html lang="nl">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0">
         <title>{% block title %}Forza-MOR{% endblock %}</title>
         <link rel="apple-touch-icon" sizes="180x180" href="{{base_url}}{%webpack_static 'images/apple-touch-icon.png' %}"/>
         <link rel="icon" type="image/png" sizes="32x32" href="{{base_url}}{%webpack_static 'images/favicon-32x32.png' %}"/>
@@ -13,6 +13,7 @@
         <link rel="manifest" href="{{base_url}}{%webpack_static 'manifest.json' %}"/>
         <link rel="shortcut icon" href="{{base_url}}{%webpack_static 'images/favicon.ico' %}"/>
         <link rel="icon" href="{{base_url}}{%webpack_static 'images/favicon.ico' %}"/>
+        <meta name="turbo-cache-control" content="no-cache">
         {% block stylesheets %}
             <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
                 integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
@@ -54,7 +55,7 @@
         {% include 'snippets/pageheader.html' %}
     {% endwith %}
     {% endblock %}
-        <main data-controller="main">
+        <main data-controller="main" data-main-taken-outlet="#taken">
             <div class="{% block container_class %}container{% endblock %}">
                 {% block body %}{% endblock %}
             </div>

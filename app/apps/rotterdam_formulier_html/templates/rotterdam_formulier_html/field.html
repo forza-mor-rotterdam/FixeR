@@ -31,7 +31,7 @@
         {% if classes.icon %}
             {% include 'rotterdam_formulier_html/field_icon.html' %}
         {% endif %}
-        {% if field.auto_id %}
+        {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
             <h3 class="label">{{ field.label }}</h3>
         {% endif %}
         <div class="wrapper-horizontal">

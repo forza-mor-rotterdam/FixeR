@@ -1,3 +1,4 @@
+from apps.services.onderwerpen import render_onderwerp
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
 from django.contrib.gis.db import models
@@ -163,6 +164,44 @@ class Taak(BasisModel):
 
     def __str__(self) -> str:
         return f"{self.taaktype.omschrijving} - {self.titel}({self.pk})"
+
+    def render_onderwerpen(self):
+        return ", ".join(
+            [
+                render_onderwerp(onderwerp_url)
+                for onderwerp_url in self.melding.response_json.get("onderwerpen", [])
+            ]
+        )
+
+    def geometrie(self):
+        locaties = self.melding.response_json.get("locaties_voor_melding")
+        if not locaties or not locaties[0].get("geometrie"):
+            return ""
+        return locaties[0].get("geometrie")
+
+    def adres(self):
+        locaties = self.melding.response_json.get("locaties_voor_melding")
+        if not locaties or not locaties[0].get("straatnaam"):
+            return ""
+        if locaties[0].get("huisnummer"):
+            return f"{locaties[0].get('straatnaam')} {locaties[0].get('huisnummer')}"
+        return locaties[0].get("straatnaam")
+
+    def postcode_digits(self):
+        locaties = self.melding.response_json.get("locaties_voor_melding")
+        if not locaties or not locaties[0].get("postcode"):
+            return 0
+        try:
+            return int(locaties[0].get("postcode")[0:4])
+        except Exception:
+            return 0
+
+    def afbeelding_url(self):
+        if not self.melding.response_json.get("bijlagen", []):
+            return ""
+        return self.melding.response_json.get("bijlagen", [])[0].get(
+            "afbeelding_verkleind_relative_url"
+        )
 
     class Meta:
         ordering = ("-aangemaakt_op",)

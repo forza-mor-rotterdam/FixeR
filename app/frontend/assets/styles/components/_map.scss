@@ -1,10 +1,8 @@
 .showMap {
-
-    .list__incidents {
+    .container__flex {
         display: none;
     }
 }
-
 .container__map {
     height: 0;
     padding-bottom: 100%;
@@ -54,6 +52,86 @@
         width: 100%;
     };
 }
+.container__map-tools {
+    height: 76px;
+
+    .form__kaart-modus {
+        padding: 16px 0;
+        ul {
+            margin: 0;
+        }
+
+        li {
+            flex: 0;
+            align-self: flex-end;
+            border: none;
+            margin-left: 0;
+            &:first-child {
+                margin-right: 1rem;
+
+                label {
+                    &::before {
+                        content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC40MTQzIDMuMjEwNDVMMTIuNjkwNCAyMi41MjAzTDkuNDcyMSAxNC4xNTI3TDEuMTA0NDkgMTAuOTM0NEwyMC40MTQzIDMuMjEwNDVaTTUuMjExODIgMTAuOTA3TDEwLjYzMjggMTIuOTkyTDEyLjcxNzggMTguNDEzTDE3LjcyMTggNS45MDMwM0w1LjIxMTgyIDEwLjkwN1oiIGZpbGw9IiM0MDRCNEYiLz4KPC9zdmc+Cg==");
+                        position: absolute;
+                        top: 50%;
+                        left: 10px;
+                        transform: translateY(-38%);
+                    }
+                }
+            }
+            &:nth-child(2) {
+                label {
+                    &::before {
+                        content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNy44MzM0IDQuNjY2MTRDMTQuNjI0OSAxLjQ1NzY0IDkuMzc0NjQgMS40NTc2NCA2LjE2NjE0IDQuNjY2MTRDMi45NTc2NCA3Ljg3NDY0IDIuOTU3NjQgMTMuMTI0OSA2LjE2NjE0IDE2LjMzMzRMMTEuOTk5OCAyMi4xNjdMMTcuODMwNiAxNi4zMzYyTDE3LjgzMzQgMTYuMzMzNEMyMS4wNDE5IDEzLjEyNDkgMjEuMDQxOSA3Ljg3NDY0IDE3LjgzMzQgNC42NjYxNFpNMTEuOTk5OCAxMy40OTk4QzEzLjY1NjYgMTMuNDk5OCAxNC45OTk4IDEyLjE1NjYgMTQuOTk5OCAxMC40OTk4QzE0Ljk5OTggOC44NDI5MiAxMy42NTY2IDcuNDk5NzcgMTEuOTk5OCA3LjQ5OTc3QzEwLjM0MjkgNy40OTk3NyA4Ljk5OTc2IDguODQyOTIgOC45OTk3NiAxMC40OTk4QzguOTk5NzYgMTIuMTU2NiAxMC4zNDI5IDEzLjQ5OTggMTEuOTk5OCAxMy40OTk4WiIgZmlsbD0iIzQwNEI0RiIvPgo8L3N2Zz4K");
+                        position: absolute;
+                        top: 50%;
+                        left: 10px;
+                        transform: translateY(-38%);
+                    }
+                }
+            }
+        }
+        label {
+            @extend .btn;
+            text-align: center;
+            line-height: 44px;
+            padding: 0 12px 0 40px;
+            font-size: 0.9rem;
+            height: 40px;
+            display: inline-block;
+            background-color: $white;
+            white-space: nowrap;
+            box-sizing: border-box;
+            position: relative;
+            border: 1px solid $gray-tint08;
+            box-sizing: border-box;
+
+            &.active {
+                height: 38px;
+                line-height: 42px;
+                border: 3px solid $gray-tint11;
+                padding: 0 10px 0 38px;
+            }
+        }
+        input[type="radio"] {
+            @extend .visually-hidden;
+        }
+
+
+    }
+
+    @media (min-width: map-get($grid-breakpoints, sm)) {
+        .form__kaart-modus {
+            ul {
+                justify-content: flex-end;
+                align-items: flex-end;
+            }
+            label {
+                font-size: 1rem;
+            }
+        }
+    }
+}
 
 .container__list {
     position: relative;
@@ -63,12 +141,13 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: calc(100vh - 113px);
-        display: none;
+        height: 0;
+        visibility: hidden;
+        pointer-events: none;
         padding-bottom: 0;
 
         .map {
-            height: 100%;
+            height: calc(100vh - 220px); // hoogte van de header
             padding-bottom: 0;
         }
     }
@@ -76,10 +155,17 @@
 
 .showMap {
     .container__map {
+        height: calc(100vh - 145px);
         display: block;
+        visibility: visible;
+        pointer-events: all;
+        width: 100%;
     }
 }
 
+.leaflet-container a.leaflet-popup-close-button {
+    top: -4px;
+}
 
 .leaflet-popup-content-wrapper {
     border-radius: 0;
@@ -112,6 +198,8 @@
             font-size: 16px;
             a {
                 color: $green-tint01;
+                text-decoration: underline;
+                cursor: pointer;
             }
             p {
                 margin: 0;
@@ -140,5 +228,41 @@ button.toggle-view {
             display: none;
         }
 
+    }
+}
+
+button.btn-on-map {
+    position: absolute;
+    z-index: 2000;
+    top: 12px;
+    right: 12px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: $white;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+
+    &:focus {
+        outline-color: transparent !important;
+        border: 0;
+    }
+
+    &.active {
+        box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.25);
+    }
+}
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+    .container__list {
+        .container__map {
+            height: calc(100vh - 145px);
+            display: block;
+            visibility: visible;
+            pointer-events: all;
+            display: flex;
+            flex-direction: column;
+            width: 65%;
+            left: 35%;
+        }
     }
 }

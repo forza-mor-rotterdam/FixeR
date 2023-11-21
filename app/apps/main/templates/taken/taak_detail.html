@@ -88,7 +88,7 @@
                         </div>
                         {% endif %}
                 {% else %}
-                    <div class="no-image" style="background-image: url('{% webpack_static 'icons/assets/icons/noimage.svg' %}');"></div>
+                    <div class="no-image" style="background-image: url('{% webpack_static 'icons/noimage.svg' %}');"></div>
                 {% endif %}
                 </div>
             </section>
@@ -290,7 +290,7 @@
 
 
             <section class="section--seperated section--seperated__no-border-bottom" data-testid="detailActions">
-                <div class="container__details">
+                <div class="container__details container__details--sticky-bottom">
                     {% if not taak.afgesloten_op %}
                     <div class="sticky sticky--bottom">
                         <div class="form-row">

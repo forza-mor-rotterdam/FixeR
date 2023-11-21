@@ -1,10 +1,16 @@
 import { Controller } from '@hotwired/stimulus';
 
+let self = null
 export default class extends Controller {
     static targets = ["turboFormHandler", "incidentDate"]
     static values = {
         date: String,
         days: String
+    }
+
+    initialize() {
+        self = this
+        self.element[self.identifier] = self
     }
 
     connect() {
@@ -30,6 +36,10 @@ export default class extends Controller {
 
     disconnect() {
         this.removeAllListeners()
+    }
+
+    selectTaak(e) {
+        this.element.dispatchEvent(new CustomEvent("taakIsSelected", {detail: {url:e.params.url, id:e.params.id}, bubbles: true}));
     }
 
     getNumberOfDays(date, days) {
