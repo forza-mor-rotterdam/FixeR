@@ -344,7 +344,6 @@ h1 + .section--seperated {
 }
 
 .hidden-vertical {
-    // display: none;
     padding-top: 0;
     max-height: 0;
     overflow: hidden;
@@ -353,7 +352,7 @@ h1 + .section--seperated {
         &.container__sorting {
             transition: all 0.25s ease-in;
 
-            @media (min-width: map-get($grid-breakpoints, lg)) {
+            @media (min-width: map-get($grid-breakpoints, md)) {
                 max-height: 100px;
                 overflow: hidden;
             }

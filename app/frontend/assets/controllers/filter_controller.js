@@ -1,18 +1,18 @@
 import { Controller } from '@hotwired/stimulus';
 
+
+
 export default class extends Controller {
     static targets = [ "foldoutStatesField", "filterInput" ]
-
-    showFilters() {
-        document.body.classList.add('show-filters')
+    static values = {
+        requestType: String,
     }
-
-    hideFilters() {
-        const frame = document.getElementById('taken_lijst');
-        frame.reload()
-        document.body.classList.remove('show-filters')
+    initialize(){
+        if (this.requestTypeValue == "post"){
+            const frame = document.getElementById('taken_lijst');
+            frame.reload()
+        }
     }
-
     removeFilter(e) {
         const input = document.querySelector(`[name="${e.params.description}"][value="${e.params.code}"]`);
         input.checked = false;
@@ -21,6 +21,7 @@ export default class extends Controller {
     toggleActiveFilter(e) {
         e.preventDefault()
         const input = this.foldoutStatesFieldTarget;
+        console.log(input.value)
         let idArray = JSON.parse(input.value)
         const idAttr = e.target.getAttribute("id")
         const isOpen = e.target.hasAttribute("open")
@@ -43,11 +44,13 @@ export default class extends Controller {
     }
 
     selectAll(e) {
+        e.preventDefault()
         const checkList = Array.from(e.target.closest('details').querySelectorAll('.form-check-input'))
         const doCheck = e.params.filterType === 'all'
         checkList.forEach(element => {
             element.checked = doCheck
         });
+        this.element.requestSubmit()
     }
 
     removeAllFilters(e) {

@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 
 import requests
-from apps.context.constanten import FILTERS
+from apps.context.filters import FilterManager
 from apps.main.forms import (
     HANDLED_OPTIONS,
     TAAK_BEHANDEL_RESOLUTIE,
@@ -13,10 +13,7 @@ from apps.main.forms import (
     TaakBehandelForm,
 )
 from apps.main.utils import (
-    filter_taken,
     get_actieve_filters,
-    get_actieve_filters_aantal,
-    get_filter_options,
     get_filters,
     get_kaart_modus,
     get_sortering,
@@ -101,10 +98,13 @@ def filter(request, status="nieuw"):
         if request.user.profiel.context
         else []
     )
+    # haal actieve filters op uit profiel
     actieve_filters = get_actieve_filters(request.user, filters, status)
 
     foldout_states = []
+    request_type = "get"
     if request.POST:
+        request_type = "post"
         actieve_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
 
@@ -113,42 +113,22 @@ def filter(request, status="nieuw"):
     except Exception as e:
         raise Exception(e)
 
-    taken = filter_taken(standaard_taken, actieve_filters)
+    filter_manager = FilterManager(standaard_taken, actieve_filters, foldout_states)
 
-    filter_options_fields = [f for f in FILTERS if f[0] in actieve_filters]
-    filter_opties = get_filter_options(taken, standaard_taken, filter_options_fields)
-
-    actieve_filters = {
-        k: [
-            af
-            for af in v
-            if af in [fok for fok, fov in filter_opties.get(k, {}).items()]
-        ]
-        for k, v in actieve_filters.items()
-    }
+    taken = filter_manager.filter_taken()
 
     # sla actieve filters op in profiel
-    set_actieve_filters(request.user, actieve_filters, status)
-
-    filters = [
-        {
-            "naam": f,
-            "opties": filter_opties.get(f, {}),
-            "actief": actieve_filters.get(f, {}),
-            "folded": f"foldout_{f}" not in foldout_states,
-        }
-        for f in filters
-    ]
+    set_actieve_filters(request.user, filter_manager.active_filters, status)
 
     return render(
         request,
         "filters/form.html",
         {
-            "filters": filters,
+            "filter_manager": filter_manager,
             "this_url": reverse("filter_part", kwargs={"status": status}),
-            "actieve_filters_aantal": get_actieve_filters_aantal(actieve_filters),
             "taken_aantal": taken.count(),
             "foldout_states": json.dumps(foldout_states),
+            "request_type": request_type,
         },
     )
 
@@ -228,8 +208,6 @@ def taken_afgerond_overzicht(request):
 
 @permission_required("authorisatie.taken_lijst_bekijken")
 def taken_lijst(request, status="nieuw"):
-    grouped_by = False
-
     try:
         taken = getattr(Taak.objects, f"get_taken_{status}")(request.user)
     except Exception as e:
@@ -240,8 +218,13 @@ def taken_lijst(request, status="nieuw"):
         if request.user.profiel.context
         else []
     )
+
     actieve_filters = get_actieve_filters(request.user, filters, status)
-    taken_gefilterd = filter_taken(taken, actieve_filters)
+
+    filter_manager = FilterManager(taken, actieve_filters)
+
+    taken_gefilterd = filter_manager.filter_taken()
+
     taken_aantal = len(taken_gefilterd)
     paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")
@@ -267,16 +250,14 @@ def taken_lijst(request, status="nieuw"):
     taken_paginated = page_obj.object_list
     return render(
         request,
-        "incident/part_list_base.html"
-        if not grouped_by
-        else "incident/part_list_grouped.html",
+        "incident/part_list_base.html",
         {
             "this_url": reverse("taken_lijst_part", kwargs={"status": status}),
             "sort_options": sort_options,
             "taken": taken_paginated,
             "taken_aantal": taken_aantal,
             "page_obj": page_obj,
-            "filters_count": len([ll for k, v in actieve_filters.items() for ll in v]),
+            "filter_manager": filter_manager,
             "taken_sorted_by_adres": taken_sorted_by_adres,
         },
     )
@@ -303,8 +284,9 @@ def sorteer_filter(request):
 def kaart_modus(request):
     kaart_modus = get_kaart_modus(request.user)
     form = KaartModusForm({"kaart_modus": kaart_modus})
-
+    request_type = "get"
     if request.POST:
+        request_type = "post"
         form = KaartModusForm(request.POST, {"kaart_modus": kaart_modus})
         if form.is_valid():
             kaart_modus = form.cleaned_data.get("kaart_modus")
@@ -312,7 +294,10 @@ def kaart_modus(request):
     return render(
         request,
         "snippets/kaart_modus_form.html",
-        {"form": form},
+        {
+            "form": form,
+            "request_type": request_type,
+        },
     )
 
 

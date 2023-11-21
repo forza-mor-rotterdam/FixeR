@@ -72,8 +72,9 @@
             width: 35%;
 
             .list__incidents {
+                border-top: 1px solid $gray-tint04;
                 overflow-y: auto;
-                height: calc(100vh - 188px); // hoogte van de header
+                height: calc(100vh - 226px); // hoogte van de header
             }
         }
     }
@@ -84,15 +85,25 @@
 
 .container__sorting {
     box-sizing: content-box;
-    // padding-top: 16px;
+
+    @media (min-width: map-get($grid-breakpoints, md)) and (max-width: 1023px) {
+        position: absolute;
+        top: -79px;
+        height: 100px;
+        width: 400px;
+        right: 140px;
+        z-index: 20;
+    }
+
     .wrapper {
         background-color: $gray-tint02;
         padding: $input-padding-x;
         display: flex;
         justify-content: space-between;
 
-        @media (min-width: map-get($grid-breakpoints, lg)) {
+        @media (min-width: map-get($grid-breakpoints, md)) {
             background-color: transparent;
+            padding-left: 0;
         }
 
     }
@@ -103,13 +114,13 @@
         background-color: white;
         border: 1px solid $gray-tint08;
         outline: 0;
-        padding: 12px 16px;
-        font-size: 16px;
+        padding: 0 16px;
+        font-size: 18px;
         width: 100%;
         color: #404b4f;
         text-align: left;
         -webkit-appearance: none;
-
+        height: 48px;
         background-image: url("data:image/svg+xml, <svg width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 xmlns=%27http://www.w3.org/2000/svg%27> <path fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M15.75 9.75L12 4.5L8.25 9.75H15.75ZM15.75 14.25L12 19.5L8.25 14.25H15.75Z%27 fill=%27%2365757B%27/> </svg>");
         background-repeat: no-repeat;
         background-position: right 10px center;
@@ -120,9 +131,9 @@
 .list__incidents {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 16px 0 0;
     overflow: hidden;
-    border-right: 16px solid white;
+
     .list__incidents__scroll-wrapper {
         overflow: hidden;
         flex: 1;
@@ -299,6 +310,12 @@
                 }
 
             }
+
+            @media (min-width: map-get($grid-breakpoints, md)) and (max-width: 1023px) {
+                h2 {
+                    font-size: 1.5rem;
+                }
+            }
         }
 
         .container__actions {
@@ -373,12 +390,19 @@
         margin: 8px 0 0;
     }
 }
-
+@media (min-width: map-get($grid-breakpoints, md)) {
+    .container__header {
+        .container__controls {
+            .btn-sort--small {
+                display: none;
+            }
+        }
+    }
+}
 @media (min-width: map-get($grid-breakpoints, lg)) {
     .container__header {
         .container__controls {
-            .btn-navigate--small.toggle-view,
-            .btn-sort--small {
+            .btn-navigate--small.toggle-view {
                 display: none;
             }
         }

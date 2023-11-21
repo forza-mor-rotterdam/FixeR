@@ -1,4 +1,4 @@
-from apps.context.constanten import FILTER_NAMEN
+from apps.context.filters import FilterManager
 from apps.context.models import Context
 from apps.taken.models import Taaktype
 from django import forms
@@ -37,7 +37,7 @@ class ContextAanpassenForm(forms.ModelForm):
         ),
         label="Filters",
         required=False,
-        choices=[(f, f) for f in FILTER_NAMEN],
+        choices=[(f, f) for f in FilterManager.available_filter_names()],
     )
 
     class Meta:

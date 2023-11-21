@@ -5,40 +5,39 @@
         action="{{this_url}}"
         method="post"
         data-controller="filter"
+        data-filter-request-type-value="{{request_type}}"
         id="incidentFilterAllForm"
         data-testid="incidentFilterAllForm"
     >
         {% csrf_token %}
-        <details class="filter filter--active">
+        <details class="filter filter--active" data-action="filter#toggleActiveFilter" id="foldout_active-filters"{% if "foldout_active-filters" in foldout_states %} open{% endif %}>
             <input data-filter-target="foldoutStatesField" type="hidden" value="{{ foldout_states }}" name="foldout_states">
             <summary>
                 <span>Actieve filters</span>
-                <span class="count count--filter">{{ actieve_filters_aantal }}<span>
+                <span class="count count--filter">{{ filter_manager.active_filter_count }}<span>
             </summary>
             <fieldset>
                 <ul class="list-clean">
 
-                    {% for f in filters %}
-                    {% if f.actief %}
+                    {% for f in filter_manager.filters %}
+                    {% if f.active %}
                     <li>
-                        <h3 class="h5">{{ f.naam|capfirst }}</h3>
+                        <h3 class="h5">{{ f.name|capfirst }}</h3>
                         <ul class="list-filters--active list-clean">
-                            {% for id in f.actief %}
-                            {% for optie_id, optie in f.opties.items %}
-                            {% if id == optie_id %}
+                            {% for optie in f.options %}
+                            {% if optie.checked %}
                             <li class="js-filter-active">
                                 <button
                                     class="btn btn-secondary btn-filter--active"
                                     data-action="filter#removeFilter"
-                                    data-filter-code-param="{{ optie_id }}"
-                                    data-filter-description-param="{{ f.naam }}"
+                                    data-filter-code-param="{{ optie.id }}"
+                                    data-filter-description-param="{{ f.key }}"
                                 >
-                                    <span>{{ optie.0 }}</span>
+                                    <span>{{ optie.filter_label }}</span>
                                 </button>
 
                             </li>
                             {% endif %}
-                            {% endfor %}
                             {% endfor %}
                         </ul>
                     </li>
@@ -59,35 +58,24 @@
 
 
 
-        {% for f in filters %}
-        <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{{f.naam}}"{% if not f.folded %} open{% endif %}>
-            <summary>
-                <span>{{ f.naam|capfirst }}</span>
-                <span>({{ f.actief|length }})</span>
-            </summary>
-            <ul
-                class="list-clean"
-                data-test-id="incidentFilter{{ f.naam|capfirst }}"
-            >
-                {% for optie_id, optie in f.opties.items %}
-                    <li class="container__check-department">
-                        <div class="form-check">
-                            <input
-                                class="form-check-input filter--taken"
-                                type="checkbox"
-                                value="{{ optie_id }}"
-                                {% if optie_id in f.actief %}checked{% endif %}
-                                name="{{ f.naam }}"
-                                id="{{ f.naam }}_{{ optie_id }}"
-                                data-action="filter#onChangeFilter"
-                                data-filter-target="filterInput"
-                            >
-                            <label class="form-check-label" for="{{ f.naam }}_{{ optie_id }}">{{ optie.0 }}</label>
-                        </div>
-                    </li>
-                {% endfor %}
-                </ul>
-        </details>
+        {% for filter in filter_manager.filters %}
+            {% if filter.groups %}
+                <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{{ filter.group_key }}"{% if filter.folded %} open{% endif %}>
+                    <summary>
+                        <span>{{ filter.group_label }}</span>
+                        <span>({{ filter.active|length }})</span>
+                    </summary>
+                    <ul class="list-clean">
+                        {% for group in filter.groups %}
+                        <li>
+                            {% include "filters/options.html" with filter=group %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </details>
+            {% else %}
+                {% include "filters/options.html" with filter=filter %}
+            {% endif %}
         {% endfor %}
 
 
@@ -97,24 +85,24 @@
                 <button
                     type="button"
                     class="btn btn-action"
-                    data-action="filter#hideFilters"
+                    data-action="main#hideFilters"
                     disabled="disabled"
                 >
                     Er zijn geen meldingen, pas filter aan
                 </button>
             {% elif incident_count == 1 %}
                 <button
-                    type="submit"
+                    type="button"
                     class="btn btn-action"
-                    data-action="filter#onSubmitFilter"
+                    data-action="main#hideFilters"
                 >
                     Toon 1 taak
                 </button>
             {% else %}
                 <button
-                    type="submit"
+                    type="button"
                     class="btn btn-action"
-                    data-action="filter#onSubmitFilter"
+                    data-action="main#hideFilters"
                 >
                     Toon {{ taken_aantal }} taken
                 </button>
