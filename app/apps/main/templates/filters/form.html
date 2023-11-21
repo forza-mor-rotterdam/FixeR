@@ -10,7 +10,7 @@
         data-testid="incidentFilterAllForm"
     >
         {% csrf_token %}
-        <details class="filter filter--active">
+        <details class="filter filter--active" data-action="filter#toggleActiveFilter" id="foldout_active-filters"{% if "foldout_active-filters" in foldout_states %} open{% endif %}>
             <input data-filter-target="foldoutStatesField" type="hidden" value="{{ foldout_states }}" name="foldout_states">
             <summary>
                 <span>Actieve filters</span>
@@ -19,14 +19,13 @@
             <fieldset>
                 <ul class="list-clean">
 
-                    {% for f in filter_options %}
-                    {% if f.actief %}
+                    {% for f in filters.filter_options %}
+                    {% if f.active %}
                     <li>
-                        <h3 class="h5">{{ f.naam|capfirst }}</h3>
+                        <h3 class="h5">{{ f.name|capfirst }}</h3>
                         <ul class="list-filters--active list-clean">
-                            {% for id in f.actief %}
-                            {% for optie_id, optie in f.opties.items %}
-                            {% if id == optie_id %}
+                            {% for optie in f.options.options %}
+                            {% if optie.checked %}
                             <li class="js-filter-active">
                                 <button
                                     class="btn btn-secondary btn-filter--active"
@@ -34,12 +33,11 @@
                                     data-filter-code-param="{{ optie_id }}"
                                     data-filter-description-param="{{ f.naam }}"
                                 >
-                                    <span>{{ optie.0 }}</span>
+                                    <span>{{ optie.label }}</span>
                                 </button>
 
                             </li>
                             {% endif %}
-                            {% endfor %}
                             {% endfor %}
                         </ul>
                     </li>
@@ -61,23 +59,22 @@
 
 
         {% for v in filters.filter_options %}
-        {% comment %} {{v.grouped_options}} {% endcomment %}
             {% if v.grouped_options %}
-                <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{{ v.grouped_options.key }}"{% if not f.folded %} open{% endif %}>
+                <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{{ v.grouped_options.key }}"{% if v.grouped_options.folded %} open{% endif %}>
                     <summary>
                         <span>{{ v.grouped_options.label }}</span>
-                        {% comment %} <span>({{ v }})</span> {% endcomment %}
+                        <span>({{ v.grouped_options.active|length }})</span>
                     </summary>
                     <ul class="list-clean">
-                        {% for vv in v.grouped_options.groups %}
+                        {% for group in v.grouped_options.groups %}
                         <li>
-                            {% include "filters/options.html" with v=vv grouped=True %}
+                            {% include "filters/options.html" with v=group grouped=True options=group.options %}
                         </li>
                         {% endfor %}
                     </ul>
                 </details>
             {% else %}
-                {% include "filters/options.html" %}
+                {% include "filters/options.html" with options=v.options.options %}
             {% endif %}
         {% endfor %}
 

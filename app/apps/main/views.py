@@ -102,15 +102,20 @@ def filter(request, status="nieuw"):
         else []
     )
     actieve_filters = get_actieve_filters(request.user, filters, status)
-    # print("actieve_filters")
+    # print("filter actieve_filters")
+    # print(actieve_filters)
+    # print(filters)
     # print(actieve_filters)
 
     foldout_states = []
     request_type = "get"
     if request.POST:
         request_type = "post"
+        print(request.POST)
         actieve_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
+    # print("foldout_states")
+    # print(len(foldout_states))
     # print(actieve_filters)
 
     try:
@@ -118,7 +123,7 @@ def filter(request, status="nieuw"):
     except Exception as e:
         raise Exception(e)
 
-    filter_manager = FilterManager(standaard_taken, actieve_filters)
+    filter_manager = FilterManager(standaard_taken, actieve_filters, foldout_states)
 
     taken = filter_manager.filter()
 
@@ -149,7 +154,7 @@ def filter(request, status="nieuw"):
     #     }
     #     for f in filters
     # ]
-    print(taken)
+    # print(taken)
 
     return render(
         request,
@@ -256,7 +261,8 @@ def taken_lijst(request, status="nieuw"):
     # print("taken_lijst filters")
     # print(filters)
     actieve_filters = get_actieve_filters(request.user, filters, status)
-    # print(actieve_filters)
+    print("taken_lijst actieve_filters")
+    print(actieve_filters)
     filter_manager = FilterManager(taken, actieve_filters)
 
     taken_gefilterd = filter_manager.filter()

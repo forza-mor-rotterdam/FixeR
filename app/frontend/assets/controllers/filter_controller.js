@@ -44,11 +44,13 @@ export default class extends Controller {
     }
 
     selectAll(e) {
+        e.preventDefault()
         const checkList = Array.from(e.target.closest('details').querySelectorAll('.form-check-input'))
         const doCheck = e.params.filterType === 'all'
         checkList.forEach(element => {
             element.checked = doCheck
         });
+        this.element.requestSubmit()
     }
 
     removeAllFilters(e) {

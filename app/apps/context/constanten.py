@@ -15,10 +15,12 @@ class StandaardFilter:
     _grouped_options = None
     _filter_manager = None
     _selected_options = None
+    _foldout_states = []
 
-    def __init__(self, filter_manager, selected_options):
+    def __init__(self, filter_manager, selected_options, foldout_states=[]):
         self._selected_options = selected_options
         self._filter_manager = filter_manager
+        self._foldout_states = foldout_states
         self._set_options(selected_options)
 
     @classmethod
@@ -79,7 +81,10 @@ class StandaardFilter:
         }
         f_dict.update(ff_dict)
         f_dict = {str(k): v for k, v in f_dict.items() if k}
-        print(f_dict)
+
+        # print(f_dict)
+        # print(selected_options)
+        # print(self._option_group_lookup)
 
         def create_option(k, v):
             return {
@@ -91,17 +96,27 @@ class StandaardFilter:
         self._options = {
             "label": self._label,
             "name": self._label,
-            "key": slugify(self._label),
+            "key": self._key,
             "options": [create_option(k, v) for k, v in f_dict.items()],
         }
         if self._option_group_lookup:
             self._grouped_options = {
                 "label": self._group_label,
-                "key": slugify(self._group_label),
+                "key": self._group_key,
+                "folded": f"foldout_{self._group_key}" in self._foldout_states,
+                "active": [kk for kk, vv in f_dict.items() if kk in selected_options],
                 "groups": [
                     {
                         "name": g,
-                        "key": slugify(g),
+                        "group_key": slugify(g),
+                        "folded": f"foldout_{slugify(g)}" in self._foldout_states,
+                        "foldout_states": self._foldout_states,
+                        "key": self._key,
+                        "active": [
+                            kk
+                            for kk, vv in f_dict.items()
+                            if kk in selected_options and g == vv[1]
+                        ],
                         "label": self._label,
                         "options": [
                             create_option(kk, vv)
@@ -112,6 +127,9 @@ class StandaardFilter:
                     for g in list(set([v[1] for k, v in f_dict.items()]))
                 ],
             }
+
+    def folded(self):
+        return f"foldout_{self._key}" in self._foldout_states
 
     def options(self):
         return self._options
@@ -152,19 +170,20 @@ class WijkFilter(StandaardFilter):
     _label = "Wijk"
 
 
-class BuurtFilter(StandaardFilter):
-    _key = "buurt"
-    _option_key_lookup = "melding__response_json__locaties_voor_melding__0__buurtnaam"
-    _filter_lookup = "melding__response_json__locaties_voor_melding__0__buurtnaam__in"
-    _label = "Buurt"
+# class BuurtFilter(StandaardFilter):
+#     _key = "buurt"
+#     _option_key_lookup = "melding__response_json__locaties_voor_melding__0__buurtnaam"
+#     _filter_lookup = "melding__response_json__locaties_voor_melding__0__buurtnaam__in"
+#     _label = "Buurt"
 
 
 class WijkBuurtFilter(StandaardFilter):
-    _key = "wijk_buurt"
+    _key = "buurt"
     _option_key_lookup = "melding__response_json__locaties_voor_melding__0__buurtnaam"
     _option_group_lookup = "melding__response_json__locaties_voor_melding__0__wijknaam"
     _filter_lookup = "melding__response_json__locaties_voor_melding__0__buurtnaam__in"
     _label = "Buurten"
+    _group_key = "wijken"
     _group_label = "Wijken"
 
 
@@ -175,17 +194,21 @@ class FilterManager:
         BegraafplaatsFilter,
         TaaktypeFilter,
         WijkFilter,
-        BuurtFilter,
+        # BuurtFilter,
         WijkBuurtFilter,
     )
+    _foldout_states = None
 
-    def __init__(self, taken, active_filters):
+    def __init__(self, taken, active_filters, foldout_states=[]):
         self._taken = taken
         self._active_filters = {
             k: v
             for k, v in active_filters.items()
             if isinstance(v, (list, tuple)) and self._get_filter_class(k)
         }
+        self._foldout_states = foldout_states
+        print("FilterManager _active_filters")
+        print(self._active_filters)
 
     @property
     def taken(self):
@@ -211,9 +234,14 @@ class FilterManager:
         return self._taken_filtered
 
     def _set_filter_options(self):
+        print("self._foldout_states")
+        print(self._foldout_states)
+        print(len(self._foldout_states))
         self._filter_options = [
-            self._get_filter_class(k)(self, v) for k, v in self._active_filters.items()
+            self._get_filter_class(k)(self, v, self._foldout_states)
+            for k, v in self._active_filters.items()
         ]
+        print([id(f) for f in self._filter_options])
 
     def _set_available_active_filter_classes(self):
         if not self._active_filters or not isinstance(self._active_filters, dict):
@@ -236,34 +264,7 @@ class FilterManager:
         }
 
     def filter_options(self, foldout_states=[]):
-        # print([f for f in self._filter_options])
         return self._filter_options
-        self._set_available_active_filter_classes()
-        self._filter_options = [
-            filter_class(
-                self, self._validated_active_filters.get(filter_class.key())
-            ).options()
-            for filter_class in self._available_active_filter_classes
-        ]
-        # self._validate_selected_options()
-
-        # print("__init__")
-        # print(self._validated_selected_options)
-        return []
-
-    #     return [
-    #         {
-    #             "key": k,
-    #             "naam": self._get_filter_class(k).label(),
-    #             "opties": self._filter_options.get(k),
-    #             "actief": self._validated_selected_options.get(k),
-    #             "folded": f"foldout_{k}" not in foldout_states,
-    #         }
-    #         for k, v in self._validated_active_filters.items()
-    #     ]
-
-    # def validated_selected_options(self):
-    #     return self._validated_selected_options
 
 
 FILTERS = (
@@ -301,7 +302,7 @@ FILTERS = (
     BegraafplaatsFilter,
     TaaktypeFilter,
     WijkFilter,
-    BuurtFilter,
+    # BuurtFilter,
     WijkBuurtFilter,
 )
 
