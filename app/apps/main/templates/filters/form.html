@@ -14,26 +14,26 @@
             <input data-filter-target="foldoutStatesField" type="hidden" value="{{ foldout_states }}" name="foldout_states">
             <summary>
                 <span>Actieve filters</span>
-                <span class="count count--filter">{{ actieve_filters_aantal }}<span>
+                <span class="count count--filter">{{ filter_manager.active_filter_count }}<span>
             </summary>
             <fieldset>
                 <ul class="list-clean">
 
-                    {% for f in filters.filter_options %}
+                    {% for f in filter_manager.filters %}
                     {% if f.active %}
                     <li>
                         <h3 class="h5">{{ f.name|capfirst }}</h3>
                         <ul class="list-filters--active list-clean">
-                            {% for optie in f.options.options %}
+                            {% for optie in f.options %}
                             {% if optie.checked %}
                             <li class="js-filter-active">
                                 <button
                                     class="btn btn-secondary btn-filter--active"
                                     data-action="filter#removeFilter"
-                                    data-filter-code-param="{{ optie_id }}"
-                                    data-filter-description-param="{{ f.naam }}"
+                                    data-filter-code-param="{{ optie.id }}"
+                                    data-filter-description-param="{{ f.key }}"
                                 >
-                                    <span>{{ optie.label }}</span>
+                                    <span>{{ optie.filter_label }}</span>
                                 </button>
 
                             </li>
@@ -58,23 +58,23 @@
 
 
 
-        {% for v in filters.filter_options %}
-            {% if v.grouped_options %}
-                <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{{ v.grouped_options.key }}"{% if v.grouped_options.folded %} open{% endif %}>
+        {% for filter in filter_manager.filters %}
+            {% if filter.groups %}
+                <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{{ filter.group_key }}"{% if filter.folded %} open{% endif %}>
                     <summary>
-                        <span>{{ v.grouped_options.label }}</span>
-                        <span>({{ v.grouped_options.active|length }})</span>
+                        <span>{{ filter.group_label }}</span>
+                        <span>({{ filter.active|length }})</span>
                     </summary>
                     <ul class="list-clean">
-                        {% for group in v.grouped_options.groups %}
+                        {% for group in filter.groups %}
                         <li>
-                            {% include "filters/options.html" with v=group grouped=True options=group.options %}
+                            {% include "filters/options.html" with filter=group %}
                         </li>
                         {% endfor %}
                     </ul>
                 </details>
             {% else %}
-                {% include "filters/options.html" with options=v.options.options %}
+                {% include "filters/options.html" with filter=filter %}
             {% endif %}
         {% endfor %}
 

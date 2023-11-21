@@ -1,13 +1,13 @@
 
-            <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{% if grouped %}{{ v.group_key }}{% else %}{{ v.key }}{% endif %}"{% if v.folded %} open{% endif %}>
+            <details class="filter" data-action="filter#toggleActiveFilter" id="foldout_{% if group %}{{ filter.group_key }}{% else %}{{ filter.key }}{% endif %}"{% if filter.folded %} open{% endif %}>
                 <summary>
-                    <span>{{ v.name|capfirst }}</span>
-                    <span>({{ v.active|length }})</span>
+                    <span>{{ filter.name|capfirst }}</span>
+                    <span>({{ filter.active|length }})</span>
                 </summary>
-                {% if grouped %}
+                {% if group %}
                 <div class="container__list--districts foldout">
                     <div class="container__list--header">
-                        <h3 class="h5">{{ v.label }}</h3>
+                        <h3 class="h5">{{ group.label }}</h3>
                         <div>
                             <button
                                 class="btn btn-textlink"
@@ -29,20 +29,20 @@
                     class="list-clean"
                     data-test-id="incidentFilter{{ f.naam|capfirst }}"
                 >
-                    {% for optie in options %}
+                    {% for option in filter.options %}
                         <li class="container__check-department">
                             <div class="form-check">
                                 <input
                                     class="form-check-input filter--taken"
                                     type="checkbox"
-                                    value="{{ optie.id }}"
-                                    {% if optie.checked %}checked{% endif %}
-                                    name="{{ v.key }}"
-                                    id="{{ v.key }}_{{ optie.id }}"
+                                    value="{{ option.value }}"
+                                    {% if option.checked %}checked{% endif %}
+                                    name="{{ filter.key }}"
+                                    id="{{ filter.key }}_{{ option.id }}"
                                     data-action="filter#onChangeFilter"
                                     data-filter-target="filterInput"
                                 >
-                                <label class="form-check-label" for="{{ v.key }}_{{ optie.id }}">{{ optie.label }}</label>
+                                <label class="form-check-label" for="{{ filter.key }}_{{ option.id }}">{{ option.label }}</label>
                             </div>
                         </li>
                     {% endfor %}
