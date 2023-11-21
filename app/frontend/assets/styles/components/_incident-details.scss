@@ -173,3 +173,76 @@
         display: inline-block;
     }
 }
+
+.container__header-taknavigatie {
+    h1 {
+        padding-right: 110px;
+        @media (min-width: map-get($grid-breakpoints, sm)) {
+            padding-right: 180px;
+        }
+    }
+}
+
+.container__taaknavigatie {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 48px;
+
+    span {
+        display: none;
+        font-size: 16px;
+        color: $gray-tint08;
+        padding-right: 16px;
+        transform: translateY(-10px);
+
+        @media (min-width: map-get($grid-breakpoints, sm)) {
+            display: inline-block;
+        }
+    }
+}
+
+.list__task-navigation {
+    display: inline;
+    @include list-clean();
+    margin: 0;
+    flex: 1;
+
+    li {
+        display: inline;
+
+        a {
+            display: inline-block;
+            width: 48px;
+            height: 48px;
+            border: 1px solid $gray-tint08;
+            background-color: transparent;
+            position: relative;
+
+            svg {
+                position: absolute;
+                top: calc(50% - 12px);
+                left: 12px;
+                width: 24px;
+                height: 24px;
+                path {
+                    fill: $gray-tint11;
+                }
+
+            }
+
+            &.previous {
+                svg {
+                    transform: rotate(180deg);
+                }
+            }
+
+            &.disabled {
+                cursor: default;
+                text-decoration: none;
+                background-color: $gray-tint04;
+                border-color: $gray-tint04;
+            }
+        }
+    }
+}
