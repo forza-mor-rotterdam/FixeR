@@ -22,6 +22,7 @@ export default class extends Controller {
         self = this
         this.element.addEventListener("orderChangeEvent", function(e){
             self.sorterenOp(e.detail.order)
+            self.saveSortedList(e.detail.order)
         });
 
         if(this.hasSortingTarget && showSortingContainer === true ) {
@@ -117,6 +118,7 @@ export default class extends Controller {
         }
     }
     sorterenOp(order){
+        console.log('order', order)
         let selectedOrder = order.split("-")[0]
         if (selectedOrder != activeOrder){
             self.setStyleOrder(selectedOrder)
@@ -125,6 +127,20 @@ export default class extends Controller {
         self.taakItemLijstTarget.classList[(order.split("-").length > 1) ? "remove" : "add"]("reverse")
         self.taakItemLijstTarget.scrollTop = 0;
     }
+
+    saveSortedList(order) {
+        let initialSortedList = Array.from(document.querySelectorAll(".list-item"))
+
+        let newSortedList = initialSortedList.map((taakItem) => {
+            return Number(taakItem.getAttribute('data-id'))
+        })
+
+        if(order.split("-").length > 1){
+            newSortedList.reverse()
+        }
+        sessionStorage.setItem("taakIdList", newSortedList)
+    }
+
     disconnect() {
         console.log("disconnect")
     }

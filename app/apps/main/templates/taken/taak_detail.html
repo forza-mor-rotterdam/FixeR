@@ -45,18 +45,42 @@
 
             {% if taak.magAfhandelen %} class="has-sticky-footer" {% endif %}
         >
-
-            {% if TEMPLATE_BASIS != "benc" %}
-            <h1 class="h3 no-padding">{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }} {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}{{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}{%endif%}</h1>
-            {% else %}
-            {% with grafnummer=melding.meta.grafnummer vak=melding.meta.vak plaats=melding.meta.begraafplaats %}
-            <h1 class="h3">
-                {% if grafnummer %} Graf {{ grafnummer }}{% endif %}{% if vak %}, Vak {{ vak }}{% endif %}
-                {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
-            </h1>
-            {% endwith %}
-            {% endif %}
-
+            <div class="container__header-taknavigatie">
+                {% if TEMPLATE_BASIS != "benc" %}
+                <h1 class="h3">{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }} {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}{{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}{%endif%}</h1>
+                {% else %}
+                {% with grafnummer=melding.meta.grafnummer vak=melding.meta.vak plaats=melding.meta.begraafplaats %}
+                <h1 class="h3">
+                    {% if grafnummer %} Graf {{ grafnummer }}{% endif %}{% if vak %}, Vak {{ vak }}{% endif %}
+                    {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
+                </h1>
+                {% endwith %}
+                {% endif %}
+                <div
+                    class="container__taaknavigatie"
+                    data-controller="taakNavigatie"
+                    data-taakNavigatie-taak-id-value="{{ taak.id }}"
+                    data-taakNavigatie-url-value="/taak/"
+                >
+                    <span data-taakNavigatie-target="teller" ></span>
+                    <ul class="list__task-navigation">
+                        <li>
+                            <a class="previous" data-taakNavigatie-target="vorige">
+                                <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z" fill="#00811F"/>
+                                </svg>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="" data-taakNavigatie-target="volgende">
+                                <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z" fill="#00811F"/>
+                                </svg>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
             <section class="section--seperated" data-testid="detailPhotoviewer" {% if melding.bijlagen|length < 2 %}style="border: 0;"{% endif %}>
                 <div class="full-width">
                 {% if melding.bijlagen %}
