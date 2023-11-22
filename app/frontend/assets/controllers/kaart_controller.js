@@ -171,7 +171,9 @@ export default class extends Controller {
 
     makeRoute(event) {
         console.log("makeRoute")
-        let routeUrl = "https://www.google.com/maps/dir"
+        // let routeUrl = "https://www.google.com/maps/dir"
+        // let routeUrl = 'https://www.waze.com/ul?ll=40.75889500,-73.98513100&navigate=yes&zoom=17'
+        let routeUrl = 'https://www.waze.com/ul?ll='
 
         function handleCurrentLocation(pos) {
             console.log("handleCurrentLocation, pos", pos)
@@ -203,12 +205,13 @@ export default class extends Controller {
             let lat = event.params.lat
             let long = event.params.long
 
-            routeUrl += `/${lat}+${long}`
+            routeUrl += `${lat},${long}&navigate=yes`
             console.log('getRoute: ', routeUrl)
             window.open(routeUrl, "_blank")
         }
 
-        navigator.geolocation.getCurrentPosition(handleCurrentLocation, handleNoCurrentLocation);
+        // navigator.geolocation.getCurrentPosition(handleCurrentLocation, handleNoCurrentLocation);
+        getRoute(event)
     }
 
     plotMarkers(coordinatenlijst) {
