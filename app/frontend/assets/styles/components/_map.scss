@@ -59,6 +59,8 @@
         padding: 16px 0;
         ul {
             margin: 0;
+            justify-content: flex-end;
+            align-items: flex-end;
         }
 
         li {
@@ -95,8 +97,7 @@
             @extend .btn;
             text-align: center;
             line-height: 44px;
-            padding: 0 12px 0 40px;
-            font-size: 0.9rem;
+            padding: 0 12px 0 39px;
             height: 40px;
             display: inline-block;
             background-color: $white;
@@ -110,7 +111,7 @@
                 height: 38px;
                 line-height: 42px;
                 border: 3px solid $gray-tint11;
-                padding: 0 10px 0 38px;
+                padding: 0 10px 0 37px;
             }
         }
         input[type="radio"] {
@@ -122,10 +123,6 @@
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         .form__kaart-modus {
-            ul {
-                justify-content: flex-end;
-                align-items: flex-end;
-            }
             label {
                 font-size: 1rem;
             }
