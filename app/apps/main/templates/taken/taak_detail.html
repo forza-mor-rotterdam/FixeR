@@ -45,7 +45,7 @@
 
             {% if taak.magAfhandelen %} class="has-sticky-footer" {% endif %}
         >
-            <div class="container__header-taknavigatie">
+            <div class="container__header-taaknavigatie">
                 {% if TEMPLATE_BASIS != "benc" %}
                 <h1 class="h3">{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }} {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}{{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}{%endif%}</h1>
                 {% else %}
@@ -56,7 +56,7 @@
                 </h1>
                 {% endwith %}
                 {% endif %}
-                <div
+                {% comment %} <div
                     class="container__taaknavigatie"
                     data-controller="taakNavigatie"
                     data-taakNavigatie-taak-id-value="{{ taak.id }}"
@@ -79,7 +79,7 @@
                             </a>
                         </li>
                     </ul>
-                </div>
+                </div> {% endcomment %}
             </div>
             <section class="section--seperated" data-testid="detailPhotoviewer" {% if melding.bijlagen|length < 2 %}style="border: 0;"{% endif %}>
                 <div class="full-width">
