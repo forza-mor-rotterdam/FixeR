@@ -135,7 +135,7 @@ export default class extends Controller {
             return Number(taakItem.getAttribute('data-id'))
         })
 
-        if(order.split("-").length > 1){
+        if(order.split("-").length < 2){
             newSortedList.reverse()
         }
         sessionStorage.setItem("taakIdList", newSortedList)
