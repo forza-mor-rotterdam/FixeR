@@ -56,11 +56,12 @@
                 </h1>
                 {% endwith %}
                 {% endif %}
-                {% comment %} <div
+                <div
                     class="container__taaknavigatie"
                     data-controller="taakNavigatie"
                     data-taakNavigatie-taak-id-value="{{ taak.id }}"
                     data-taakNavigatie-url-value="/taak/"
+                    data-taakNavigatie-target="navigatie"
                 >
                     <span data-taakNavigatie-target="teller" ></span>
                     <ul class="list__task-navigation">
@@ -79,7 +80,7 @@
                             </a>
                         </li>
                     </ul>
-                </div> {% endcomment %}
+                </div>
             </div>
             <section class="section--seperated" data-testid="detailPhotoviewer" {% if melding.bijlagen|length < 2 %}style="border: 0;"{% endif %}>
                 <div class="full-width">
