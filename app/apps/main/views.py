@@ -108,14 +108,11 @@ def filter(request, status="nieuw"):
         actieve_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
 
-    try:
-        standaard_taken = getattr(Taak.objects, f"get_taken_{status}")(request.user)
-    except Exception as e:
-        raise Exception(e)
+    taken = Taak.objects.get_taken_recent(request.user)
 
-    filter_manager = FilterManager(standaard_taken, actieve_filters, foldout_states)
+    filter_manager = FilterManager(taken, actieve_filters, foldout_states)
 
-    taken = filter_manager.filter_taken()
+    taken_gefilterd = filter_manager.filter_taken()
 
     # sla actieve filters op in profiel
     set_actieve_filters(request.user, filter_manager.active_filters, status)
@@ -126,7 +123,7 @@ def filter(request, status="nieuw"):
         {
             "filter_manager": filter_manager,
             "this_url": reverse("filter_part", kwargs={"status": status}),
-            "taken_aantal": taken.count(),
+            "taken_aantal": taken_gefilterd.count(),
             "foldout_states": json.dumps(foldout_states),
             "request_type": request_type,
         },
@@ -208,10 +205,7 @@ def taken_afgerond_overzicht(request):
 
 @permission_required("authorisatie.taken_lijst_bekijken")
 def taken_lijst(request, status="nieuw"):
-    try:
-        taken = getattr(Taak.objects, f"get_taken_{status}")(request.user)
-    except Exception as e:
-        raise Exception(e)
+    taken = Taak.objects.get_taken_recent(request.user)
 
     filters = (
         get_filters(request.user.profiel.context)
@@ -226,7 +220,7 @@ def taken_lijst(request, status="nieuw"):
     taken_gefilterd = filter_manager.filter_taken()
 
     taken_aantal = len(taken_gefilterd)
-    paginator = Paginator(taken_gefilterd, 50)
+    paginator = Paginator(taken_gefilterd, 500)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
