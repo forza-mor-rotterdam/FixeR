@@ -1,4 +1,8 @@
 
+.taak-detail {
+    max-width: map-get($container-max-widths , md );
+    margin: 0 auto;
+}
 .container__details {
     &--sticky-bottom {
         min-height: 90px;

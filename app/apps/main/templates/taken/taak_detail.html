@@ -38,6 +38,7 @@
     </div>
     <div  data-controller="taak" data-action="cancelHandle->taak#cancelHandleHandler" >
         <div
+            class="taak-detail"
             data-controller="detail"
             data-detail-taak-object-value="{{ taak }}"
             data-detail-incident-y-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.0 }}"
