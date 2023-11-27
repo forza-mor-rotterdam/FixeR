@@ -4,12 +4,10 @@
     }
 }
 .container__map {
-    height: 0;
-    padding-bottom: 100%;
 
     .map {
-        height: 0;
-        padding-bottom: 100%;
+        height: 100%;
+        flex: 1 1 0;
 
         .map__overlay {
             color: $white;
@@ -131,29 +129,17 @@
 }
 
 .container__list {
-    position: relative;
-
     .container__map {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 0;
         visibility: hidden;
         pointer-events: none;
-        padding-bottom: 0;
-
-        .map {
-            height: calc(100vh - 220px); // hoogte van de header
-            padding-bottom: 0;
-        }
+        width: 0;
     }
 }
 
 .showMap {
     .container__map {
-        height: calc(100vh - 145px);
-        display: block;
+        display: flex;
+        flex-direction: column;
         visibility: visible;
         pointer-events: all;
         width: 100%;
@@ -253,14 +239,11 @@ button.btn-on-map {
 @media (min-width: map-get($grid-breakpoints, lg)) {
     .container__list {
         .container__map {
-            height: calc(100vh - 145px);
-            display: block;
             visibility: visible;
             pointer-events: all;
             display: flex;
             flex-direction: column;
-            width: 65%;
-            left: 35%;
+            flex: 2 1 auto;
         }
     }
 }

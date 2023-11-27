@@ -8,6 +8,8 @@
     {% endwith %}
 {% endblock %}
 
+{% block body_class %}{% endblock %}
+
 <main data-controller="main">
     <div class="{% block container_class %}container container--wide{% endblock %}">
         {% block body %}{% endblock %}
