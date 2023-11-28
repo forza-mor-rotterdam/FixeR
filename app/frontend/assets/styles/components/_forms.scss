@@ -300,11 +300,11 @@ textarea {
     }
 
     input:checked + .container__slider .slider {
-        background-color: $green-tint01;
+        background-color: $primary;
     }
 
     input:focus + .slider {
-        box-shadow: 0 0 1px $green-tint01;
+        box-shadow: 0 0 1px $primary;
     }
 
     input:checked + .container__slider .slider:before {

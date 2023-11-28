@@ -54,10 +54,61 @@ export default class extends Controller {
     }
 
     connect() {
-        document.querySelectorAll(".container__image img").forEach(element => {
-            console.log("_ _ _ _ _", element)
+        document.querySelectorAll(".container__image").forEach(element => {
             this.pinchZoom(element);
         });
+
+        const touchsurface = document.querySelector('#container-image'),
+        startX = 0,
+        startY = 0,
+        dist = 0,
+        threshold = 150, //required min distance traveled to be considered swipe
+        allowedTime = 200, // maximum time allowed to travel that distance
+        elapsedTime = 0,
+        startTime = 0
+
+        console.log("touchsurface", touchsurface)
+
+    touchsurface.addEventListener('touchstart', function(e){
+        console.log('touchstart')
+        touchsurface.innerHTML = ''
+        var touchobj = e.changedTouches[0]
+        dist = 0
+        startX = touchobj.pageX
+        startY = touchobj.pageY
+        startTime = new Date().getTime() // record time when finger first makes contact with surface
+        e.preventDefault()
+    }, false)
+
+    touchsurface.addEventListener('touchmove', function(e){
+        e.preventDefault() // prevent scrolling when inside DIV
+        console.log('touchMove')
+    }, false)
+
+    touchsurface.addEventListener('touchend', function(e){
+        console.log('touchend')
+        var touchobj = e.changedTouches[0]
+        dist = touchobj.pageX - startX // get total dist traveled by finger while in contact with surface
+        elapsedTime = new Date().getTime() - startTime // get time elapsed
+        // check that elapsed time is within specified, horizontal dist traveled >= threshold, and vertical dist traveled <= 100
+        var swiperightBol = (elapsedTime <= allowedTime && dist >= threshold && Math.abs(touchobj.pageY - startY) <= 100)
+        this.handleswipe(swiperightBol)
+        e.preventDefault()
+    }, false)
+    }
+
+    handleswipe(isrightswipe){
+        if (isrightswipe)
+            console.log("right swipe")
+        else{
+            console.log("NO right swipe")
+        }
+    }
+
+
+    openImageInPopup(event) {
+        console.log("openImageInPopup", event.target.src)
+        this.openModalForImage(event)
     }
 
     mappingFunction(object) {
@@ -73,22 +124,23 @@ export default class extends Controller {
         return result;
     }
 
-    onTwoFingerDrag (e) {
-        if (e.type === 'touchstart' && e.touches.length === 1) {
-            e.currentTarget.classList.add('swiping')
+    onTwoFingerDrag (event) {
+        console.log("onTwoFingerDrag, event: ", event)
+        if (event.type === 'touchstart' && event.touches.length === 1) {
+            event.currentTarget.classList.add('swiping')
         } else {
-            e.currentTarget.classList.remove('swiping')
+            event.currentTarget.classList.remove('swiping')
         }
     }
 
-    onScrollSlider(e) {
+    onScrollSlider() {
         this.highlightThumb(Math.floor(this.imageSliderContainerTarget.scrollLeft / this.imageSliderContainerTarget.offsetWidth))
     }
 
-    selectImage(e) {
-        this.imageSliderContainerTarget.scrollTo({left: (Number(e.params.imageIndex) - 1) * this.imageSliderContainerTarget.offsetWidth, top: 0})
-        this.deselectThumbs(e.target.closest('ul'));
-        e.target.closest('li').classList.add('selected');
+    selectImage(event) {
+        this.imageSliderContainerTarget.scrollTo({left: (Number(event.params.imageIndex) - 1) * this.imageSliderContainerTarget.offsetWidth, top: 0})
+        this.deselectThumbs(event.target.closest('ul'));
+        event.target.closest('li').classList.add('selected');
     }
 
     highlightThumb(index) {
@@ -102,19 +154,41 @@ export default class extends Controller {
         }
     }
 
+    openModalForImage(event) {
+        console.log("openModalForImage")
+
+        const modal = document.querySelector('.modal--transparent')
+        const modalBackdrop = document.querySelector('.modal-backdrop')
+        const imageContainer = document.querySelector('#container-image')
+
+        while (imageContainer.firstChild) {
+            imageContainer.removeChild(imageContainer.firstChild)
+        }
+            const image = document.createElement('img')
+            image.classList.add('selectedImage')
+            image.src = event.target.currentSrc
+            imageContainer.appendChild(image)
+            modal.classList.add('show')
+            modalBackdrop.classList.add('show')
+            document.body.classList.add('show-modal')
+
+            // document.querySelectorAll(".container__image img").forEach(element => {
+            //     this.pinchZoom(element);
+            // });
+    }
+
     pinchZoom = (imageElement) => {
-        console.log("pinchZoom", imageElement)
         let imageElementScale = 1;
 
         let start = {};
 
         // Calculate distance between two fingers
         const distance = (event) => {
-          return Math.hypot(event.touches[0].pageX - event.touches[1].pageX, event.touches[0].pageY - event.touches[1].pageY);
+            const dist = Math.hypot(event.touches[0].pageX - event.touches[1].pageX, event.touches[0].pageY - event.touches[1].pageY);
+          return dist
         };
 
         imageElement.addEventListener('touchstart', (event) => {
-          console.log('touchstart', event);
           if (event.touches.length === 2) {
             event.preventDefault(); // Prevent page scroll
 
@@ -126,7 +200,6 @@ export default class extends Controller {
         });
 
         imageElement.addEventListener('touchmove', (event) => {
-          console.log('touchmove', event);
           if (event.touches.length === 2) {
             event.preventDefault(); // Prevent page scroll
 
@@ -154,7 +227,6 @@ export default class extends Controller {
         });
 
         imageElement.addEventListener('touchend', (event) => {
-          console.log('touchend', event);
           // Reset image to it's original format
           imageElement.style.transform = "";
           imageElement.style.WebkitTransform = "";
