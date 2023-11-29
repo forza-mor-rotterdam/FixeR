@@ -175,9 +175,9 @@ export default class extends Controller {
             imageContainer.appendChild(image)
 
 
-            // document.querySelectorAll(".container__image img").forEach(element => {
-            //     this.pinchZoom(element);
-            // });
+            document.querySelectorAll(".container__image").forEach(element => {
+                this.pinchZoom(element);
+            });
     }
 
     openModalForImage(event) {
