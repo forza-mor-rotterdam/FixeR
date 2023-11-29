@@ -1,6 +1,10 @@
 import { Controller } from '@hotwired/stimulus';
 
-let markerIcon, markerBlue, markerGreen = null
+let markerIcon, markerBlue, markerGreen, currentImg, imageContainer, modal, modalBackdrop = null
+let dist, elapsedTime, startX, startY, startTime = 0
+let imageSrcList = []
+
+self = null
 export default class extends Controller {
     static values = {
         incidentX: String,
@@ -16,6 +20,7 @@ export default class extends Controller {
     };
 
     initialize() {
+        self = this
         if(this.hasThumbListTarget) {
             this.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
         }
@@ -59,19 +64,11 @@ export default class extends Controller {
         });
 
         const touchsurface = document.querySelector('#container-image'),
-        startX = 0,
-        startY = 0,
-        dist = 0,
         threshold = 150, //required min distance traveled to be considered swipe
-        allowedTime = 200, // maximum time allowed to travel that distance
-        elapsedTime = 0,
-        startTime = 0
+        allowedTime = 1000 // maximum time allowed to travel that distance
 
-        console.log("touchsurface", touchsurface)
 
     touchsurface.addEventListener('touchstart', function(e){
-        console.log('touchstart')
-        touchsurface.innerHTML = ''
         var touchobj = e.changedTouches[0]
         dist = 0
         startX = touchobj.pageX
@@ -82,33 +79,47 @@ export default class extends Controller {
 
     touchsurface.addEventListener('touchmove', function(e){
         e.preventDefault() // prevent scrolling when inside DIV
-        console.log('touchMove')
     }, false)
 
     touchsurface.addEventListener('touchend', function(e){
-        console.log('touchend')
         var touchobj = e.changedTouches[0]
         dist = touchobj.pageX - startX // get total dist traveled by finger while in contact with surface
         elapsedTime = new Date().getTime() - startTime // get time elapsed
         // check that elapsed time is within specified, horizontal dist traveled >= threshold, and vertical dist traveled <= 100
         var swiperightBol = (elapsedTime <= allowedTime && dist >= threshold && Math.abs(touchobj.pageY - startY) <= 100)
-        this.handleswipe(swiperightBol)
+        self.handleswipe(swiperightBol)
         e.preventDefault()
     }, false)
     }
 
     handleswipe(isrightswipe){
-        if (isrightswipe)
-            console.log("right swipe")
-        else{
-            console.log("NO right swipe")
+        const imgIndex = imageSrcList.indexOf(currentImg)
+        const lastImgInList = imgIndex >= 0 && imgIndex === imageSrcList.length-1
+        const firstImgInList = imgIndex === 0
+        let newImg = null
+        if (isrightswipe && !firstImgInList){
+            newImg = imageSrcList[imgIndex-1]
+            self.loadImage(newImg)
+        } else if (!lastImgInList) {
+            newImg = imageSrcList[imgIndex+1]
+            self.loadImage(newImg)
         }
+        if(newImg) currentImg = newImg
+    }
+
+    saveImagesinList(event) {
+        const imageList = Array.from(event.target.parentElement.parentElement.querySelectorAll('img'))
+        imageSrcList = imageList.map(img => {
+            return img.src
+        })
     }
 
 
     openImageInPopup(event) {
-        console.log("openImageInPopup", event.target.src)
+        currentImg = event.target.src
         this.openModalForImage(event)
+        self.saveImagesinList(event)
+
     }
 
     mappingFunction(object) {
@@ -154,27 +165,31 @@ export default class extends Controller {
         }
     }
 
-    openModalForImage(event) {
-        console.log("openModalForImage")
-
-        const modal = document.querySelector('.modal--transparent')
-        const modalBackdrop = document.querySelector('.modal-backdrop')
-        const imageContainer = document.querySelector('#container-image')
-
+    loadImage(imgSrc) {
         while (imageContainer.firstChild) {
             imageContainer.removeChild(imageContainer.firstChild)
         }
             const image = document.createElement('img')
             image.classList.add('selectedImage')
-            image.src = event.target.currentSrc
+            image.src = imgSrc
             imageContainer.appendChild(image)
-            modal.classList.add('show')
-            modalBackdrop.classList.add('show')
-            document.body.classList.add('show-modal')
+
 
             // document.querySelectorAll(".container__image img").forEach(element => {
             //     this.pinchZoom(element);
             // });
+    }
+
+    openModalForImage(event) {
+        modal = document.querySelector('.modal--transparent')
+        modalBackdrop = document.querySelector('.modal-backdrop')
+        imageContainer = document.querySelector('#container-image')
+
+        self.loadImage(event.target.currentSrc)
+
+        modal.classList.add('show')
+        modalBackdrop.classList.add('show')
+        document.body.classList.add('show-modal')
     }
 
     pinchZoom = (imageElement) => {
