@@ -27,6 +27,19 @@ body.show-modal {
     }
 }
 
+body.show-modal--transparent {
+    @include bodyModal();
+
+    .modal-backdrop {
+        display: block;
+        opacity: 0.5;
+    }
+
+    .modal--transparent.show {
+        @include modalVisible()
+    }
+}
+
 body.show-modal--first-filter {
     .modal--first-filter {
         @include modalVisible()
@@ -121,4 +134,41 @@ body.show-modal--first-filter {
     background-color: $black;
     opacity: 0;
     display: none;
+}
+
+.modal--transparent {
+    text-align: center;
+
+    .modal-dialog {
+        max-width: none;
+        text-align: center;
+        display: inline-block;
+        width: auto;
+
+
+        .modal-content {
+            background: transparent;
+            pointer-events:initial;
+        }
+    }
+
+    .modal-header {
+        padding: 0;
+    }
+
+    .modal-body {
+        padding: 0;
+    }
+
+    .container-image {
+        user-select: none;
+        cursor: grab;
+    }
+
+    img {
+        max-width: 90vw;
+        max-height: 90vh;
+        pointer-events: all;
+        cursor: grab;
+    }
 }

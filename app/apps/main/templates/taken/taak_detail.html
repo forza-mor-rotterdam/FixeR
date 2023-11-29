@@ -92,7 +92,7 @@
                         >
                             {% for foto in melding.bijlagen %}
                             <li class="container__image" id="{{ foto.afbeelding_relative_url }}">
-                                <img src="{{ foto.afbeelding_relative_url }}" alt="" data-detail-target="selectedImage" />
+                                <img src="{{ foto.afbeelding_relative_url }}" alt="" data-detail-target="selectedImage" data-action="click->detail#openImageInPopup" />
                             </li>
                             {% endfor %}
                         </ul>
@@ -332,7 +332,28 @@
                 </div>
             </section>
         </div>
+
+
+<div class="modal modal--transparent">
+    <div class="modal-dialog">
+        <div class="modal-backdrop modal-exit" data-action="click->taak#closeModal"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+               <button
+                    type="button"
+                    class="btn-close"
+                    aria-label="Sluit"
+                    data-action="taak#closeModal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="container-image"></div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
+
 
 
 

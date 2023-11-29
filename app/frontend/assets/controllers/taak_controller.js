@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 
 let self = null
 export default class extends Controller {
-    static targets = ["turboFormHandler", "incidentDate"]
+    static targets = ["turboFormHandler", "incidentDate", "modalAfbeeldingen"]
     static values = {
         date: String,
         days: String
@@ -239,7 +239,7 @@ export default class extends Controller {
         const modalBackdrop = this.element.querySelector('.modal-backdrop');
         modal.classList.remove('show');
         modalBackdrop.classList.remove('show');
-        document.body.classList.remove('show-modal');
+        document.body.classList.remove('show-modal', 'show-modal--transparent');
         this.addInitialListeners()
         this.turboFormHandlerTarget.innerHTML = ""
     }
@@ -255,7 +255,8 @@ export default class extends Controller {
         this.turboFormHandlerTarget.setAttribute("src", this.turboFormHandlerTarget.dataset.src + (isFinished ? "?resolutie=opgelost": "?resolutie=niet_opgelost"))
 
         this.removeAllListeners()
-        const modal = this.element.querySelector('.modal');
+        const modal = this.element.querySelectorAll('.modal-js')[0];
+        console.log("modal", modal)
         const modalBackdrop = this.element.querySelector('.modal-backdrop');
 
         modal.classList.add('show');

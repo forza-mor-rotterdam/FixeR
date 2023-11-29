@@ -33,12 +33,12 @@
                     &.line-melding{
                         width: 0;
                         background-color: transparent;
-                        border-left: 2px dashed $green-tint01;
+                        border-left: 2px dashed $primary;
                     }
                     &.line-taak {
                         width: 0;
                         background-color: transparent;
-                        border-left: 2px dashed $magenta-tint01;
+                        border-left: 2px dashed $action;
                     }
                 }
             }
@@ -64,19 +64,19 @@
             background-color: $gray-tint11;
             transform: translateX(-32px);
             &.line-melding {
-                background-color: $green-tint01;
+                background-color: $primary;
             }
             &.line-taak {
-                background-color: $magenta-tint01;
+                background-color: $action;
             }
         }
 
         .event {
             &.event-melding {
-                background-color: $green-tint01;
+                background-color: $primary;
             }
             &.event-taak {
-                background-color: $magenta-tint01;
+                background-color: $action;
             }
         }
 
