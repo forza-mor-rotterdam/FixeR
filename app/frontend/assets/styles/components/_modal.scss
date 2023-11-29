@@ -27,6 +27,19 @@ body.show-modal {
     }
 }
 
+body.show-modal--transparent {
+    @include bodyModal();
+
+    .modal-backdrop {
+        display: block;
+        opacity: 0.5;
+    }
+
+    .modal--transparent.show {
+        @include modalVisible()
+    }
+}
+
 body.show-modal--first-filter {
     .modal--first-filter {
         @include modalVisible()

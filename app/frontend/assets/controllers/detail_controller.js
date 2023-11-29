@@ -189,7 +189,7 @@ export default class extends Controller {
 
         modal.classList.add('show')
         modalBackdrop.classList.add('show')
-        document.body.classList.add('show-modal')
+        document.body.classList.add('show-modal--transparent')
     }
 
     pinchZoom = (imageElement) => {
