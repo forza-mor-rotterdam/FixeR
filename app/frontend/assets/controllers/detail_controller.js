@@ -193,6 +193,8 @@ export default class extends Controller {
     }
 
     pinchZoom = (imageElement) => {
+
+        console.log("pinchZoom, imageElement", imageElement)
         let imageElementScale = 1;
 
         let start = {};
@@ -204,9 +206,10 @@ export default class extends Controller {
         };
 
         imageElement.addEventListener('touchstart', (event) => {
+            console.log('touchstart')
           if (event.touches.length === 2) {
             event.preventDefault(); // Prevent page scroll
-
+            console.log('event.touches.length === 2')
             // Calculate where the fingers have started on the X and Y axis
             start.x = (event.touches[0].pageX + event.touches[1].pageX) / 2;
             start.y = (event.touches[0].pageY + event.touches[1].pageY) / 2;
@@ -215,7 +218,9 @@ export default class extends Controller {
         });
 
         imageElement.addEventListener('touchmove', (event) => {
+            console.log('touchmove')
           if (event.touches.length === 2) {
+            console.log('event.touches.length === 2')
             event.preventDefault(); // Prevent page scroll
 
             // Safari provides event.scale as two fingers move on the screen
@@ -242,6 +247,7 @@ export default class extends Controller {
         });
 
         imageElement.addEventListener('touchend', (event) => {
+            console.log('touchend')
           // Reset image to it's original format
           imageElement.style.transform = "";
           imageElement.style.WebkitTransform = "";
