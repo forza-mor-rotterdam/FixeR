@@ -94,13 +94,13 @@ export default class extends Controller {
 
     handleswipe(isrightswipe){
         const imgIndex = imageSrcList.indexOf(currentImg)
-        const lastImgInList = imgIndex >= 0 && imgIndex === imageSrcList.length-1
+        const lastImgInList = imgIndex === imageSrcList.length-1
         const firstImgInList = imgIndex === 0
         let newImg = null
         if (isrightswipe && !firstImgInList){
             newImg = imageSrcList[imgIndex-1]
             self.loadImage(newImg)
-        } else if (!lastImgInList) {
+        } else if (!isrightswipe && !lastImgInList) {
             newImg = imageSrcList[imgIndex+1]
             self.loadImage(newImg)
         }
@@ -193,8 +193,6 @@ export default class extends Controller {
     }
 
     pinchZoom = (imageElement) => {
-
-        console.log("pinchZoom, imageElement", imageElement)
         let imageElementScale = 1;
 
         let start = {};
