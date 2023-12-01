@@ -2,6 +2,7 @@
 <div data-controller="sessionTimer"
     data-sessionTimer-session_expiry_max_timestamp-value="{{ SESSION_EXPIRY_MAX_TIMESTAMP }}"
     data-sessionTimer-session_expiry_timestamp-value="{{ SESSION_EXPIRY_TIMESTAMP }}"
+    data-sessionTimer-session_check_interval-value="{{ SESSION_CHECK_INTERVAL_SECONDS }}"
     >
     <div class="modal" data-sessionTimer-target="modal">
         <div class="modal-backdrop modal-exit"  data-sessionTimer-target="modalBackdrop" data-action="click->sessionTimer#closeModal"></div>

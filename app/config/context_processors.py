@@ -33,6 +33,7 @@ def general_settings(context):
         "ABSOLUTE_ROOT": absolute(context).get("ABSOLUTE_ROOT"),
         "SESSION_EXPIRY_MAX_TIMESTAMP": session_expiry_max_timestamp,
         "SESSION_EXPIRY_TIMESTAMP": session_expiry_timestamp,
+        "SESSION_CHECK_INTERVAL_SECONDS": settings.SESSION_CHECK_INTERVAL_SECONDS,
         "LOGOUT_URL": reverse("oidc_logout"),
         "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}",
         "TEMPLATE_BASIS": template_basis,
