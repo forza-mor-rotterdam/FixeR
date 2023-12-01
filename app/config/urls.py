@@ -17,12 +17,12 @@ from apps.context.views import (
     ContextVerwijderenView,
 )
 from apps.main.views import (
-    account,
     config,
     filter,
     http_404,
     http_500,
     incident_modal_handle,
+    informatie,
     kaart_modus,
     meldingen_bestand,
     root,
@@ -57,7 +57,7 @@ router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 
 urlpatterns = [
     path("", root, name="root"),
-    path("account/", account, name="account"),
+    path("informatie/", informatie, name="informatie"),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path("api-token-auth/", views.obtain_auth_token),
     path("admin/", admin.site.urls),

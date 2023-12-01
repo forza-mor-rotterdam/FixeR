@@ -1,6 +1,6 @@
 from apps.context.forms import ContextAanmakenForm, ContextAanpassenForm
 from apps.context.models import Context
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -8,14 +8,20 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
 
-@method_decorator(permission_required("authorisatie.context_bekijken"), name="dispatch")
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("authorisatie.context_bekijken", raise_exception=True),
+    name="dispatch",
+)
 class ContextView(View):
     model = Context
     success_url = reverse_lazy("context_lijst")
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("authorisatie.context_lijst_bekijken"), name="dispatch"
+    permission_required("authorisatie.context_lijst_bekijken", raise_exception=True),
+    name="dispatch",
 )
 class ContextLijstView(ContextView, ListView):
     ...
@@ -27,8 +33,10 @@ class ContextAanmakenAanpassenView(ContextView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("authorisatie.context_aanpassen"), name="dispatch"
+    permission_required("authorisatie.context_aanpassen", raise_exception=True),
+    name="dispatch",
 )
 class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
     form_class = ContextAanpassenForm
@@ -40,13 +48,19 @@ class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
         return initial
 
 
-@method_decorator(permission_required("authorisatie.context_aanmaken"), name="dispatch")
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("authorisatie.context_aanmaken", raise_exception=True),
+    name="dispatch",
+)
 class ContextAanmakenView(ContextAanmakenAanpassenView, CreateView):
     form_class = ContextAanmakenForm
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("authorisatie.context_verwijderen"), name="dispatch"
+    permission_required("authorisatie.context_verwijderen", raise_exception=True),
+    name="dispatch",
 )
 class ContextVerwijderenView(ContextView, DeleteView):
     def get(self, request, *args, **kwargs):

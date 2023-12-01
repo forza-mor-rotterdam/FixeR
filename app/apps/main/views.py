@@ -1,6 +1,5 @@
 import json
 import logging
-from datetime import datetime
 
 import requests
 from apps.context.filters import FilterManager
@@ -32,7 +31,7 @@ from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import Value
 from django.db.models.functions import Concat
-from django.http import HttpResponse, StreamingHttpResponse
+from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from rest_framework.reverse import reverse as drf_reverse
@@ -54,23 +53,23 @@ def http_500(request):
     )
 
 
-def http_response(request):
-    return HttpResponse("<h1>Hello HttpResponse</h1>")
-
-
-def root(request):
-    if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
-        return redirect(reverse("incident_index"))
-    if request.user.has_perms(["authorisatie.beheer_bekijken"]):
-        return redirect(reverse("beheer"))
-    return redirect(reverse("account"))
+def informatie(request):
+    return render(
+        request,
+        "auth/informatie.html",
+        {},
+    )
 
 
 @login_required
-def account(request):
+def root(request):
+    if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
+        return redirect(reverse("incident_index"), False)
+    if request.user.has_perms(["authorisatie.beheer_bekijken"]):
+        return redirect(reverse("beheer"), False)
     return render(
         request,
-        "auth/account.html",
+        "home.html",
         {},
     )
 
@@ -91,7 +90,8 @@ def ui_settings_handler(request):
     )
 
 
-@permission_required("authorisatie.taken_lijst_bekijken")
+@login_required
+@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def filter(request, status="nieuw"):
     filters = (
         get_filters(request.user.profiel.context)
@@ -130,48 +130,8 @@ def filter(request, status="nieuw"):
     )
 
 
-STREET_NAME = "streetName"
-DAYS = "days"
-SUBJECT = "subject"
-STATUS = "status"
-SPEED = "speed"
-
-sort_function = {
-    STREET_NAME: (
-        lambda x: x.get("locatie", {}).get("adres", {}).get("straatNaam", ""),
-        None,
-        None,
-    ),
-    DAYS: (
-        lambda x: x.get("werkdagenSindsRegistratie", 0),
-        lambda x: datetime.strptime(
-            x.get("datumMelding"), "%Y-%m-%dT%H:%M:%S"
-        ).strftime("%Y%m01"),
-        lambda x: datetime.strptime(x, "%Y%m01").strftime("%B %Y"),
-    ),
-    SUBJECT: (lambda x: x.get("onderwerp", {}).get("omschrijving", ""), None, None),
-    STATUS: (lambda x: x.get("status", ""), None, None),
-    SPEED: (
-        lambda x: x.get("spoed", False),
-        None,
-        lambda x: "Spoed" if x else "Geen spoed",
-    ),
-}
-
-sort_options = (
-    (f"-{DAYS}", "Oud > nieuw"),
-    (f"{DAYS}", "Nieuw > oud"),
-    (f"{STREET_NAME}", "Straat (a-z)"),
-    (f"-{STREET_NAME}", "Straat (z-a)"),
-    (f"{SUBJECT}", "Onderwerp (a-z)"),
-    (f"-{SUBJECT}", "Onderwerp (z-a)"),
-    (f"{STATUS}", "Status (a-z)"),
-    (f"-{STATUS}", "Status (z-a)"),
-    (f"-{SPEED}", "Spoed"),
-)
-
-
-@permission_required("authorisatie.taken_lijst_bekijken")
+@login_required
+@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_overzicht(request):
     url_kwargs = {"status": "nieuw"}
     return render(
@@ -184,7 +144,8 @@ def taken_overzicht(request):
     )
 
 
-@permission_required("authorisatie.taken_lijst_bekijken")
+@login_required
+@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_afgerond_overzicht(request):
     url_kwargs = {"status": "voltooid"}
     return render(
@@ -203,7 +164,8 @@ def taken_afgerond_overzicht(request):
     )
 
 
-@permission_required("authorisatie.taken_lijst_bekijken")
+@login_required
+@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_lijst(request, status="nieuw"):
     taken = Taak.objects.get_taken_recent(request.user)
 
@@ -247,7 +209,6 @@ def taken_lijst(request, status="nieuw"):
         "incident/part_list_base.html",
         {
             "this_url": reverse("taken_lijst_part", kwargs={"status": status}),
-            "sort_options": sort_options,
             "taken": taken_paginated,
             "taken_aantal": taken_aantal,
             "page_obj": page_obj,
@@ -295,7 +256,8 @@ def kaart_modus(request):
     )
 
 
-@permission_required("authorisatie.taak_bekijken")
+@login_required
+@permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
     melding_response = MeldingenService().get_by_uri(taak.melding.bron_url)
