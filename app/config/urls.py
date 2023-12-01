@@ -28,6 +28,8 @@ from apps.main.views import (
     root,
     sorteer_filter,
     taak_detail,
+    taak_toewijzen,
+    taak_toewijzing_intrekken,
     taken_afgerond_overzicht,
     taken_lijst,
     taken_overzicht,
@@ -78,6 +80,12 @@ urlpatterns = [
     path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
+    path("taak-toewijzen/<int:id>/", taak_toewijzen, name="taak_toewijzen"),
+    path(
+        "taak-toewijzing-intrekken/<int:id>/",
+        taak_toewijzing_intrekken,
+        name="taak_toewijzing_intrekken",
+    ),
     # END taken
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),

@@ -315,11 +315,38 @@
                         <div class="form-row">
                             <button
                                 class="btn btn-action"
-                                data-id="{{ taak.id }}"
-                                data-action="taak#openModal"
+                                data-modal-title-param="Taak behandelen"
+                                data-modal-sub-title-param="{{ taak.titel }}"
+                                data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}"
+                                data-modal-id-param="incident_modal_handle_{{ taak.id }}"
+                                data-action="modal#openModal"
                             >
                                 Taak behandelen
                             </button>
+                            {% if taak.taakstatus.naam == "openstaand" or taak.taakstatus.naam == "nieuw" %}
+                            <button
+                                    class="btn btn-tertiary"
+                                    data-modal-title-param="Toewijzen"
+                                    data-modal-sub-title-param="{{ taak.titel }}"
+                                    data-modal-url-param="{% url 'taak_toewijzen' taak.id %}"
+                                    data-modal-id-param="taak_toewijzen"
+                                    data-action="modal#openModal"
+                                >
+                                    Toewijzen
+                            </button>
+                            {% elif taak.taakstatus.naam == "toegewezen" %}
+                            <button
+                                    class="btn btn-tertiary"
+                                    data-id="{{ taak.id }}"
+                                    data-modal-title-param="Toewijzing intrekken"
+                                    data-modal-sub-title-param="{{ taak.titel }}"
+                                    data-modal-url-param="{% url 'taak_toewijzing_intrekken' taak.id %}"
+                                    data-modal-id-param="taak_toewijzing_intrekken"
+                                    data-action="modal#openModal"
+                                >
+                                    Toewijzing intrekken
+                            </button>
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}

@@ -60,7 +60,8 @@ class Taaktype(BasisModel):
 class Taakstatus(BasisModel):
     class NaamOpties(models.TextChoices):
         NIEUW = "nieuw", "Nieuw"
-        BEZIG = "bezig", "Bezig"
+        TOEGEWEZEN = "toegewezen", "Toegewezen"
+        OPENSTAAND = "openstaand", "Openstaand"
         VOLTOOID = "voltooid", "Voltooid"
 
     naam = models.CharField(
@@ -79,14 +80,23 @@ class Taakstatus(BasisModel):
         if self.naam not in naam_opties:
             return naam_opties
 
+        if self.naam not in naam_opties:
+            return naam_opties
+
         match self.naam:
             case Taakstatus.NaamOpties.NIEUW:
                 return [
-                    Taakstatus.NaamOpties.BEZIG,
+                    Taakstatus.NaamOpties.TOEGEWEZEN,
                     Taakstatus.NaamOpties.VOLTOOID,
                 ]
-            case Taakstatus.NaamOpties.BEZIG:
+            case Taakstatus.NaamOpties.TOEGEWEZEN:
                 return [
+                    Taakstatus.NaamOpties.OPENSTAAND,
+                    Taakstatus.NaamOpties.VOLTOOID,
+                ]
+            case Taakstatus.NaamOpties.OPENSTAAND:
+                return [
+                    Taakstatus.NaamOpties.TOEGEWEZEN,
                     Taakstatus.NaamOpties.VOLTOOID,
                 ]
             case _:

@@ -2,6 +2,7 @@ import json
 import logging
 
 import requests
+from apps.authenticatie.models import Gebruiker
 from apps.context.filters import FilterManager
 from apps.main.forms import (
     HANDLED_OPTIONS,
@@ -10,6 +11,8 @@ from apps.main.forms import (
     KaartModusForm,
     SorteerFilterForm,
     TaakBehandelForm,
+    TaakToewijzenForm,
+    TaakToewijzingIntrekkenForm,
 )
 from apps.main.utils import (
     get_actieve_filters,
@@ -276,7 +279,75 @@ def taak_detail(request, id):
     )
 
 
-@permission_required("authorisatie.taak_afronden")
+@login_required
+@permission_required("authorisatie.taak_toewijzen", raise_exception=True)
+def taak_toewijzen(request, id):
+    taak = get_object_or_404(Taak, pk=id)
+    valide_gebruikers = Gebruiker.objects.taak_toewijzen_gebruikers()
+    form = TaakToewijzenForm(gebruikers=valide_gebruikers)
+    if request.POST:
+        form = TaakToewijzenForm(request.POST, gebruikers=valide_gebruikers)
+        if form.is_valid():
+            taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
+                taakopdracht_url=taak.taakopdracht,
+                status="toegewezen",
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                gebruiker=request.user.email,
+                uitvoerder=form.cleaned_data.get("uitvoerder"),
+            )
+            if taak_status_aanpassen_response.status_code == 200:
+                return render(
+                    request,
+                    "taken/taak_toewijzen.html",
+                    {
+                        "taak": taak,
+                    },
+                )
+
+    return render(
+        request,
+        "taken/taak_toewijzen.html",
+        {
+            "form": form,
+            "taak": taak,
+        },
+    )
+
+
+@login_required
+@permission_required("authorisatie.taak_toewijzing_intrekken", raise_exception=True)
+def taak_toewijzing_intrekken(request, id):
+    taak = get_object_or_404(Taak, pk=id)
+    form = TaakToewijzingIntrekkenForm()
+    if request.POST:
+        form = TaakToewijzingIntrekkenForm(request.POST)
+        if form.is_valid():
+            taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
+                taakopdracht_url=taak.taakopdracht,
+                status="openstaand",
+                gebruiker=request.user.email,
+            )
+            if taak_status_aanpassen_response.status_code == 200:
+                return render(
+                    request,
+                    "taken/taak_toewijzing_intrekken.html",
+                    {
+                        "taak": taak,
+                    },
+                )
+
+    return render(
+        request,
+        "taken/taak_toewijzing_intrekken.html",
+        {
+            "form": form,
+            "taak": taak,
+        },
+    )
+
+
+@login_required
+@permission_required("authorisatie.taak_afronden", raise_exception=True)
 def incident_modal_handle(request, id):
     resolutie = request.GET.get("resolutie", "opgelost")
     taak = get_object_or_404(Taak, pk=id)
