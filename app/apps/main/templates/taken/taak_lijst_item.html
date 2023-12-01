@@ -4,7 +4,6 @@
 {% load to_date vind_in_dict to_timestamp from main_tags %}
 {% load json_encode replace_comma_by_dot adres_order_nummer from main_tags %}
 {% load context_template from context_tags %}
-{% with incident_id=incident.id|stringformat:"s" %}
 
 {% block before_modal_content %}
 
@@ -97,29 +96,8 @@
         </div>
 {% endblock %}
 
-{% block modal_header %}
-<h1>
-    <span>Taak behandelen</span><br>
-    <small>{{ taak.titel }}</small>
-</h1>
-<button
-    type="button"
-    class="btn-close"
-    aria-label="Sluit"
-    data-action="taak#closeModal"
-></button>
-{% endblock %}
-
-{% block modal_body %}
-<turbo-frame
-    id="incident_modal_handle_{{ taak.id }}"
-    data-taak-target="turboFormHandler"
-    data-src="{% url 'incident_modal_handle_part' taak.id %}"
->
-</turbo-frame>
-{% endblock %}
+{% block turbo_frame_id %}incident_modal_handle_{{ taak.id }}{% endblock %}
 
 {% block after_modal_content %}
     </div>
 {% endblock %}
-{% endwith %}

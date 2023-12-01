@@ -3,15 +3,22 @@
 {% block before_modal_content %}{% endblock %}
 <div class="modal modal-js" {% if modal_id %}id="{{ modal_id }}"{% endif %}>
     <div class="modal-dialog">
-        <div class="modal-backdrop modal-exit"></div>
+        <div class="modal-backdrop modal-exit" data-action="click->modal#closeModal"></div>
         <div class="modal-content">
             <div class="modal-header">
-            {% block modal_header %}
-            {% endblock %}
+                <h1>
+                    <span data-modal-target="title"></span><br>
+                    <small data-modal-target="subTitle"></small>
+                </h1>
+            <button
+                type="button"
+                class="btn-close"
+                aria-label="Sluit"
+                data-action="modal#closeModal">
+            </button>
             </div>
             <div class="modal-body">
-            {% block modal_body %}
-            {% endblock %}
+                <turbo-frame data-modal-target="turboFrame"></turbo-frame>
             </div>
         </div>
     </div>
