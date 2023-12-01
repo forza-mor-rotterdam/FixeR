@@ -3,7 +3,6 @@ import { Controller } from '@hotwired/stimulus';
 let showSortingContainer = false;
 let sortDirectionReversed = false;
 let currentPosition = null
-self = null
 const orderOptions = [
     "Datum",
     "Adres",
@@ -18,16 +17,16 @@ export default class extends Controller {
     static targets = [ "sorting", "toggleMapView", "taakAfstand", "taakItem", "taakItemLijst"]
 
     initialize() {
-        this.element[this.identifier] = this
-        self = this
-        this.element.addEventListener("orderChangeEvent", function(e){
+        let self = this
+        self.element[self.identifier] = self
+        self.element.addEventListener("orderChangeEvent", function(e){
             self.sorterenOp(e.detail.order)
             self.saveSortedList(e.detail.order)
         });
 
-        if(this.hasSortingTarget && showSortingContainer === true ) {
-            this.sortingTarget.classList.remove("hidden-vertical")
-            this.sortingTarget.classList.add("show-vertical")
+        if(self.hasSortingTarget && showSortingContainer === true ) {
+            self.sortingTarget.classList.remove("hidden-vertical")
+            self.sortingTarget.classList.add("show-vertical")
         }
         self.setStyleOrder(activeOrder)
         let kaartMarkers = []
@@ -43,12 +42,12 @@ export default class extends Controller {
                 })
             }
         }
-        this.kaartOutlet.plotMarkers(kaartMarkers)
+        self.kaartOutlet.plotMarkers(kaartMarkers)
 
-        this.element.addEventListener("markerSelectedEvent", function(e){
+        self.element.addEventListener("markerSelectedEvent", function(e){
             self.selecteerTaakItem(e.detail.taakId)
         });
-        this.element.addEventListener("markerDeselectedEvent", function(e){
+        self.element.addEventListener("markerDeselectedEvent", function(e){
             self.deselecteerTaakItem(e.detail.taakId)
         });
         window.addEventListener("positionChangeEvent", function(e){
@@ -71,6 +70,7 @@ export default class extends Controller {
         element.textContent = Math.round(markerLocation.distanceTo(currentPosition))
     }
     selecteerTaakItem(taakId) {
+        let self = this
         for(let i =0; i < self.taakItemTargets.length; i++){
             if (self.taakItemTargets[i].dataset.id == taakId){
                 self.taakItemTargets[i].classList.add("selected")
@@ -81,11 +81,13 @@ export default class extends Controller {
         }
     }
     deselecteerTaakItem(taakId){
+        let self = this
         for(let i =0; i < self.taakItemTargets.length; i++){
             self.taakItemTargets[i].classList.remove("selected")
         }
     }
     positionWatchSuccess(position){
+        let self = this
         console.log("positionWatchSuccess")
         currentPosition = [position.coords.latitude, position.coords.longitude]
         if (self.hasKaartOutlet){
@@ -109,15 +111,18 @@ export default class extends Controller {
         }
     }
     selectTaakMarker(e) {
+        let self = this
         self.kaartOutlet.selectTaakMarker(e.params.taakId)
     }
     setStyleOrder(order){
+        let self = this
         for(let i = 0; i < self.taakItemTargets.length; i++){
             const taakItem = self.taakItemTargets[i]
             taakItem.style.order = taakItem.dataset[`order${order}`]
         }
     }
     sorterenOp(order){
+        let self = this
         console.log('order', order)
         let selectedOrder = order.split("-")[0]
         if (selectedOrder != activeOrder){
@@ -156,8 +161,9 @@ export default class extends Controller {
     }
 
     onToggleSortingContainer() {
-        this.sortingTarget.classList.toggle("hidden-vertical")
-        this.sortingTarget.classList.toggle("show-vertical")
+        let self = this
+        self.sortingTarget.classList.toggle("hidden-vertical")
+        self.sortingTarget.classList.toggle("show-vertical")
         showSortingContainer = !showSortingContainer
         sortDirectionReversed = sortDirectionReversed === undefined ? false : true
     }
