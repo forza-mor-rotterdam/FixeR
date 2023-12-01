@@ -21,15 +21,23 @@
         data-order-postcode="{{ taak.postcode_digits }}"
         class="list-item{% if form_submitted %} form-is-submitted{% endif %}{% if errors and warnings %} has-errors{% endif %}"
         {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}
-            data-controller="taak"
+            data-controller="taak modal"
             data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler cancelHandle->taak#cancelHandleHandler"
             data-taak-date-value="{{ incident.datumMelding }}"
             data-taak-days-value="{{ incident.werkdagenSindsRegistratie }}"
         {%endif%}>
+
+        <div class="wrapper__swipe" data-taak-target="swipeContainer">
         {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}
         <button
             class="container__actions handle--no-success"
-            data-id="{{ incident.id }}"
+            data-id="{{ taak.id }}"
+            data-taak-target="buttonNietOpgelost"
+            data-modal-title-param="Taak behandelen"
+            data-modal-sub-title-param="{{ taak.titel }}"
+            data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}?resolutie=niet_opgelost"
+            data-modal-id-param="incident_modal_handle_{{ taak.id }}"
+            data-action="modal#openModal"
         >
             <div>
                 <span>Niet opgelost</span>
@@ -37,14 +45,19 @@
         </button>
         <button
             class="container__actions handle--success"
-            data-id="{{ incident.id }}"
+            data-id="{{ taak.id }}"
+            data-taak-target="buttonOpgelost"
+            data-modal-title-param="Taak behandelen"
+            data-modal-sub-title-param="{{ taak.titel }}"
+            data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}?resolutie=opgelost"
+            data-modal-id-param="incident_modal_handle_{{ taak.id }}"
+            data-action="modal#openModal"
         >
             <div>
                 <span>Afhandelen</span>
             </div>
         </button>
         {% endif %}
-        <div class="wrapper__swipe">
             <div class="container__flex">
                 <a href="{% url 'taak_detail' taak.id %}" data-turbo-frame="taak_basis" aria-label="Bekijk taak {{ taak.id }}">
                     <div class="container__image">
