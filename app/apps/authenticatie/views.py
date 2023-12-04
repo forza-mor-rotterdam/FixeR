@@ -2,7 +2,7 @@ import logging
 
 from apps.authenticatie.forms import GebruikerAanmakenForm, GebruikerAanpassenForm
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -13,16 +13,20 @@ Gebruiker = get_user_model()
 logger = logging.getLogger(__name__)
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("authorisatie.gebruiker_bekijken"), name="dispatch"
+    permission_required("authorisatie.gebruiker_bekijken", raise_exception=True),
+    name="dispatch",
 )
 class GebruikerView(View):
     model = Gebruiker
     success_url = reverse_lazy("gebruiker_lijst")
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("authorisatie.gebruiker_lijst_bekijken"), name="dispatch"
+    permission_required("authorisatie.gebruiker_lijst_bekijken", raise_exception=True),
+    name="dispatch",
 )
 class GebruikerLijstView(GebruikerView, ListView):
     def get_context_data(self, **kwargs):
@@ -51,8 +55,10 @@ class GebruikerAanmakenAanpassenView(GebruikerView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("authorisatie.gebruiker_aanpassen"), name="dispatch"
+    permission_required("authorisatie.gebruiker_aanpassen", raise_exception=True),
+    name="dispatch",
 )
 class GebruikerAanpassenView(GebruikerAanmakenAanpassenView, UpdateView):
     form_class = GebruikerAanpassenForm
@@ -67,8 +73,10 @@ class GebruikerAanpassenView(GebruikerAanmakenAanpassenView, UpdateView):
         return initial
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("authorisatie.gebruiker_aanmaken"), name="dispatch"
+    permission_required("authorisatie.gebruiker_aanmaken", raise_exception=True),
+    name="dispatch",
 )
 class GebruikerAanmakenView(GebruikerAanmakenAanpassenView, CreateView):
     template_name = "authenticatie/gebruiker_aanmaken.html"

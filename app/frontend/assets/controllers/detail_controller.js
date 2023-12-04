@@ -20,9 +20,9 @@ export default class extends Controller {
     };
 
     initialize() {
-        self = this
-        if(this.hasThumbListTarget) {
-            this.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
+        let self = this
+        if(self.hasThumbListTarget) {
+            self.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
         }
 
         const mapDiv = document.getElementById('incidentMap')
@@ -51,7 +51,7 @@ export default class extends Controller {
                 tileSize: 256,
                 attribution: "",
             }
-            const incidentCoordinates = [parseFloat(this.incidentXValue.replace(/,/g, '.')), parseFloat(this.incidentYValue.replace(/,/g, '.'))]
+            const incidentCoordinates = [parseFloat(self.incidentXValue.replace(/,/g, '.')), parseFloat(self.incidentYValue.replace(/,/g, '.'))]
             const map = L.map('incidentMap').setView(incidentCoordinates, 16);
             L.tileLayer(url, config).addTo(map);
             const marker = L.marker(incidentCoordinates, {icon: markerGreen}).addTo(map);
@@ -123,9 +123,10 @@ export default class extends Controller {
     }
 
     mappingFunction(object) {
+        let self = this
         const result = {};
-        for (const key in this.Mapping) {
-			const newKey = this.Mapping[key];
+        for (const key in self.Mapping) {
+            const newKey = self.Mapping[key];
             if (object.hasOwnProperty(key)) {
                 result[newKey] = object[key];
             } else {
@@ -144,19 +145,22 @@ export default class extends Controller {
         }
     }
 
-    onScrollSlider() {
-        this.highlightThumb(Math.floor(this.imageSliderContainerTarget.scrollLeft / this.imageSliderContainerTarget.offsetWidth))
+    onScrollSlider(e) {
+        let self = this
+        self.highlightThumb(Math.floor(self.imageSliderContainerTarget.scrollLeft / self.imageSliderContainerTarget.offsetWidth))
     }
 
-    selectImage(event) {
-        this.imageSliderContainerTarget.scrollTo({left: (Number(event.params.imageIndex) - 1) * this.imageSliderContainerTarget.offsetWidth, top: 0})
-        this.deselectThumbs(event.target.closest('ul'));
-        event.target.closest('li').classList.add('selected');
+    selectImage(e) {
+        let self = this
+        self.imageSliderContainerTarget.scrollTo({left: (Number(e.params.imageIndex) - 1) * self.imageSliderContainerTarget.offsetWidth, top: 0})
+        self.deselectThumbs(e.target.closest('ul'));
+        e.target.closest('li').classList.add('selected');
     }
 
     highlightThumb(index) {
-        this.deselectThumbs(this.thumbListTarget)
-        this.thumbListTarget.getElementsByTagName('li')[index].classList.add('selected')
+        let self = this
+        self.deselectThumbs(self.thumbListTarget)
+        self.thumbListTarget.getElementsByTagName('li')[index].classList.add('selected')
     }
 
     deselectThumbs(list) {
@@ -169,18 +173,19 @@ export default class extends Controller {
         while (imageContainer.firstChild) {
             imageContainer.removeChild(imageContainer.firstChild)
         }
-            const image = document.createElement('img')
-            image.classList.add('selectedImage')
-            image.src = imgSrc
-            imageContainer.appendChild(image)
+        const image = document.createElement('img')
+        image.classList.add('selectedImage')
+        image.src = imgSrc
+        imageContainer.appendChild(image)
 
 
-            document.querySelectorAll(".container__image").forEach(element => {
-                this.pinchZoom(element);
-            });
+        document.querySelectorAll(".container__image").forEach(element => {
+            this.pinchZoom(element);
+        });
     }
 
     openModalForImage(event) {
+        let self = this
         modal = document.querySelector('.modal--transparent')
         modalBackdrop = document.querySelector('.modal-backdrop')
         imageContainer = document.querySelector('#container-image')

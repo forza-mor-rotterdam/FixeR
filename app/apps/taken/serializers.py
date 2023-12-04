@@ -20,6 +20,7 @@ class TaakgebeurtenisStatusSerializer(WritableNestedModelSerializer):
     )
     taakstatus = TaakstatusSerializer(required=True)
     resolutie = serializers.CharField(required=False, allow_null=True)
+    uitvoerder = serializers.CharField(required=False, allow_null=True)
 
     class Meta:
         model = Taakgebeurtenis
@@ -29,6 +30,7 @@ class TaakgebeurtenisStatusSerializer(WritableNestedModelSerializer):
             "resolutie",
             "omschrijving_intern",
             "gebruiker",
+            "uitvoerder",
         )
 
 
