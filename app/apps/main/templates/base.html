@@ -56,7 +56,7 @@
         {% include 'snippets/pageheader.html' %}
     {% endwith %}
     {% endblock %}
-        <main data-controller="main" data-main-taken-outlet="#taken">
+        <main data-controller="main" data-main-taken-outlet="#taken" data-main-mercure-publisher-jwt-key-value="{{ MERCURE_PUBLISHER_JWT_KEY }}" data-main-mercure-subscriber-jwt-key-value="{{ MERCURE_SUBSCRIBER_JWT_KEY }}">
             <div class="{% block container_class %}container container--unlimited{% endblock %}">
                 {% block body %}{% endblock %}
             </div>

@@ -14,6 +14,10 @@ let kaartStatus = null
 
 export default class extends Controller {
     static outlets = [ "taken" ]
+    static values = {
+        mercurePublisherJwtKey: String,
+        mercureSubscriberJwtKey: String,
+    }
 
     initialize() {
         let self = this
@@ -39,6 +43,33 @@ export default class extends Controller {
                 incidentlist.positionWatchSuccess(currentPosition)
             }
         });
+
+        // The subscriber subscribes to updates for the https://example.com/users/dunglas topic
+        // and to any topic matching https://example.com/books/{id}
+        const url = new URL('http://localhost:7001/.well-known/mercure?topic=mytopicname');
+        // url.searchParams.append('topic', 'https://example.com/books/{id}');
+        // url.searchParams.append('topic', 'mytopicname');
+        // The URL class is a convenient way to generate URLs such as https://localhost/.well-known/mercure?topic=https://example.com/books/{id}&topic=https://example.com/users/dunglas
+
+        console.log(self.mercureSubscriberJwtKeyValue)
+        let token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InN1YnNjcmliZSI6WyJteXRvcGljbmFtZSJdLCJwdWJsaXNoIjpbIm15dG9waWNuYW1lIl19fQ.k0kjyeyOP2Sw9YC8KbaMgumX1jxptAh7dLoznpSpymY"
+        const eventSource = new EventSource(url
+            // , {
+            //     // withCredentials: true,
+            //     headers: {
+            //         Authorization: 'Bearer ' + token
+            //     }
+            // }
+        );
+
+        // The callback will be called every time an update is published
+        eventSource.onmessage = e => console.log(e); // do something with the payload
+        eventSource.onerror = (e) => {
+            console.log(e)
+            console.log("An error occurred while attempting to connect.");
+            eventSource.close()
+          };
+
     }
     connect() {}
     takenOutletConnected(outlet, element){
