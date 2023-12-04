@@ -48,16 +48,19 @@ export default class extends Controller {
     }
     getCurrentPositionSuccess(position){
         let self = this
+        console.log("getCurrentPositionSuccess controller id:", self.identifier)
         self.positionWatchSuccess(position)
     }
     positionWatchSuccess(position){
         currentPosition = position
+        console.log("positionWatchSuccess controller id:", self.identifier)
         if (incidentlist) {
             incidentlist.positionWatchSuccess(position)
         }
     }
     positionWatchError(error){
         let self = this
+        console.log("positionWatchError controller id:", self.identifier)
         console.log("handleNoCurrentLocation, error: ", error)
         switch(error.code) {
             case error.PERMISSION_DENIED:
