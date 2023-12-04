@@ -156,19 +156,19 @@ export default class extends Controller {
         self.deselectThumbs(e.target.closest('ul'));
         e.target.closest('li').classList.add('selected');
     }
-    
+
     highlightThumb(index) {
         let self = this
         self.deselectThumbs(self.thumbListTarget)
         self.thumbListTarget.getElementsByTagName('li')[index].classList.add('selected')
     }
-    
+
     deselectThumbs(list) {
         for (const item of list.querySelectorAll('li')) {
             item.classList.remove('selected');
         }
     }
-    
+
     loadImage(imgSrc) {
         while (imageContainer.firstChild) {
             imageContainer.removeChild(imageContainer.firstChild)
@@ -177,26 +177,26 @@ export default class extends Controller {
         image.classList.add('selectedImage')
         image.src = imgSrc
         imageContainer.appendChild(image)
-        
-        
+
+
         document.querySelectorAll(".container__image").forEach(element => {
             this.pinchZoom(element);
         });
     }
-    
+
     openModalForImage(event) {
         let self = this
         modal = document.querySelector('.modal--transparent')
         modalBackdrop = document.querySelector('.modal-backdrop')
         imageContainer = document.querySelector('#container-image')
-        
+
         self.loadImage(event.target.currentSrc)
-        
+
         modal.classList.add('show')
         modalBackdrop.classList.add('show')
         document.body.classList.add('show-modal--transparent')
     }
-    
+
     pinchZoom = (imageElement) => {
         let imageElementScale = 1;
 
