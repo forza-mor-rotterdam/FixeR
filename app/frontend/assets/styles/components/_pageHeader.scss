@@ -2,6 +2,7 @@
     height: 64px;
     padding: 0;
     border-bottom: 1px solid $gray-tint04;
+    padding: 0 16px;
     margin-bottom: 16px;
     .container__logo {
         flex: 1;
@@ -30,7 +31,7 @@
         .pagetitle {
             display: inline-block;
             margin: 0 16px;
-            color: $green-tint01;
+            color: $primary;
             vertical-align: super;
         }
     }
@@ -65,7 +66,7 @@
 
                 &:active,
                 &:hover {
-                    color: $green-tint01;
+                    color: $primary;
                 }
 
                 &.selected {
@@ -76,7 +77,7 @@
                         left: -($container-padding-x);
                         bottom: 0;
                         width: 8px;
-                        background-color: $green-tint01;
+                        background-color: $primary;
                     }
                 }
             }
@@ -91,7 +92,7 @@
                     a {
                         &:hover,
                         &:focus {
-                            color: $green-tint01;
+                            color: $primary;
                         }
                     }
 

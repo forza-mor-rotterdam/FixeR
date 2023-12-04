@@ -21,42 +21,63 @@
 {% block before_modal_content %}
 
 <turbo-frame id="taak_basis">
+    <div data-controller="modal">
     <div>
-        {% if taak.taakstatus.naam != "voltooid" %}
         <a href="{% url 'incident_index' %}" data-turbo-action="advance" class="link--back" aria-label="Terug">
             <svg width="25" height="16" viewBox="0 0 25 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F"/>
             </svg>
         </a>
-        {%else%}
-        <a href="{% url 'taken_afgerond_overzicht' %}" data-turbo-action="advance" class="link--back" aria-label="Terug">
-            <svg width="25" height="16" viewBox="0 0 25 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F"/>
-            </svg>
-        </a>
-        {% endif %}
     </div>
-    <div  data-controller="taak" data-action="cancelHandle->taak#cancelHandleHandler" >
-        <div
-            data-controller="detail"
+    <div
+        data-controller="detail"
             data-detail-taak-object-value="{{ taak }}"
             data-detail-incident-y-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.0 }}"
             data-detail-incident-x-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.1 }}"
 
             {% if taak.magAfhandelen %} class="has-sticky-footer" {% endif %}
+        data-action="cancelHandle->taak#cancelHandleHandler"
         >
-
-            {% if TEMPLATE_BASIS != "benc" %}
-            <h1 class="h3 no-padding">{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }} {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}{{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}{%endif%}</h1>
-            {% else %}
-            {% with grafnummer=melding.meta.grafnummer vak=melding.meta.vak plaats=melding.meta.begraafplaats %}
-            <h1 class="h3">
-                {% if grafnummer %} Graf {{ grafnummer }}{% endif %}{% if vak %}, Vak {{ vak }}{% endif %}
-                {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
-            </h1>
-            {% endwith %}
-            {% endif %}
-
+        <div
+            class="taak-detail"
+        >
+            <div class="container__header-taaknavigatie">
+                <span class="badge badge--darkblue">{{ taak.taakstatus.naam }}{% if taak.additionele_informatie.uitvoerder %} aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}</span>
+                {% if TEMPLATE_BASIS != "benc" %}
+                <h1 class="h3">{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }} {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}{{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}{%endif%}</h1>
+                {% else %}
+                {% with grafnummer=melding.meta.grafnummer vak=melding.meta.vak plaats=melding.meta.begraafplaats %}
+                <h1 class="h3">
+                    {% if grafnummer %} Graf {{ grafnummer }}{% endif %}{% if vak %}, Vak {{ vak }}{% endif %}
+                    {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
+                </h1>
+                {% endwith %}
+                {% endif %}
+                {% comment %} <div
+                    class="container__taaknavigatie"
+                    data-controller="taakNavigatie"
+                    data-taakNavigatie-taak-id-value="{{ taak.id }}"
+                    data-taakNavigatie-url-value="/taak/"
+                >
+                    <span data-taakNavigatie-target="teller" ></span>
+                    <ul class="list__task-navigation">
+                        <li>
+                            <a class="previous" data-taakNavigatie-target="vorige">
+                                <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z" fill="#00811F"/>
+                                </svg>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="" data-taakNavigatie-target="volgende">
+                                <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z" fill="#00811F"/>
+                                </svg>
+                            </a>
+                        </li>
+                    </ul>
+                </div> {% endcomment %}
+            </div>
             <section class="section--seperated" data-testid="detailPhotoviewer" {% if melding.bijlagen|length < 2 %}style="border: 0;"{% endif %}>
                 <div class="full-width">
                 {% if melding.bijlagen %}
@@ -67,7 +88,7 @@
                         >
                             {% for foto in melding.bijlagen %}
                             <li class="container__image" id="{{ foto.afbeelding_relative_url }}">
-                                <img src="{{ foto.afbeelding_relative_url }}" alt="" data-detail-target="selectedImage" />
+                                <img src="{{ foto.afbeelding_relative_url }}" alt="" data-detail-target="selectedImage" data-action="click->detail#openImageInPopup" />
                             </li>
                             {% endfor %}
                         </ul>
@@ -287,8 +308,6 @@
                 </div>
             </section>
 
-
-
             <section class="section--seperated section--seperated__no-border-bottom" data-testid="detailActions">
                 <div class="container__details container__details--sticky-bottom">
                     {% if not taak.afgesloten_op %}
@@ -296,57 +315,68 @@
                         <div class="form-row">
                             <button
                                 class="btn btn-action"
-                                data-id="{{ taak.id }}"
-                                data-action="taak#openModal"
+                                data-modal-title-param="Taak behandelen"
+                                data-modal-sub-title-param="{{ taak.titel }}"
+                                data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}"
+                                data-modal-id-param="incident_modal_handle_{{ taak.id }}"
+                                data-action="modal#openModal"
                             >
                                 Taak behandelen
                             </button>
+                            {% if taak.taakstatus.naam == "openstaand" or taak.taakstatus.naam == "nieuw" %}
+                            <button
+                                    class="btn btn-tertiary"
+                                    data-modal-title-param="Toewijzen"
+                                    data-modal-sub-title-param="{{ taak.titel }}"
+                                    data-modal-url-param="{% url 'taak_toewijzen' taak.id %}"
+                                    data-modal-id-param="taak_toewijzen"
+                                    data-action="modal#openModal"
+                                >
+                                    Toewijzen
+                            </button>
+                            {% elif taak.taakstatus.naam == "toegewezen" %}
+                            <button
+                                    class="btn btn-tertiary"
+                                    data-id="{{ taak.id }}"
+                                    data-modal-title-param="Toewijzing intrekken"
+                                    data-modal-sub-title-param="{{ taak.titel }}"
+                                    data-modal-url-param="{% url 'taak_toewijzing_intrekken' taak.id %}"
+                                    data-modal-id-param="taak_toewijzing_intrekken"
+                                    data-action="modal#openModal"
+                                >
+                                    Toewijzing intrekken
+                            </button>
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}
                 </div>
             </section>
         </div>
+
+
+<div class="modal modal--transparent">
+    <div class="modal-dialog">
+        <div class="modal-backdrop modal-exit" data-action="click->taak#closeModal"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+               <button
+                    type="button"
+                    class="btn-close"
+                    aria-label="Sluit"
+                    data-action="taak#closeModal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="container-image"></div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
-
-
-
-{% block modal_header %}
-<h1>
-    <span>Taak behandelen</span><br>
-    <small>{{ taak.titel }}</small>
-</h1>
-{% if TEMPLATE_BASIS != "benc" %}
-<p>
-    <span class="">
-        {{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }} {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}{{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}{%endif%}
-    </span>
-</p>
-{% endif %}
-<button
-    type="button"
-    class="btn-close"
-    aria-label="Sluit"
-    data-action="taak#closeModal">
-</button>
-{% endblock %}
-
-
-
-{% block modal_body %}
-<turbo-frame
-    id="incident_modal_handle_{{ taak.id }}"
-    data-taak-target="turboFormHandler"
-    data-src="{% url 'incident_modal_handle_part' taak.id %}"
->
-</turbo-frame>
-{% endblock %}
-
-
-
-
 
 {% block after_modal_content %}
+        </div>
     </div>
 </turbo-frame>
 {% endblock %}

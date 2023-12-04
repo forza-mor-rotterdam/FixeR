@@ -3,10 +3,12 @@
 {% block title %}FixeR beheer{% endblock %}
 
 {% block pageheader %}
-    {% with hide_menu=True screen_wide=True page_title="FixeR" %}
+    {% with page_title="FixeR" %}
     {{ block.super }}
     {% endwith %}
 {% endblock %}
+
+{% block body_class %}{% endblock %}
 
 <main data-controller="main">
     <div class="{% block container_class %}container container--wide{% endblock %}">

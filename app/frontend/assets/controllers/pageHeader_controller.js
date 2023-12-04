@@ -24,15 +24,6 @@ export default class extends Controller {
     }
 
     openModal(e) {
-        const currentUrl = window.location.href
-
-        if (currentUrl.includes("/taken/")) {
-            this.todoTarget.classList.add("selected")
-        }
-        if (currentUrl.includes("/taken-afgerond/")) {
-            this.finishedTarget.classList.add("selected")
-        }
-
         const modalBackdrop = this.element.querySelector('.modal-backdrop');
         this.modalMenuTarget.classList.add('show');
         modalBackdrop.classList.add('show');

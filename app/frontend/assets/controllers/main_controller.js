@@ -3,7 +3,7 @@ import { Controller } from '@hotwired/stimulus';
 let currentPosition = {coords: {latitude: 51.9247772, longitude: 4.4780972}}
 let positionWatchId = null
 let incidentlist = null
-self = null
+
 const positionWatchOptions = {
     enableHighAccuracy: true,
     timeout: 5000,
@@ -16,8 +16,8 @@ export default class extends Controller {
     static outlets = [ "taken" ]
 
     initialize() {
-        this.element[this.identifier] = this
-        self = this
+        let self = this
+        self.element[self.identifier] = self
         const status = {
             zoom: 16,
             center: [currentPosition.coords.latitude, currentPosition.coords.longitude],
@@ -31,8 +31,8 @@ export default class extends Controller {
             sessionStorage.setItem("kaartStatus", JSON.stringify(kaartStatus));
         }
 
-        navigator.geolocation.getCurrentPosition(this.getCurrentPositionSuccess, this.positionWatchError);
-        positionWatchId = navigator.geolocation.watchPosition(this.positionWatchSuccess, this.positionWatchError, positionWatchOptions);
+        navigator.geolocation.getCurrentPosition(self.getCurrentPositionSuccess, self.positionWatchError);
+        positionWatchId = navigator.geolocation.watchPosition(self.positionWatchSuccess, self.positionWatchError, positionWatchOptions);
         window.addEventListener("childControllerConnectedEvent", function(e){
             if (e.detail.controller.identifier == "incidentlist"){
                 incidentlist = e.detail.controller
@@ -42,10 +42,12 @@ export default class extends Controller {
     }
     connect() {}
     takenOutletConnected(outlet, element){
+        let self = this
         console.log("takenListOutletConnected")
         console.log(self.takenListOutlet)
     }
     getCurrentPositionSuccess(position){
+        let self = this
         self.positionWatchSuccess(position)
     }
     positionWatchSuccess(position){
@@ -55,6 +57,7 @@ export default class extends Controller {
         }
     }
     positionWatchError(error){
+        let self = this
         console.log("handleNoCurrentLocation, error: ", error)
         switch(error.code) {
             case error.PERMISSION_DENIED:
