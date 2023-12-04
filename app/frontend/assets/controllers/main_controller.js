@@ -31,8 +31,8 @@ export default class extends Controller {
             sessionStorage.setItem("kaartStatus", JSON.stringify(kaartStatus));
         }
 
-        navigator.geolocation.getCurrentPosition(self.getCurrentPositionSuccess, self.positionWatchError);
-        positionWatchId = navigator.geolocation.watchPosition(self.positionWatchSuccess, self.positionWatchError, positionWatchOptions);
+        navigator.geolocation.getCurrentPosition(self.getCurrentPositionSuccess.bind(self), self.positionWatchError.bind(self));
+        positionWatchId = navigator.geolocation.watchPosition(self.positionWatchSuccess.bind(self), self.positionWatchError.bind(self), positionWatchOptions);
         window.addEventListener("childControllerConnectedEvent", function(e){
             if (e.detail.controller.identifier == "incidentlist"){
                 incidentlist = e.detail.controller
