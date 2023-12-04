@@ -52,6 +52,7 @@ export default class extends Controller {
         self.positionWatchSuccess(position)
     }
     positionWatchSuccess(position){
+        let self = this
         currentPosition = position
         console.log("positionWatchSuccess controller id:", self.identifier)
         if (incidentlist) {
