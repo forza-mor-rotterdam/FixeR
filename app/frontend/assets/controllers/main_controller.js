@@ -31,8 +31,8 @@ export default class extends Controller {
             sessionStorage.setItem("kaartStatus", JSON.stringify(kaartStatus));
         }
 
-        navigator.geolocation.getCurrentPosition(self.getCurrentPositionSuccess, self.positionWatchError);
-        positionWatchId = navigator.geolocation.watchPosition(self.positionWatchSuccess, self.positionWatchError, positionWatchOptions);
+        navigator.geolocation.getCurrentPosition(self.getCurrentPositionSuccess.bind(self), self.positionWatchError.bind(self));
+        positionWatchId = navigator.geolocation.watchPosition(self.positionWatchSuccess.bind(self), self.positionWatchError.bind(self), positionWatchOptions);
         window.addEventListener("childControllerConnectedEvent", function(e){
             if (e.detail.controller.identifier == "incidentlist"){
                 incidentlist = e.detail.controller
@@ -48,16 +48,20 @@ export default class extends Controller {
     }
     getCurrentPositionSuccess(position){
         let self = this
+        console.log("getCurrentPositionSuccess controller id:", self.identifier)
         self.positionWatchSuccess(position)
     }
     positionWatchSuccess(position){
+        let self = this
         currentPosition = position
+        console.log("positionWatchSuccess controller id:", self.identifier)
         if (incidentlist) {
             incidentlist.positionWatchSuccess(position)
         }
     }
     positionWatchError(error){
         let self = this
+        console.log("positionWatchError controller id:", self.identifier)
         console.log("handleNoCurrentLocation, error: ", error)
         switch(error.code) {
             case error.PERMISSION_DENIED:
