@@ -4,7 +4,7 @@ let markerIcon, markerBlue, markerGreen, currentImg, imageContainer, modal, moda
 let dist, elapsedTime, startX, startY, startTime = 0
 let imageSrcList = []
 
-self = null
+let self = null
 export default class extends Controller {
     static values = {
         incidentX: String,
@@ -20,7 +20,7 @@ export default class extends Controller {
     };
 
     initialize() {
-        let self = this
+        self = this
         if(self.hasThumbListTarget) {
             self.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
         }
@@ -67,41 +67,39 @@ export default class extends Controller {
         threshold = 150, //required min distance traveled to be considered swipe
         allowedTime = 1000 // maximum time allowed to travel that distance
 
+        touchsurface.addEventListener('touchstart', function(e){
+            var touchobj = e.changedTouches[0]
+            dist = 0
+            startX = touchobj.pageX
+            startY = touchobj.pageY
+            startTime = new Date().getTime() // record time when finger first makes contact with surface
+            e.preventDefault()
+        }, false)
 
-    touchsurface.addEventListener('touchstart', function(e){
-        var touchobj = e.changedTouches[0]
-        dist = 0
-        startX = touchobj.pageX
-        startY = touchobj.pageY
-        startTime = new Date().getTime() // record time when finger first makes contact with surface
-        e.preventDefault()
-    }, false)
+        touchsurface.addEventListener('touchmove', function(e){
+            e.preventDefault() // prevent scrolling when inside DIV
+        }, false)
 
-    touchsurface.addEventListener('touchmove', function(e){
-        e.preventDefault() // prevent scrolling when inside DIV
-    }, false)
-
-    touchsurface.addEventListener('touchend', function(e){
-        var touchobj = e.changedTouches[0]
-        dist = touchobj.pageX - startX // get total dist traveled by finger while in contact with surface
-        elapsedTime = new Date().getTime() - startTime // get time elapsed
-        // check that elapsed time is within specified, horizontal dist traveled >= threshold, and vertical dist traveled <= 100
-        var swiperightBol = (elapsedTime <= allowedTime && dist >= threshold && Math.abs(touchobj.pageY - startY) <= 100)
-        self.handleswipe(swiperightBol)
-        e.preventDefault()
-    }, false)
+        touchsurface.addEventListener('touchend', function(e){
+            var touchobj = e.changedTouches[0]
+            dist = touchobj.pageX - startX // get total dist traveled by finger while in contact with surface
+            elapsedTime = new Date().getTime() - startTime // get time elapsed
+            // check that elapsed time is within specified, horizontal dist traveled >= threshold, and vertical dist traveled <= 100
+            var swiperightBol = (elapsedTime <= allowedTime && dist >= threshold && Math.abs(touchobj.pageY - startY) <= 100)
+            self.handleswipe(swiperightBol)
+            e.preventDefault()
+        }, false)
     }
 
-    handleswipe(isrightswipe){
-        console.log('handleSwipe', isrightSwipe)
+    handleswipe(isRightSwipe){
         const imgIndex = imageSrcList.indexOf(currentImg)
         const lastImgInList = imgIndex === imageSrcList.length-1
         const firstImgInList = imgIndex === 0
         let newImg = null
-        if (isrightswipe && !firstImgInList){
+        if (isRightSwipe && !firstImgInList){
             newImg = imageSrcList[imgIndex-1]
             self.loadImage(newImg)
-        } else if (!isrightswipe && !lastImgInList) {
+        } else if (!isRightSwipe && !lastImgInList) {
             newImg = imageSrcList[imgIndex+1]
             self.loadImage(newImg)
         }
@@ -109,11 +107,7 @@ export default class extends Controller {
     }
 
     saveImagesinList(event) {
-        console.log('saveImagesinList', event)
-        console.log('saveImagesinList', event.target.parentElement)
-        console.log('saveImagesinList', event.target.parentElement.parentElement)
         const imageList = Array.from(event.target.parentElement.parentElement.querySelectorAll('img'))
-        console.log('imageList', imageList)
         imageSrcList = imageList.map(img => {
             return img.src
         })
