@@ -42,14 +42,17 @@
             class="taak-detail"
         >
             <div class="container__header-taaknavigatie">
-                <span class="badge badge--darkblue">{{ taak.taakstatus.naam }}{% if taak.additionele_informatie.uitvoerder %} aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}</span>
                 {% if TEMPLATE_BASIS != "benc" %}
-                <h1 class="h3">{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }} {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}{{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}{%endif%}</h1>
+                <h1 class="h3">
+                    {{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }} {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}{{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}{%endif%}
+                    <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}{% if taak.additionele_informatie.uitvoerder %} aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}</span>
+                </h1>
                 {% else %}
                 {% with grafnummer=melding.meta.grafnummer vak=melding.meta.vak plaats=melding.meta.begraafplaats %}
                 <h1 class="h3">
                     {% if grafnummer %} Graf {{ grafnummer }}{% endif %}{% if vak %}, Vak {{ vak }}{% endif %}
                     {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
+                    <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}{% if taak.additionele_informatie.uitvoerder %} aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}</span>
                 </h1>
                 {% endwith %}
                 {% endif %}

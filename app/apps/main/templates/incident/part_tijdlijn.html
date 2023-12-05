@@ -69,82 +69,84 @@
                             {% endif %}
                         </summary>
                         <div class="content">
-                            <dl>
-                                {% if row_data.mg.taakgebeurtenis %}
-                                    <dt>Status</dt>
-                                    <dd>
-                                        {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
-                                    </dd>
-                                    {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
-                                        <dt>Datum</dt>
+                            <div class="wrapper">
+                                <dl>
+                                    {% if row_data.mg.taakgebeurtenis %}
+                                        <dt>Status</dt>
                                         <dd>
-                                            {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_date }}
+                                            {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
                                         </dd>
+                                        {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
+                                            <dt>Datum</dt>
+                                            <dd>
+                                                {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_date }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if row_data.mg.taakgebeurtenis.gebruiker %}
+                                            <dt>Gebruiker</dt>
+                                            <dd>
+                                                {{ row_data.mg.taakgebeurtenis.gebruiker|gebruiker_middels_email }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if row_data.mg.taakgebeurtenis.omschrijving_intern %}
+                                            <dt>Interne opmerking</dt>
+                                            <dd>
+                                                {{ row_data.mg.taakgebeurtenis.omschrijving_intern }}
+                                            </dd>
+                                        {% endif %}
+                                    {% elif row_data.mg.locatie %}
+                                        {% if row_data.mg.gebruiker %}
+                                            <dt>Gewijzigd door</dt>
+                                            <dd>
+                                                {{ row_data.mg.gebruiker|gebruiker_middels_email }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if row_data.mg.aangemaakt_op %}
+                                            <dt>Datum</dt>
+                                            <dd>
+                                                {{ row_data.mg.aangemaakt_op|to_date }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if row_data.mg.omschrijving_intern %}
+                                            <dt>Interne opmerking</dt>
+                                            <dd>
+                                                {{ row_data.mg.omschrijving_intern }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder %}
+                                            <dt>Uitvoerder</dt>
+                                            <dd>
+                                                {{ row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|gebruiker_middels_email }}
+                                            </dd>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if row_data.mg.gebruiker %}
+                                            <dt>Afgehandeld door</dt>
+                                            <dd>
+                                                {{ row_data.mg.gebruiker|gebruiker_middels_email }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if row_data.mg.aangemaakt_op %}
+                                            <dt>Datum</dt>
+                                            <dd>
+                                                {{ row_data.mg.aangemaakt_op|to_date }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if row_data.mg.omschrijving_extern %}
+                                            <dt>Bericht voor de melder</dt>
+                                            <dd>
+                                                {{ row_data.mg.omschrijving_extern }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if row_data.mg.omschrijving_intern %}
+                                            <dt>Interne opmerking</dt>
+                                            <dd>
+                                                {{ row_data.mg.omschrijving_intern }}
+                                            </dd>
+                                        {% endif %}
                                     {% endif %}
-                                    {% if row_data.mg.taakgebeurtenis.gebruiker %}
-                                        <dt>Gebruiker</dt>
-                                        <dd>
-                                            {{ row_data.mg.taakgebeurtenis.gebruiker|gebruiker_middels_email }}
-                                        </dd>
-                                    {% endif %}
-                                    {% if row_data.mg.taakgebeurtenis.omschrijving_intern %}
-                                        <dt>Interne opmerking</dt>
-                                        <dd>
-                                            {{ row_data.mg.taakgebeurtenis.omschrijving_intern }}
-                                        </dd>
-                                    {% endif %}
-                                {% elif row_data.mg.locatie %}
-                                    {% if row_data.mg.gebruiker %}
-                                        <dt>Gewijzigd door</dt>
-                                        <dd>
-                                            {{ row_data.mg.gebruiker|gebruiker_middels_email }}
-                                        </dd>
-                                    {% endif %}
-                                    {% if row_data.mg.aangemaakt_op %}
-                                        <dt>Datum</dt>
-                                        <dd>
-                                            {{ row_data.mg.aangemaakt_op|to_date }}
-                                        </dd>
-                                    {% endif %}
-                                    {% if row_data.mg.omschrijving_intern %}
-                                        <dt>Interne opmerking</dt>
-                                        <dd>
-                                            {{ row_data.mg.omschrijving_intern }}
-                                        </dd>
-                                    {% endif %}
-                                    {% if row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder %}
-                                        <dt>Uitvoerder</dt>
-                                        <dd>
-                                            {{ row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|gebruiker_middels_email }}
-                                        </dd>
-                                    {% endif %}
-                                {% else %}
-                                    {% if row_data.mg.gebruiker %}
-                                        <dt>Afgehandeld door</dt>
-                                        <dd>
-                                            {{ row_data.mg.gebruiker|gebruiker_middels_email }}
-                                        </dd>
-                                    {% endif %}
-                                    {% if row_data.mg.aangemaakt_op %}
-                                        <dt>Datum</dt>
-                                        <dd>
-                                            {{ row_data.mg.aangemaakt_op|to_date }}
-                                        </dd>
-                                    {% endif %}
-                                    {% if row_data.mg.omschrijving_extern %}
-                                        <dt>Bericht voor de melder</dt>
-                                        <dd>
-                                            {{ row_data.mg.omschrijving_extern }}
-                                        </dd>
-                                    {% endif %}
-                                    {% if row_data.mg.omschrijving_intern %}
-                                        <dt>Interne opmerking</dt>
-                                        <dd>
-                                            {{ row_data.mg.omschrijving_intern }}
-                                        </dd>
-                                    {% endif %}
-                                {% endif %}
-                            </dl>
+                                </dl>
+                            </div>
                         </div>
                     </details>
                 </li>
