@@ -24,12 +24,6 @@ export default class extends Controller {
                 self.incidentDateTarget.textContent = self.getNumberOfDays(self.dateValue, parseInt(self.daysValue))
             }
         }
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-              self.closeModal()
-            }
-        })
     }
 
     connect() {}
@@ -139,10 +133,6 @@ export default class extends Controller {
             div.append("De melding is doorverwezen")
         }
         self.element.append(div)
-    }
-
-    cancelHandleHandler(event) {
-        self.closeModal()
     }
 
     // Handle the start of gestures

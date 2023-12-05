@@ -93,6 +93,7 @@ export default class extends Controller {
     }
 
     handleswipe(isrightswipe){
+        console.log('handleSwipe', isrightSwipe)
         const imgIndex = imageSrcList.indexOf(currentImg)
         const lastImgInList = imgIndex === imageSrcList.length-1
         const firstImgInList = imgIndex === 0
@@ -108,7 +109,11 @@ export default class extends Controller {
     }
 
     saveImagesinList(event) {
+        console.log('saveImagesinList', event)
+        console.log('saveImagesinList', event.target.parentElement)
+        console.log('saveImagesinList', event.target.parentElement.parentElement)
         const imageList = Array.from(event.target.parentElement.parentElement.querySelectorAll('img'))
+        console.log('imageList', imageList)
         imageSrcList = imageList.map(img => {
             return img.src
         })
@@ -118,7 +123,7 @@ export default class extends Controller {
     openImageInPopup(event) {
         currentImg = event.target.src
         this.openModalForImage(event)
-        self.saveImagesinList(event)
+        this.saveImagesinList(event)
 
     }
 

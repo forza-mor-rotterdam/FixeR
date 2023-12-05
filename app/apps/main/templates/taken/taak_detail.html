@@ -36,7 +36,6 @@
             data-detail-incident-x-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.1 }}"
 
             {% if taak.magAfhandelen %} class="has-sticky-footer" {% endif %}
-        data-action="cancelHandle->taak#cancelHandleHandler"
         >
         <div
             class="taak-detail"
@@ -360,14 +359,14 @@
 
 <div class="modal modal--transparent">
     <div class="modal-dialog">
-        <div class="modal-backdrop modal-exit" data-action="click->taak#closeModal"></div>
+        <div class="modal-backdrop modal-exit" data-action="click->modal#closeModal"></div>
         <div class="modal-content">
             <div class="modal-header">
                <button
                     type="button"
                     class="btn-close"
                     aria-label="Sluit"
-                    data-action="taak#closeModal">
+                    data-action="modal#closeModal">
                 </button>
             </div>
             <div class="modal-body">
