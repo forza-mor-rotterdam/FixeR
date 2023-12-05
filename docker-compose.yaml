@@ -92,10 +92,6 @@ services:
           cors_origins "http://fixer.mor.local:8004"
           anonymous
       SERVER_NAME: ':80'
-    #   # Uncomment the following line to disable HTTPS
-    #   MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-    #   MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-    # Uncomment the following line to enable the development mode
     command: /usr/bin/caddy run --config /etc/caddy/Caddyfile.dev
     env_file:
       - .env.local

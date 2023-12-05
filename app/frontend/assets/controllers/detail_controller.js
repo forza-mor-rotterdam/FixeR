@@ -11,7 +11,8 @@ export default class extends Controller {
         incidentY: String,
         areaList: String,
         currentDistrict: String,
-        incidentObject: Object
+        incidentObject: Object,
+        mercurePublicUrl: String,
     }
     static targets = ['selectedImage', 'thumbList', 'imageSliderContainer']
 
@@ -20,7 +21,8 @@ export default class extends Controller {
     };
 
     initialize() {
-        self = this
+        let self = this
+        self.initMessages()
         if(self.hasThumbListTarget) {
             self.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
         }
@@ -90,8 +92,28 @@ export default class extends Controller {
             e.preventDefault()
         }, false)
     }
-
-    handleswipe(isRightSwipe){
+    initMessages(){
+        let self = this
+        if (self.hasMercurePublicUrlValue){
+            const url = new URL(self.mercurePublicUrlValue);
+            url.searchParams.append('topic', window.location.pathname);
+            self.eventSource = new EventSource(url);
+            self.eventSource.onmessage = e => self.onMessage(e)
+            self.eventSource.onerror = (e) => self.onMessageError(e)
+        }
+    }
+    onMessage(e){
+        let data  = JSON.parse(e.data)
+        let turboFrame = document.getElementById("taak_basis")
+        turboFrame.src = data.url
+    }
+    onMessageError(e){
+        let self = this
+        console.log(e)
+        console.log("An error occurred while attempting to connect.");
+        self.eventSource.close()
+    }
+    handleswipe(isrightswipe){
         const imgIndex = imageSrcList.indexOf(currentImg)
         const lastImgInList = imgIndex === imageSrcList.length-1
         const firstImgInList = imgIndex === 0
