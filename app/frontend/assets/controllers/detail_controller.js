@@ -4,14 +4,15 @@ let markerIcon, markerBlue, markerGreen, currentImg, imageContainer, modal, moda
 let dist, elapsedTime, startX, startY, startTime = 0
 let imageSrcList = []
 
-self = null
+let self = null
 export default class extends Controller {
     static values = {
         incidentX: String,
         incidentY: String,
         areaList: String,
         currentDistrict: String,
-        incidentObject: Object
+        incidentObject: Object,
+        mercurePublicUrl: String,
     }
     static targets = ['selectedImage', 'thumbList', 'imageSliderContainer']
 
@@ -21,6 +22,7 @@ export default class extends Controller {
 
     initialize() {
         let self = this
+        self.initMessages()
         if(self.hasThumbListTarget) {
             self.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
         }
@@ -46,13 +48,13 @@ export default class extends Controller {
                 name: "standaard",
                 layerName: "standaard",
                 type: "wmts",
-                minZoom: 6,
+                minZoom: 12,
                 maxZoom: 19,
                 tileSize: 256,
                 attribution: "",
             }
             const incidentCoordinates = [parseFloat(self.incidentXValue.replace(/,/g, '.')), parseFloat(self.incidentYValue.replace(/,/g, '.'))]
-            const map = L.map('incidentMap').setView(incidentCoordinates, 16);
+            const map = L.map('incidentMap').setView(incidentCoordinates, 18);
             L.tileLayer(url, config).addTo(map);
             const marker = L.marker(incidentCoordinates, {icon: markerGreen}).addTo(map);
         }
@@ -67,40 +69,59 @@ export default class extends Controller {
         threshold = 150, //required min distance traveled to be considered swipe
         allowedTime = 1000 // maximum time allowed to travel that distance
 
+        touchsurface.addEventListener('touchstart', function(e){
+            var touchobj = e.changedTouches[0]
+            dist = 0
+            startX = touchobj.pageX
+            startY = touchobj.pageY
+            startTime = new Date().getTime() // record time when finger first makes contact with surface
+            e.preventDefault()
+        }, false)
 
-    touchsurface.addEventListener('touchstart', function(e){
-        var touchobj = e.changedTouches[0]
-        dist = 0
-        startX = touchobj.pageX
-        startY = touchobj.pageY
-        startTime = new Date().getTime() // record time when finger first makes contact with surface
-        e.preventDefault()
-    }, false)
+        touchsurface.addEventListener('touchmove', function(e){
+            e.preventDefault() // prevent scrolling when inside DIV
+        }, false)
 
-    touchsurface.addEventListener('touchmove', function(e){
-        e.preventDefault() // prevent scrolling when inside DIV
-    }, false)
-
-    touchsurface.addEventListener('touchend', function(e){
-        var touchobj = e.changedTouches[0]
-        dist = touchobj.pageX - startX // get total dist traveled by finger while in contact with surface
-        elapsedTime = new Date().getTime() - startTime // get time elapsed
-        // check that elapsed time is within specified, horizontal dist traveled >= threshold, and vertical dist traveled <= 100
-        var swiperightBol = (elapsedTime <= allowedTime && dist >= threshold && Math.abs(touchobj.pageY - startY) <= 100)
-        self.handleswipe(swiperightBol)
-        e.preventDefault()
-    }, false)
+        touchsurface.addEventListener('touchend', function(e){
+            var touchobj = e.changedTouches[0]
+            dist = touchobj.pageX - startX // get total dist traveled by finger while in contact with surface
+            elapsedTime = new Date().getTime() - startTime // get time elapsed
+            // check that elapsed time is within specified, horizontal dist traveled >= threshold, and vertical dist traveled <= 100
+            var swiperightBol = (elapsedTime <= allowedTime && dist >= threshold && Math.abs(touchobj.pageY - startY) <= 100)
+            self.handleswipe(swiperightBol)
+            e.preventDefault()
+        }, false)
     }
-
+    initMessages(){
+        let self = this
+        if (self.hasMercurePublicUrlValue){
+            const url = new URL(self.mercurePublicUrlValue);
+            url.searchParams.append('topic', window.location.pathname);
+            self.eventSource = new EventSource(url);
+            self.eventSource.onmessage = e => self.onMessage(e)
+            self.eventSource.onerror = (e) => self.onMessageError(e)
+        }
+    }
+    onMessage(e){
+        let data  = JSON.parse(e.data)
+        let turboFrame = document.getElementById("taak_basis")
+        turboFrame.src = data.url
+    }
+    onMessageError(e){
+        let self = this
+        console.log(e)
+        console.log("An error occurred while attempting to connect.");
+        self.eventSource.close()
+    }
     handleswipe(isrightswipe){
         const imgIndex = imageSrcList.indexOf(currentImg)
         const lastImgInList = imgIndex === imageSrcList.length-1
         const firstImgInList = imgIndex === 0
         let newImg = null
-        if (isrightswipe && !firstImgInList){
+        if (isRightSwipe && !firstImgInList){
             newImg = imageSrcList[imgIndex-1]
             self.loadImage(newImg)
-        } else if (!isrightswipe && !lastImgInList) {
+        } else if (!isRightSwipe && !lastImgInList) {
             newImg = imageSrcList[imgIndex+1]
             self.loadImage(newImg)
         }
@@ -118,7 +139,7 @@ export default class extends Controller {
     openImageInPopup(event) {
         currentImg = event.target.src
         this.openModalForImage(event)
-        self.saveImagesinList(event)
+        this.saveImagesinList(event)
 
     }
 
