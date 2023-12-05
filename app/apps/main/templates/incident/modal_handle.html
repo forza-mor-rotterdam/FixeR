@@ -22,13 +22,15 @@
         {% csrf_token %}
 
         {{ form.resolutie|render_rotterdam_formulier }}
-        <div class="form-control__with-helptext">
-            {{ form.omschrijving_intern|render_rotterdam_formulier }}
-        </div>
 
         <div data-controller="bijlagen">
             {{ form.bijlagen|render_rotterdam_formulier }}
         </div>
+
+        <div class="form-control__with-helptext">
+            {{ form.omschrijving_intern|render_rotterdam_formulier }}
+        </div>
+
         {% if form.nieuwe_taak %}
         <div class="form-part-seperated">
             <h3 class="h5">Vervolgtaak <small>(Optioneel)</small></h3>

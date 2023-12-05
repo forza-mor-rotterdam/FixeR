@@ -20,7 +20,7 @@ export default class extends Controller {
 
     showFileInput() {
         const inputContainer = document.getElementById('id_bijlagen').parentElement;
-        inputContainer.classList.remove('hidden');
+        inputContainer.classList.toggle('hidden');
     }
 
     removeFile (e) {
