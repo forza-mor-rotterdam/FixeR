@@ -21,7 +21,7 @@
         class="list-item{% if form_submitted %} form-is-submitted{% endif %}{% if errors and warnings %} has-errors{% endif %}"
         {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}
             data-controller="taak modal"
-            data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler cancelHandle->taak#cancelHandleHandler"
+            data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler"
             data-taak-date-value="{{ incident.datumMelding }}"
             data-taak-days-value="{{ incident.werkdagenSindsRegistratie }}"
         {%endif%}>

@@ -6,6 +6,12 @@ export default class extends Controller {
 
     initialize() {
         console.log("modal init")
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+              this.closeModal()
+            }
+        })
     }
     closeModalElementTargetConnected(element){
         let self = this
@@ -25,7 +31,7 @@ export default class extends Controller {
         }
         modal.classList.remove('show');
         modalBackdrop.classList.remove('show');
-        document.body.classList.remove('show-modal');
+        document.body.classList.remove('show-modal', 'show-modal--transparent');
     }
     openModal(event) {
         let self = this
