@@ -5,6 +5,7 @@ export default class extends Controller {
     static targets = [ "title", "subTitle", "turboFrame", "closeModalElement" ]
 
     initialize() {
+        document.body.classList.remove('show-modal');
         console.log("modal init")
 
         document.addEventListener('keydown', (event) => {
