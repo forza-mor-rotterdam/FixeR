@@ -46,13 +46,13 @@ export default class extends Controller {
                 name: "standaard",
                 layerName: "standaard",
                 type: "wmts",
-                minZoom: 6,
+                minZoom: 12,
                 maxZoom: 19,
                 tileSize: 256,
                 attribution: "",
             }
             const incidentCoordinates = [parseFloat(self.incidentXValue.replace(/,/g, '.')), parseFloat(self.incidentYValue.replace(/,/g, '.'))]
-            const map = L.map('incidentMap').setView(incidentCoordinates, 16);
+            const map = L.map('incidentMap').setView(incidentCoordinates, 18);
             L.tileLayer(url, config).addTo(map);
             const marker = L.marker(incidentCoordinates, {icon: markerGreen}).addTo(map);
         }
