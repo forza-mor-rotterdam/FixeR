@@ -93,6 +93,15 @@ export default class extends Controller {
 
     disconnect() {}
 
+    onTwoFingerDrag (event) {
+        console.log("onTwoFingerDrag, event: ", event)
+        if (event.type === 'touchstart' && event.touches.length === 1) {
+            event.currentTarget.classList.add('swiping')
+        } else {
+            event.currentTarget.classList.remove('swiping')
+        }
+    }
+
     selectTaakMarker(taakId) {
         let obj = markerList.find(obj => obj.options.taakId == taakId);
         obj.openPopup()
@@ -121,6 +130,7 @@ export default class extends Controller {
             maxZoom: 19,
             tileSize: 256,
             attribution: "",
+            gestureHandling: true,
         }
 
         L.tileLayer(url, config).addTo(map);
