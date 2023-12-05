@@ -384,17 +384,14 @@ textarea {
 .list--form-check-input,
 .list--form-radio-input {
     @include list-clean();
-    display: flex;
+    // display: flex;
 
     li {
-        margin: 0 0 0 0.25rem;
-        flex: 1;
+        margin: 0 0 8px;
         border: 1px solid $gray-tint04;
         position: relative;
 
-        &:first-child {
-            margin: 0 0.25rem 0 0;
-        }
+
     }
     input {
         @include form-check-input();

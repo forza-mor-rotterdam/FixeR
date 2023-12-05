@@ -35,22 +35,32 @@ HANDLED_OPTIONS = (
 TAAK_BEHANDEL_OPTIES = (
     (
         "ja",
-        "Ja",
-        "We zijn met uw melding aan de slag gegaan en hebben het probleem opgelost.",
+        "De taak is afgerond",
         "voltooid",
         "opgelost",
     ),
     (
-        "nee",
-        "Nee",
-        "We zijn met uw melding aan de slag gegaan, maar konden het probleem helaas niet oplossen. Want...",
+        "ja",
+        "Niets aangetroffen",
         "voltooid",
+        "niet_gevonden",
+    ),
+    (
+        "nee",
+        "Er moet nog iets gebeuren",
+        "open",
+        "niet_opgelost",
+    ),
+    (
+        "nee",
+        "Kan niet worden uitgevoerd",
+        "open",
         "niet_opgelost",
     ),
 )
 
-TAAK_BEHANDEL_STATUS = {bo[0]: bo[3] for bo in TAAK_BEHANDEL_OPTIES}
-TAAK_BEHANDEL_RESOLUTIE = {bo[0]: bo[4] for bo in TAAK_BEHANDEL_OPTIES}
+TAAK_BEHANDEL_STATUS = {bo[0]: bo[2] for bo in TAAK_BEHANDEL_OPTIES}
+TAAK_BEHANDEL_RESOLUTIE = {bo[0]: bo[3] for bo in TAAK_BEHANDEL_OPTIES}
 
 
 class RadioSelect(forms.RadioSelect):
@@ -70,7 +80,7 @@ class TaakBehandelForm(forms.Form):
             }
         ),
         label="Is de taak afgehandeld?",
-        choices=[[x[4], x[1]] for x in TAAK_BEHANDEL_OPTIES],
+        choices=[[x[3], x[1]] for x in TAAK_BEHANDEL_OPTIES],
         required=True,
     )
 
@@ -102,6 +112,10 @@ class TaakBehandelForm(forms.Form):
     def __init__(self, *args, **kwargs):
         volgende_taaktypes = kwargs.pop("volgende_taaktypes", None)
         super().__init__(*args, **kwargs)
+
+        # Vraag Vervolgtaak? Alleen tonen bij resolutie 0 en 2 ("afgerond" en "nog iets")
+        # Lijst met vervolgtaken is dan verplicht
+        # Bij resolutie 3 ("kan  niet") is interne opmerking wel verplicht
 
         if volgende_taaktypes:
             self.fields["nieuwe_taak"] = forms.ChoiceField(
