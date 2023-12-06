@@ -52,7 +52,7 @@
                             {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}
                                 {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
                             {% endif %}
-                            <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
+                            <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
                                 {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
                             </span>
                         </h1>
@@ -64,7 +64,7 @@
                                 {% if not grafnummer and not vak and plaats %}
                                     {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
                                 {% endif %}
-                                <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
+                                <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
                                     {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
                                 </span>
                             </h1>
