@@ -6,6 +6,8 @@
 .container__map {
 
     .map {
+        width: calc(100% + 32px);
+        margin-left: -16px;
         height: 100%;
         flex: 1 1 0;
 
@@ -45,6 +47,11 @@
                 opacity: 1;
                 background: rgba(0, 0, 0, 0.5);
             }
+        }
+
+        @media (min-width: map-get($grid-breakpoints, sm)) {
+            width: auto;
+            margin-left: 0;
         }
     }
 
@@ -152,8 +159,13 @@
     }
 }
 
-.leaflet-container a.leaflet-popup-close-button {
-    top: -4px;
+.leaflet-container {
+    a {
+        color: $green;
+    }
+    a.leaflet-popup-close-button {
+        top: -4px;
+    }
 }
 
 .leaflet-popup-content-wrapper {
@@ -221,24 +233,32 @@ button.toggle-view {
     }
 }
 
-button.btn-on-map {
+.btn-on-map {
     position: absolute;
     z-index: 2000;
-    top: 12px;
-    right: 12px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    top: 16px;
+    right: 16px;
+    width: auto;
+    padding: 0 8px;
+    font-weight: 400;
+    font-size: 1rem;
     background-color: $white;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    border: 1px solid $gray-tint11;
 
+    input {
+        margin-right: .5rem;
+        vertical-align: top;
+    }
+    span {
+        padding: 0;
+        pointer-events: none;
+    }
     &:focus {
         outline-color: transparent !important;
-        border: 0;
     }
 
     &.active {
-        box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.25);
+        border: 3px solid $gray-tint11;
     }
 }
 

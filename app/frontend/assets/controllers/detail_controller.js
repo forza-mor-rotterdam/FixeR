@@ -107,21 +107,20 @@ export default class extends Controller {
     initMessages(){
         let self = this
         if (self.hasMercurePublicUrlValue && self.isValidHttpUrl(self.mercurePublicUrlValue)){
-            console.log(self.mercurePublicUrlValue)
-            console.log(self.mercureSubscriberTokenValue)
             const url = new URL(self.mercurePublicUrlValue);
             url.searchParams.append('topic', window.location.pathname);
-            url.searchParams.append('authToken', self.mercureSubscriberTokenValue);
-            url.searchParams.append('authorization', self.mercureSubscriberTokenValue);
+            if (self.hasMercureSubscriberTokenValue){
+                url.searchParams.append('authorization', self.mercureSubscriberTokenValue);
+            }
             console.log(url)
             self.eventSource = new EventSource(url);
-            console.log(self.eventSource)
             self.eventSource.onmessage = e => self.onMessage(e)
             self.eventSource.onerror = (e) => self.onMessageError(e)
         }
     }
     onMessage(e){
         let data  = JSON.parse(e.data)
+        console.log("mercure message", data)
         let turboFrame = document.getElementById("taak_basis")
         turboFrame.src = data.url
     }
