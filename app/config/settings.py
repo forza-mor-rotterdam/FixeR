@@ -237,7 +237,7 @@ X_FRAME_OPTIONS = "SAMEORIGIN"
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_PRELOAD = True
-CORS_ORIGIN_WHITELIST = ("http://localhost:7001",)
+CORS_ORIGIN_WHITELIST = ()
 CORS_ORIGIN_ALLOW_ALL = True
 USE_X_FORWARDED_HOST = True
 SESSION_COOKIE_HTTPONLY = True
@@ -279,7 +279,16 @@ CSP_STYLE_SRC = (
     "unpkg.com",
     "cdn.jsdelivr.net",
 )
-CSP_CONNECT_SRC = ("'self'",) if not DEBUG else ("'self'", "ws:", "localhost:7001")
+CSP_CONNECT_SRC = (
+    (
+        "'self'",
+        "mercure.fixer-test.forzamor.nl",
+        "mercure.fixer-acc.forzamor.nl",
+        "mercure.fixer.forzamor.nl",
+    )
+    if not DEBUG
+    else ("'self'", "ws:", "localhost:7001")
+)
 
 TEMPLATES = [
     {
