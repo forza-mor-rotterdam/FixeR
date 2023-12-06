@@ -92,9 +92,20 @@ export default class extends Controller {
             e.preventDefault()
         }, false)
     }
+    isValidHttpUrl(string) {
+        let url;
+
+        try {
+          url = new URL(string);
+        } catch (_) {
+          return false;
+        }
+
+        return url.protocol === "http:" || url.protocol === "https:";
+    }
     initMessages(){
         let self = this
-        if (self.hasMercurePublicUrlValue && self.mercurePublicUrlValue){
+        if (self.hasMercurePublicUrlValue && self.isValidHttpUrl(self.mercurePublicUrlValue)){
             const url = new URL(self.mercurePublicUrlValue);
             url.searchParams.append('topic', window.location.pathname);
             self.eventSource = new EventSource(url);

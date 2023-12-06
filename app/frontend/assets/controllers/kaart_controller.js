@@ -238,12 +238,12 @@ export default class extends Controller {
                 const markerLocation = new L.LatLng(lat, long);
                 const marker = new L.Marker(markerLocation, {icon: markerGreen, taakId: taakId});
                 const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
-
+                const anchorDetail = `<a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">Bekijk details</a>`
                 // let popupContent = `<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
-                let popupContent = `<div class="container__content"><span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" aria-label="Bekijk taak ${taakId}">${adres}</span><p>${omschrijving}</p>${paragraphDistance}</div>`
+                let popupContent = `<div class="container__content"><span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" aria-label="Bekijk taak ${taakId}">${adres}</span><p>${omschrijving}</p>${paragraphDistance}${anchorDetail}</div>`
                 if (afbeelding) {
                     // popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
-                    popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" aria-label="Bekijk taak ${taakId}">${adres}</span><p>${omschrijving}</p>${paragraphDistance}</div>`
+                    popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" aria-label="Bekijk taak ${taakId}">${adres}</span><p>${omschrijving}</p>${paragraphDistance}${anchorDetail}</div>`
                 }
                 marker.bindPopup(popupContent)
 

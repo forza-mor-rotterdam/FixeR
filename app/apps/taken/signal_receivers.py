@@ -15,7 +15,14 @@ def taak_post_save(sender, instance, created, **kwargs):
     logger.info(f"taak_post_save instance: {instance.id}")
     taak_url = reverse("taak_detail", args=(instance.id,))
     logger.info(f"taak_post_save url: {taak_url}")
-    MercurePublisher().publish(taak_url, {"url": taak_url, "taak_id": instance.id})
+    publisher = None
+    try:
+        publisher = MercurePublisher()
+    except MercurePublisher.ConfigException:
+        ...
+
+    if publisher:
+        publisher.publish(taak_url, {"url": taak_url, "taak_id": instance.id})
 
 
 @receiver(status_aangepast, dispatch_uid="taak_status_aangepast")

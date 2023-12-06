@@ -9,9 +9,20 @@ export default class extends Controller {
         let self = this
         self.initMessages()
     }
+    isValidHttpUrl(string) {
+        let url;
+
+        try {
+          url = new URL(string);
+        } catch (_) {
+          return false;
+        }
+
+        return url.protocol === "http:" || url.protocol === "https:";
+    }
     initMessages(){
         let self = this
-        if (self.hasMercurePublicUrlValue && self.mercurePublicUrlValue){
+        if (self.hasMercurePublicUrlValue && self.isValidHttpUrl(self.mercurePublicUrlValue)){
             const url = new URL(self.mercurePublicUrlValue);
             // subscribe with a topic like below
             // url.searchParams.append('topic', [messages topic]);

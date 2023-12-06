@@ -337,7 +337,7 @@
 
             &.handle--success {
                 background-color: $primary;
-                right: -100%;
+                right: calc(-100% - 1px);
                 text-align: left;
 
                 > div {
