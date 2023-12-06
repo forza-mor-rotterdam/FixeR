@@ -84,15 +84,22 @@ body.show-modal--first-filter {
         padding-bottom: 4px;
 
         h1 {
-            padding: 25px 48px 0 0;
+            padding: 25px 1.5rem 0 0;
             margin: 0 0 1rem;
-            font-size: calc(1.25rem + 1.5vw);
+            font-size: calc(1.25rem + 1vw);
+
+            > span {
+                padding-right: 48px;
+            }
 
             small {
                 display: block;
                 font-weight: 400;
                 font-size: calc(0.75rem + 1vw);
                 margin-top: 0.5rem;
+                padding: 4px 8px;
+                line-height: 1.5rem;
+                background-color: $gray-tint02;
             }
         }
     }

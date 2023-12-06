@@ -71,6 +71,7 @@ class TaakBehandelForm(forms.Form):
             attrs={
                 "class": "list--form-radio-input",
                 "data-action": "change->bijlagen#updateImageDisplay",
+                "hideLabel": True,
             }
         ),
         label="Is de taak afgehandeld?",
