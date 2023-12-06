@@ -9,6 +9,19 @@ from django.core.validators import URLValidator
 logger = logging.getLogger(__name__)
 
 
+def get_subscriber_token(mercure_subscriber_jwt_key):
+    return jwt.encode(
+        {
+            "mercure": {
+                "subscribe": MercurePublisher._subscribe_targets,
+                "publish": MercurePublisher._publish_targets,
+            }
+        },
+        mercure_subscriber_jwt_key,
+        algorithm="HS256",
+    )
+
+
 class MercurePublisher:
     _subscribe_targets = ["*"]
     _publish_targets = ["/taak/{id}/"]
