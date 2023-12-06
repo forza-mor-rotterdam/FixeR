@@ -11,7 +11,7 @@ export default class extends Controller {
     }
     initMessages(){
         let self = this
-        if (self.hasMercurePublicUrlValue){
+        if (self.hasMercurePublicUrlValue && self.mercurePublicUrlValue){
             const url = new URL(self.mercurePublicUrlValue);
             // subscribe with a topic like below
             // url.searchParams.append('topic', [messages topic]);
