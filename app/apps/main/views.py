@@ -269,6 +269,14 @@ def taak_detail(request, id):
     melding = melding_response.json()
     tijdlijn_data = melding_naar_tijdlijn(melding)
 
+    mercure_subscriber_key = (
+        settings.MERCURE_SUBSCRIBER_JWT_KEY
+        if hasattr(settings, "MERCURE_SUBSCRIBER_JWT_KEY")
+        else None
+    )
+    mercure_subscriber_token = (
+        get_subscriber_token(mercure_subscriber_key) if mercure_subscriber_key else None
+    )
     return render(
         request,
         "taken/taak_detail.html",
@@ -277,9 +285,7 @@ def taak_detail(request, id):
             "taak": taak,
             "melding": melding,
             "tijdlijn_data": tijdlijn_data,
-            "subscriber_token": get_subscriber_token(
-                settings.MERCURE_SUBSCRIBER_JWT_KEY
-            ),
+            "mercure_subscriber_token": mercure_subscriber_token,
         },
     )
 
