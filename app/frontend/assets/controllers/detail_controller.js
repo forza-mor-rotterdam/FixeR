@@ -94,7 +94,7 @@ export default class extends Controller {
     }
     initMessages(){
         let self = this
-        if (self.hasMercurePublicUrlValue){
+        if (self.hasMercurePublicUrlValue && self.mercurePublicUrlValue){
             const url = new URL(self.mercurePublicUrlValue);
             url.searchParams.append('topic', window.location.pathname);
             self.eventSource = new EventSource(url);
