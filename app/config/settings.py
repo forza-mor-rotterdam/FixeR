@@ -17,6 +17,7 @@ SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY", os.environ.get("SECRET_KEY", os.environ.get("APP_SECRET"))
 )
 
+GIT_SHA = os.getenv("GIT_SHA")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 DEBUG = ENVIRONMENT == "development"
 
@@ -50,6 +51,8 @@ DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
 UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
 
 INSTALLED_APPS = (
+    # templates override
+    "apps.health",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "django.contrib.messages",
@@ -77,7 +80,6 @@ INSTALLED_APPS = (
     "apps.main",
     "apps.authorisatie",
     "apps.authenticatie",
-    "apps.health",
     "apps.taken",
     "apps.aliassen",
     "apps.rotterdam_formulier_html",
