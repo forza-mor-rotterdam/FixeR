@@ -51,6 +51,8 @@ DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
 UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
 
 INSTALLED_APPS = (
+    # templates override
+    "apps.health",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "django.contrib.messages",
@@ -78,7 +80,6 @@ INSTALLED_APPS = (
     "apps.main",
     "apps.authorisatie",
     "apps.authenticatie",
-    "apps.health",
     "apps.taken",
     "apps.aliassen",
     "apps.rotterdam_formulier_html",
