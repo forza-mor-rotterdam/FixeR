@@ -47,12 +47,6 @@ TAAK_BEHANDEL_OPTIES = (
     ),
     (
         "nee",
-        "Er moet nog iets gebeuren",
-        "open",
-        "niet_opgelost",
-    ),
-    (
-        "nee",
         "Kan niet worden uitgevoerd",
         "open",
         "niet_opgelost",
@@ -113,30 +107,21 @@ class TaakBehandelForm(forms.Form):
         volgende_taaktypes = kwargs.pop("volgende_taaktypes", None)
         super().__init__(*args, **kwargs)
 
-        # Vraag Vervolgtaak? Alleen tonen bij resolutie 0 en 2 ("afgerond" en "nog iets")
-        # Lijst met vervolgtaken is dan verplicht
-        # Bij resolutie 3 ("kan  niet") is interne opmerking wel verplicht
+        # Vraag Vervolgtaak? Altijd tonen bij de 3 resoluties (afgehandeld, niet afgehandeld, niets aangetroffen)
+        # Alle vervolgtaken als checkboxes weergeven?
+        # Bij resolutie 3 ("kan  niet") is interne opmerking VERPLICHT, met tekst "Waarom kan de taak niet worden afgerond?"
 
         if volgende_taaktypes:
             self.fields["nieuwe_taak"] = forms.ChoiceField(
-                widget=forms.Select(),
-                label="Vervolgtaak",
+                widget=forms.CheckboxSelectMultiple,
+                label="",
                 choices=[
                     (taaktype.id, taaktype.omschrijving)
                     for taaktype in volgende_taaktypes
                 ],
                 required=False,
             )
-            self.fields["nieuwe_taak_toevoegen"] = forms.BooleanField(
-                widget=forms.CheckboxInput(
-                    attrs={
-                        "class": "form-check-input",
-                        "data-action": "change->incidentHandleForm#toggleNewTask",
-                    }
-                ),
-                label="Er moet nog iets gebeuren.",
-                required=False,
-            )
+            # Omschrijving nieuwe taak nodig?
             self.fields["omschrijving_nieuwe_taak"] = forms.CharField(
                 label="Toelichting",
                 help_text="Deze tekst wordt niet naar de melder verstuurd.",

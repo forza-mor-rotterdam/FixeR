@@ -56,6 +56,7 @@
                 <span>Afhandelen</span>
             </div>
         </button>
+        {% comment %} Add other resolutions? Niets aangetroffen {% endcomment %}
         {% endif %}
             <div class="container__flex">
                 <a href="{% url 'taak_detail' taak.id %}" data-turbo-frame="taak_basis" aria-label="Bekijk taak {{ taak.id }}">

@@ -289,6 +289,7 @@ CSP_CONNECT_SRC = (
     if not DEBUG
     else ("'self'", "ws:", "localhost:7001")
 )
+CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
 
 TEMPLATES = [
     {
