@@ -1,6 +1,6 @@
 import logging
 
-from apps.services.mercure import MercurePublisher
+from apps.services.mercure import MercureService
 from apps.taken.managers import aangemaakt, gebeurtenis_toegevoegd, status_aangepast
 from apps.taken.models import Taak
 from django.db.models.signals import post_save
@@ -15,14 +15,14 @@ def taak_post_save(sender, instance, created, **kwargs):
     logger.info(f"taak_post_save instance: {instance.id}")
     taak_url = reverse("taak_detail", args=(instance.id,))
     logger.info(f"taak_post_save url: {taak_url}")
-    publisher = None
+    mercure_service = None
     try:
-        publisher = MercurePublisher()
-    except MercurePublisher.ConfigException:
+        mercure_service = MercureService()
+    except MercureService.ConfigException:
         ...
 
-    if publisher:
-        publisher.publish(taak_url, {"url": taak_url, "taak_id": instance.id})
+    if mercure_service:
+        mercure_service.publish(taak_url, {"url": taak_url, "taak_id": instance.id})
 
 
 @receiver(status_aangepast, dispatch_uid="taak_status_aangepast")
