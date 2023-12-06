@@ -4,8 +4,22 @@ import logging
 import jwt
 import requests
 from django.conf import settings
+from django.core.validators import URLValidator
 
 logger = logging.getLogger(__name__)
+
+
+def get_subscriber_token(mercure_subscriber_jwt_key):
+    return jwt.encode(
+        {
+            "mercure": {
+                "subscribe": MercurePublisher._subscribe_targets,
+                "publish": MercurePublisher._publish_targets,
+            }
+        },
+        mercure_subscriber_jwt_key,
+        algorithm="HS256",
+    )
 
 
 class MercurePublisher:
@@ -14,7 +28,25 @@ class MercurePublisher:
     _mercure_url = None
     _mercure_publisher_jwt_key = None
 
+    class ConfigException(Exception):
+        ...
+
     def __init__(self):
+        try:
+            validate = URLValidator()
+            validate(settings.APP_MERCURE_PUBLIC_URL)
+            validate(settings.APP_MERCURE_INTERNAL_URL)
+        except Exception as e:
+            logentry = f"MercurePublisher config error: APP_MERCURE_PUBLIC_URL is not a valid url, error: {e}"
+            logger.warning(logentry)
+            raise MercurePublisher.ConfigException(logentry)
+        if not settings.MERCURE_PUBLISHER_JWT_KEY:
+            logentry = (
+                "MercurePublisher config error: MERCURE_PUBLISHER_JWT_KEY is None"
+            )
+            logger.warning(logentry)
+            raise MercurePublisher.ConfigException(logentry)
+
         logger.info(f"MercurePublisher public url: {settings.APP_MERCURE_PUBLIC_URL}")
         logger.info(
             f"MercurePublisher internal url: {settings.APP_MERCURE_INTERNAL_URL}"
@@ -54,5 +86,6 @@ class MercurePublisher:
             data=data,
             headers=headers,
         )
+        response.raise_for_status()
         logger.info(f"Publish response status_code: {response.status_code}")
         logger.info(f"Publish response text: {response.text}")

@@ -42,6 +42,7 @@
              data-detail-incident-y-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.0 }}"
              data-detail-incident-x-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.1 }}"
              data-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+             data-detail-mercure-subscriber-token-value="{{ subscriber_token }}"
              {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
             <div class="taak-detail">
                 <div class="container__header-taaknavigatie">

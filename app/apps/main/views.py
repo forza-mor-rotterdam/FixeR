@@ -262,6 +262,8 @@ def kaart_modus(request):
 @login_required
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, id):
+    from apps.services.mercure import get_subscriber_token
+
     taak = get_object_or_404(Taak, pk=id)
     melding_response = MeldingenService().get_by_uri(taak.melding.bron_url)
     melding = melding_response.json()
@@ -275,6 +277,9 @@ def taak_detail(request, id):
             "taak": taak,
             "melding": melding,
             "tijdlijn_data": tijdlijn_data,
+            "subscriber_token": get_subscriber_token(
+                settings.MERCURE_SUBSCRIBER_JWT_KEY
+            ),
         },
     )
 
