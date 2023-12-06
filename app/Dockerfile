@@ -86,4 +86,7 @@ RUN mkdir -p /media \
 
 USER $APP_USER
 
+ARG GIT_SHA
+ENV GIT_SHA=$GIT_SHA
+
 CMD ["bash", "/app/deploy/docker-entrypoint.sh"]
