@@ -180,7 +180,7 @@
 
 .container__header-taaknavigatie {
     h1 {
-        padding-right: 115px;
+        // padding-right: 115px;
         @media (min-width: map-get($grid-breakpoints, sm)) {
             padding-right: 185px;
         }

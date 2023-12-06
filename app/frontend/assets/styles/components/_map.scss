@@ -152,8 +152,13 @@
     }
 }
 
-.leaflet-container a.leaflet-popup-close-button {
-    top: -4px;
+.leaflet-container {
+    a {
+        color: $green;
+    }
+    a.leaflet-popup-close-button {
+        top: -4px;
+    }
 }
 
 .leaflet-popup-content-wrapper {
@@ -221,7 +226,7 @@ button.toggle-view {
     }
 }
 
-button.btn-on-map {
+.btn-on-map {
     position: absolute;
     z-index: 2000;
     top: 12px;
