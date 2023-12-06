@@ -112,7 +112,7 @@ class TaakBehandelForm(forms.Form):
         # Bij resolutie 3 ("kan  niet") is interne opmerking VERPLICHT, met tekst "Waarom kan de taak niet worden afgerond?"
 
         if volgende_taaktypes:
-            self.fields["nieuwe_taak"] = forms.ChoiceField(
+            self.fields["nieuwe_taak"] = forms.MultipleChoiceField(
                 widget=forms.CheckboxSelectMultiple,
                 label="",
                 choices=[
