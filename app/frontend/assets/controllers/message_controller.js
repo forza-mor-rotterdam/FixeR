@@ -27,9 +27,9 @@ export default class extends Controller {
             // subscribe with a topic like below
             // url.searchParams.append('topic', [messages topic]);
 
-            self.eventSource = new EventSource(url);
-            self.eventSource.onmessage = e => self.onMessage(e)
-            self.eventSource.onerror = (e) => self.onMessageError(e)
+            // self.eventSource = new EventSource(url);
+            // self.eventSource.onmessage = e => self.onMessage(e)
+            // self.eventSource.onerror = (e) => self.onMessageError(e)
         }
     }
     onMessage(e){
