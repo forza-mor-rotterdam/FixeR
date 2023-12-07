@@ -7,11 +7,8 @@
      data-controller="incidentHandleForm"
      data-incidentHandleForm-parent-context-value="{{ parent_context|json_encode }}"
      data-incidentHandleForm-handled-options-value="{{ HANDLED_OPTIONS|json_encode }}"
-     data-incidentHandleForm-form-is-submitted-value="{% if form_submitted %}"
-     true
-     {% else %}
-     false
-     {% endif %}>
+     data-incidentHandleForm-form-is-submitted-value="{% if form_submitted %}true{% else %}false{% endif %}"
+>
     {% if form %}
         <form action="{% url 'incident_modal_handle_part' taak.id %}"
               method="post"
@@ -22,16 +19,19 @@
             {% csrf_token %}
             <div data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
             {{ form.resolutie|render_rotterdam_formulier }}
-            <div>
-                <h3 class="h5">Moet er nog iets gebeuren?</h3>
-                {% comment %} <div class="form-row margin-vertical">
-                {{ form.nieuwe_taak_toevoegen|render_rotterdam_formulier }}
-                </div> {% endcomment %}
-                <div data-incidentHandleForm-target="newTask">
-                    <div class="form-row">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
+
+            <div class="wrapper--flex-order">
+                <div>
+                    <h3 class="h5">Moet er nog iets gebeuren?</h3>
+                    {% comment %} <div class="form-row margin-vertical">
+                    {{ form.nieuwe_taak_toevoegen|render_rotterdam_formulier }}
+                    </div> {% endcomment %}
+                    <div data-incidentHandleForm-target="newTask">
+                        <div class="form-row">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
+                    </div>
                 </div>
+                <div class="form-control__with-helptext label-strong" data-incidentHandleForm-target="internalText">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
             </div>
-            <div class="form-control__with-helptext">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
             <div class="form-row">
                 <button type="submit" class="btn btn-action">
                     <span>OK</span>

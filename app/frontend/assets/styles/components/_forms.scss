@@ -121,9 +121,11 @@ $form-search-indicator-position: left 10px center !default;
 }
 
 .help-block {
-    font-size: $h6-font-size;
-    margin: 0.25rem 0 1.5rem;
+    font-size: $h5-font-size;
+    line-height: 1.25em;
+    margin: 0.25rem 0;
     display: block;
+    color: $gray-tint09;
 }
 
 .form-control__with-helptext {
@@ -547,5 +549,21 @@ ul.list--form-radio-input {
 
     &.hidden {
         display: none;
+    }
+}
+
+.label-strong {
+    label {
+        font-weight: 700;
+    }
+}
+
+.wrapper--flex-order {
+
+    display: flex;
+    flex-direction: column;
+
+    >div {
+        flex: 1;
     }
 }

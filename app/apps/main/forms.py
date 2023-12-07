@@ -70,7 +70,7 @@ class TaakBehandelForm(forms.Form):
         widget=RadioSelectSimple(
             attrs={
                 "class": "list--form-radio-input",
-                "data-action": "change->bijlagen#updateImageDisplay",
+                "data-action": "change->incidentHandleForm#doResolution",
                 "hideLabel": True,
             }
         ),
@@ -88,6 +88,7 @@ class TaakBehandelForm(forms.Form):
             }
         ),
         label="Foto's",
+        help_text="Help je collega’s en de melder door een volledig beeld van de situatie te geven.",
         required=False,
     )
 
