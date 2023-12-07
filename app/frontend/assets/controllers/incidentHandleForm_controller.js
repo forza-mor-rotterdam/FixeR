@@ -53,19 +53,56 @@ export default class extends Controller {
         }
     }
 
-onResolutionTrue() {
-    if(this.hasInternalTextTarget) {
-        this.internalTextTarget.querySelector('label').textContent = defaultLabelInternalText
-        this.internalTextTarget.querySelector('textarea').removeAttribute("required")
-        this.internalTextTarget.closest(".wrapper--flex-order").style.flexDirection='column'
+    onResolutionTrue() {
+        if(this.hasInternalTextTarget) {
+            this.internalTextTarget.querySelector('label').textContent = defaultLabelInternalText
+            this.internalTextTarget.querySelector('textarea').removeAttribute("required")
+            this.internalTextTarget.closest(".wrapper--flex-order").style.flexDirection='column'
+        }
     }
-}
 
     onChangeResolution(event) {
         if (event.target.value === "niet_opgelost") {
             this.onResolutionFalse()
        }else {
             this.onResolutionTrue()
+        }
+    }
+
+    checkValids() {
+        inputList = document.querySelectorAll('textarea[required]')
+        let count = 0
+
+        if(inputList.length > 0) {
+            for (let i=0; i<inputList.length; i++){
+                input = inputList[i]
+                error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
+                if (input.value.length > 0) {
+                    count++
+                }
+
+            }
+            if (count > 0) {
+                input.closest('.form-row').classList.remove("is-invalid")
+                error.textContent = ""
+                return true
+            }else {
+                error.textContent = defaultErrorMessage
+                input.closest('.form-row').classList.add("is-invalid")
+                return false
+            }
+        } else {
+            return true
+        }
+
+    }
+
+    onSubmit(event) {
+        const allFieldsValid = this.checkValids()
+        if(!(allFieldsValid)){
+            event.preventDefault();
+        } else {
+            form.requestSubmit()
         }
     }
 }

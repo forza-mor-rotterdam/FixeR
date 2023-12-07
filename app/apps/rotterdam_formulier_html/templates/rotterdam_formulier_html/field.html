@@ -187,9 +187,7 @@
             <div>
                 <textarea id="{{ field.auto_id }}" class="form-control {% if field.errors %}is-invalid{% endif %}" rows="4" name="{{field.html_name}}" {% render_attrs field %} >{% if field.value %}{{ field.value }}{% endif %}</textarea>
 
-                {% for error in field.errors %}
-                    <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
-                {% endfor %}
+                <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
 
                 {% if field.help_text %}
                     <p class="help-block">
@@ -201,7 +199,7 @@
 
     {% elif field|is_file %}
         <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
-            {% if field.auto_id %}
+            {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
                 <label class="label--file {% if field.field.required %}{{ form.required_css_class }}{% endif %}" for="{{ field.auto_id }}">{{ field.field.label }}{% if not field.field.required %} <small>(Niet verplicht)</small>{% endif %}</label>
             {% endif %}
             <div class="">
