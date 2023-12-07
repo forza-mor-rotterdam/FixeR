@@ -1,0 +1,21 @@
+                        <h3>
+                            Rol & rechten
+                        </h3>
+                        Hieronder vindt je de instellingen waarmee je bij ons bekent bent.
+                        <div class="display--flex--md">
+                            <dl>
+                                <dt>
+                                    Rol
+                                </dt>
+                                <dd>
+                                    {% if request.user.profiel.context %}{{ request.user.profiel.context.naam }}{% else %}- geen rol -{% endif %}
+                                </dd>
+                                </dd>
+                                    Rechten
+                                </dt>
+                                <dd>
+                                    {% if request.user.groups.all %}{{ request.user.groups.all.0.name }}{% else %}- geen rechten -{% endif %}
+                                <dt>
+
+                            </dl>
+                        </div>

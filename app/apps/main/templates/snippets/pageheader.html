@@ -1,11 +1,12 @@
 {% load webpack_static from webpack_loader %}
+{% load gebruikersnaam from gebruikers_tags %}
 <header
     class="pageheader"
     data-testid="pageHeader"
-    data-controller="pageHeader"
+    data-controller="pageHeader modal"
 >
 
-    <div class="container{% if screen_wide %} container--wide{% endif %}">
+    <div class="container">
         <div class="container__logo">
             <a href="{% url 'root' %}">
                 <img src="{% webpack_static 'images/logo-organisatie.svg' %}" alt="Logo organisatie" class="logo logo--large" />
@@ -13,8 +14,17 @@
             </a>
             {% if page_title %}<h1 class="pagetitle h2">{{ page_title }}</h1>{% endif %}
         </div>
-        {% if not hide_menu %}
-        <button aria-expanded="false" class="btn btn-togglemenu" data-action="pageHeader#openModal" aria-label="Open menu">
+        {%if request.user.is_authenticated %}
+        <div
+            data-controller="message"
+            data-message-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+            ></div>
+        <button
+            class="btn btn-togglemenu"
+            data-action="modal#openModal"
+            aria-expanded="false"
+            aria-label="Open menu"
+            >
             <svg
                 fill="#404B4F"
                 height="32"
@@ -33,25 +43,27 @@
         </button>
         {% endif %}
     </div>
-
-    <div class="modal" data-pageHeader-target="modalMenu">
+    {%if request.user.is_authenticated %}
+    <div class="modal">
         <div class="modal-dialog modal-navigation">
-            <div class="modal-backdrop modal-exit" data-action="click->pageHeader#closeModal"></div>
+            <div class="modal-backdrop modal-exit" data-action="click->modal#closeModal"></div>
             <div class="modal-content">
                 <div class="modal-header">
-                <button
-                    type="button"
-                    class="btn-close"
-                    aria-label="Sluit"
-                    data-action="pageHeader#closeModal">
-                </button>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        aria-label="Sluit"
+                        data-action="modal#closeModal">
+                    </button>
 
                 </div>
-
                 <div class="modal-body">
+                    {% if request.user.is_authenticated %}
                     {% include "snippets/form_pageheader.html" %}
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
+    {% endif %}
 </header>

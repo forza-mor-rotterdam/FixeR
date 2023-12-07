@@ -1,45 +1,38 @@
 import { Controller } from '@hotwired/stimulus';
 
-let self = null
+
 export default class extends Controller {
-    static targets = ["turboFormHandler", "incidentDate"]
+    static targets = ["turboFormHandler", "incidentDate", "buttonNietOpgelost", "buttonOpgelost", "swipeContainer"]
     static values = {
         date: String,
         days: String
     }
 
     initialize() {
-        self = this
+        let self = this
         self.element[self.identifier] = self
-    }
+        self.lock = false
+        if(self.element.classList.contains('list-item')) {
+            self.initialTouchPos = null
+            self.bindStart = self.handleGestureStart.bind(self);
+            self.bindMove = self.handleGestureMove.bind(self);
+            self.bindEnd = self.handleGestureEnd.bind(self);
+            self.addInitialListeners();
+            self.isMoving = false;
 
-    connect() {
-        if(this.element.classList.contains('list-item')) {
-            this.initialTouchPos = null
-            this.bindStart = this.handleGestureStart.bind(this);
-            this.bindMove = this.handleGestureMove.bind(this);
-            this.bindEnd = this.handleGestureEnd.bind(this);
-            this.addInitialListeners();
-            this.isMoving = false;
-
-            if(!!this.dateValue && !!this.daysValue) {
-                this.incidentDateTarget.textContent = this.getNumberOfDays(this.dateValue, parseInt(this.daysValue))
+            if(!!self.dateValue && !!self.daysValue) {
+                self.incidentDateTarget.textContent = self.getNumberOfDays(self.dateValue, parseInt(self.daysValue))
             }
         }
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-              this.closeModal()
-            }
-        })
     }
 
-    disconnect() {
-        this.removeAllListeners()
-    }
+    connect() {}
+
+    disconnect() {}
 
     selectTaak(e) {
-        this.element.dispatchEvent(new CustomEvent("taakIsSelected", {detail: {url:e.params.url, id:e.params.id}, bubbles: true}));
+        let self = this
+        self.element.dispatchEvent(new CustomEvent("taakIsSelected", {detail: {url:e.params.url, id:e.params.id}, bubbles: true}));
     }
 
     getNumberOfDays(date, days) {
@@ -55,78 +48,83 @@ export default class extends Controller {
     }
 
     addInitialListeners() {
+        let self = this
         // Safari on iOS does not apply the active state by default
         if (/iP(hone|ad)/.test(window.navigator.userAgent)) {
             document.body.addEventListener('touchstart', function() {}, false);
         }
         if (window.PointerEvent) {
             // Add Pointer Event Listener
-            this.element.addEventListener('pointerdown', this.bindStart, false);
+            self.swipeContainerTarget.addEventListener('pointerdown', self.bindStart, false);
         } else {
             // Add Touch Listener
-            this.element.addEventListener('touchstart', this.bindStart, false);
+            self.swipeContainerTarget.addEventListener('touchstart', self.bindStart, false);
             // Add Mouse Listener
-            this.element.addEventListener('mousedown', this.bindStart, false);
+            self.swipeContainerTarget.addEventListener('mousedown', self.bindStart, false);
         }
     }
 
     addAllListeners() {
+        let self = this
          // Check if pointer events are supported.
          if (window.PointerEvent) {
             // Add Pointer Event Listener
-            this.element.addEventListener('pointerdown', this.bindStart, false);
-            this.element.addEventListener('pointermove', this.bindMove, false);
-            this.element.addEventListener('pointerup', this.bindEnd, false);
-            this.element.addEventListener('pointercancel', this.bindEnd, false);
+            self.swipeContainerTarget.addEventListener('pointerdown', self.bindStart, false);
+            self.swipeContainerTarget.addEventListener('pointermove', self.bindMove, false);
+            self.swipeContainerTarget.addEventListener('pointerup', self.bindEnd, false);
+            self.swipeContainerTarget.addEventListener('pointercancel', self.bindEnd, false);
         } else {
             // Add Touch Listener
-            this.element.addEventListener('touchstart', this.bindStart, false);
-            this.element.addEventListener('touchmove', this.bindMove, false);
-            this.element.addEventListener('touchend', this.bindEnd, false);
-            this.element.addEventListener('touchcancel', this.bindEnd, false);
+            self.swipeContainerTarget.addEventListener('touchstart', self.bindStart, false);
+            self.swipeContainerTarget.addEventListener('touchmove', self.bindMove, false);
+            self.swipeContainerTarget.addEventListener('touchend', self.bindEnd, false);
+            self.swipeContainerTarget.addEventListener('touchcancel', self.bindEnd, false);
             // Add Mouse Listener
-            this.element.addEventListener('mousedown', this.bindStart, false);
+            self.swipeContainerTarget.addEventListener('mousedown', self.bindStart, false);
         }
     }
 
     removeAllListeners() {
+        let self = this
         // Check if pointer events are supported.
         if (window.PointerEvent) {
            // Add Pointer Event Listener
-           this.element.removeEventListener('pointerdown', this.bindStart, false);
-           this.element.removeEventListener('pointermove', this.bindMove, false);
-           this.element.removeEventListener('pointerup', this.bindEnd, false);
-           this.element.removeEventListener('pointercancel', this.bindEnd, false);
+           self.swipeContainerTarget.removeEventListener('pointerdown', self.bindStart, false);
+           self.swipeContainerTarget.removeEventListener('pointermove', self.bindMove, false);
+           self.swipeContainerTarget.removeEventListener('pointerup', self.bindEnd, false);
+           self.swipeContainerTarget.removeEventListener('pointercancel', self.bindEnd, false);
        } else {
            // Add Touch Listener
-           this.element.removeEventListener('touchstart', this.bindStart, false);
-           this.element.removeEventListener('touchmove', this.bindMove, false);
-           this.element.removeEventListener('touchend', this.bindEnd, false);
-           this.element.removeEventListener('touchcancel', this.bindEnd, false);
+           self.swipeContainerTarget.removeEventListener('touchstart', self.bindStart, false);
+           self.swipeContainerTarget.removeEventListener('touchmove', self.bindMove, false);
+           self.swipeContainerTarget.removeEventListener('touchend', self.bindEnd, false);
+           self.swipeContainerTarget.removeEventListener('touchcancel', self.bindEnd, false);
            // Add Mouse Listener
-           this.element.removeEventListener('mousedown', this.bindStart, false);
+           self.swipeContainerTarget.removeEventListener('mousedown', self.bindStart, false);
        }
    }
 
     formHandleIsConnectedHandler(event) {
-        const removeElem = this.element.parentNode;
+        let self = this
+        const removeElem = self.element.parentNode;
 
         const frame = document.getElementById('incident_detail_part');
         frame?.reload()
 
         if (event.detail.is_handled){
-            this.element.classList.add("hide");
+            self.element.classList.add("hide");
             if(event.detail.handled_type) {
-                this.showAlert(event.detail.handled_type)
+                self.showAlert(event.detail.handled_type)
             }
-            this.element.addEventListener('transitionend', function(e){
+            self.element.addEventListener('transitionend', function(e){
                 removeElem.parentNode?.removeChild(removeElem);
             });
-            this.buttonTarget.textContent = event.detail.messages.join(",")
+            self.buttonTarget.textContent = event.detail.messages.join(",")
         }
     }
 
     showAlert(type) {
+        let self = this
         const div = document.createElement('div')
         div.classList.add('message')
         if (type === "handled") {
@@ -134,54 +132,53 @@ export default class extends Controller {
         } else {
             div.append("De melding is doorverwezen")
         }
-        this.element.append(div)
-    }
-
-    cancelHandleHandler(event) {
-        this.closeModal()
+        self.element.append(div)
     }
 
     // Handle the start of gestures
     handleGestureStart(evt) {
+        let self = this
         evt.preventDefault();
-        this.isMoving = false;
+        self.isMoving = false;
         if((evt.touches && evt.touches.length > 1)) {
             return;
         }
 
-        this.addAllListeners()
-        this.initialTouchPos = this.getGesturePointFromEvent(evt);
+        self.addAllListeners()
+        self.initialTouchPos = self.getGesturePointFromEvent(evt);
     }
 
     // Handle end gestures
     handleGestureEnd(evt) {
-
+        let self = this
         evt.preventDefault();
         if ((evt.touches && evt.touches.length > 0)) {
             return;
         }
 
-        // this.removeAllListeners()
-        this.updateSwipeRestPosition(evt);
+        // self.removeAllListeners()
+        self.updateSwipeRestPosition(evt);
 
-        this.initialTouchPos = null;
-        if (this.isMoving !== true) {
-            this.isMoving = false;
+        self.initialTouchPos = null;
+        if (self.isMoving !== true) {
+            self.isMoving = false;
         }
     }
 
     handleGestureMove(evt) {
+        let self = this
         evt.preventDefault();
-        this.isMoving = true;
-        if (!this.initialTouchPos) {
+        self.isMoving = true;
+        if (!self.initialTouchPos) {
           return;
         }
 
-        this.lastTouchPos = this.getGesturePointFromEvent(evt);
-        this.onAnimFrame()
+        self.lastTouchPos = self.getGesturePointFromEvent(evt);
+        self.onAnimFrame()
     }
 
     getGesturePointFromEvent = function (evt) {
+        let self = this
         var point = {};
 
         if (evt.targetTouches) {
@@ -198,81 +195,50 @@ export default class extends Controller {
     }
 
     onAnimFrame() {
-
-        let differenceInX = this.initialTouchPos.x - this.lastTouchPos.x;
+        let self = this
+        let differenceInX = self.initialTouchPos.x - self.lastTouchPos.x;
         let newLeft = (0 - differenceInX)+'px';
         let leftStyle = newLeft;
-
+        if (self.lock){
+            return
+        }
         if(differenceInX > -100 && differenceInX < 100) {
-            this.element.style.left = leftStyle;
+            self.element.style.left = leftStyle;
         } else if (differenceInX <= -100) {
-            this.element.style.left = '100%';
+            self.element.style.left = '100%';
+            self.lock = true
             setTimeout(function (){
-                this.openModal(false)
-            }.bind(this), 500)
-
-
+                self.buttonNietOpgelostTarget.click();
+                self.resetIncidentSwipe()
+            }.bind(self), 500)
         } else {
-            this.element.style.left = '-100%';
+            self.lock = true
+            self.element.style.left = '-100%';
             setTimeout(function (){
-                this.openModal(true)
-            }.bind(this), 500)
+                self.buttonOpgelostTarget.click();
+                self.resetIncidentSwipe()
+            }.bind(self), 500)
         }
     }
 
     resetIncidentSwipe() {
-        this.element.style.left = '0';
+        let self = this
+        self.removeAllListeners()
+        self.addInitialListeners()
+        setTimeout(function (){
+            self.element.style.left = '0';
+            self.lock = false
+        }.bind(self), 1000)
     }
 
     updateSwipeRestPosition(evt) {
-        if(this.lastTouchPos) {
-            let differenceInX = this.initialTouchPos.x - this.lastTouchPos.x;
+        let self = this
+        if(self.lastTouchPos) {
+            let differenceInX = self.initialTouchPos.x - self.lastTouchPos.x;
             if(differenceInX > -100 && differenceInX < 100) {
-                this.element.style.left = '0';
+                self.element.style.left = '0';
             }
-            this.initialTouchPos = this.getGesturePointFromEvent(evt);
+            self.initialTouchPos = self.getGesturePointFromEvent(evt);
         }
-    }
-
-    closeModal() {
-        const modal = this.element.querySelector('.modal');
-        const modalBackdrop = this.element.querySelector('.modal-backdrop');
-        modal.classList.remove('show');
-        modalBackdrop.classList.remove('show');
-        document.body.classList.remove('show-modal');
-        this.addInitialListeners()
-        this.turboFormHandlerTarget.innerHTML = ""
-    }
-
-    openModal(event) {
-        let isFinished = true
-        if (typeof(event) === 'boolean' ){
-            isFinished = event
-        } else if( typeof(event) === 'object' && event.params.isFinished) {
-            isFinished = event.params.isFinished
-        }
-
-        this.turboFormHandlerTarget.setAttribute("src", this.turboFormHandlerTarget.dataset.src + (isFinished ? "?resolutie=opgelost": "?resolutie=niet_opgelost"))
-
-        this.removeAllListeners()
-        const modal = this.element.querySelector('.modal');
-        const modalBackdrop = this.element.querySelector('.modal-backdrop');
-
-        modal.classList.add('show');
-        modalBackdrop.classList.add('show');
-        document.body.classList.add('show-modal');
-
-        // TODO only used for modal backdrop, try to get rid of it
-        const exits = modal.querySelectorAll('.modal-exit');
-        exits.forEach((exit) => {
-            exit.addEventListener('click', (event) => {
-                event.preventDefault();
-                this.closeModal()
-            });
-        });
-
-        setTimeout(function (){
-            this.resetIncidentSwipe()
-        }.bind(this), 1000)
     }
 }

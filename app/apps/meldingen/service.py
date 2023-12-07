@@ -128,6 +128,7 @@ class MeldingenService:
         omschrijving_intern=None,
         bijlagen=[],
         gebruiker=None,
+        uitvoerder=None,
     ):
         data = {
             "taakstatus": {
@@ -138,6 +139,8 @@ class MeldingenService:
             "bijlagen": bijlagen,
             "gebruiker": gebruiker,
         }
+        if uitvoerder:
+            data.update({"uitvoerder": uitvoerder})
         return self.do_request(
             f"{taakopdracht_url}status-aanpassen/", method="patch", data=data
         )

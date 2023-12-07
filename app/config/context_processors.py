@@ -1,5 +1,6 @@
 import logging
 
+from apps.services.mercure import MercureService
 from django.conf import settings
 from django.urls import reverse
 from utils.diversen import absolute
@@ -24,6 +25,16 @@ def general_settings(context):
     ):
         template_basis = context.user.profiel.context.template
 
+    mercure_service = None
+    subscriber_token = None
+    try:
+        mercure_service = MercureService()
+    except MercureService.ConfigException:
+        ...
+
+    if mercure_service:
+        subscriber_token = mercure_service.get_subscriber_token()
+
     return {
         "MELDINGEN_URL": settings.MELDINGEN_URL,
         "UI_SETTINGS": settings.UI_SETTINGS,
@@ -33,7 +44,11 @@ def general_settings(context):
         "ABSOLUTE_ROOT": absolute(context).get("ABSOLUTE_ROOT"),
         "SESSION_EXPIRY_MAX_TIMESTAMP": session_expiry_max_timestamp,
         "SESSION_EXPIRY_TIMESTAMP": session_expiry_timestamp,
+        "SESSION_CHECK_INTERVAL_SECONDS": settings.SESSION_CHECK_INTERVAL_SECONDS,
         "LOGOUT_URL": reverse("oidc_logout"),
         "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}",
         "TEMPLATE_BASIS": template_basis,
+        "APP_MERCURE_PUBLIC_URL": settings.APP_MERCURE_PUBLIC_URL,
+        "GIT_SHA": settings.GIT_SHA,
+        "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
     }

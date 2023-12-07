@@ -93,6 +93,15 @@ export default class extends Controller {
 
     disconnect() {}
 
+    onTwoFingerDrag (event) {
+        console.log("onTwoFingerDrag, event: ", event)
+        if (event.type === 'touchstart' && event.touches.length === 1) {
+            event.currentTarget.classList.add('swiping')
+        } else {
+            event.currentTarget.classList.remove('swiping')
+        }
+    }
+
     selectTaakMarker(taakId) {
         let obj = markerList.find(obj => obj.options.taakId == taakId);
         obj.openPopup()
@@ -121,6 +130,7 @@ export default class extends Controller {
             maxZoom: 19,
             tileSize: 256,
             attribution: "",
+            gestureHandling: true,
         }
 
         L.tileLayer(url, config).addTo(map);
@@ -154,11 +164,11 @@ export default class extends Controller {
     }
 
     toggleBuurten(e) {
-        console.log("toggle buurten", e)
         e.target.classList.toggle("active")
+        const cb = e.target.querySelector('input')
+        cb.checked = !cb.checked
         if(map.hasLayer(buurten)) {
             map.removeLayer(buurten)
-
         }else {
             buurten.addTo(map)
         }
@@ -170,9 +180,10 @@ export default class extends Controller {
     }
 
     makeRoute(event) {
-
         console.log("makeRoute")
-        let routeUrl = "https://www.google.com/maps/dir"
+        // let routeUrl = "https://www.google.com/maps/dir"
+        // let routeUrl = 'https://www.waze.com/ul?ll=40.75889500,-73.98513100&navigate=yes&zoom=17'
+        let routeUrl = 'https://www.waze.com/ul?ll='
 
         function handleCurrentLocation(pos) {
             console.log("handleCurrentLocation, pos", pos)
@@ -204,12 +215,13 @@ export default class extends Controller {
             let lat = event.params.lat
             let long = event.params.long
 
-            routeUrl += `/${lat}+${long}`
+            routeUrl += `${lat},${long}&navigate=yes`
             console.log('getRoute: ', routeUrl)
             window.open(routeUrl, "_blank")
         }
 
-        navigator.geolocation.getCurrentPosition(handleCurrentLocation, handleNoCurrentLocation);
+        // navigator.geolocation.getCurrentPosition(handleCurrentLocation, handleNoCurrentLocation);
+        getRoute(event)
     }
 
     plotMarkers(coordinatenlijst) {
@@ -226,11 +238,12 @@ export default class extends Controller {
                 const markerLocation = new L.LatLng(lat, long);
                 const marker = new L.Marker(markerLocation, {icon: markerGreen, taakId: taakId});
                 const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
-
-                let popupContent = `<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
-                // let popupContent = `<div class="container__content"><span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" aria-label="Bekijk taak ${taakId}">${adres}</span><p>${omschrijving}</p>${paragraphDistance}</div>`
+                const anchorDetail = `<a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">Bekijk details</a>`
+                // let popupContent = `<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
+                let popupContent = `<div class="container__content"><span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" aria-label="Bekijk taak ${taakId}">${adres}</span><p>${omschrijving}</p>${paragraphDistance}${anchorDetail}</div>`
                 if (afbeelding) {
-                    popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
+                    // popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
+                    popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" aria-label="Bekijk taak ${taakId}">${adres}</span><p>${omschrijving}</p>${paragraphDistance}${anchorDetail}</div>`
                 }
                 marker.bindPopup(popupContent)
 

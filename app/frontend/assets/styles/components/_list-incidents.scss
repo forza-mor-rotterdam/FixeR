@@ -60,21 +60,24 @@
 }
 
 .container__list {
-    position: relative;
+    display: flex;
     border-top: 1px solid $gray-tint04;
-
+    > .container__flex {
+        width: 100%;
+    }
     @media (min-width: map-get($grid-breakpoints, lg)) {
         border-top: none;
 
         > .container__flex {
             display: flex;
             flex-direction: column;
-            width: 35%;
+            flex: 1 1 auto;
+            max-width: 500px;
 
             .list__incidents {
+                flex: 1 1 0;
                 border-top: 1px solid $gray-tint04;
                 overflow-y: auto;
-                height: calc(100vh - 226px); // hoogte van de header
             }
         }
     }
@@ -86,22 +89,13 @@
 .container__sorting {
     box-sizing: content-box;
 
-    @media (min-width: map-get($grid-breakpoints, md)) and (max-width: 1023px) {
-        position: absolute;
-        top: -79px;
-        height: 100px;
-        width: 400px;
-        right: 140px;
-        z-index: 20;
-    }
-
     .wrapper {
         background-color: $gray-tint02;
         padding: $input-padding-x;
         display: flex;
         justify-content: space-between;
 
-        @media (min-width: map-get($grid-breakpoints, md)) {
+        @media (min-width: map-get($grid-breakpoints, lg)) {
             background-color: transparent;
             padding-left: 0;
         }
@@ -234,7 +228,7 @@
                     width: 24px;
                     height: 24px;
                     path {
-                        fill: $green-tint01;
+                        fill: $primary;
                     }
                 }
             }
@@ -343,7 +337,7 @@
 
             &.handle--success {
                 background-color: $primary;
-                right: -100%;
+                right: calc(-100% - 1px);
                 text-align: left;
 
                 > div {
@@ -390,7 +384,7 @@
         margin: 8px 0 0;
     }
 }
-@media (min-width: map-get($grid-breakpoints, md)) {
+@media (min-width: map-get($grid-breakpoints, lg)) {
     .container__header {
         .container__controls {
             .btn-sort--small {

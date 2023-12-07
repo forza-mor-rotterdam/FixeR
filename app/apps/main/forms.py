@@ -148,8 +148,8 @@ class SorteerFilterForm(forms.Form):
             ("Datum-reverse", "Datum (nieuwste bovenaan)"),
             ("Datum", "Datum (oudste bovenaan)"),
             ("Afstand", "Afstand"),
-            ("Adres", "Adres (a-z)"),
-            ("Adres-reverse", "Adres (z-a)"),
+            ("Adres", "T.h.v. Adres (a-z)"),
+            ("Adres-reverse", "T.h.v. Adres (z-a)"),
             ("Postcode", "Postcode (1000-9999)"),
             ("Postcode-reverse", "Postcode (9999-1000)"),
         ),
@@ -170,3 +170,43 @@ class KaartModusForm(forms.Form):
             ("toon_alles", "Toon alle taken"),
         ),
     )
+
+
+class TaakToewijzenForm(forms.Form):
+    omschrijving_intern = forms.CharField(
+        label="Interne opmerking",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "data-testid": "information",
+                "rows": "4",
+            }
+        ),
+        required=False,
+    )
+    uitvoerder_zoeken = forms.CharField(
+        label="Zoek uitvoerder",
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "data-action": "form#searchFieldChange"}
+        ),
+        required=False,
+    )
+    uitvoerder = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={"class": "form-control", "data-form-target": "searchSelect"}
+        ),
+        choices=(),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        gebruikers = kwargs.pop("gebruikers", None)
+        super().__init__(*args, **kwargs)
+
+        self.fields["uitvoerder"].choices = [
+            (gebruiker.email, gebruiker) for gebruiker in gebruikers
+        ]
+
+
+class TaakToewijzingIntrekkenForm(forms.Form):
+    ...

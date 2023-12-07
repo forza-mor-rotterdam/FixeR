@@ -246,10 +246,7 @@ button {
         width: 56px;
         height: 64px;
         background: transparent;
-
-        @media (min-width: map-get($grid-breakpoints, xl)) {
-            margin-right: -16px;
-        }
+        margin-right: -16px;
     }
 
 

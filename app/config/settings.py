@@ -17,6 +17,7 @@ SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY", os.environ.get("SECRET_KEY", os.environ.get("APP_SECRET"))
 )
 
+GIT_SHA = os.getenv("GIT_SHA")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 DEBUG = ENVIRONMENT == "development"
 
@@ -50,6 +51,8 @@ DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
 UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
 
 INSTALLED_APPS = (
+    # templates override
+    "apps.health",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "django.contrib.messages",
@@ -77,7 +80,6 @@ INSTALLED_APPS = (
     "apps.main",
     "apps.authorisatie",
     "apps.authenticatie",
-    "apps.health",
     "apps.taken",
     "apps.aliassen",
     "apps.rotterdam_formulier_html",
@@ -236,7 +238,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_PRELOAD = True
 CORS_ORIGIN_WHITELIST = ()
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
 USE_X_FORWARDED_HOST = True
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
@@ -277,7 +279,16 @@ CSP_STYLE_SRC = (
     "unpkg.com",
     "cdn.jsdelivr.net",
 )
-CSP_CONNECT_SRC = ("'self'",) if not DEBUG else ("'self'", "ws:")
+CSP_CONNECT_SRC = (
+    (
+        "'self'",
+        "mercure.fixer-test.forzamor.nl",
+        "mercure.fixer-acc.forzamor.nl",
+        "mercure.fixer.forzamor.nl",
+    )
+    if not DEBUG
+    else ("'self'", "ws:", "localhost:7001")
+)
 
 TEMPLATES = [
     {
@@ -323,6 +334,7 @@ SESSION_EXPIRE_SECONDS = int(os.getenv("SESSION_EXPIRE_SECONDS", "3600"))
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
     os.getenv("SESSION_EXPIRE_SECONDS", "3600")
 )
+SESSION_CHECK_INTERVAL_SECONDS = int(os.getenv("SESSION_CHECK_INTERVAL_SECONDS", "60"))
 
 
 LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
@@ -425,3 +437,9 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     LOGIN_REDIRECT_URL_FAILURE = "/"
     LOGOUT_REDIRECT_URL = OIDC_OP_LOGOUT_ENDPOINT
     LOGIN_URL = "/oidc/authenticate/"
+
+
+APP_MERCURE_PUBLIC_URL = os.getenv("APP_MERCURE_PUBLIC_URL")
+APP_MERCURE_INTERNAL_URL = os.getenv("APP_MERCURE_INTERNAL_URL", APP_MERCURE_PUBLIC_URL)
+MERCURE_PUBLISHER_JWT_KEY = os.getenv("MERCURE_PUBLISHER_JWT_KEY")
+MERCURE_SUBSCRIBER_JWT_KEY = os.getenv("MERCURE_SUBSCRIBER_JWT_KEY")

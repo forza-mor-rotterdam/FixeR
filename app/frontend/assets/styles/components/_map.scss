@@ -4,12 +4,18 @@
     }
 }
 .container__map {
-    height: 0;
-    padding-bottom: 100%;
 
     .map {
-        height: 0;
-        padding-bottom: 100%;
+        width: calc(100% + 32px);
+        margin-left: -16px;
+        height: 100%;
+        flex: 1 1 0;
+
+        &.map--single {
+            height: 0;
+            flex: 0;
+            padding-bottom: 50%;
+        }
 
         .map__overlay {
             color: $white;
@@ -42,6 +48,11 @@
                 background: rgba(0, 0, 0, 0.5);
             }
         }
+
+        @media (min-width: map-get($grid-breakpoints, sm)) {
+            width: auto;
+            margin-left: 0;
+        }
     }
 
     .section--seperated & {
@@ -59,6 +70,8 @@
         padding: 16px 0;
         ul {
             margin: 0;
+            justify-content: flex-end;
+            align-items: flex-end;
         }
 
         li {
@@ -95,8 +108,7 @@
             @extend .btn;
             text-align: center;
             line-height: 44px;
-            padding: 0 12px 0 40px;
-            font-size: 0.9rem;
+            padding: 0 12px 0 39px;
             height: 40px;
             display: inline-block;
             background-color: $white;
@@ -110,7 +122,7 @@
                 height: 38px;
                 line-height: 42px;
                 border: 3px solid $gray-tint11;
-                padding: 0 10px 0 38px;
+                padding: 0 10px 0 37px;
             }
         }
         input[type="radio"] {
@@ -122,10 +134,6 @@
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         .form__kaart-modus {
-            ul {
-                justify-content: flex-end;
-                align-items: flex-end;
-            }
             label {
                 font-size: 1rem;
             }
@@ -134,37 +142,30 @@
 }
 
 .container__list {
-    position: relative;
-
     .container__map {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 0;
         visibility: hidden;
         pointer-events: none;
-        padding-bottom: 0;
-
-        .map {
-            height: calc(100vh - 220px); // hoogte van de header
-            padding-bottom: 0;
-        }
+        width: 0;
     }
 }
 
 .showMap {
     .container__map {
-        height: calc(100vh - 145px);
-        display: block;
+        display: flex;
+        flex-direction: column;
         visibility: visible;
         pointer-events: all;
         width: 100%;
     }
 }
 
-.leaflet-container a.leaflet-popup-close-button {
-    top: -4px;
+.leaflet-container {
+    a {
+        color: $green;
+    }
+    a.leaflet-popup-close-button {
+        top: -4px;
+    }
 }
 
 .leaflet-popup-content-wrapper {
@@ -196,8 +197,9 @@
         .container__content {
             flex: 1 0 75%;
             font-size: 16px;
-            a {
-                color: $green-tint01;
+            .link {
+            // a {
+                color: $primary;
                 text-decoration: underline;
                 cursor: pointer;
             }
@@ -231,38 +233,43 @@ button.toggle-view {
     }
 }
 
-button.btn-on-map {
+.btn-on-map {
     position: absolute;
     z-index: 2000;
-    top: 12px;
-    right: 12px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    top: 16px;
+    right: 16px;
+    width: auto;
+    padding: 0 8px;
+    font-weight: 400;
+    font-size: 1rem;
     background-color: $white;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    border: 1px solid $gray-tint11;
 
+    input {
+        margin-right: .5rem;
+        vertical-align: top;
+    }
+    span {
+        padding: 0;
+        pointer-events: none;
+    }
     &:focus {
         outline-color: transparent !important;
-        border: 0;
     }
 
     &.active {
-        box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.25);
+        border: 3px solid $gray-tint11;
     }
 }
 
 @media (min-width: map-get($grid-breakpoints, lg)) {
     .container__list {
         .container__map {
-            height: calc(100vh - 145px);
-            display: block;
             visibility: visible;
             pointer-events: all;
             display: flex;
             flex-direction: column;
-            width: 65%;
-            left: 35%;
+            flex: 2 1 auto;
         }
     }
 }

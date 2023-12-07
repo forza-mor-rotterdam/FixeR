@@ -17,17 +17,19 @@ from apps.context.views import (
     ContextVerwijderenView,
 )
 from apps.main.views import (
-    account,
     config,
     filter,
     http_404,
     http_500,
     incident_modal_handle,
+    informatie,
     kaart_modus,
     meldingen_bestand,
     root,
     sorteer_filter,
     taak_detail,
+    taak_toewijzen,
+    taak_toewijzing_intrekken,
     taken_afgerond_overzicht,
     taken_lijst,
     taken_overzicht,
@@ -57,7 +59,7 @@ router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 
 urlpatterns = [
     path("", root, name="root"),
-    path("account/", account, name="account"),
+    path("informatie/", informatie, name="informatie"),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path("api-token-auth/", views.obtain_auth_token),
     path("admin/", admin.site.urls),
@@ -78,6 +80,12 @@ urlpatterns = [
     path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
+    path("taak-toewijzen/<int:id>/", taak_toewijzen, name="taak_toewijzen"),
+    path(
+        "taak-toewijzing-intrekken/<int:id>/",
+        taak_toewijzing_intrekken,
+        name="taak_toewijzing_intrekken",
+    ),
     # END taken
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),

@@ -10,13 +10,13 @@
         class="map"
         id="incidentMap"
         data-kaart-main-outlet="main"
-        data-action="touchstart->detail#onTwoFingerDrag touchend->detail#onTwoFingerDrag"
+        data-action="touchstart->kaart#onTwoFingerDrag touchend->kaart#onTwoFingerDrag"
     >
         <div class="map__overlay">
             <span>
                 Gebruik twee vingers om de kaart te verplaatsen
             </span>
         </div>
-        <button class="btn btn-on-map" data-action="kaart#toggleBuurten">[ ]</button>
+        <button class="btn btn-on-map" data-action="kaart#toggleBuurten"><input type="checkbox" class="form-check-input" /><span>Buurten</span></button>
     </div>
 </div>

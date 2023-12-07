@@ -62,6 +62,7 @@ class TaakManager(models.Manager):
             vorige_status = locked_taak.taakstatus
             resolutie = serializer.validated_data.pop("resolutie", None)
             bijlagen = serializer.validated_data.pop("bijlagen", None)
+            uitvoerder = serializer.validated_data.pop("uitvoerder", None)
             taakgebeurtenis = serializer.save(
                 taak=locked_taak,
             )
@@ -69,6 +70,7 @@ class TaakManager(models.Manager):
                 task_maak_bijlagealias.delay(bijlage, taakgebeurtenis.pk)
 
             locked_taak.taakstatus = taakgebeurtenis.taakstatus
+            locked_taak.additionele_informatie["uitvoerder"] = uitvoerder
 
             if not locked_taak.taakstatus.volgende_statussen():
                 locked_taak.afgesloten_op = timezone.now().isoformat()
