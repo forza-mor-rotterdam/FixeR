@@ -26,14 +26,14 @@
                     {{ form.nieuwe_taak_toevoegen|render_rotterdam_formulier }}
                     </div> {% endcomment %}
                     <div data-incidentHandleForm-target="newTask">
-                        <div class="form-row">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
+                        <div class="form-row list-horizontal">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
                     </div>
                 </div>
                 <div class="form-control__with-helptext label-strong" data-incidentHandleForm-target="internalText">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
             </div>
             <div class="form-row">
                 <button type="submit" class="btn btn-action" data-action="incidentHandleForm#onSubmit">
-                    <span>OK</span>
+                    <span>Taak afhandelen</span>
                 </button>
                 <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
                     <span>Annuleren</span>

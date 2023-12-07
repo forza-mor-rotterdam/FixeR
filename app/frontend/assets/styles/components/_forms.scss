@@ -429,6 +429,22 @@ ul.list--form-radio-input {
     }
 }
 
+.list-horizontal {
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        ul.list--form-check-input {
+            display: flex;
+            justify-content: space-between;
+            column-gap: 16px;
+            flex-wrap: wrap;
+
+            li {
+                flex: 1 1 45%;
+                max-width: calc(50% - 10px);
+            }
+        }
+    }
+}
+
 .list--form-radio-input {
     .form--beheer & {
         li,

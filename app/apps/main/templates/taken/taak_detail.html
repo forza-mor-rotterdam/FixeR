@@ -346,14 +346,14 @@
                             <div class="sticky sticky--bottom">
                                 <div class="form-row">
                                     <button class="btn btn-action"
-                                            data-modal-title-param="Taak behandelen"
+                                            data-modal-title-param="Taak afhandelen"
                                             data-modal-sub-title-param="<strong>{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }}
                                                 {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}
                                                     {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
                                                 {% endif %}</strong><br>{{ taak.titel }}"
                                             data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}"
                                             data-modal-id-param="incident_modal_handle_{{ taak.id }}"
-                                            data-action="modal#openModal">Taak behandelen</button>
+                                            data-action="modal#openModal">Taak afhandelen</button>
                                     {% if taak.taakstatus.naam == "openstaand" or taak.taakstatus.naam == "nieuw" %}
                                         <button class="btn btn-tertiary"
                                                 data-modal-title-param="Toewijzen"
