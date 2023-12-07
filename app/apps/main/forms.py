@@ -70,7 +70,7 @@ class TaakBehandelForm(forms.Form):
         widget=RadioSelectSimple(
             attrs={
                 "class": "list--form-radio-input",
-                "data-action": "change->incidentHandleForm#doResolution",
+                "data-action": "change->incidentHandleForm#onChangeResolution",
                 "hideLabel": True,
             }
         ),
