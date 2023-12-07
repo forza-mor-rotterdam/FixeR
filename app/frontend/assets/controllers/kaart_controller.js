@@ -164,11 +164,11 @@ export default class extends Controller {
     }
 
     toggleBuurten(e) {
-        console.log("toggle buurten", e)
         e.target.classList.toggle("active")
+        const cb = e.target.querySelector('input')
+        cb.checked = !cb.checked
         if(map.hasLayer(buurten)) {
             map.removeLayer(buurten)
-
         }else {
             buurten.addTo(map)
         }

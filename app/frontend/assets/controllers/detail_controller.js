@@ -13,6 +13,7 @@ export default class extends Controller {
         currentDistrict: String,
         incidentObject: Object,
         mercurePublicUrl: String,
+        mercureSubscriberToken: String,
     }
     static targets = ['selectedImage', 'thumbList', 'imageSliderContainer']
 
@@ -108,6 +109,10 @@ export default class extends Controller {
         if (self.hasMercurePublicUrlValue && self.isValidHttpUrl(self.mercurePublicUrlValue)){
             const url = new URL(self.mercurePublicUrlValue);
             url.searchParams.append('topic', window.location.pathname);
+            if (self.hasMercureSubscriberTokenValue){
+                url.searchParams.append('authorization', self.mercureSubscriberTokenValue);
+            }
+            console.log(url)
             self.eventSource = new EventSource(url);
             self.eventSource.onmessage = e => self.onMessage(e)
             self.eventSource.onerror = (e) => self.onMessageError(e)
@@ -115,6 +120,7 @@ export default class extends Controller {
     }
     onMessage(e){
         let data  = JSON.parse(e.data)
+        console.log("mercure message", data)
         let turboFrame = document.getElementById("taak_basis")
         turboFrame.src = data.url
     }

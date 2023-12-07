@@ -157,8 +157,6 @@ textarea {
 }
 
 .form-check {
-    // display: flex;
-    margin-bottom: 0.75em;
     margin-left: -0.2rem;
 
     input {
@@ -381,8 +379,8 @@ textarea {
     }
 }
 
-.list--form-check-input,
-.list--form-radio-input {
+ul.list--form-check-input,
+ul.list--form-radio-input {
     @include list-clean();
     // display: flex;
 
@@ -460,6 +458,7 @@ textarea {
 
 .form-row {
     position: relative;
+    margin-bottom: 2rem;
     > label,
     > input {
         display: block;

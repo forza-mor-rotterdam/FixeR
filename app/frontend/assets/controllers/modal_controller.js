@@ -37,7 +37,7 @@ export default class extends Controller {
     openModal(event) {
         let self = this
         self.titleTarget.textContent = event.params.title
-        self.subTitleTarget.textContent = event.params.subTitle
+        self.subTitleTarget.innerHTML = event.params.subTitle
         self.turboFrameTarget.id = event.params.id
         self.turboFrameTarget.src = event.params.url
         const modal = self.turboFrameTarget.closest('.modal');
