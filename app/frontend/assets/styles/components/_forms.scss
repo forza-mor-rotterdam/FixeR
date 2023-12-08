@@ -105,6 +105,7 @@ $form-search-indicator-position: left 10px center !default;
 
     .invalid-text {
         margin-top: 0.5rem;
+        margin-bottom: 0.25rem;
         padding-left: 1rem;
         position: relative;
 
@@ -112,7 +113,7 @@ $form-search-indicator-position: left 10px center !default;
             content: url('../icons/warning_triangle.svg');
             position: absolute;
             left: 0;
-            top: -1px;
+            top: 1px;
         }
     }
 }
@@ -120,7 +121,7 @@ $form-search-indicator-position: left 10px center !default;
     border-color: #404B4F;
 }
 
-.help-block {
+.help-block:not(.invalid-text) {
     font-size: $h5-font-size;
     line-height: 1.25em;
     margin: 0.25rem 0;
@@ -388,7 +389,6 @@ ul.list--form-radio-input {
 
     li {
         margin: 0 0 8px;
-        border: 1px solid $gray-tint04;
         position: relative;
 
 
@@ -445,7 +445,22 @@ ul.list--form-radio-input {
     }
 }
 
-.list--form-radio-input {
+ul.list--form-check-input {
+    .form-check {
+        margin-left: 0;
+
+        input {
+            margin-right: 0;
+            top: 0;
+            left: 8px;
+        }
+    }
+}
+
+ul.list--form-radio-input {
+    li {
+        border: 1px solid $gray-tint04;
+    }
     .form--beheer & {
         li,
         li:first-child {
@@ -581,5 +596,12 @@ ul.list--form-radio-input {
 
     >div {
         flex: 1;
+
+        input {
+            ~.form-check-label {
+                line-height: 1.5rem;
+                min-height: 48px;
+            }
+        }
     }
 }
