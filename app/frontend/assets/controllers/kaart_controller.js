@@ -247,7 +247,7 @@ export default class extends Controller {
         const long = coordinatenlijst[i].geometrie.coordinates[0];
         const adres = coordinatenlijst[i].adres;
         const afbeelding = coordinatenlijst[i].afbeeldingUrl;
-        const omschrijving = coordinatenlijst[i].onderwerpen;
+        const titel = coordinatenlijst[i].titel
         const taakId = coordinatenlijst[i].taakId;
 
         const markerLocation = new L.LatLng(lat, long);
@@ -258,11 +258,12 @@ export default class extends Controller {
         const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`;
         const anchorDetail = `<a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">Details</a>`;
         const anchorNavigeer = `<span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" target="_top" aria-label="Navigeer naar taak ${taakId}">Navigeren</span>`;
+        const divDetailNavigeer = `<div class="display-flex gap">${anchorDetail} | ${anchorNavigeer}</div>`
         // let popupContent = `<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
-        let popupContent = `<div class="container__content"><h5 class="h5">${adres}</h5><p>${omschrijving}</p>${paragraphDistance}${anchorDetail} | ${anchorNavigeer}</div>`;
+        let popupContent = `<div></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`;
         if (afbeelding) {
           // popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
-          popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${omschrijving}</p>${paragraphDistance}${anchorDetail} | ${anchorNavigeer}</div>`;
+          popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`;
         }
         marker.bindPopup(popupContent);
 

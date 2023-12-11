@@ -196,8 +196,9 @@
             }
         }
         .container__content {
-            flex: 1 0 75%;
+            flex: 0 1 75%;
             font-size: 16px;
+            text-wrap: nowrap;
             .link {
             // a {
                 color: $primary;
@@ -209,6 +210,9 @@
             &:last-of-type {
                 color: $gray-tint08;
             }
+            }
+            .gap {
+                gap: 8px;
             }
         }
     }

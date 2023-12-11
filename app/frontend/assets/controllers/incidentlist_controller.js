@@ -39,6 +39,7 @@ export default class extends Controller {
                     afbeeldingUrl: taakItem.dataset.afbeeldingUrl,
                     onderwerpen: taakItem.dataset.onderwerpen,
                     taakId: taakItem.dataset.id,
+                    titel: taakItem.dataset.titel
                 })
             }
         }
