@@ -103,9 +103,10 @@
                                     {% for foto in melding.bijlagen %}
                                         <li class="container__image" id="{{ foto.afbeelding_relative_url }}">
                                             <img src="{{ foto.afbeelding_relative_url }}"
-                                                 alt=""
-                                                 data-detail-target="selectedImage"
-                                                 data-action="click->detail#openImageInPopup" />
+                                                alt=""
+                                                data-detail-target="selectedImage"
+                                                {% comment %} data-action="click->detail#openImageInPopup"   {% endcomment %}
+                                                />
                                         </li>
                                     {% endfor %}
                                 </ul>
@@ -382,7 +383,7 @@
                     </div>
                 </section>
             </div>
-            <div class="modal modal--transparent">
+            {% comment %} <div class="modal modal--transparent">
                 <div class="modal-dialog">
                     <div class="modal-backdrop modal-exit"
                          data-action="click->modal#closeModal"></div>
@@ -398,7 +399,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> {% endcomment %}
         {% endblock before_modal_content %}
         {% block after_modal_content %}
         </div>
