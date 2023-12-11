@@ -372,23 +372,14 @@ def incident_modal_handle(request, id):
             initial={"resolutie": resolutie},
         )
         if form.is_valid():
+            # Afhandelen bijlagen
             bijlagen = request.FILES.getlist("bijlagen", [])
-            taaktype = Taaktype.objects.filter(
-                id=form.cleaned_data.get("nieuwe_taak")
-            ).first()
-            taaktype_url = (
-                drf_reverse(
-                    "v1:taaktype-detail",
-                    kwargs={"uuid": taaktype.uuid},
-                    request=request,
-                )
-                if taaktype
-                else None
-            )
             bijlagen_base64 = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
+
+            # Taak status aanpassen
             taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
                 taakopdracht_url=taak.taakopdracht,
                 status="voltooid",
@@ -401,25 +392,41 @@ def incident_modal_handle(request, id):
                 logger.error(
                     f"taak_status_aanpassen: status code: {taak_status_aanpassen_response.status_code}, taak id: {id}"
                 )
+
+            # Aanmaken extra taken
             if (
                 taak_status_aanpassen_response.status_code == 200
-                and taaktype_url
-                and form.cleaned_data.get("nieuwe_taak_toevoegen")
+                and form.cleaned_data.get("nieuwe_taak")
             ):
-                taak_aanmaken_response = MeldingenService().taak_aanmaken(
-                    melding_uuid=taak.melding.response_json.get("uuid"),
-                    taaktype_url=taaktype_url,
-                    titel=taaktype.omschrijving,
-                    bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
-                    gebruiker=request.user.email,
-                )
-                if taak_aanmaken_response.status_code != 200:
-                    logger.error(
-                        f"taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
+                taken = form.cleaned_data.get("nieuwe_taak", [])
+                for vervolg_taak in taken:
+                    taaktype = Taaktype.objects.filter(id=vervolg_taak).first()
+                    taaktype_url = (
+                        drf_reverse(
+                            "v1:taaktype-detail",
+                            kwargs={"uuid": taaktype.uuid},
+                            request=request,
+                        )
+                        if taaktype
+                        else None
                     )
 
-            form.cleaned_data.get("handle_choice", 1)
-            return redirect("incident_index")
+                    if taaktype_url:
+                        taak_aanmaken_response = MeldingenService().taak_aanmaken(
+                            melding_uuid=taak.melding.response_json.get("uuid"),
+                            taaktype_url=taaktype_url,
+                            titel=taaktype.omschrijving,
+                            bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
+                            gebruiker=request.user.email,
+                        )
+
+                        if taak_aanmaken_response.status_code != 200:
+                            logger.error(
+                                f"taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
+                            )
+
+                return redirect("incident_index")
+
     return render(
         request,
         "incident/modal_handle.html",

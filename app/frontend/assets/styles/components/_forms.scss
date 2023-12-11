@@ -105,6 +105,7 @@ $form-search-indicator-position: left 10px center !default;
 
     .invalid-text {
         margin-top: 0.5rem;
+        margin-bottom: 0.25rem;
         padding-left: 1rem;
         position: relative;
 
@@ -112,7 +113,7 @@ $form-search-indicator-position: left 10px center !default;
             content: url('../icons/warning_triangle.svg');
             position: absolute;
             left: 0;
-            top: -1px;
+            top: 1px;
         }
     }
 }
@@ -120,10 +121,12 @@ $form-search-indicator-position: left 10px center !default;
     border-color: #404B4F;
 }
 
-.help-block {
-    font-size: $h6-font-size;
-    margin: 0.25rem 0 1.5rem;
+.help-block:not(.invalid-text) {
+    font-size: $h5-font-size;
+    line-height: 1.25em;
+    margin: 0.25rem 0;
     display: block;
+    color: $gray-tint09;
 }
 
 .form-control__with-helptext {
@@ -157,8 +160,6 @@ textarea {
 }
 
 .form-check {
-    // display: flex;
-    margin-bottom: 0.75em;
     margin-left: -0.2rem;
 
     input {
@@ -381,20 +382,16 @@ textarea {
     }
 }
 
-.list--form-check-input,
-.list--form-radio-input {
+ul.list--form-check-input,
+ul.list--form-radio-input {
     @include list-clean();
-    display: flex;
+    // display: flex;
 
     li {
-        margin: 0 0 0 0.25rem;
-        flex: 1;
-        border: 1px solid $gray-tint04;
+        margin: 0 0 8px;
         position: relative;
 
-        &:first-child {
-            margin: 0 0.25rem 0 0;
-        }
+
     }
     input {
         @include form-check-input();
@@ -432,7 +429,38 @@ textarea {
     }
 }
 
-.list--form-radio-input {
+.list-horizontal {
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        ul.list--form-check-input {
+            display: flex;
+            justify-content: space-between;
+            column-gap: 16px;
+            flex-wrap: wrap;
+
+            li {
+                flex: 1 1 45%;
+                max-width: calc(50% - 10px);
+            }
+        }
+    }
+}
+
+ul.list--form-check-input {
+    .form-check {
+        margin-left: 0;
+
+        input {
+            margin-right: 0;
+            top: 0;
+            left: 8px;
+        }
+    }
+}
+
+ul.list--form-radio-input {
+    li {
+        border: 1px solid $gray-tint04;
+    }
     .form--beheer & {
         li,
         li:first-child {
@@ -463,6 +491,7 @@ textarea {
 
 .form-row {
     position: relative;
+    margin-bottom: 2rem;
     > label,
     > input {
         display: block;
@@ -551,5 +580,28 @@ textarea {
 
     &.hidden {
         display: none;
+    }
+}
+
+.label-strong {
+    label {
+        font-weight: 700;
+    }
+}
+
+.wrapper--flex-order {
+
+    display: flex;
+    flex-direction: column;
+
+    >div {
+        flex: 1;
+
+        input {
+            ~.form-check-label {
+                line-height: 1.5rem;
+                min-height: 48px;
+            }
+        }
     }
 }

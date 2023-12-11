@@ -4,6 +4,8 @@ let form = null
 let inputList = null
 let input = null
 let error = null
+let defaultLabelInternalText = ""
+const requiredLabelInternalText = "Waarom kan de taak niet worden afgerond?"
 const defaultErrorMessage = "Vul a.u.b. dit veld in."
 export default class extends Controller {
     static values = {
@@ -17,7 +19,11 @@ export default class extends Controller {
     connect() {
 
         form = document.querySelector("form");
-        inputList = document.querySelectorAll('[type="radio"]')
+        inputList = Array.from(document.querySelectorAll('[type="radio"]'))
+
+        const btn = inputList.find((input) => {
+            input.value == "niet_opgelost"
+        })
 
         for (let i=0; i<inputList.length; i++){
             input = inputList[i]
@@ -27,69 +33,76 @@ export default class extends Controller {
                 input.closest('.form-row').classList.remove('is-invalid')
                 error.textContent = "";
             })
+
+            if(input.value === "niet_opgelost" && input.checked === true) {
+                console.log("NIET OPGELOST")
+                this.onResolutionFalse()
+            }
         };
+
+        if(this.hasInternalTextTarget) {
+            defaultLabelInternalText = this.internalTextTarget.querySelector('label').textContent
+        }
     }
 
-    onSubmit(event) {
-        const allFieldsValid = this.checkValids()
+    onResolutionFalse() {
+        if(this.hasInternalTextTarget) {
+            this.internalTextTarget.querySelector('label').textContent = requiredLabelInternalText
+            this.internalTextTarget.querySelector('textarea').setAttribute("required", true)
+            this.internalTextTarget.closest(".wrapper--flex-order").style.flexDirection='column-reverse'
+        }
+    }
 
-        if(!(allFieldsValid)){
-            event.preventDefault();
+    onResolutionTrue() {
+        if(this.hasInternalTextTarget) {
+            this.internalTextTarget.querySelector('label').textContent = defaultLabelInternalText
+            this.internalTextTarget.querySelector('textarea').removeAttribute("required")
+            this.internalTextTarget.closest(".wrapper--flex-order").style.flexDirection='column'
+        }
+    }
 
-        } else {
-            form.requestSubmit()
+    onChangeResolution(event) {
+        if (event.target.value === "niet_opgelost") {
+            this.onResolutionFalse()
+       }else {
+            this.onResolutionTrue()
         }
     }
 
     checkValids() {
-        //check all radoofields for validity
-        // if 1 or more fields is invalid, don't send the form (return false)
-        inputList = document.querySelectorAll('[type="radio"]')
+        inputList = document.querySelectorAll('textarea[required]')
         let count = 0
 
-        for (let i=0; i<inputList.length; i++){
-            input = inputList[i]
-            error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
+        if(inputList.length > 0) {
+            for (let i=0; i<inputList.length; i++){
+                input = inputList[i]
+                error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
+                if (input.value.length > 0) {
+                    count++
+                }
 
-            if (input.checked === true) {
-                count++
             }
-        }
-        if (count > 0) {
-            input.closest('.form-row').classList.remove("is-invalid")
-            error.textContent = ""
+            if (count > 0) {
+                input.closest('.form-row').classList.remove("is-invalid")
+                error.textContent = ""
+                return true
+            }else {
+                error.textContent = defaultErrorMessage
+                input.closest('.form-row').classList.add("is-invalid")
+                return false
+            }
+        } else {
             return true
-        }else {
-            error.textContent = defaultErrorMessage
-            input.closest('.form-row').classList.add("is-invalid")
-            return false
         }
+
     }
 
-    cancelHandle() {
-        this.element.dispatchEvent(new CustomEvent("cancelHandle", {
-            detail: JSON.parse(this.parentContextValue),
-            bubbles: true
-        }));
-    }
-
-    toggleNewTask(){
-        this.newTaskTarget.classList.toggle("hidden")
-    }
-
-    setExternalMessage(evt){
-        this.choice =  evt.params.index
-        this.externalMessage = JSON.parse(this.handledOptionsValue)[this.choice][2]
-        this.externalTextTarget.value = this.externalMessage
-    }
-
-    defaultExternalMessage(){
-        if(this.externalMessage.length === 0) return
-
-        this.externalTextTarget.value = this.externalMessage
-    }
-
-    clearExternalMessage() {
-        this.externalTextTarget.value = ""
+    onSubmit(event) {
+        const allFieldsValid = this.checkValids()
+        if(!(allFieldsValid)){
+            event.preventDefault();
+        } else {
+            form.requestSubmit()
+        }
     }
 }
