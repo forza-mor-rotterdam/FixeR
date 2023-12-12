@@ -298,6 +298,11 @@ ul {
         }
     }
 }
+li {
+    &.list-item {
+    border-bottom: 1px solid $gray-tint04;
+  }
+}
 
 dl {
     div{
