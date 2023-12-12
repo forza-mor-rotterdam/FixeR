@@ -85,6 +85,7 @@ INSTALLED_APPS = (
     "apps.rotterdam_formulier_html",
     "apps.context",
     "apps.beheer",
+    "apps.release_notes",
 )
 
 LOGIN_URL = "/login/"
@@ -336,6 +337,8 @@ SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
     os.getenv("SESSION_EXPIRE_SECONDS", "3600")
 )
 SESSION_CHECK_INTERVAL_SECONDS = int(os.getenv("SESSION_CHECK_INTERVAL_SECONDS", "60"))
+
+BESTANDEN_PREFIX = "bestanden"
 
 
 LOG_LEVEL = "DEBUG" if DEBUG else "INFO"

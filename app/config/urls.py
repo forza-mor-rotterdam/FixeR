@@ -35,6 +35,14 @@ from apps.main.views import (
     taken_overzicht,
     ui_settings_handler,
 )
+from apps.release_notes.views import (
+    ReleaseNoteAanmakenView,
+    ReleaseNoteAanpassenView,
+    ReleaseNoteDetailView,
+    ReleaseNoteListView,
+    ReleaseNoteListViewPublic,
+    ReleaseNoteVerwijderenView,
+)
 from apps.taken.views import (
     TaaktypeAanmakenView,
     TaaktypeAanpassenView,
@@ -156,6 +164,37 @@ urlpatterns = [
         "beheer/rechtengroep/<int:pk>/verwijderen/",
         RechtengroepVerwijderenView.as_view(),
         name="rechtengroep_verwijderen",
+    ),
+    # Release notes
+    path(
+        "release-notes/",
+        ReleaseNoteListViewPublic.as_view(),
+        name="release_note_lijst_public",
+    ),
+    path(
+        "release-notes/<int:pk>/",
+        ReleaseNoteDetailView.as_view(),
+        name="release_note_detail",
+    ),
+    path(
+        "beheer/release-notes/",
+        ReleaseNoteListView.as_view(),
+        name="release_note_lijst",
+    ),
+    path(
+        "beheer/release-notes/aanmaken/",
+        ReleaseNoteAanmakenView.as_view(),
+        name="release_note_aanmaken",
+    ),
+    path(
+        "beheer/release-notes/<int:pk>/aanpassen/",
+        ReleaseNoteAanpassenView.as_view(),
+        name="release_note_aanpassen",
+    ),
+    path(
+        "beheer/release-notes/<int:pk>/verwijderen/",
+        ReleaseNoteVerwijderenView.as_view(),
+        name="release_note_verwijderen",
     ),
     # END beheer
     path("api/schema/", SpectacularAPIView.as_view(api_version="v1"), name="schema"),

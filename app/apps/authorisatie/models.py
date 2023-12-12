@@ -136,6 +136,32 @@ class RechtengroepVerwijderenPermissie(BasisPermissie):
     codenaam = "rechtengroep_verwijderen"
 
 
+# Release notes
+class ReleaseNoteLijstBekijkenPermissie(BasisPermissie):
+    naam = "Release notes bekijken"
+    codenaam = "release_note_lijst_bekijken"
+
+
+class ReleaseNoteAanmakenPermissie(BasisPermissie):
+    naam = "Release note aanmaken"
+    codenaam = "release_note_aanmaken"
+
+
+class ReleaseNoteBekijkenPermissie(BasisPermissie):
+    naam = "Release note bekijken"
+    codenaam = "release_note_bekijken"
+
+
+class ReleaseNoteAanpassenPermissie(BasisPermissie):
+    naam = "Release note aanpassen"
+    codenaam = "release_note_aanpassen"
+
+
+class ReleaseNoteVerwijderenPermissie(BasisPermissie):
+    naam = "Release note verwijderen"
+    codenaam = "release_note_verwijderen"
+
+
 gebruikersgroep_permissies = (
     TakenLijstBekijkenPermissie,
     TaakBekijkenPermissie,
@@ -163,6 +189,11 @@ gebruikersgroep_permissies = (
     RechtengroepBekijkenPermissie,
     RechtengroepAanpassenPermissie,
     RechtengroepVerwijderenPermissie,
+    ReleaseNoteLijstBekijkenPermissie,
+    ReleaseNoteAanmakenPermissie,
+    ReleaseNoteBekijkenPermissie,
+    ReleaseNoteAanpassenPermissie,
+    ReleaseNoteVerwijderenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [

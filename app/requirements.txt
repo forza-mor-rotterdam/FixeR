@@ -23,6 +23,8 @@ django-webpack-loader==1.7.0
 requests==2.29.0
 debugpy
 celery==5.2.6
+Pillow==9.4.0
+pillow-heif==0.13.0
 
 redis==4.5.5
 mozilla-django-oidc==3.0.0
