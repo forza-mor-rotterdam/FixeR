@@ -146,8 +146,8 @@ export default class extends Controller {
 
 
         function getRoute(event) {
-          let lat = typeof event.params.lat !== 'number' ? event.params.lat.replace(/,/g, '.') : event.params.lat;
-          let long = typeof event.params.long !== 'number' ? event.params.long.replace(/,/g, '.') : event.params.long;
+          let lat = event.params.lat;
+          let long = event.params.long;
           routeUrl += `${lat},${long}&navigate=yes`;
           window.open(routeUrl, "_blank");
         }
