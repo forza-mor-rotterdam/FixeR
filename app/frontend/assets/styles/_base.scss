@@ -61,7 +61,11 @@ header {
 
 main,
 header {
-    padding: 0 map-get($container-margin, s) 16px;
+    padding: 0 map-get($container-margin, sm) map-get($container-margin, sm);
+
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        padding: 0 map-get($container-margin, md) map-get($container-margin, md);
+    }
 }
 
 main {
@@ -434,4 +438,8 @@ h1 + .section--seperated {
 
 .padding-bottom-2x {
     padding-bottom: 2rem;
+}
+
+.textalign--right {
+    text-align: right;
 }

@@ -2,6 +2,19 @@
 .taak-detail {
     max-width: map-get($container-max-widths , md );
     margin: 0 auto;
+
+    .link {
+
+        svg {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            margin-right: 10px;
+            path{
+                fill: $green-tint01;
+            }
+        }
+    }
 }
 .container__details {
     &--sticky-bottom {
@@ -183,6 +196,22 @@
         // padding-right: 115px;
         @media (min-width: map-get($grid-breakpoints, sm)) {
             padding-right: 185px;
+        }
+    }
+    span,
+    p {
+        font-size: 16px;
+
+        &.lighter {
+            color: $gray-tint08;
+        }
+    }
+    >.container__flex {
+        display: flex;
+        justify-content: space-between;
+
+        >div {
+            flex: 1 1 auto;
         }
     }
 }

@@ -70,6 +70,18 @@
                             </h1>
                         {% endwith %}
                     {% endif %}
+                    <div class="container__flex">
+                        <div>
+                            <span>{{ taak.titel }}</span><br>
+                            <span class="lighter">{{ taak.geometrie.coordinates.0 }}</span>
+                        </div>
+                        <div class="textalign--right">
+                            <a class="link" data-action="detail#makeRoute" data-detail-lat-param="{{ taak.geometrie.coordinates.1 }}" data-detail-long-param="{{ taak.geometrie.coordinates.0 }}" target="_top" aria-label="Navigeer naar taak">
+                                {%include "icons/navigate.svg"%}Navigeren
+                            </a>
+                        </div>
+                    </div>
+                    {% comment %} <p>{{ taak.titel }}</p> {% endcomment %}
                     {% comment %} <div class="container__taaknavigatie" data-controller="taakNavigatie" data-taakNavigatie-taak-id-value="{{ taak.id }}" data-taakNavigatie-url-value="/taak/">
                     <span data-taakNavigatie-target="teller"></span>
                     <ul class="list__task-navigation">
@@ -178,7 +190,7 @@
                                 <p>{{ taak.resolutie }}</p>
                             {% endif %}
                             {% if taak.taakgebeurtenissen_voor_taak.all.0.gebruiker %}
-                                <h3 class="h5">Gebruiker</h3>
+                                <h3 class="h5">Taak gestart door</h3>
                                 {{ taak.taakgebeurtenissen_voor_taak.all.0.gebruiker|gebruiker_middels_email }}
                             {% endif %}
                         </details>
@@ -207,6 +219,9 @@
                                             {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
                                         {% endif %}
                                     </p>
+                                    <a class="link" data-action="detail#makeRoute" data-detail-lat-param="{{ taak.geometrie.coordinates.1 }}" data-detail-long-param="{{ taak.geometrie.coordinates.0 }}" target="_top" aria-label="Navigeer naar taak">
+                                        {%include "icons/navigate.svg"%}Navigeer naar dit adres
+                                    </a>
                                 </div>
                                 <dl>
                                     {% if taak.melding.response_json.locaties_voor_melding.0.wijknaam %}
