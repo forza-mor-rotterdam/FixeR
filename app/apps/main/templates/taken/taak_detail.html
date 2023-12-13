@@ -2,7 +2,7 @@
 {% load webpack_static from webpack_loader %}
 {% load multiply previous next from list_tags %}
 {% load taakopdracht render_onderwerp from melding_tags %}
-{% load to_date vind_in_dict from main_tags %}
+{% load to_date replace_comma_by_dot vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
 {% load context_template from context_tags %}
 {% load gebruiker_middels_email from gebruikers_tags %}
@@ -39,8 +39,8 @@
         </div>
         <div data-controller="detail"
              data-detail-taak-object-value="{{ taak }}"
-             data-detail-incident-y-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.0 }}"
-             data-detail-incident-x-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.1 }}"
+             data-detail-incident-y-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.0|replace_comma_by_dot }}"
+             data-detail-incident-x-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.1|replace_comma_by_dot }}"
              data-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
              {% if not DEBUG %}data-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
              {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
@@ -70,6 +70,18 @@
                             </h1>
                         {% endwith %}
                     {% endif %}
+                    <div class="container__flex">
+                        <div>
+                            <span>{{ taak.titel }}</span><br>
+                            <span class="lighter"><span data-detail-target="taakAfstand" data-latitude="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-longitude="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" ></span> meter afstand</span>
+                        </div>
+                        <div class="textalign--right">
+                            <a class="link" data-action="detail#makeRoute" data-detail-lat-param="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">
+                                {%include "icons/navigate.svg"%}Navigeren
+                            </a>
+                        </div>
+                    </div>
+                    {% comment %} <p>{{ taak.titel }}</p> {% endcomment %}
                     {% comment %} <div class="container__taaknavigatie" data-controller="taakNavigatie" data-taakNavigatie-taak-id-value="{{ taak.id }}" data-taakNavigatie-url-value="/taak/">
                     <span data-taakNavigatie-target="teller"></span>
                     <ul class="list__task-navigation">
@@ -178,7 +190,7 @@
                                 <p>{{ taak.resolutie }}</p>
                             {% endif %}
                             {% if taak.taakgebeurtenissen_voor_taak.all.0.gebruiker %}
-                                <h3 class="h5">Gebruiker</h3>
+                                <h3 class="h5">Taak gestart door</h3>
                                 {{ taak.taakgebeurtenissen_voor_taak.all.0.gebruiker|gebruiker_middels_email }}
                             {% endif %}
                         </details>
@@ -207,6 +219,9 @@
                                             {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
                                         {% endif %}
                                     </p>
+                                    <a class="link" data-action="detail#makeRoute" data-detail-lat-param="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">
+                                        {%include "icons/navigate.svg"%}Navigeer naar dit adres
+                                    </a>
                                 </div>
                                 <dl>
                                     {% if taak.melding.response_json.locaties_voor_melding.0.wijknaam %}
