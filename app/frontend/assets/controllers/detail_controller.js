@@ -16,7 +16,7 @@ export default class extends Controller {
         mercurePublicUrl: String,
         mercureSubscriberToken: String,
     }
-    static targets = ['selectedImage', 'thumbList', 'imageSliderContainer']
+    static targets = ['selectedImage', 'thumbList', 'imageSliderContainer', 'taakAfstand']
 
     Mapping = {
         'fotos': 'media',
@@ -124,13 +124,18 @@ export default class extends Controller {
         }
     }
 
+    taakAfstandTargetConnected(element) {
+        const markerLocation = new L.LatLng(element.dataset.latitude, element.dataset.longitude);
+        element.textContent = Math.round(markerLocation.distanceTo(currentPosition))
+    }
+
     positionChangeEvent(position) {
         console.log("DETAIL, positionChangeEvent lat", position.coords.latitude)
         console.log("DETAIL, positionChangeEvent long", position.coords.longitude)
 
-      }
+    }
 
-      positionWatchSuccess(position){
+    positionWatchSuccess(position){
         let self = this
         currentPosition = [position.coords.latitude, position.coords.longitude]
 
