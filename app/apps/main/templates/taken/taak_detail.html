@@ -79,6 +79,10 @@
                             <a class="link" data-action="detail#makeRoute" data-detail-lat-param="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">
                                 {%include "icons/navigate.svg"%}Navigeren
                             </a>
+                            <br>
+                            <small><a class="link" href="geo:{{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">
+                                Open in app (test)
+                            </a></small>
                         </div>
                     </div>
                     {% comment %} <p>{{ taak.titel }}</p> {% endcomment %}
