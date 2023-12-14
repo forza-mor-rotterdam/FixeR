@@ -1,8 +1,10 @@
 import { Controller } from '@hotwired/stimulus';
 
-let markerIcon, markerBlue, markerGreen, markerMe, markers, map, currentImg, imageContainer, modal, modalBackdrop, currentPosition = null
+let markerIcon, markerBlue, markerGreen, markerMe, markers, map, currentImg, imageContainer, modal, modalBackdrop, isMobileDevice, currentPosition = null
 let dist, elapsedTime, startX, startY, startTime = 0
 let imageSrcList = []
+const linkNavigateOnDesktop = '<a class="link" data-action="detail#makeRoute" data-detail-target="navigatedesktop" data-detail-lat-param="" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">{%include "icons/navigate.svg"%}Navigeren</a>'
+const linkNavigateOnMobile = '<a class="link" href="geo:{{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak" data-detail-target="navigatemobile">Open in app (test)</a>'
 
 let self = null
 export default class extends Controller {
@@ -16,7 +18,7 @@ export default class extends Controller {
         mercurePublicUrl: String,
         mercureSubscriberToken: String,
     }
-    static targets = ['selectedImage', 'thumbList', 'imageSliderContainer', 'taakAfstand']
+    static targets = ['selectedImage', 'thumbList', 'imageSliderContainer', 'taakAfstand', 'linkNavigate']
 
     Mapping = {
         'fotos': 'media',
@@ -25,6 +27,11 @@ export default class extends Controller {
     initialize() {
         let self = this
 
+        isMobileDevice = this.checkIsMobileDevice()
+        console.log("isMobileDevice", isMobileDevice)
+        // self.linkNavigateTarget.innerHTML = isMobileDevice
+        //     ? <a class="link" data-action="detail#makeRoute" data-detail-target="navigatedesktop" data-detail-lat-param="e" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">{%include "icons/navigate.svg"%}Navigeren</a> : linkNavigateOnDesktop
+
         let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', { bubbles: true, cancelable: false, detail: {
             controller: self
         }});
@@ -32,7 +39,6 @@ export default class extends Controller {
         window.dispatchEvent(childControllerConnectedEvent);
         self.initMessages()
 
-        console.log("currentPosition", currentPosition)
         if(self.hasThumbListTarget) {
             self.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
         }
@@ -68,17 +74,16 @@ export default class extends Controller {
             map = L.map('incidentMap').setView(incidentCoordinates, 18);
             L.tileLayer(url, config).addTo(map);
             const marker = L.marker(incidentCoordinates, {icon: markerGreen}).addTo(map);
+
             markers.addLayer(marker);
 
             if(currentPosition) {
-                if (!markerMe) {
-                    markerMe = new L.Marker(
-                      [currentPosition[0], currentPosition[1]],
-                      { icon: markerBlue }
-                    );
-                    markers.addLayer(markerMe);
-                    markerMe.setLatLng([currentPosition[0], currentPosition[1]]);
-                }
+                markerMe = new L.Marker(
+                    [currentPosition[0], currentPosition[1]],
+                    { icon: markerBlue }
+                );
+                markers.addLayer(markerMe);
+                markerMe.setLatLng([currentPosition[0], currentPosition[1]]);
                 L.marker(currentPosition, {icon: markerBlue}).addTo(map);
                 map.fitBounds(markers.getBounds())
             }
@@ -124,6 +129,19 @@ export default class extends Controller {
         }
     }
 
+    disconnect(){
+
+    }
+
+    checkIsMobileDevice() {
+        const detectDeviceType = () =>
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                ? true
+                : false;
+            return detectDeviceType()
+
+    }
+
     taakAfstandTargetConnected(element) {
         const markerLocation = new L.LatLng(element.dataset.latitude, element.dataset.longitude);
         element.textContent = Math.round(markerLocation.distanceTo(currentPosition))
@@ -137,10 +155,13 @@ export default class extends Controller {
 
     positionWatchSuccess(position){
         let self = this
+        console.log("detail.positionWatchSuccess")
         currentPosition = [position.coords.latitude, position.coords.longitude]
-
-        if (self.hasKaartOutlet){
-            self.kaartOutlet.positionChangeEvent(position)
+       if (self.hasTaakAfstandTarget){
+            const elem = self.taakAfstandTarget
+            const markerLocation = new L.LatLng(elem.dataset.latitude, elem.dataset.longitude);
+            const afstand = Math.round(markerLocation.distanceTo(currentPosition))
+            elem.textContent = afstand
         }
     }
 

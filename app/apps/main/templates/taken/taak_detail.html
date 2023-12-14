@@ -70,19 +70,27 @@
                             </h1>
                         {% endwith %}
                     {% endif %}
+                    {% comment %} {{request.META.HTTP_USER_AGENT}} {% endcomment %}
                     <div class="container__flex">
                         <div>
                             <span>{{ taak.titel }}</span><br>
                             <span class="lighter"><span data-detail-target="taakAfstand" data-latitude="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-longitude="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" ></span> meter afstand</span>
                         </div>
-                        <div class="textalign--right">
+                        <div class="textalign--right" data-detail-target="linkNavigate">
+                            {% comment %} if desktop {% endcomment %}
                             <a class="link" data-action="detail#makeRoute" data-detail-lat-param="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">
                                 {%include "icons/navigate.svg"%}Navigeren
                             </a>
                             <br>
-                            <small><a class="link" href="geo:{{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">
+                            {% comment %} if mobile and NOT iphone/ipad {% endcomment %}
+                            <small><a class="link" href="geo:{{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak" data-detail-target="navigatemobile">
                                 Open in app (test)
                             </a></small>
+                            {% comment %} if mobile AND iphone/ipad {% endcomment %}
+                            <small><a class="link" href="http://maps.apple.com/?sll={{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}&z=10&,{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak" data-detail-target="navigatemobile">
+                                Open in iOS (test)
+                            </a></small>
+
                         </div>
                     </div>
                     {% comment %} <p>{{ taak.titel }}</p> {% endcomment %}
