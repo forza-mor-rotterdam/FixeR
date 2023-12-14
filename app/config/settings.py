@@ -76,7 +76,6 @@ INSTALLED_APPS = (
     "health_check.contrib.migrations",
     "django_celery_beat",
     "django_celery_results",
-    # "mobiledetect",
     # Apps
     "apps.main",
     "apps.authorisatie",
@@ -103,7 +102,6 @@ MIDDLEWARE = (
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "mobiledetect.middleware.DetectMiddleware",
 )
 
 # django-permissions-policy settings
