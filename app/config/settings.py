@@ -76,6 +76,7 @@ INSTALLED_APPS = (
     "health_check.contrib.migrations",
     "django_celery_beat",
     "django_celery_results",
+    "sorl.thumbnail",
     # Apps
     "apps.main",
     "apps.authorisatie",
@@ -184,8 +185,8 @@ STATICFILES_DIRS = (
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "static"))
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "media"))
+MEDIA_URL = "/bijlagen/"
+MEDIA_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "bijlagen"))
 
 WEBPACK_LOADER = {
     "DEFAULT": {
@@ -338,8 +339,11 @@ SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
 )
 SESSION_CHECK_INTERVAL_SECONDS = int(os.getenv("SESSION_CHECK_INTERVAL_SECONDS", "60"))
 
+THUMBNAIL_BACKEND = "utils.images.ThumbnailBackend"
+THUMBNAIL_PREFIX = "afbeeldingen"
+THUMBNAIL_KLEIN = "128x128"
+THUMBNAIL_STANDAARD = "1480x1480"
 BESTANDEN_PREFIX = "bestanden"
-
 
 LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
 

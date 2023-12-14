@@ -1,10 +1,18 @@
 import logging
 
 from django import forms
+from django.contrib.contenttypes.forms import generic_inlineformset_factory
 
-from .models import ReleaseNote
+from .models import Bijlage, ReleaseNote
 
 logger = logging.getLogger(__name__)
+
+BijlageFormSet = generic_inlineformset_factory(
+    Bijlage,
+    fields=["bestand"],
+    extra=0,
+    can_delete=True,
+)
 
 
 class ReleaseNoteAanpassenForm(forms.ModelForm):
@@ -32,21 +40,29 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
         required=False,
     )
 
-    afbeelding = forms.ImageField(
+    bijlagen = forms.FileField(
         label="Afbeelding of GIF",
         required=False,
         widget=forms.widgets.FileInput(
             attrs={
-                "accept": ".jpg, .jpeg, .png, .heic",
+                "accept": ".jpg, .jpeg, .png, .heic, .gif",
                 "data-action": "change->bijlagen#updateImageDisplay",
-                "data-bijlagen-target": "bijlagenNieuw",
+                "data-bijlagen-target": "bijlagenExtra",
+                "hideLabel": True,
             }
         ),
     )
 
+    formset = BijlageFormSet(queryset=Bijlage.objects.none(), prefix="bijlage")
+
     class Meta:
         model = ReleaseNote
-        fields = ["titel", "beschrijving", "versie", "publicatie_datum", "afbeelding"]
+        fields = [
+            "titel",
+            "beschrijving",
+            "versie",
+            "publicatie_datum",
+        ]
 
 
 class ReleaseNoteAanmakenForm(ReleaseNoteAanpassenForm):

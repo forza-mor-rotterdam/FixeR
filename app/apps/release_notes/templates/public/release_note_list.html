@@ -12,8 +12,19 @@
                     <li class="list-item">
                         <h2>{{ release_note.titel|capfirst }}</h2>
                         <p class="release-date">{{ release_note.publicatie_datum }}</p>
-                        <div class="container__image" id="{{ release_note.afbeelding }}">
-                            <img src="{{ release_note.afbeelding }}" alt="" />
+                        <div class="container__imageslider"
+                             data-detail-target="imageSliderContainer"
+                             data-action="scroll->detail#onScrollSlider">
+                            <ul class="list-clean imageslider"
+                                style="width: calc(100% * {{ release_note.bijlagen.all|length }})">
+                                {% for bijlage in release_note.bijlagen.all %}
+                                    <li class="container__image" id="{{ bijlage.afbeelding.url }}">
+                                        <img src="{{ bijlage.afbeelding.url }}"
+                                             alt="Afbeelding"
+                                             data-detail-target="selectedImage">
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </div>
                         <p class="description">
                             {{ release_note.beschrijving|truncate_text:200 }}

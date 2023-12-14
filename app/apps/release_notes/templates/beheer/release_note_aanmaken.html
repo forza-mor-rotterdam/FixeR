@@ -24,12 +24,15 @@
                 <form action="."
                       method="post"
                       novalidate
-                      id="releaseNoteForm">
+                      id="releaseNoteForm"
+                      enctype="multipart/form-data">
                     {% csrf_token %}
                     <fieldset>
                         <div class="form-control__with-helptext js-validation">{{ form.titel|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation">{{ form.beschrijving|render_rotterdam_formulier }}</div>
-                        <div class="form-control__with-helptext js-validation" data-controller="bijlagen">{{ form.afbeelding|render_rotterdam_formulier }}</div>
+                        {{ form.management_form }}
+                        <div class="form-control__with-helptext js-validation"
+                             data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation">{{ form.publicatie_datum|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation">{{ form.versie|render_rotterdam_formulier }}</div>
                     </fieldset>
@@ -37,8 +40,8 @@
                         <div class="form-row btn-row">
                             <button type="reset"
                                     class="btn btn-tertiary"
-                                    data-controller="detail"
-                                    data-action="detail#closeModal">
+                                    data-controller="releaseNote"
+                                    data-action="releaseNote#closeModal">
                                 <span>Annuleren</span>
                             </button>
                             <button type="submit" class="btn btn-action">

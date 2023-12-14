@@ -25,6 +25,8 @@ debugpy
 celery==5.2.6
 Pillow==9.4.0
 pillow-heif==0.13.0
+sorl-thumbnail==12.8.0
+
 
 redis==4.5.5
 mozilla-django-oidc==3.0.0
