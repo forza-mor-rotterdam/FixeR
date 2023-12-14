@@ -3,8 +3,6 @@ import { Controller } from '@hotwired/stimulus';
 let markerIcon, markerBlue, markerGreen, markerMe, markers, map, currentImg, imageContainer, modal, modalBackdrop, isMobileDevice, currentPosition = null
 let dist, elapsedTime, startX, startY, startTime = 0
 let imageSrcList = []
-const linkNavigateOnDesktop = '<a class="link" data-action="detail#makeRoute" data-detail-target="navigatedesktop" data-detail-lat-param="" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">{%include "icons/navigate.svg"%}Navigeren</a>'
-const linkNavigateOnMobile = '<a class="link" href="geo:{{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak" data-detail-target="navigatemobile">Open in app (test)</a>'
 
 let self = null
 export default class extends Controller {
@@ -18,7 +16,7 @@ export default class extends Controller {
         mercurePublicUrl: String,
         mercureSubscriberToken: String,
     }
-    static targets = ['selectedImage', 'thumbList', 'imageSliderContainer', 'taakAfstand', 'linkNavigate']
+    static targets = ['selectedImage', 'thumbList', 'imageSliderContainer', 'taakAfstand', 'navigeerLink']
 
     Mapping = {
         'fotos': 'media',
@@ -26,12 +24,6 @@ export default class extends Controller {
 
     initialize() {
         let self = this
-
-        isMobileDevice = this.checkIsMobileDevice()
-        console.log("isMobileDevice", isMobileDevice)
-        // self.linkNavigateTarget.innerHTML = isMobileDevice
-        //     ? <a class="link" data-action="detail#makeRoute" data-detail-target="navigatedesktop" data-detail-lat-param="e" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">{%include "icons/navigate.svg"%}Navigeren</a> : linkNavigateOnDesktop
-
         let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', { bubbles: true, cancelable: false, detail: {
             controller: self
         }});
@@ -133,15 +125,6 @@ export default class extends Controller {
 
     }
 
-    checkIsMobileDevice() {
-        const detectDeviceType = () =>
-            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-                ? true
-                : false;
-            return detectDeviceType()
-
-    }
-
     taakAfstandTargetConnected(element) {
         const markerLocation = new L.LatLng(element.dataset.latitude, element.dataset.longitude);
         element.textContent = Math.round(markerLocation.distanceTo(currentPosition))
@@ -162,6 +145,16 @@ export default class extends Controller {
             const markerLocation = new L.LatLng(elem.dataset.latitude, elem.dataset.longitude);
             const afstand = Math.round(markerLocation.distanceTo(currentPosition))
             elem.textContent = afstand
+        }
+        if (self.hasNavigeerLinkTarget){
+            const linkList = document.querySelectorAll('[data-detail-target="navigeerLink"]')
+
+            for (const link of linkList) {
+                const href = link.getAttribute("href")
+                const rx = new RegExp("saddr=[\\d\\D]*?&", "g");
+                const newHref = href.replace(rx, `saddr=${currentPosition}&`);
+                link.setAttribute('href', newHref)
+            }
         }
     }
 

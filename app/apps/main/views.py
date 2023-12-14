@@ -27,6 +27,7 @@ from apps.main.utils import (
 )
 from apps.meldingen.service import MeldingenService
 from apps.taken.models import Taak, Taaktype
+from device_detector import DeviceDetector
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.files.storage import default_storage
@@ -266,7 +267,8 @@ def taak_detail(request, id):
     melding_response = MeldingenService().get_by_uri(taak.melding.bron_url)
     melding = melding_response.json()
     tijdlijn_data = melding_naar_tijdlijn(melding)
-
+    ua = request.META.get("HTTP_USER_AGENT")
+    device = DeviceDetector(ua).parse()
     return render(
         request,
         "taken/taak_detail.html",
@@ -275,6 +277,7 @@ def taak_detail(request, id):
             "taak": taak,
             "melding": melding,
             "tijdlijn_data": tijdlijn_data,
+            "device_os": device.os_name().lower(),
         },
     )
 
