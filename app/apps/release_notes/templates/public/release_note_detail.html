@@ -22,11 +22,19 @@
             <ul class="list-clean imageslider"
                 style="width: calc(100% * {{ release_note.bijlagen.all|length }})">
                 {% for bijlage in release_note.bijlagen.all %}
-                    <li class="container__image" id="{{ bijlage.afbeelding.url }}">
-                        <img src="{{ bijlage.afbeelding.url }}"
-                             alt="Afbeelding"
-                             data-detail-target="selectedImage">
-                    </li>
+                    {% if bijlage.mimetype == "image/gif" and bijlage.bestand %}
+                        <li class="container__image" id="{{ bijlage.bestand.url }}">
+                            <img src="{{ bijlage.bestand.url }}"
+                                 alt="GIF"
+                                 data-detail-target="selectedImage">
+                        </li>
+                    {% elif bijlage.afbeelding %}
+                        <li class="container__image" id="{{ bijlage.afbeelding.url }}">
+                            <img src="{{ bijlage.afbeelding.url }}"
+                                 alt="Afbeelding"
+                                 data-detail-target="selectedImage">
+                        </li>
+                    {% endif %}
                 {% endfor %}
             </ul>
         </div>

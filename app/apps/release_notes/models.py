@@ -76,6 +76,9 @@ class Bijlage(BasisModel):
                 self.is_afbeelding = True
 
             logger.info(f"is afbeelding: {self.is_afbeelding}")
+            # Dont convert to jpeg if the image is a gif.
+            if self.mimetype == "image/gif":
+                return
             if self.is_afbeelding:
                 try:
                     self.afbeelding_verkleind.name = get_thumbnail(

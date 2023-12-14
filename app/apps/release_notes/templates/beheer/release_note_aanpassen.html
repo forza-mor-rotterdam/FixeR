@@ -34,11 +34,12 @@
                         {{ formset.management_form }}
                         {{ formset.media }}
                         <div class="form-control__with-helptext js-validation container">
-
-                        {% for bijlage_form in formset %}
+                            {% for bijlage_form in formset %}
                                 <div class="wrapper--flex-order">
-                                    {% if bijlage_form.instance.afbeelding %}
-                                        <img src="{{ bijlage_form.instance.afbeelding.url }}" alt="Thumbnail">
+                                    {% if bijlage_form.instance.mimetype == "image/gif" and bijlage_form.instance.bestand %}
+                                        <img src="{{ bijlage_form.instance.bestand.url }}" alt="GIF">
+                                    {% elif bijlage_form.instance.afbeelding %}
+                                        <img src="{{ bijlage_form.instance.afbeelding.url }}" alt="Afbeelding">
                                     {% endif %}
                                     {% if formset.can_delete %}<label>Verwijderen: {{ bijlage_form.DELETE }}</label>{% endif %}
                                     <div class="">
@@ -53,9 +54,8 @@
                                                id="{{ bijlage_form.id.id_for_label }}">
                                     </div>
                                 </div>
-                        {% endfor %}
-                    </div>
-
+                            {% endfor %}
+                        </div>
                         <div class="form-control__with-helptext js-validation"
                              data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation">{{ form.publicatie_datum|render_rotterdam_formulier }}</div>
