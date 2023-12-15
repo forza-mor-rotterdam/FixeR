@@ -302,6 +302,17 @@ ul {
             margin-bottom: 0.25rem;
         }
     }
+
+    &.list--images {
+        @include list-clean();
+        li {
+            margin-bottom: 1em;
+
+            img {
+                max-width: 100%;
+            }
+        }
+    }
 }
 li {
     &.list-item {

@@ -1,6 +1,6 @@
 .page__beheer {
     padding-top: 0.5rem;
-    @media (min-width: map-get($grid-breakpoints, md)) {
+    @media (min-width: map-get($grid-breakpoints, lg)) {
         padding-top: 2rem;
     }
 

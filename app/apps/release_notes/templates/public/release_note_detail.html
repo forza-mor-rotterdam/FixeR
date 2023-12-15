@@ -18,19 +18,11 @@
         <p class="release-date">{{ release_note.publicatie_datum }}</p>
         <p class="description">{{ release_note.beschrijving }}</p>
         <div class="container__imageslider">
-            <ul class="list-clean">
+            <ul class="list--images">
                 {% for bijlage in release_note.bijlagen.all %}
-                    {% if bijlage.mimetype == "image/gif" and bijlage.bestand %}
-                        <li class="">
-                            <img src="{{ bijlage.bestand.url }}"
-                                 alt="">
-                        </li>
-                    {% elif bijlage.afbeelding %}
-                        <li class="">
-                            <img src="{{ bijlage.afbeelding.url }}"
-                                 alt="">
-                        </li>
-                    {% endif %}
+                    <li class="">
+                        <img src="{{ bijlage.bestand.url }}" alt="">
+                    </li>
                 {% endfor %}
             </ul>
         </div>
