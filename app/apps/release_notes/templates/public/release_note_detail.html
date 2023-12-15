@@ -16,29 +16,24 @@
         </div>
         <h1 class="pagetitle">{{ release_note.titel|capfirst }}</h1>
         <p class="release-date">{{ release_note.publicatie_datum }}</p>
-        <div class="container__imageslider"
-             data-detail-target="imageSliderContainer"
-             data-action="scroll->detail#onScrollSlider">
-            <ul class="list-clean imageslider"
-                style="width: calc(100% * {{ release_note.bijlagen.all|length }})">
+        <p class="description">{{ release_note.beschrijving }}</p>
+        <div class="container__imageslider">
+            <ul class="list-clean">
                 {% for bijlage in release_note.bijlagen.all %}
                     {% if bijlage.mimetype == "image/gif" and bijlage.bestand %}
-                        <li class="container__image" id="{{ bijlage.bestand.url }}">
+                        <li class="">
                             <img src="{{ bijlage.bestand.url }}"
-                                 alt="GIF"
-                                 data-detail-target="selectedImage">
+                                 alt="">
                         </li>
                     {% elif bijlage.afbeelding %}
-                        <li class="container__image" id="{{ bijlage.afbeelding.url }}">
+                        <li class="">
                             <img src="{{ bijlage.afbeelding.url }}"
-                                 alt="Afbeelding"
-                                 data-detail-target="selectedImage">
+                                 alt="">
                         </li>
                     {% endif %}
                 {% endfor %}
             </ul>
         </div>
-        <p class="description">{{ release_note.beschrijving }}</p>
     </div>
     </turbo-frame>
 {% endblock body %}

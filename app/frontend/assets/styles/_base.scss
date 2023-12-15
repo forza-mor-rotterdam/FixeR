@@ -125,6 +125,11 @@ h6, .h6 {
     font-size: $h6-font-size;
 }
 
+p {
+    line-height: $line-height-base;
+    max-width: map-get($container-max-widths , md );
+}
+
 @mixin has-icon {
     display: inline-block;
     margin-left: 25px;
@@ -301,6 +306,12 @@ ul {
 li {
     &.list-item {
     border-bottom: 1px solid $gray-tint04;
+  }
+
+  .border-top & {
+    &:first-child {
+        border-top: 1px solid $gray-tint04;
+    }
   }
 }
 
