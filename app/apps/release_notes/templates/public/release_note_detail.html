@@ -16,7 +16,7 @@
         </div>
         <h1 class="pagetitle">{{ release_note.titel|capfirst }}</h1>
         {% if release_note.publicatie_datum %}<p class="release-date">{{ release_note.publicatie_datum }}</p>{% endif %}
-        <p class="description">{{ release_note.beschrijving }}</p>
+        <p class="description">{{ release_note.beschrijving|safe }}</p>
         <div class="container">
             <ul class="list--images">
                 {% for bijlage in release_note.bijlagen.all %}

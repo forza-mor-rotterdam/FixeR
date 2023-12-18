@@ -68,6 +68,8 @@ INSTALLED_APPS = (
     "django_filters",
     "webpack_loader",
     "corsheaders",
+    "ckeditor",
+    "ckeditor_uploader",
     "mozilla_django_oidc",
     "health_check",
     "health_check.cache",
@@ -451,3 +453,19 @@ APP_MERCURE_PUBLIC_URL = os.getenv("APP_MERCURE_PUBLIC_URL")
 APP_MERCURE_INTERNAL_URL = os.getenv("APP_MERCURE_INTERNAL_URL", APP_MERCURE_PUBLIC_URL)
 MERCURE_PUBLISHER_JWT_KEY = os.getenv("MERCURE_PUBLISHER_JWT_KEY")
 MERCURE_SUBSCRIBER_JWT_KEY = os.getenv("MERCURE_SUBSCRIBER_JWT_KEY")
+
+CKEDITOR_CONFIGS = {
+    "default": {
+        "toolbar": "full",  # change to Custom if you want the below settings
+        # 'toolbar_Custom': [
+        #     ['heading'],
+        #     ['Bold', 'Italic', 'Underline'],
+        #     ['NumberedList', 'BulletedList', '-', 'blockQuote', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+        #     ['Link', 'Unlink'],
+        #     ['RemoveFormat', 'Source']
+        # ],
+        "height": 300,
+    },
+}
+
+CKEDITOR_UPLOAD_PATH = "uploads/"

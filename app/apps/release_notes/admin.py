@@ -1,6 +1,8 @@
 from apps.release_notes.tasks import task_aanmaken_afbeelding_versies
+from ckeditor.widgets import CKEditorWidget
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
+from django.db import models
 from utils.diversen import truncate_tekst
 
 from .models import Bijlage, ReleaseNote
@@ -15,6 +17,9 @@ class ReleaseNoteAdmin(admin.ModelAdmin):
     def korte_tekst(self, obj):
         return truncate_tekst(obj.beschrijving)
 
+    formfield_overrides = {
+        models.TextField: {"widget": CKEditorWidget()},
+    }
     list_display = ("titel", "korte_tekst", "aangemaakt_op", "publicatie_datum")
     search_fields = ("titel",)
     list_filter = ("aangemaakt_op", "publicatie_datum")
@@ -23,6 +28,10 @@ class ReleaseNoteAdmin(admin.ModelAdmin):
 
     # form = ReleaseNoteAanpassenForm
     korte_tekst.short_description = "Beschrijving"
+
+    class Meta:
+        model = ReleaseNote
+        fields = "__all__"
 
 
 @admin.action(description="Maak afbeelding versies voor selectie")

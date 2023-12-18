@@ -1,6 +1,10 @@
 {% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from main_tags %}
+{% load static %}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer">
@@ -27,12 +31,13 @@
                       id="releaseNoteForm"
                       enctype="multipart/form-data">
                     {% csrf_token %}
+                    {{ form.management_form }}
+                    {{ form.media }}
+                    {{ formset.management_form }}
+                    {{ formset.media }}
                     <fieldset>
                         <div class="form-control__with-helptext js-validation">{{ form.titel|render_rotterdam_formulier }}</div>
-                        <div class="form-control__with-helptext js-validation">{{ form.beschrijving|render_rotterdam_formulier }}</div>
-                        {{ form.management_form }}
-                        {{ formset.management_form }}
-                        {{ formset.media }}
+                        <div class="form-control__with-helptext js-validation">{{ form.beschrijving }}</div>
                         <div class="form-control__with-helptext js-validation container">
                             {% for bijlage_form in formset %}
                                 <div class="wrapper--flex-order">

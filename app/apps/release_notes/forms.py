@@ -1,5 +1,6 @@
 import logging
 
+from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
 
@@ -21,11 +22,8 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
         widget=forms.TextInput(),
     )
     beschrijving = forms.CharField(
-        widget=forms.Textarea(
+        widget=CKEditorWidget(
             attrs={
-                "rows": 10,
-                "cols": 38,
-                "style": "resize: none;",
                 "name": "beschrijving",
             }
         ),
