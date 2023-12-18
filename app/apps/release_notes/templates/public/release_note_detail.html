@@ -15,14 +15,16 @@
             </a>
         </div>
         <h1 class="pagetitle">{{ release_note.titel|capfirst }}</h1>
-        <p class="release-date">{{ release_note.publicatie_datum }}</p>
+        {% if release_note.publicatie_datum %}<p class="release-date">{{ release_note.publicatie_datum }}</p>{% endif %}
         <p class="description">{{ release_note.beschrijving }}</p>
-        <div class="container__imageslider">
+        <div class="container">
             <ul class="list--images">
                 {% for bijlage in release_note.bijlagen.all %}
-                    <li class="">
-                        <img src="{{ bijlage.bestand.url }}" alt="">
-                    </li>
+                    {% if bijlage.bestand %}
+                        <li class="">
+                            <img src="{{ bijlage.bestand.url }}" alt="">
+                        </li>
+                    {% endif %}
                 {% endfor %}
             </ul>
         </div>
