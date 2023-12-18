@@ -1,6 +1,6 @@
 .badge {
     display: inline-block;
-    padding: 0 8px;
+    padding: 0 $input-padding-y;
     color: $white;
     font-weight: 700;
     font-size: 12px;
@@ -10,7 +10,7 @@
     h1 & {
         vertical-align: middle;
         margin-left: 12px;
-        padding: 2px 8px;
+        padding: 2px $input-padding-y;
         margin-top: -4px;
     }
 
