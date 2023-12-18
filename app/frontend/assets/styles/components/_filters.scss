@@ -136,7 +136,7 @@
             &.list-filters--active {
                 li {
                     display: inline-block;
-                    margin-right: 8px;
+                    margin-right: $input-padding-y;
                 }
             }
 
@@ -260,7 +260,7 @@ details {
         &.list-filters--active {
             li {
                 display: inline-block;
-                margin-right: 8px;
+                margin-right: $input-padding-y;
             }
         }
 

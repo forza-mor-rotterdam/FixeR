@@ -31,7 +31,7 @@
             font-weight: 300;
             line-height: 12px;
             margin-bottom: 0;
-            margin-left: 8px;
+            margin-left: $input-padding-y;
             max-width: 37px;
 
             span {
@@ -242,7 +242,7 @@
         }
 
         .container__image {
-            margin: 8px 16px 14px 0;
+            margin: $input-padding-y 16px 14px 0;
             .background-image {
                 width: calc(78px + 2vw);
                 height: calc(58px + 1vw);
@@ -265,8 +265,9 @@
 
         .container__info {
             flex: 1;
-            padding-top: 8px;
+            padding-top: $input-padding-y;
             font-size: 16px;
+            position: relative;
 
             a {
                 color: inherit;
@@ -276,6 +277,13 @@
             h2 {
                 margin: 0 0 4px;
                 text-decoration: none;
+                padding-right: 90px;
+
+                .badge {
+                    position: absolute;
+                    top: $input-padding-y;
+                    right: 0;
+                }
             }
 
             .incident__category,
@@ -381,7 +389,7 @@
 
 .page-incidents {
     .icon--warning {
-        margin: 8px 0 0;
+        margin: $input-padding-y 0 0;
     }
 }
 @media (min-width: map-get($grid-breakpoints, lg)) {

@@ -6,7 +6,7 @@
         position: relative;
 
         p {
-            margin: 8px 0 0;
+            margin: $input-padding-y 0 0;
         }
 
         &:last-child {
@@ -92,7 +92,7 @@
                 // display: none;
                 right: 0;
                 left: auto;
-                top: calc(50% - 8px);
+                top: calc(50% - $input-padding-y);
             }
             .line {
                 width: 2px;

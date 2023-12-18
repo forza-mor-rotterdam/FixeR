@@ -213,7 +213,7 @@
             }
             }
             .gap {
-                gap: 8px;
+                gap: $input-padding-y;
             }
         }
     }
@@ -245,7 +245,7 @@ button.toggle-view {
     top: 16px;
     right: 16px;
     width: auto;
-    padding: 0 8px;
+    padding: 0 $input-padding-y;
     font-weight: 400;
     font-size: 1rem;
     background-color: $white;
