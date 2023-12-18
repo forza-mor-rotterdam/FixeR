@@ -57,6 +57,10 @@
         }
     }
 
+    ul.list--images li img {
+        max-width: map-get($container-max-widths , lg );
+    }
+
     table tbody {
         th, td {
             text-align: left;
