@@ -456,14 +456,24 @@ MERCURE_SUBSCRIBER_JWT_KEY = os.getenv("MERCURE_SUBSCRIBER_JWT_KEY")
 
 CKEDITOR_CONFIGS = {
     "default": {
-        "toolbar": "full",  # change to Custom if you want the below settings
-        # 'toolbar_Custom': [
-        #     ['heading'],
-        #     ['Bold', 'Italic', 'Underline'],
-        #     ['NumberedList', 'BulletedList', '-', 'blockQuote', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-        #     ['Link', 'Unlink'],
-        #     ['RemoveFormat', 'Source']
-        # ],
+        "toolbar": "Custom",  # change to Custom if you want the below settings
+        "toolbar_Custom": [
+            ["Bold", "Italic", "Underline"],
+            [
+                "NumberedList",
+                "BulletedList",
+                "-",
+                "Outdent",
+                "Indent",
+                "-",
+                "JustifyLeft",
+                "JustifyCenter",
+                "JustifyRight",
+                "JustifyBlock",
+            ],
+            ["Link", "Unlink"],
+            ["RemoveFormat", "Source"],
+        ],
         "height": 300,
     },
 }
