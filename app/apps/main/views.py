@@ -479,6 +479,7 @@ class HomepageView(PermissionRequiredMixin, View):
     template_name = "homepage_nieuw.html"
 
     def get(self, request, *args, **kwargs):
+        request.session["origine"] = "home"
         release_notes = self.get_release_notes()
         context = {
             "release_notes": release_notes,

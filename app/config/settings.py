@@ -289,9 +289,15 @@ CSP_CONNECT_SRC = (
         "mercure.fixer-test.forzamor.nl",
         "mercure.fixer-acc.forzamor.nl",
         "mercure.fixer.forzamor.nl",
+        "cke4.ckeditor.com",
     )
     if not DEBUG
-    else ("'self'", "ws:", "localhost:7001")
+    else (
+        "'self'",
+        "ws:",
+        "localhost:7001",
+        "cke4.ckeditor.com",
+    )
 )
 CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
 

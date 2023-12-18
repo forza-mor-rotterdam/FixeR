@@ -7,6 +7,7 @@ from apps.release_notes.tasks import task_aanmaken_afbeelding_versies
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -47,6 +48,12 @@ class ReleaseNoteDetailView(ReleaseNoteView, DetailView):
     template_name = "public/release_note_detail.html"
     context_object_name = "release_note"
 
+    def get(self, request, *args, **kwargs):
+        release_note = get_object_or_404(ReleaseNote, pk=kwargs["pk"])
+        origine = request.session.pop("origine", "home")
+        context = {"release_note": release_note, "origine": origine}
+        return render(request, self.template_name, context)
+
     # form_class = ReleaseNoteSearchForm
 
 
@@ -62,6 +69,11 @@ class ReleaseNoteListViewPublic(ReleaseNoteView, ListView):
         )
 
         return queryset
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        request.session["origine"] = "release_note_lijst_public"
+        return response
 
 
 class ReleaseNoteAanmakenView(PermissionRequiredMixin, ReleaseNoteView, CreateView):
