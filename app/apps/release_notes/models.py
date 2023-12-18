@@ -109,7 +109,7 @@ class Bijlage(BasisModel):
 
 class ReleaseNote(BasisModel):
     titel = models.CharField(max_length=255)
-    beschrijving = models.TextField(blank=True, max_length=500)
+    beschrijving = models.TextField(blank=True, max_length=1000)
     publicatie_datum = models.DateTimeField(null=True, blank=True)
     bijlagen = GenericRelation(Bijlage)
     versie = models.CharField(max_length=20, blank=True, null=True)

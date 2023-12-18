@@ -38,6 +38,8 @@ class ReleaseNoteListView(PermissionRequiredMixin, ReleaseNoteView, ListView):
             queryset = queryset.filter(
                 Q(titel__icontains=search) | Q(tekst__icontains=search)
             )
+        queryset = queryset.order_by("-aangemaakt_op")
+
         return queryset
 
 
@@ -52,6 +54,14 @@ class ReleaseNoteListViewPublic(ReleaseNoteView, ListView):
     template_name = "public/release_note_list.html"
     context_object_name = "release_notes"
     # form_class = ReleaseNoteSearchForm
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(publicatie_datum__isnull=False).order_by(
+            "-publicatie_datum", "-aangemaakt_op"
+        )
+
+        return queryset
 
 
 class ReleaseNoteAanmakenView(PermissionRequiredMixin, ReleaseNoteView, CreateView):

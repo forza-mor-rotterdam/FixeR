@@ -1,32 +1,32 @@
 {% extends "base.html" %}
-{% block body_class %}page__home {% endblock %}
-{% block container_class %}container{% endblock %}
+{% block body_class %}
+    page__home
+{% endblock body_class %}
+{% block container_class %}
+    container
+{% endblock container_class %}
 {% block body %}
     <turbo-frame id="overview">
     <div class="border-green print-only"></div>
     <div>
         <h1>Nieuw in Fixer</h1>
         <ul class="list-clean">
-            {% comment %} {% for release_note in release_notes %} {% endcomment %}
-            <li>
-                <div class="alert alert--confirmation">
-                    <span>
-                        {% include "icons/checkmark-circle.svg" %}
-                    </span>
-                    <div>
-                        <p>
-                            Navigeer naar een taak op de klaart
-                            <a href="{% url 'home' %}">Lees meer</a>
-                        </p>
+            {% for release_note in release_notes %}
+                <li>
+                    <div class="alert alert--confirmation">
+                        <span>{% include "icons/checkmark-circle.svg" %}</span>
+                        <div>
+                            <p>
+                                {{ release_note.titel }}
+                                <small><a href="{% url 'release_note_detail' release_note.pk %}">Lees meer</a></small>
+                            </p>
+                        </div>
                     </div>
-                </div>
-            </li>
-            {% comment %} {% endfor %} {% endcomment %}
-            <div class="container">
-                <a href="{% url 'incident_index' %}" class="btn btn-action">
-                    Bekijk mijn taken
-                </a>
-            </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="container">
+            <a href="{% url 'incident_index' %}" class="btn btn-action">Bekijk mijn taken</a>
         </div>
     </div>
     </turbo-frame>
