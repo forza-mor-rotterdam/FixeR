@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block body %}
+    <turbo-frame id="overview">
+    <div class="border-green print-only"></div>
+    <div class="page__detail">
+        <div data-controller="detail">
+            <div class="grid-container">
+                <div class="grid-item">
+                    <div>
+                        <h1>Nieuw in Fixer</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-container">
+                <div class="grid-item">
+                    <section class="section--seperated">
+                        <div class="container__details">
+                            <h2>Navigeer naar een taak op de klaart</h2>
+                            <p>
+                                <small><a href="{% url 'home' %}">Lees meer</a></small>
+                            </p>
+                        </div>
+                    </section>
+
+                </div>
+
+
+            </div>
+            <div class="container">
+                <a href="{% url 'incident_index' %}">
+                    <button type="button" class="btn btn-action">
+                        Bekijk mijn taken
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+    </turbo-frame>
+{% endblock body %}

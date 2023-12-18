@@ -30,6 +30,7 @@ from apps.taken.models import Taak, Taaktype
 from device_detector import DeviceDetector
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
@@ -38,6 +39,7 @@ from django.db.models.functions import Concat
 from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.views.generic import View
 from rest_framework.reverse import reverse as drf_reverse
 
 logger = logging.getLogger(__name__)
@@ -65,6 +67,7 @@ def informatie(request):
     )
 
 
+# Verander hier de instellingen voor de nieuwe homepagina.
 @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
@@ -467,3 +470,18 @@ def meldingen_bestand(request):
         status=response.status_code,
         reason=response.reason,
     )
+
+
+class HomepageView(PermissionRequiredMixin, View):
+    permission_required = "authorisatie.homepage_bekijken"
+    template_name = "homepage_nieuw.html"
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            # Voeg meer context toe zonodig
+        }
+        return render(request, self.template_name, context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context

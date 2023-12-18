@@ -17,6 +17,7 @@ from apps.context.views import (
     ContextVerwijderenView,
 )
 from apps.main.views import (
+    HomepageView,
     config,
     filter,
     http_404,
@@ -68,6 +69,12 @@ router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 
 urlpatterns = [
     path("", root, name="root"),
+    # Tijdelijke url voor nieuwe homepage
+    path(
+        "home/",
+        HomepageView.as_view(),
+        name="home",
+    ),
     path("informatie/", informatie, name="informatie"),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path("api-token-auth/", views.obtain_auth_token),

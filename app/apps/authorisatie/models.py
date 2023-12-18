@@ -162,6 +162,14 @@ class ReleaseNoteVerwijderenPermissie(BasisPermissie):
     codenaam = "release_note_verwijderen"
 
 
+# Homepage
+
+
+class HomePageBekijkenPermissie(BasisPermissie):
+    naam = "Homepage bekijken"
+    codenaam = "homepage_bekijken"
+
+
 gebruikersgroep_permissies = (
     TakenLijstBekijkenPermissie,
     TaakBekijkenPermissie,
@@ -194,6 +202,7 @@ gebruikersgroep_permissies = (
     ReleaseNoteBekijkenPermissie,
     ReleaseNoteAanpassenPermissie,
     ReleaseNoteVerwijderenPermissie,
+    HomePageBekijkenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [
