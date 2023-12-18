@@ -23,7 +23,7 @@ class ReleaseNoteAdmin(admin.ModelAdmin):
     list_display = ("titel", "korte_tekst", "aangemaakt_op", "publicatie_datum")
     search_fields = ("titel",)
     list_filter = ("aangemaakt_op", "publicatie_datum")
-    ordering = ["aangemaakt_op"]
+    ordering = ["-aangemaakt_op"]
     inlines = [BijlageInline]
 
     # form = ReleaseNoteAanpassenForm
