@@ -14,7 +14,7 @@ export default class extends Controller {
         }
     }
     removeFilter(e) {
-        const input = document.querySelector(`[name="${e.params.description}"][value="${e.params.code}"]`);
+        const input = document.querySelector(`[id="${e.params.code}"]`);
         input.checked = false;
         this.element.requestSubmit()
     }
