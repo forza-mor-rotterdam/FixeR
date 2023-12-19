@@ -609,3 +609,11 @@ ul.list--form-radio-input {
 .django-ckeditor-widget {
     width: 100%;
 }
+
+.form--aanpassen {
+    .wrapper--flex-order {
+        img {
+            margin-bottom: 1em;
+        }
+    }
+}

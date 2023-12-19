@@ -29,7 +29,8 @@
                       method="post"
                       novalidate
                       id="releaseNoteForm"
-                      enctype="multipart/form-data">
+                      enctype="multipart/form-data"
+                      class="form--aanpassen">
                     {% csrf_token %}
                     {{ form.management_form }}
                     {{ form.media }}
@@ -40,28 +41,31 @@
                         <div class="form-control__with-helptext js-validation">{{ form.beschrijving }}</div>
                         <div class="form-control__with-helptext js-validation container">
                             {% for bijlage_form in formset %}
-                                <div class="wrapper--flex-order">
-                                    {% if bijlage_form.instance.mimetype == "image/gif" and bijlage_form.instance.bestand %}
-                                        <img src="{{ bijlage_form.instance.bestand.url }}" alt="GIF">
-                                    {% elif bijlage_form.instance.afbeelding %}
-                                        <img src="{{ bijlage_form.instance.afbeelding.url }}" alt="Afbeelding">
-                                    {% endif %}
-                                    {% if formset.can_delete %}<label>Verwijderen: {{ bijlage_form.DELETE }}</label>{% endif %}
-                                    <div class="">
-                                        <label for="{{ bijlage_form.bestand.id_for_label }}">Wijzigen:</label>
-                                        <input id="{{ bijlage_form.bestand.id_for_label }}"
-                                               name="{{ bijlage_form.bestand.html_name }}"
-                                               type="file"
-                                               {% render_attrs bijlage_form.bestand class="file-upload-input" %}>
-                                        <input type="hidden"
-                                               name="bijlage-0-id"
-                                               value="{{ bijlage_form.instance.id|stringformat:'s' }}"
-                                               id="{{ bijlage_form.id.id_for_label }}">
+                                <div class="form-row">
+                                    <div class="wrapper--flex-order">
+                                        {% if bijlage_form.instance.mimetype == "image/gif" and bijlage_form.instance.bestand %}
+                                            <img src="{{ bijlage_form.instance.bestand.url }}" alt="GIF">
+                                        {% elif bijlage_form.instance.afbeelding %}
+                                            <img src="{{ bijlage_form.instance.afbeelding.url }}" alt="Afbeelding">
+                                        {% endif %}
+                                        {% if formset.can_delete %}<label>Verwijderen: {{ bijlage_form.DELETE }}</label>{% endif %}
+                                            {% comment %} <label for="{{ bijlage_form.bestand.id_for_label }}">Wijzigen:</label> {% endcomment %}
+                                            <div class="">
+                                            {% comment %} <input id="{{ bijlage_form.bestand.id_for_label }}"
+                                                name="{{ bijlage_form.bestand.html_name }}"
+                                                type="file"
+                                                {% render_attrs bijlage_form.bestand class="file-upload-input" %}>
+                                                 {% endcomment %}
+                                            <input type="hidden"
+                                                name="{{ bijlage_form.id.html_name }}"
+                                                value="{{ bijlage_form.instance.id|stringformat:'s' }}"
+                                                id="{{ bijlage_form.id.id_for_label }}">
+                                        </div>
                                     </div>
                                 </div>
                             {% endfor %}
                         </div>
-                        <div class="form-control__with-helptext js-validation"
+                        <div class="form-control__with-helptext js-validation full-width"
                              data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation">{{ form.publicatie_datum|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation">{{ form.versie|render_rotterdam_formulier }}</div>
@@ -69,9 +73,7 @@
                     <div class="form-row container__button">
                         <div class="form-row btn-row">
                             <button type="reset"
-                                    class="btn btn-tertiary"
-                                    data-controller="releaseNote"
-                                    data-action="releaseNote#closeModal">
+                                    class="btn btn-tertiary">
                                 <span>Annuleren</span>
                             </button>
                             <button type="submit" class="btn btn-action">

@@ -28,7 +28,7 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
             }
         ),
         label="Beschrijving",
-        max_length=500,
+        max_length=1000,
     )
 
     versie = forms.CharField(label="Versie", widget=forms.TextInput(), required=False)
