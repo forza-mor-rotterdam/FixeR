@@ -4,7 +4,7 @@ from apps.release_notes.forms import (
     ReleaseNoteAanpassenForm,
 )
 from apps.release_notes.tasks import task_aanmaken_afbeelding_versies
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
@@ -44,7 +44,7 @@ class ReleaseNoteListView(PermissionRequiredMixin, ReleaseNoteView, ListView):
         return queryset
 
 
-class ReleaseNoteDetailView(ReleaseNoteView, DetailView):
+class ReleaseNoteDetailView(LoginRequiredMixin, ReleaseNoteView, DetailView):
     template_name = "public/release_note_detail.html"
     context_object_name = "release_note"
 
@@ -57,7 +57,7 @@ class ReleaseNoteDetailView(ReleaseNoteView, DetailView):
     # form_class = ReleaseNoteSearchForm
 
 
-class ReleaseNoteListViewPublic(ReleaseNoteView, ListView):
+class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):
     template_name = "public/release_note_list.html"
     context_object_name = "release_notes"
     # form_class = ReleaseNoteSearchForm

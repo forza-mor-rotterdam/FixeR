@@ -433,7 +433,7 @@ def incident_modal_handle(request, id):
                                 f"taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
                             )
 
-                return redirect("incident_index")
+            return redirect("incident_index")
 
     return render(
         request,
@@ -475,6 +475,7 @@ def meldingen_bestand(request):
 
 
 class HomepageView(PermissionRequiredMixin, View):
+    # Might change to LoginRequiredMixin
     permission_required = "authorisatie.homepage_bekijken"
     template_name = "homepage_nieuw.html"
 
