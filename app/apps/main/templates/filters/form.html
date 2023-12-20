@@ -24,12 +24,13 @@
                     {% for filter in filter_manager.filters %}
                         {% if filter.active %}
                             <li>
-                                <h3 class="h5">{{ filter.name|capfirst }}</h3>
                                 {% if filter.groups %}
+                                    <h3 class="h5">{{ filter.group_label }}</h3>
                                     {% for group in filter.groups %}
                                         {% include "filters/selected_options.html" with filter=group %}
                                     {% endfor %}
                                 {% else %}
+                                    <h3 class="h5">{{ filter.name|capfirst }}</h3>
                                     {% include "filters/selected_options.html" with filter=filter %}
                                 {% endif %}
                             </li>
