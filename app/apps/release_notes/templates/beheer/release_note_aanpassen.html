@@ -48,14 +48,8 @@
                                         {% elif bijlage_form.instance.afbeelding %}
                                             <img src="{{ bijlage_form.instance.afbeelding.url }}" alt="Afbeelding">
                                         {% endif %}
-                                        {% if formset.can_delete %}<label>Verwijderen: {{ bijlage_form.DELETE }}</label>{% endif %}
-                                            {% comment %} <label for="{{ bijlage_form.bestand.id_for_label }}">Wijzigen:</label> {% endcomment %}
+                                        {% if formset.can_delete %}<label>{{ bijlage_form.DELETE }} Bestand verwijderen</label>{% endif %}
                                             <div class="">
-                                            {% comment %} <input id="{{ bijlage_form.bestand.id_for_label }}"
-                                                name="{{ bijlage_form.bestand.html_name }}"
-                                                type="file"
-                                                {% render_attrs bijlage_form.bestand class="file-upload-input" %}>
-                                                 {% endcomment %}
                                             <input type="hidden"
                                                 name="{{ bijlage_form.id.html_name }}"
                                                 value="{{ bijlage_form.instance.id|stringformat:'s' }}"
