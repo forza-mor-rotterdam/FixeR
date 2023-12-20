@@ -20,6 +20,7 @@
             {{ form.resolutie|render_rotterdam_formulier }}
 
             <div class="wrapper--flex-order">
+                {% if form.nieuwe_taak %}
                 <div>
                     <h3 class="h5">Moet er nog iets gebeuren?</h3>
                     {% comment %} <div class="form-row margin-vertical">
@@ -29,6 +30,7 @@
                         <div class="form-row list-horizontal">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
                     </div>
                 </div>
+                {% endif %}
                 <div class="form-control__with-helptext label-strong" data-incidentHandleForm-target="internalText">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
             </div>
             <div class="form-row">
