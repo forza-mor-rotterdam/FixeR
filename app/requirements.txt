@@ -8,6 +8,7 @@ django-csp==3.6
 django-db-schema-renderer==0.1.2
 django-celery-beat==2.2.1
 django-celery-results==2.4.0
+django-ckeditor
 django-session-timeout-joinup==1.0.0
 djangorestframework==3.13.1
 djangorestframework-csv==2.1.1
@@ -23,6 +24,10 @@ django-webpack-loader==1.7.0
 requests==2.29.0
 debugpy
 celery==5.2.6
+Pillow==9.4.0
+pillow-heif==0.13.0
+sorl-thumbnail==12.8.0
+
 
 redis==4.5.5
 mozilla-django-oidc==3.0.0

@@ -123,7 +123,6 @@ $form-search-indicator-position: left 10px center !default;
 
 .help-block:not(.invalid-text) {
     font-size: $h5-font-size;
-    line-height: 1.25em;
     margin: 0.25rem 0;
     display: block;
     color: $gray-tint09;
@@ -603,6 +602,21 @@ ul.list--form-radio-input {
                 line-height: 1.5rem;
                 min-height: 48px;
             }
+        }
+    }
+}
+
+.django-ckeditor-widget {
+    width: 100%;
+}
+
+.form--aanpassen {
+    .wrapper--flex-order {
+        img {
+            margin-bottom: 1em;
+        }
+        input[type="checkbox"] {
+            @include form-check-input();
         }
     }
 }

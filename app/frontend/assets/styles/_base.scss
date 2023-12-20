@@ -125,6 +125,11 @@ h6, .h6 {
     font-size: $h6-font-size;
 }
 
+p {
+    line-height: $line-height-base;
+    max-width: map-get($container-max-widths , lg );
+}
+
 @mixin has-icon {
     display: inline-block;
     margin-left: 25px;
@@ -297,6 +302,28 @@ ul {
             margin-bottom: 0.25rem;
         }
     }
+
+    &.list--images {
+        @include list-clean();
+        li {
+            margin-bottom: 1em;
+
+            img {
+                max-width: 100%;
+            }
+        }
+    }
+}
+li {
+    &.list-item {
+    border-bottom: 1px solid $gray-tint04;
+  }
+
+  .border-top & {
+    &:first-child {
+        border-top: 1px solid $gray-tint04;
+    }
+  }
 }
 
 dl {

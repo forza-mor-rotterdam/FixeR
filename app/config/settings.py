@@ -68,6 +68,8 @@ INSTALLED_APPS = (
     "django_filters",
     "webpack_loader",
     "corsheaders",
+    "ckeditor",
+    "ckeditor_uploader",
     "mozilla_django_oidc",
     "health_check",
     "health_check.cache",
@@ -76,6 +78,7 @@ INSTALLED_APPS = (
     "health_check.contrib.migrations",
     "django_celery_beat",
     "django_celery_results",
+    "sorl.thumbnail",
     # Apps
     "apps.main",
     "apps.authorisatie",
@@ -85,6 +88,7 @@ INSTALLED_APPS = (
     "apps.rotterdam_formulier_html",
     "apps.context",
     "apps.beheer",
+    "apps.release_notes",
 )
 
 LOGIN_URL = "/login/"
@@ -183,8 +187,8 @@ STATICFILES_DIRS = (
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "static"))
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "media"))
+MEDIA_URL = "/bijlagen/"
+MEDIA_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "bijlagen"))
 
 WEBPACK_LOADER = {
     "DEFAULT": {
@@ -285,9 +289,15 @@ CSP_CONNECT_SRC = (
         "mercure.fixer-test.forzamor.nl",
         "mercure.fixer-acc.forzamor.nl",
         "mercure.fixer.forzamor.nl",
+        "cke4.ckeditor.com",
     )
     if not DEBUG
-    else ("'self'", "ws:", "localhost:7001")
+    else (
+        "'self'",
+        "ws:",
+        "localhost:7001",
+        "cke4.ckeditor.com",
+    )
 )
 CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
 
@@ -337,6 +347,11 @@ SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
 )
 SESSION_CHECK_INTERVAL_SECONDS = int(os.getenv("SESSION_CHECK_INTERVAL_SECONDS", "60"))
 
+THUMBNAIL_BACKEND = "utils.images.ThumbnailBackend"
+THUMBNAIL_PREFIX = "afbeeldingen"
+THUMBNAIL_KLEIN = "128x128"
+THUMBNAIL_STANDAARD = "1480x1480"
+BESTANDEN_PREFIX = "bestanden"
 
 LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
 
@@ -444,3 +459,37 @@ APP_MERCURE_PUBLIC_URL = os.getenv("APP_MERCURE_PUBLIC_URL")
 APP_MERCURE_INTERNAL_URL = os.getenv("APP_MERCURE_INTERNAL_URL", APP_MERCURE_PUBLIC_URL)
 MERCURE_PUBLISHER_JWT_KEY = os.getenv("MERCURE_PUBLISHER_JWT_KEY")
 MERCURE_SUBSCRIBER_JWT_KEY = os.getenv("MERCURE_SUBSCRIBER_JWT_KEY")
+
+CKEDITOR_CONFIGS = {
+    "default": {
+        "toolbar": "Custom",  # change to Custom if you want the below settings
+        # create custom config here: https://ckeditor.com/latest/samples/toolbarconfigurator/index.html#advanced
+        "toolbar_Custom": [
+            {"name": "basicstyles", "items": ["Bold", "Italic", "Underline", "Strike"]},
+            {
+                "name": "paragraph",
+                "items": [
+                    "NumberedList",
+                    "BulletedList",
+                    "-",
+                    "Outdent",
+                    "Indent",
+                    "-",
+                    "-",
+                    "JustifyLeft",
+                    "JustifyCenter",
+                    "JustifyRight",
+                    "JustifyBlock",
+                    "-",
+                ],
+            },
+            "/",
+            {"name": "styles", "items": ["Format", "FontSize"]},
+            {"name": "links", "items": ["Link", "Unlink"]},
+            {"name": "format", "items": ["CopyFormatting", "RemoveFormat"]},
+        ],
+        "height": 300,
+    },
+}
+
+CKEDITOR_UPLOAD_PATH = "uploads/"

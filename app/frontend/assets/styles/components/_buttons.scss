@@ -105,6 +105,10 @@ button {
     margin-bottom: 0.5em;
     max-width: 540px;
 
+    .full-width & {
+        max-width: none;
+    }
+
     span {
         padding: 0 16px;
     }
@@ -247,6 +251,7 @@ button {
         height: 64px;
         background: transparent;
         margin-right: -16px;
+        padding-top: 16px;
     }
 
 

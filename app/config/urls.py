@@ -17,6 +17,7 @@ from apps.context.views import (
     ContextVerwijderenView,
 )
 from apps.main.views import (
+    HomepageView,
     config,
     filter,
     http_404,
@@ -35,6 +36,14 @@ from apps.main.views import (
     taken_overzicht,
     ui_settings_handler,
 )
+from apps.release_notes.views import (
+    ReleaseNoteAanmakenView,
+    ReleaseNoteAanpassenView,
+    ReleaseNoteDetailView,
+    ReleaseNoteListView,
+    ReleaseNoteListViewPublic,
+    ReleaseNoteVerwijderenView,
+)
 from apps.taken.views import (
     TaaktypeAanmakenView,
     TaaktypeAanpassenView,
@@ -42,6 +51,7 @@ from apps.taken.views import (
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
 from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
@@ -59,6 +69,12 @@ router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 
 urlpatterns = [
     path("", root, name="root"),
+    # Tijdelijke url voor nieuwe homepage
+    path(
+        "home/",
+        HomepageView.as_view(),
+        name="home",
+    ),
     path("informatie/", informatie, name="informatie"),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path("api-token-auth/", views.obtain_auth_token),
@@ -157,6 +173,37 @@ urlpatterns = [
         RechtengroepVerwijderenView.as_view(),
         name="rechtengroep_verwijderen",
     ),
+    # Release notes
+    path(
+        "release-notes/",
+        ReleaseNoteListViewPublic.as_view(),
+        name="release_note_lijst_public",
+    ),
+    path(
+        "release-notes/<int:pk>/",
+        ReleaseNoteDetailView.as_view(),
+        name="release_note_detail",
+    ),
+    path(
+        "beheer/release-notes/",
+        ReleaseNoteListView.as_view(),
+        name="release_note_lijst",
+    ),
+    path(
+        "beheer/release-notes/aanmaken/",
+        ReleaseNoteAanmakenView.as_view(),
+        name="release_note_aanmaken",
+    ),
+    path(
+        "beheer/release-notes/<int:pk>/aanpassen/",
+        ReleaseNoteAanpassenView.as_view(),
+        name="release_note_aanpassen",
+    ),
+    path(
+        "beheer/release-notes/<int:pk>/verwijderen/",
+        ReleaseNoteVerwijderenView.as_view(),
+        name="release_note_verwijderen",
+    ),
     # END beheer
     path("api/schema/", SpectacularAPIView.as_view(api_version="v1"), name="schema"),
     # Optional UI:
@@ -194,6 +241,7 @@ if settings.OIDC_ENABLED:
     ]
 
 if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
         path("404/", http_404, name="404"),
         path("500/", http_500, name="500"),
