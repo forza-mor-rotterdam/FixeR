@@ -1,4 +1,4 @@
-{% if group %}<h3 class="h6">{{ filter.name|capfirst }}</h3>{% endif %}
+{% if group and group.active %}<h3 class="h6">{{ filter.name|capfirst }}</h3>{% endif %}
 <ul class="list-filters--active list-clean">
     {% for optie in filter.options %}
         {% if optie.checked %}
