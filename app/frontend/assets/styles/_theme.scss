@@ -84,7 +84,7 @@ $container-max-widths: (
 // around it in window.
 $container-margin: (
   xs: 0px,
-  sm: 0px,
+  sm: 16px,
   md: 24px,
   lg: 32px,
   xl: 32px,
@@ -104,7 +104,7 @@ $focus-border-color: $gray-tint11;
 $disabled-border-color: $gray-tint08;
 
 $font-weight-normal: 400;
-$line-height-base: 1.75 !default;
+$line-height-base: 1.5 !default;
 
 // voor footer links, <small> en input field error messages
 $small-font-size: 0.75rem;
@@ -122,7 +122,7 @@ $h2-font-size: calc(1.275em + 0.3vw);
 $h3-font-size: 1.25em;
 $h4-font-size: 1.125em;
 $h5-font-size: 1em;
-$h6-font-size: 0.75em;
+$h6-font-size: 0.8888em;
 $font-size-base: 1em;
 
 $body-color: $gray-tint11;

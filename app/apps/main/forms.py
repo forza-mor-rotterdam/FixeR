@@ -35,22 +35,26 @@ HANDLED_OPTIONS = (
 TAAK_BEHANDEL_OPTIES = (
     (
         "ja",
-        "Ja",
-        "We zijn met uw melding aan de slag gegaan en hebben het probleem opgelost.",
+        "De taak is afgerond",
         "voltooid",
         "opgelost",
     ),
     (
-        "nee",
-        "Nee",
-        "We zijn met uw melding aan de slag gegaan, maar konden het probleem helaas niet oplossen. Want...",
+        "ja",
+        "Niets aangetroffen",
         "voltooid",
+        "niet_gevonden",
+    ),
+    (
+        "nee",
+        "Kan niet worden uitgevoerd",
+        "open",
         "niet_opgelost",
     ),
 )
 
-TAAK_BEHANDEL_STATUS = {bo[0]: bo[3] for bo in TAAK_BEHANDEL_OPTIES}
-TAAK_BEHANDEL_RESOLUTIE = {bo[0]: bo[4] for bo in TAAK_BEHANDEL_OPTIES}
+TAAK_BEHANDEL_STATUS = {bo[0]: bo[2] for bo in TAAK_BEHANDEL_OPTIES}
+TAAK_BEHANDEL_RESOLUTIE = {bo[0]: bo[3] for bo in TAAK_BEHANDEL_OPTIES}
 
 
 class RadioSelect(forms.RadioSelect):
@@ -66,11 +70,12 @@ class TaakBehandelForm(forms.Form):
         widget=RadioSelectSimple(
             attrs={
                 "class": "list--form-radio-input",
-                "data-action": "change->bijlagen#updateImageDisplay",
+                "data-action": "change->incidentHandleForm#onChangeResolution",
+                "hideLabel": True,
             }
         ),
         label="Is de taak afgehandeld?",
-        choices=[[x[4], x[1]] for x in TAAK_BEHANDEL_OPTIES],
+        choices=[[x[3], x[1]] for x in TAAK_BEHANDEL_OPTIES],
         required=True,
     )
 
@@ -80,9 +85,11 @@ class TaakBehandelForm(forms.Form):
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenExtra",
+                "hideLabel": True,
             }
         ),
         label="Foto's",
+        help_text="Help je collega’s en de melder door een volledig beeld van de situatie te geven.",
         required=False,
     )
 
@@ -103,26 +110,21 @@ class TaakBehandelForm(forms.Form):
         volgende_taaktypes = kwargs.pop("volgende_taaktypes", None)
         super().__init__(*args, **kwargs)
 
+        # Vraag Vervolgtaak? Altijd tonen bij de 3 resoluties (afgehandeld, niet afgehandeld, niets aangetroffen)
+        # Alle vervolgtaken als checkboxes weergeven?
+        # Bij resolutie 3 ("kan  niet") is interne opmerking VERPLICHT, met tekst "Waarom kan de taak niet worden afgerond?"
+
         if volgende_taaktypes:
-            self.fields["nieuwe_taak"] = forms.ChoiceField(
-                widget=forms.Select(),
-                label="Vervolgtaak",
+            self.fields["nieuwe_taak"] = forms.MultipleChoiceField(
+                widget=forms.CheckboxSelectMultiple,
+                label="",
                 choices=[
                     (taaktype.id, taaktype.omschrijving)
                     for taaktype in volgende_taaktypes
                 ],
                 required=False,
             )
-            self.fields["nieuwe_taak_toevoegen"] = forms.BooleanField(
-                widget=forms.CheckboxInput(
-                    attrs={
-                        "class": "form-check-input",
-                        "data-action": "change->incidentHandleForm#toggleNewTask",
-                    }
-                ),
-                label="Er moet nog iets gebeuren.",
-                required=False,
-            )
+            # Omschrijving nieuwe taak nodig?
             self.fields["omschrijving_nieuwe_taak"] = forms.CharField(
                 label="Toelichting",
                 help_text="Deze tekst wordt niet naar de melder verstuurd.",

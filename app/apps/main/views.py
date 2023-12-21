@@ -26,9 +26,12 @@ from apps.main.utils import (
     to_base64,
 )
 from apps.meldingen.service import MeldingenService
+from apps.release_notes.models import ReleaseNote
 from apps.taken.models import Taak, Taaktype
+from device_detector import DeviceDetector
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
@@ -37,6 +40,8 @@ from django.db.models.functions import Concat
 from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
+from django.views.generic import View
 from rest_framework.reverse import reverse as drf_reverse
 
 logger = logging.getLogger(__name__)
@@ -64,6 +69,7 @@ def informatie(request):
     )
 
 
+# Verander hier de instellingen voor de nieuwe homepagina.
 @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
@@ -266,7 +272,8 @@ def taak_detail(request, id):
     melding_response = MeldingenService().get_by_uri(taak.melding.bron_url)
     melding = melding_response.json()
     tijdlijn_data = melding_naar_tijdlijn(melding)
-
+    ua = request.META.get("HTTP_USER_AGENT")
+    device = DeviceDetector(ua).parse()
     return render(
         request,
         "taken/taak_detail.html",
@@ -275,6 +282,7 @@ def taak_detail(request, id):
             "taak": taak,
             "melding": melding,
             "tijdlijn_data": tijdlijn_data,
+            "device_os": device.os_name().lower(),
         },
     )
 
@@ -372,23 +380,14 @@ def incident_modal_handle(request, id):
             initial={"resolutie": resolutie},
         )
         if form.is_valid():
+            # Afhandelen bijlagen
             bijlagen = request.FILES.getlist("bijlagen", [])
-            taaktype = Taaktype.objects.filter(
-                id=form.cleaned_data.get("nieuwe_taak")
-            ).first()
-            taaktype_url = (
-                drf_reverse(
-                    "v1:taaktype-detail",
-                    kwargs={"uuid": taaktype.uuid},
-                    request=request,
-                )
-                if taaktype
-                else None
-            )
             bijlagen_base64 = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
+
+            # Taak status aanpassen
             taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
                 taakopdracht_url=taak.taakopdracht,
                 status="voltooid",
@@ -401,25 +400,41 @@ def incident_modal_handle(request, id):
                 logger.error(
                     f"taak_status_aanpassen: status code: {taak_status_aanpassen_response.status_code}, taak id: {id}"
                 )
+
+            # Aanmaken extra taken
             if (
                 taak_status_aanpassen_response.status_code == 200
-                and taaktype_url
-                and form.cleaned_data.get("nieuwe_taak_toevoegen")
+                and form.cleaned_data.get("nieuwe_taak")
             ):
-                taak_aanmaken_response = MeldingenService().taak_aanmaken(
-                    melding_uuid=taak.melding.response_json.get("uuid"),
-                    taaktype_url=taaktype_url,
-                    titel=taaktype.omschrijving,
-                    bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
-                    gebruiker=request.user.email,
-                )
-                if taak_aanmaken_response.status_code != 200:
-                    logger.error(
-                        f"taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
+                taken = form.cleaned_data.get("nieuwe_taak", [])
+                for vervolg_taak in taken:
+                    taaktype = Taaktype.objects.filter(id=vervolg_taak).first()
+                    taaktype_url = (
+                        drf_reverse(
+                            "v1:taaktype-detail",
+                            kwargs={"uuid": taaktype.uuid},
+                            request=request,
+                        )
+                        if taaktype
+                        else None
                     )
 
-            form.cleaned_data.get("handle_choice", 1)
+                    if taaktype_url:
+                        taak_aanmaken_response = MeldingenService().taak_aanmaken(
+                            melding_uuid=taak.melding.response_json.get("uuid"),
+                            taaktype_url=taaktype_url,
+                            titel=taaktype.omschrijving,
+                            bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
+                            gebruiker=request.user.email,
+                        )
+
+                        if taak_aanmaken_response.status_code != 200:
+                            logger.error(
+                                f"taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
+                            )
+
             return redirect("incident_index")
+
     return render(
         request,
         "incident/modal_handle.html",
@@ -457,3 +472,26 @@ def meldingen_bestand(request):
         status=response.status_code,
         reason=response.reason,
     )
+
+
+class HomepageView(PermissionRequiredMixin, View):
+    # Might change to LoginRequiredMixin
+    permission_required = "authorisatie.homepage_bekijken"
+    template_name = "homepage_nieuw.html"
+
+    def get(self, request, *args, **kwargs):
+        request.session["origine"] = "home"
+        release_notes = self.get_release_notes()
+        context = {
+            "release_notes": release_notes,
+        }
+        return render(request, self.template_name, context)
+
+    def get_release_notes(self):
+        five_weeks_ago = timezone.now() - timezone.timedelta(weeks=5)
+
+        release_notes = ReleaseNote.objects.filter(
+            publicatie_datum__gte=five_weeks_ago
+        ).order_by("-publicatie_datum")[:6]
+
+        return release_notes

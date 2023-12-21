@@ -1,0 +1,27 @@
+{% extends "base_beheer.html" %}
+{% load rotterdam_formulier_html %}
+{% block body %}
+    <turbo-frame id="release_notes" data-turbo-action="advance">
+    <div class="page__beheer" data-controller="row-search">
+        <div>
+            <h1 class="pagetitle">Nieuw in FixeR</h1>
+            <ul class="list-clean border-top">
+                {% for release_note in release_notes %}
+                    <li class="list-item">
+                        <h2>{{ release_note.titel|capfirst }}</h2>
+                        {% if release_note.publicatie_datum %}<p class="release-date">{{ release_note.publicatie_datum }}</p>{% endif %}
+                        <p class="description">
+                            {{ release_note.beschrijving|striptags|safe|truncate_text:200 }}
+                            <br />
+                            <small><a href="{% url 'release_note_detail' release_note.pk %}">Lees meer</a></small>
+                        </p>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="container">
+                <a href="{% url 'incident_index' %}" class="btn btn-action">Bekijk mijn taken</a>
+            </div>
+        </div>
+    </div>
+    </turbo-frame>
+{% endblock body %}

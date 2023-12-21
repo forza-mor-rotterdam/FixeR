@@ -36,11 +36,18 @@ export default class extends Controller {
     }
     openModal(event) {
         let self = this
-        self.titleTarget.textContent = event.params.title
-        self.subTitleTarget.textContent = event.params.subTitle
-        self.turboFrameTarget.id = event.params.id
-        self.turboFrameTarget.src = event.params.url
-        const modal = self.turboFrameTarget.closest('.modal');
+        if (self.hasTitleTarget){
+            self.titleTarget.innerHTML = event.params.title
+        }
+        if (self.hasSubTitleTarget){
+            self.subTitleTarget.innerHTML = event.params.subTitle
+        }
+        let modal = this.element.querySelector('.modal')
+        if (self.hasTurboFrameTarget){
+            self.turboFrameTarget.id = event.params.id
+            self.turboFrameTarget.src = event.params.url
+            modal = self.turboFrameTarget.closest('.modal');
+        }
         const modalBackdrop = modal.querySelector('.modal-backdrop');
         modal.classList.add('show');
         modalBackdrop.classList.add('show');

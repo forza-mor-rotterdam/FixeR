@@ -14,3 +14,9 @@ def gebruikersnaam(gebruiker):
         last_name = gebruiker.last_name if gebruiker.last_name else ""
         return f"{first_name} {last_name}".strip()
     return gebruiker.email
+
+
+def truncate_tekst(text, length=200):
+    if len(text) > length:
+        return f"{text[:length]}..."
+    return text

@@ -11,6 +11,7 @@
         data-incidentlist-target="taakItem"
         data-id="{{ taak.id }}"
         data-onderwerpen="{{ taak.render_onderwerpen }}"
+        data-titel="{{ taak.titel }}"
         data-adres="{{ taak.adres }}"
         data-geometrie="{{ taak.geometrie|json_encode }}"
         data-afbeelding-url="{{ taak.afbeelding_url }}"
@@ -32,7 +33,7 @@
             class="container__actions handle--no-success"
             data-id="{{ taak.id }}"
             data-taak-target="buttonNietOpgelost"
-            data-modal-title-param="Taak behandelen"
+            data-modal-title-param="Taak afhandelen"
             data-modal-sub-title-param="{{ taak.titel }}"
             data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}?resolutie=niet_opgelost"
             data-modal-id-param="incident_modal_handle_{{ taak.id }}"
@@ -46,7 +47,7 @@
             class="container__actions handle--success"
             data-id="{{ taak.id }}"
             data-taak-target="buttonOpgelost"
-            data-modal-title-param="Taak behandelen"
+            data-modal-title-param="Taak afhandelen"
             data-modal-sub-title-param="{{ taak.titel }}"
             data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}?resolutie=opgelost"
             data-modal-id-param="incident_modal_handle_{{ taak.id }}"
@@ -56,6 +57,7 @@
                 <span>Afhandelen</span>
             </div>
         </button>
+        {% comment %} Add other resolutions? Niets aangetroffen {% endcomment %}
         {% endif %}
             <div class="container__flex">
                 <a href="{% url 'taak_detail' taak.id %}" data-turbo-frame="taak_basis" aria-label="Bekijk taak {{ taak.id }}">

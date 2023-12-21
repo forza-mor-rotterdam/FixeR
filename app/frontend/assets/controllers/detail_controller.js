@@ -1,11 +1,12 @@
 import { Controller } from '@hotwired/stimulus';
 
-let markerIcon, markerBlue, markerGreen, currentImg, imageContainer, modal, modalBackdrop = null
+let markerIcon, markerBlue, markerGreen, markerMe, markers, map, currentImg, imageContainer, modal, modalBackdrop, isMobileDevice, currentPosition = null
 let dist, elapsedTime, startX, startY, startTime = 0
 let imageSrcList = []
 
 let self = null
 export default class extends Controller {
+    static outlets = ["kaart"];
     static values = {
         incidentX: String,
         incidentY: String,
@@ -15,7 +16,7 @@ export default class extends Controller {
         mercurePublicUrl: String,
         mercureSubscriberToken: String,
     }
-    static targets = ['selectedImage', 'thumbList', 'imageSliderContainer']
+    static targets = ['selectedImage', 'thumbList', 'imageSliderContainer', 'taakAfstand', 'navigeerLink']
 
     Mapping = {
         'fotos': 'media',
@@ -23,13 +24,20 @@ export default class extends Controller {
 
     initialize() {
         let self = this
+        let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', { bubbles: true, cancelable: false, detail: {
+            controller: self
+        }});
+
+        window.dispatchEvent(childControllerConnectedEvent);
         self.initMessages()
+
         if(self.hasThumbListTarget) {
             self.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
         }
 
         const mapDiv = document.getElementById('incidentMap')
         if(mapDiv){
+            markers = new L.featureGroup();
             markerIcon = L.Icon.extend({
                 options: {
                     iconSize:     [26, 26],
@@ -55,9 +63,26 @@ export default class extends Controller {
                 attribution: "",
             }
             const incidentCoordinates = [parseFloat(self.incidentXValue.replace(/,/g, '.')), parseFloat(self.incidentYValue.replace(/,/g, '.'))]
-            const map = L.map('incidentMap').setView(incidentCoordinates, 18);
+            map = L.map('incidentMap').setView(incidentCoordinates, 18);
             L.tileLayer(url, config).addTo(map);
             const marker = L.marker(incidentCoordinates, {icon: markerGreen}).addTo(map);
+
+            markers.addLayer(marker);
+
+            if(currentPosition) {
+                markerMe = new L.Marker(
+                    [currentPosition[0], currentPosition[1]],
+                    { icon: markerBlue }
+                );
+                markers.addLayer(markerMe);
+                markerMe.setLatLng([currentPosition[0], currentPosition[1]]);
+                L.marker(currentPosition, {icon: markerBlue}).addTo(map);
+                map.fitBounds(markers.getBounds())
+            }
+
+            window.addEventListener("positionChangeEvent", function(e){
+                self.positionWatchSuccess(e.detail.position)
+            });
         }
     }
 
@@ -69,30 +94,86 @@ export default class extends Controller {
         const touchsurface = document.querySelector('#container-image'),
         threshold = 150, //required min distance traveled to be considered swipe
         allowedTime = 1000 // maximum time allowed to travel that distance
+        if (touchsurface){
 
-        touchsurface.addEventListener('touchstart', function(e){
-            var touchobj = e.changedTouches[0]
-            dist = 0
-            startX = touchobj.pageX
-            startY = touchobj.pageY
-            startTime = new Date().getTime() // record time when finger first makes contact with surface
-            e.preventDefault()
-        }, false)
+            touchsurface.addEventListener('touchstart', function(e){
+                var touchobj = e.changedTouches[0]
+                dist = 0
+                startX = touchobj.pageX
+                startY = touchobj.pageY
+                startTime = new Date().getTime() // record time when finger first makes contact with surface
+                e.preventDefault()
+            }, false)
 
-        touchsurface.addEventListener('touchmove', function(e){
-            e.preventDefault() // prevent scrolling when inside DIV
-        }, false)
+            touchsurface.addEventListener('touchmove', function(e){
+                e.preventDefault() // prevent scrolling when inside DIV
+            }, false)
 
-        touchsurface.addEventListener('touchend', function(e){
-            var touchobj = e.changedTouches[0]
-            dist = touchobj.pageX - startX // get total dist traveled by finger while in contact with surface
-            elapsedTime = new Date().getTime() - startTime // get time elapsed
-            // check that elapsed time is within specified, horizontal dist traveled >= threshold, and vertical dist traveled <= 100
-            var swiperightBol = (elapsedTime <= allowedTime && dist >= threshold && Math.abs(touchobj.pageY - startY) <= 100)
-            self.handleswipe(swiperightBol)
-            e.preventDefault()
-        }, false)
+            touchsurface.addEventListener('touchend', function(e){
+                var touchobj = e.changedTouches[0]
+                dist = touchobj.pageX - startX // get total dist traveled by finger while in contact with surface
+                elapsedTime = new Date().getTime() - startTime // get time elapsed
+                // check that elapsed time is within specified, horizontal dist traveled >= threshold, and vertical dist traveled <= 100
+                var swiperightBol = (elapsedTime <= allowedTime && dist >= threshold && Math.abs(touchobj.pageY - startY) <= 100)
+                self.handleswipe(swiperightBol)
+                e.preventDefault()
+            }, false)
+        }
     }
+
+    disconnect(){
+
+    }
+
+    taakAfstandTargetConnected(element) {
+        const markerLocation = new L.LatLng(element.dataset.latitude, element.dataset.longitude);
+        element.textContent = Math.round(markerLocation.distanceTo(currentPosition))
+    }
+
+    positionChangeEvent(position) {
+        console.log("DETAIL, positionChangeEvent lat", position.coords.latitude)
+        console.log("DETAIL, positionChangeEvent long", position.coords.longitude)
+
+    }
+
+    positionWatchSuccess(position){
+        let self = this
+        console.log("detail.positionWatchSuccess")
+        currentPosition = [position.coords.latitude, position.coords.longitude]
+       if (self.hasTaakAfstandTarget){
+            const elem = self.taakAfstandTarget
+            const markerLocation = new L.LatLng(elem.dataset.latitude, elem.dataset.longitude);
+            const afstand = Math.round(markerLocation.distanceTo(currentPosition))
+            elem.textContent = afstand
+        }
+        if (self.hasNavigeerLinkTarget){
+            const linkList = document.querySelectorAll('[data-detail-target="navigeerLink"]')
+
+            for (const link of linkList) {
+                const href = link.getAttribute("href")
+                const rx = new RegExp("saddr=[\\d\\D]*?&", "g");
+                const newHref = href.replace(rx, `saddr=${currentPosition}&`);
+                link.setAttribute('href', newHref)
+            }
+        }
+    }
+
+    makeRoute(event) {
+        // let routeUrl = "https://www.google.com/maps/dir"
+        // let routeUrl = 'https://www.waze.com/ul?ll=40.75889500,-73.98513100&navigate=yes&zoom=17'
+        let routeUrl = "https://www.waze.com/ul?ll=";
+
+
+        function getRoute(event) {
+          let lat = event.params.lat;
+          let long = event.params.long;
+          routeUrl += `${lat},${long}&navigate=yes`;
+          window.open(routeUrl, "_blank");
+        }
+
+        getRoute(event);
+      }
+
     isValidHttpUrl(string) {
         let url;
 

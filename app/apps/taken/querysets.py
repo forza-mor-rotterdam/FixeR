@@ -29,5 +29,6 @@ class TaakQuerySet(QuerySet):
             resolutie__in=[
                 Taak.ResolutieOpties.NIET_OPGELOST,
                 Taak.ResolutieOpties.OPGELOST,
+                Taak.ResolutieOpties.NIET_GEVONDEN,
             ],
         ).order_by("-afgesloten_op")

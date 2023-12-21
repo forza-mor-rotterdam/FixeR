@@ -61,7 +61,11 @@ header {
 
 main,
 header {
-    padding: 0 map-get($container-margin, s) 16px;
+    padding: 0 map-get($container-margin, sm) map-get($container-margin, sm);
+
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        padding: 0 map-get($container-margin, md) map-get($container-margin, md);
+    }
 }
 
 main {
@@ -119,6 +123,11 @@ h5, .h5 {
 }
 h6, .h6 {
     font-size: $h6-font-size;
+}
+
+p {
+    line-height: $line-height-base;
+    max-width: map-get($container-max-widths , lg );
 }
 
 @mixin has-icon {
@@ -293,6 +302,28 @@ ul {
             margin-bottom: 0.25rem;
         }
     }
+
+    &.list--images {
+        @include list-clean();
+        li {
+            margin-bottom: 1em;
+
+            img {
+                max-width: 100%;
+            }
+        }
+    }
+}
+li {
+    &.list-item {
+    border-bottom: 1px solid $gray-tint04;
+  }
+
+  .border-top & {
+    &:first-child {
+        border-top: 1px solid $gray-tint04;
+    }
+  }
 }
 
 dl {
@@ -429,8 +460,13 @@ h1 + .section--seperated {
 
 .invalid-text {
     color: $invalid-color !important;
+    margin: 0;
 }
 
 .padding-bottom-2x {
     padding-bottom: 2rem;
+}
+
+.textalign--right {
+    text-align: right;
 }

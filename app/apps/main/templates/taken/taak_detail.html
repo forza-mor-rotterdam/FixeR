@@ -2,7 +2,7 @@
 {% load webpack_static from webpack_loader %}
 {% load multiply previous next from list_tags %}
 {% load taakopdracht render_onderwerp from melding_tags %}
-{% load to_date vind_in_dict from main_tags %}
+{% load to_date replace_comma_by_dot vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
 {% load context_template from context_tags %}
 {% load gebruiker_middels_email from gebruikers_tags %}
@@ -39,8 +39,8 @@
         </div>
         <div data-controller="detail"
              data-detail-taak-object-value="{{ taak }}"
-             data-detail-incident-y-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.0 }}"
-             data-detail-incident-x-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.1 }}"
+             data-detail-incident-y-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.0|replace_comma_by_dot }}"
+             data-detail-incident-x-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.1|replace_comma_by_dot }}"
              data-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
              {% if not DEBUG %}data-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
              {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
@@ -70,6 +70,24 @@
                             </h1>
                         {% endwith %}
                     {% endif %}
+                    <div class="container__flex">
+                        <div>
+                            <span>{{ taak.titel }}</span><br>
+                            <span class="lighter"><span data-detail-target="taakAfstand" data-latitude="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-longitude="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" ></span> meter afstand</span>
+                        </div>
+                        <div class="textalign--right">
+                            {% if device_os == "ios" %}
+                            <small><a class="link" href="http://maps.apple.com/?saddr=''&daddr={{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}&z=10&" target="_top" aria-label="Navigeer naar taak" data-detail-target="navigeerLink">
+                                {%include "icons/navigate.svg"%}Navigeren
+                            </a></small>
+                            {% else %}
+                            <a class="link" data-action="detail#makeRoute" data-detail-lat-param="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">
+                                {%include "icons/navigate.svg"%}Navigeren
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% comment %} <p>{{ taak.titel }}</p> {% endcomment %}
                     {% comment %} <div class="container__taaknavigatie" data-controller="taakNavigatie" data-taakNavigatie-taak-id-value="{{ taak.id }}" data-taakNavigatie-url-value="/taak/">
                     <span data-taakNavigatie-target="teller"></span>
                     <ul class="list__task-navigation">
@@ -103,9 +121,10 @@
                                     {% for foto in melding.bijlagen %}
                                         <li class="container__image" id="{{ foto.afbeelding_relative_url }}">
                                             <img src="{{ foto.afbeelding_relative_url }}"
-                                                 alt=""
-                                                 data-detail-target="selectedImage"
-                                                 data-action="click->detail#openImageInPopup" />
+                                                alt=""
+                                                data-detail-target="selectedImage"
+                                                {% comment %} data-action="click->detail#openImageInPopup"   {% endcomment %}
+                                                />
                                         </li>
                                     {% endfor %}
                                 </ul>
@@ -177,7 +196,7 @@
                                 <p>{{ taak.resolutie }}</p>
                             {% endif %}
                             {% if taak.taakgebeurtenissen_voor_taak.all.0.gebruiker %}
-                                <h3 class="h5">Gebruiker</h3>
+                                <h3 class="h5">Taak gestart door</h3>
                                 {{ taak.taakgebeurtenissen_voor_taak.all.0.gebruiker|gebruiker_middels_email }}
                             {% endif %}
                         </details>
@@ -206,6 +225,15 @@
                                             {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
                                         {% endif %}
                                     </p>
+                                    {% if device_os == "ios" %}
+                                    <small><a class="link" href="http://maps.apple.com/?saddr=''&daddr={{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}&z=10&" target="_top" aria-label="Navigeer naar taak" data-detail-target="navigeerLink">
+                                        {%include "icons/navigate.svg"%}Navigeren
+                                    </a></small>
+                                    {% else %}
+                                    <a class="link" data-action="detail#makeRoute" data-detail-lat-param="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">
+                                        {%include "icons/navigate.svg"%}Navigeren
+                                    </a>
+                                    {% endif %}
                                 </div>
                                 <dl>
                                     {% if taak.melding.response_json.locaties_voor_melding.0.wijknaam %}
@@ -346,26 +374,39 @@
                             <div class="sticky sticky--bottom">
                                 <div class="form-row">
                                     <button class="btn btn-action"
-                                            data-modal-title-param="Taak behandelen"
-                                            data-modal-sub-title-param="{{ taak.titel }}"
+                                            data-modal-title-param="Taak afhandelen"
+                                            data-modal-sub-title-param="<strong>{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }}
+                                                {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}
+                                                    {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
+                                                {% endif %}</strong><br>{{ taak.titel }}"
                                             data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}"
                                             data-modal-id-param="incident_modal_handle_{{ taak.id }}"
-                                            data-action="modal#openModal">Taak behandelen</button>
+                                            data-action="modal#openModal">Taak afhandelen</button>
                                     {% if taak.taakstatus.naam == "openstaand" or taak.taakstatus.naam == "nieuw" %}
+                                        {% if perms.authorisatie.taak_toewijzen %}
                                         <button class="btn btn-tertiary"
                                                 data-modal-title-param="Toewijzen"
-                                                data-modal-sub-title-param="{{ taak.titel }}"
+                                                data-modal-sub-title-param="<strong>{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }}
+                                                {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}
+                                                    {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
+                                                {% endif %}</strong><br>{{ taak.titel }}"
                                                 data-modal-url-param="{% url 'taak_toewijzen' taak.id %}"
                                                 data-modal-id-param="taak_toewijzen"
                                                 data-action="modal#openModal">Toewijzen</button>
-                                    {% elif taak.taakstatus.naam == "toegewezen" %}
+                                        {% endif %}
+                                    {% elif taak.taakstatus.naam == "toegewezen" and perms.authorisatie.taak_toewijzing_intrekken %}
+                                        {% if perms.authorisatie.taak_toewijzing_intrekken %}
                                         <button class="btn btn-tertiary"
                                                 data-id="{{ taak.id }}"
                                                 data-modal-title-param="Toewijzing intrekken"
-                                                data-modal-sub-title-param="{{ taak.titel }}"
+                                                data-modal-sub-title-param="<strong>{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }}
+                                                {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}
+                                                    {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
+                                                {% endif %}</strong><br>{{ taak.titel }}"
                                                 data-modal-url-param="{% url 'taak_toewijzing_intrekken' taak.id %}"
                                                 data-modal-id-param="taak_toewijzing_intrekken"
                                                 data-action="modal#openModal">Toewijzing intrekken</button>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -373,7 +414,7 @@
                     </div>
                 </section>
             </div>
-            <div class="modal modal--transparent">
+            {% comment %} <div class="modal modal--transparent">
                 <div class="modal-dialog">
                     <div class="modal-backdrop modal-exit"
                          data-action="click->modal#closeModal"></div>
@@ -389,7 +430,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> {% endcomment %}
         {% endblock before_modal_content %}
         {% block after_modal_content %}
         </div>
