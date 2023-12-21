@@ -58,6 +58,18 @@
 
                 </div>
                 <div class="modal-body">
+
+                    <ul class="list-clean list-nav--tertiary">
+                        <li class="wrapper-horizontal">
+                            <a href="{% url 'home' %}">Homepagina</a>
+                        </li>
+                        <li class="wrapper-horizontal">
+                            <a href="{% url 'incident_index' %}">Taken</a>
+                        </li>
+                        <li class="wrapper-horizontal">
+                            <a href="{% url 'release_note_lijst_public' %}">Nieuw in FixeR</a>
+                        </li>
+                    </ul>
                     {% if request.user.is_authenticated %}
                     {% include "snippets/form_pageheader.html" %}
                     {% endif %}

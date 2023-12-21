@@ -3,6 +3,7 @@ import { Controller } from '@hotwired/stimulus';
 let currentPosition = {coords: {latitude: 51.9247772, longitude: 4.4780972}}
 let positionWatchId = null
 let incidentlist = null
+let detail = null
 
 const positionWatchOptions = {
     enableHighAccuracy: true,
@@ -38,25 +39,29 @@ export default class extends Controller {
                 incidentlist = e.detail.controller
                 incidentlist.positionWatchSuccess(currentPosition)
             }
+            if (e.detail.controller.identifier == "detail"){
+                detail = e.detail.controller
+                detail.positionWatchSuccess(currentPosition)
+            }
         });
     }
     connect() {}
     takenOutletConnected(outlet, element){
         let self = this
-        console.log("takenListOutletConnected")
         console.log(self.takenListOutlet)
     }
     getCurrentPositionSuccess(position){
         let self = this
-        console.log("getCurrentPositionSuccess controller id:", self.identifier)
         self.positionWatchSuccess(position)
     }
     positionWatchSuccess(position){
         let self = this
         currentPosition = position
-        console.log("positionWatchSuccess controller id:", self.identifier)
         if (incidentlist) {
             incidentlist.positionWatchSuccess(position)
+        }
+        if (detail) {
+            detail.positionWatchSuccess(position)
         }
     }
     positionWatchError(error){

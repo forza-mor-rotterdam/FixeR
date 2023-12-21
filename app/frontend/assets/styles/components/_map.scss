@@ -70,6 +70,7 @@
         padding: 16px 0;
         ul {
             margin: 0;
+            display: flex;
             justify-content: flex-end;
             align-items: flex-end;
         }
@@ -188,15 +189,17 @@
             background-color: $gray-tint02;
             text-align: center;
             img {
-                width: auto;
+                width: 100%;
                 height: 65px;
                 min-width: 53px;
                 margin: 0;
+                object-fit: contain;
             }
         }
         .container__content {
-            flex: 1 0 75%;
+            flex: 0 1 75%;
             font-size: 16px;
+            text-wrap: nowrap;
             .link {
             // a {
                 color: $primary;
@@ -208,6 +211,9 @@
             &:last-of-type {
                 color: $gray-tint08;
             }
+            }
+            .gap {
+                gap: $input-padding-y;
             }
         }
     }
@@ -239,7 +245,7 @@ button.toggle-view {
     top: 16px;
     right: 16px;
     width: auto;
-    padding: 0 8px;
+    padding: 0 $input-padding-y;
     font-weight: 400;
     font-size: 1rem;
     background-color: $white;

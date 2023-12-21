@@ -37,10 +37,10 @@ export default class extends Controller {
     openModal(event) {
         let self = this
         if (self.hasTitleTarget){
-            self.titleTarget.textContent = event.params.title
+            self.titleTarget.innerHTML = event.params.title
         }
         if (self.hasSubTitleTarget){
-            self.subTitleTarget.textContent = event.params.subTitle
+            self.subTitleTarget.innerHTML = event.params.subTitle
         }
         let modal = this.element.querySelector('.modal')
         if (self.hasTurboFrameTarget){
