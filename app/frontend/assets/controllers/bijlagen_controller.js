@@ -4,7 +4,11 @@ let temp_files = {};
 let temp_filesArr = [];
 export default class extends Controller {
   static targets = ["bijlagenExtra"];
-  connect() {}
+  connect() {
+     //clear the filelist
+     temp_files = {}
+     temp_filesArr = []
+  }
 
   removeDuplicates(arr) {
     var unique = [];
