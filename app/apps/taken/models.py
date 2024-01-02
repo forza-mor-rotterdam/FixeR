@@ -188,6 +188,23 @@ class Taak(BasisModel):
         self.melding.save()
         return self.melding
 
+    @classmethod
+    def behandel_opties(cls):
+        return (
+            (
+                Taak.ResolutieOpties.OPGELOST,
+                "De taak is afgerond",
+            ),
+            (
+                Taak.ResolutieOpties.NIET_GEVONDEN,
+                "Niets aangetroffen",
+            ),
+            (
+                Taak.ResolutieOpties.NIET_OPGELOST,
+                "Kan niet worden uitgevoerd",
+            ),
+        )
+
     def render_onderwerpen(self):
         return ", ".join(
             [

@@ -5,9 +5,6 @@
 <turbo-frame id="incident_modal_handle_{{ taak.id }}">
 <div class="container__form"
      data-controller="incidentHandleForm"
-     data-incidentHandleForm-parent-context-value="{{ parent_context|json_encode }}"
-     data-incidentHandleForm-handled-options-value="{{ HANDLED_OPTIONS|json_encode }}"
-     data-incidentHandleForm-form-is-submitted-value="{% if form_submitted %}true{% else %}false{% endif %}"
 >
     {% if form %}
         <form action="{% url 'incident_modal_handle_part' taak.id %}"
@@ -23,9 +20,6 @@
                 {% if form.nieuwe_taak %}
                 <div>
                     <h3 class="h5">Moet er nog iets gebeuren?</h3>
-                    {% comment %} <div class="form-row margin-vertical">
-                    {{ form.nieuwe_taak_toevoegen|render_rotterdam_formulier }}
-                    </div> {% endcomment %}
                     <div data-incidentHandleForm-target="newTask">
                         <div class="form-row list-horizontal">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
                     </div>
@@ -66,19 +60,6 @@
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M21.9 12C21.9 6.5 17.5 2.1 12 2.1C6.5 2.1 2.1 6.5 2.1 12C2.1 17.5 6.5 21.9 12 21.9C17.5 21.9 21.9 17.5 21.9 12ZM0 12C0 5.4 5.4 0 12 0C18.6 0 24 5.4 24 12C24 18.6 18.6 24 12 24C5.4 24 0 18.6 0 12ZM13 7V5H11V7H13ZM13 19V9H11V19H13Z" fill="#00689E" />
                 </svg>
             </span>
-            <div>
-                {% if parent_context.messages %}
-                    {% for e in parent_context.messages %}{{ e }}{% endfor %}
-                {% endif %}
-                {% if parent_context.warnings %}
-                    <h3>Waarschuwing!</h3>
-                    {% for e in parent_context.warnings %}{{ e }}{% endfor %}
-                {% endif %}
-                {% if parent_context.errors %}
-                    <h3>Er is een fout opgetreden!</h3>
-                    {% for e in .parent_context.errors %}{{ e }}{% endfor %}
-                {% endif %}
-            </div>
         </div>
     {% endif %}
 </div>
