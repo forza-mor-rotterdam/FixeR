@@ -37,7 +37,6 @@ export default class extends Controller {
                     geometrie: JSON.parse(taakItem.dataset.geometrie),
                     adres: taakItem.dataset.adres,
                     afbeeldingUrl: taakItem.dataset.afbeeldingUrl,
-                    onderwerpen: taakItem.dataset.onderwerpen,
                     taakId: taakItem.dataset.id,
                     titel: taakItem.dataset.titel
                 })
