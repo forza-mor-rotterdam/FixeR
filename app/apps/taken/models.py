@@ -75,6 +75,14 @@ class Taakstatus(BasisModel):
         on_delete=models.CASCADE,
     )
 
+    @classmethod
+    def niet_voltooid_statussen(cls):
+        return [
+            choice[0]
+            for choice in Taakstatus.NaamOpties.choices
+            if choice[0] != Taakstatus.NaamOpties.VOLTOOID
+        ]
+
     def volgende_statussen(self):
         naam_opties = [no[0] for no in Taakstatus.NaamOpties.choices]
         if self.naam not in naam_opties:
@@ -175,6 +183,27 @@ class Taak(BasisModel):
 
     def __str__(self) -> str:
         return f"{self.taaktype.omschrijving} - {self.titel}({self.pk})"
+
+    def get_melding_alias(self):
+        self.melding.save()
+        return self.melding
+
+    @classmethod
+    def behandel_opties(cls):
+        return (
+            (
+                Taak.ResolutieOpties.OPGELOST,
+                "De taak is afgerond",
+            ),
+            (
+                Taak.ResolutieOpties.NIET_GEVONDEN,
+                "Niets aangetroffen",
+            ),
+            (
+                Taak.ResolutieOpties.NIET_OPGELOST,
+                "Kan niet worden uitgevoerd",
+            ),
+        )
 
     def render_onderwerpen(self):
         return ", ".join(

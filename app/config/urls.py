@@ -18,6 +18,7 @@ from apps.context.views import (
 )
 from apps.main.views import (
     HomepageView,
+    clear_melding_token_from_cache,
     config,
     filter,
     http_404,
@@ -26,6 +27,7 @@ from apps.main.views import (
     informatie,
     kaart_modus,
     meldingen_bestand,
+    onderwerp,
     root,
     sorteer_filter,
     taak_detail,
@@ -78,6 +80,11 @@ urlpatterns = [
     path("informatie/", informatie, name="informatie"),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path("api-token-auth/", views.obtain_auth_token),
+    path(
+        "admin/clear-melding-token-from-cache/",
+        clear_melding_token_from_cache,
+        name="clear_melding_token_from_cache",
+    ),
     path("admin/", admin.site.urls),
     path("oidc/", include("mozilla_django_oidc.urls")),
     path("config/", config, name="config"),
@@ -107,6 +114,7 @@ urlpatterns = [
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
     path("part/filter/<str:status>/", filter, name="filter_part"),
     path("part/taken/<str:status>/", taken_lijst, name="taken_lijst_part"),
+    path("onderwerp/", onderwerp, name="onderwerp"),
     path(
         "part/taak-modal-handle/<int:id>/",
         incident_modal_handle,

@@ -10,7 +10,6 @@
     <div
         data-incidentlist-target="taakItem"
         data-id="{{ taak.id }}"
-        data-onderwerpen="{{ taak.render_onderwerpen }}"
         data-titel="{{ taak.titel }}"
         data-adres="{{ taak.adres }}"
         data-geometrie="{{ taak.geometrie|json_encode }}"
@@ -19,7 +18,7 @@
         data-order-adres="{{ taak|adres_order_nummer:taken_sorted_by_adres }}"
         data-order-afstand="0"
         data-order-postcode="{{ taak.postcode_digits }}"
-        class="list-item{% if form_submitted %} form-is-submitted{% endif %}{% if errors and warnings %} has-errors{% endif %}"
+        class="list-item"
         {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}
             data-controller="taak modal"
             data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler"

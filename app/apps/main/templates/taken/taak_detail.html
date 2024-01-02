@@ -39,8 +39,8 @@
         </div>
         <div data-controller="detail"
              data-detail-taak-object-value="{{ taak }}"
-             data-detail-incident-y-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.0|replace_comma_by_dot }}"
-             data-detail-incident-x-value="{{ taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates.1|replace_comma_by_dot }}"
+             data-detail-incident-y-value="{{ melding.locaties_voor_melding.0.geometrie.coordinates.0|replace_comma_by_dot }}"
+             data-detail-incident-x-value="{{ melding.locaties_voor_melding.0.geometrie.coordinates.1|replace_comma_by_dot }}"
              data-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
              {% if not DEBUG %}data-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
              {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
@@ -48,9 +48,9 @@
                 <div class="container__header-taaknavigatie">
                     {% if TEMPLATE_BASIS != "benc" %}
                         <h1 class="h3">
-                            {{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                            {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}
-                                {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
+                            {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
+                            {% if melding.locaties_voor_melding.0.huisnummer %}
+                                {{ melding.locaties_voor_melding.0.huisnummer }}
                             {% endif %}
                             <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
                                 {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
@@ -220,9 +220,9 @@
                                     </svg> {% endcomment %}
                                     <h3 class="h5">Ter hoogte van:</h3>
                                     <p>
-                                        {{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                                        {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}
-                                            {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
+                                        {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
+                                        {% if melding.locaties_voor_melding.0.huisnummer %}
+                                            {{ melding.locaties_voor_melding.0.huisnummer }}
                                         {% endif %}
                                     </p>
                                     {% if device_os == "ios" %}
@@ -236,19 +236,19 @@
                                     {% endif %}
                                 </div>
                                 <dl>
-                                    {% if taak.melding.response_json.locaties_voor_melding.0.wijknaam %}
+                                    {% if melding.locaties_voor_melding.0.wijknaam %}
                                         <div>
                                             <dt>Wijk:</dt>
                                             <dd>
-                                                {{ taak.melding.response_json.locaties_voor_melding.0.wijknaam }}
+                                                {{ melding.locaties_voor_melding.0.wijknaam }}
                                             </dd>
                                         </div>
                                     {% endif %}
-                                    {% if taak.melding.response_json.locaties_voor_melding.0.buurtnaam %}
+                                    {% if melding.locaties_voor_melding.0.buurtnaam %}
                                         <div>
                                             <dt>Buurt:</dt>
                                             <dd>
-                                                {{ taak.melding.response_json.locaties_voor_melding.0.buurtnaam }}
+                                                {{ melding.locaties_voor_melding.0.buurtnaam }}
                                             </dd>
                                         </div>
                                     {% endif %}
@@ -328,7 +328,7 @@
                                 <h3 class="h5">Onderwerp</h3>
                                 <p>
                                     {% for onderwerp in melding.onderwerpen %}
-                                        {% render_onderwerp onderwerp %}
+                                        <turbo-frame id="onderwerp_{{ onderwerp|urlencode }}" data-spinner="hide" loading="lazy" src="{% url 'onderwerp' %}?url={{ onderwerp|urlencode }}"></turbo-frame>
                                         {% if not forloop.last %},{% endif %}
                                     {% endfor %}
                                 </p>
@@ -375,9 +375,9 @@
                                 <div class="form-row">
                                     <button class="btn btn-action"
                                             data-modal-title-param="Taak afhandelen"
-                                            data-modal-sub-title-param="<strong>{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                                                {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}
-                                                    {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
+                                            data-modal-sub-title-param="<strong>{{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
+                                                {% if melding.locaties_voor_melding.0.huisnummer %}
+                                                    {{ melding.locaties_voor_melding.0.huisnummer }}
                                                 {% endif %}</strong><br>{{ taak.titel }}"
                                             data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}"
                                             data-modal-id-param="incident_modal_handle_{{ taak.id }}"
@@ -386,9 +386,9 @@
                                         {% if perms.authorisatie.taak_toewijzen %}
                                         <button class="btn btn-tertiary"
                                                 data-modal-title-param="Toewijzen"
-                                                data-modal-sub-title-param="<strong>{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                                                {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}
-                                                    {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
+                                                data-modal-sub-title-param="<strong>{{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
+                                                {% if melding.locaties_voor_melding.0.huisnummer %}
+                                                    {{ melding.locaties_voor_melding.0.huisnummer }}
                                                 {% endif %}</strong><br>{{ taak.titel }}"
                                                 data-modal-url-param="{% url 'taak_toewijzen' taak.id %}"
                                                 data-modal-id-param="taak_toewijzen"
@@ -399,9 +399,9 @@
                                         <button class="btn btn-tertiary"
                                                 data-id="{{ taak.id }}"
                                                 data-modal-title-param="Toewijzing intrekken"
-                                                data-modal-sub-title-param="<strong>{{ taak.melding.response_json.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                                                {% if taak.melding.response_json.locaties_voor_melding.0.huisnummer %}
-                                                    {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
+                                                data-modal-sub-title-param="<strong>{{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
+                                                {% if melding.locaties_voor_melding.0.huisnummer %}
+                                                    {{ melding.locaties_voor_melding.0.huisnummer }}
                                                 {% endif %}</strong><br>{{ taak.titel }}"
                                                 data-modal-url-param="{% url 'taak_toewijzing_intrekken' taak.id %}"
                                                 data-modal-id-param="taak_toewijzing_intrekken"
