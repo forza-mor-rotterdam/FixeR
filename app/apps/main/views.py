@@ -5,9 +5,6 @@ import requests
 from apps.authenticatie.models import Gebruiker
 from apps.context.filters import FilterManager
 from apps.main.forms import (
-    HANDLED_OPTIONS,
-    TAAK_BEHANDEL_RESOLUTIE,
-    TAAK_BEHANDEL_STATUS,
     KaartModusForm,
     SorteerFilterForm,
     TaakBehandelForm,
@@ -27,7 +24,7 @@ from apps.main.utils import (
 )
 from apps.meldingen.service import MeldingenService
 from apps.release_notes.models import ReleaseNote
-from apps.taken.models import Taak, Taaktype
+from apps.taken.models import Taak, Taakstatus, Taaktype
 from device_detector import DeviceDetector
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -357,26 +354,52 @@ def taak_toewijzing_intrekken(request, id):
 @login_required
 @permission_required("authorisatie.taak_afronden", raise_exception=True)
 def incident_modal_handle(request, id):
+    context = request.user.profiel.context
     resolutie = request.GET.get("resolutie", "opgelost")
     taak = get_object_or_404(Taak, pk=id)
+    if taak.taakstatus.naam == Taakstatus.NaamOpties.VOLTOOID:
+        # Voorkom het voltooien van een taak die reeds voltooid is.
+        return http_404(request)
+
+    # Alle taken voor deze melding
+    openstaande_taken_voor_melding = Taak.objects.filter(
+        melding__response_json__id=taak.melding.response_json.get("id"),
+        taakstatus__naam__in=Taakstatus.niet_voltooid_statussen(),
+    )
+
+    # Alle taaktype ids voor deze melding
+    openstaande_taaktype_ids_voor_melding = list(
+        {
+            taaktype_id
+            for taaktype_id in openstaande_taken_voor_melding.values_list(
+                "taaktype__id", flat=True
+            )
+            .order_by("taaktype__id")
+            .distinct()
+        }
+    )
+
+    # Exclude alle taaktype ids voor vervolgtaken
+    volgende_taaktypes = taak.taaktype.volgende_taaktypes.all().exclude(
+        id__in=openstaande_taaktype_ids_voor_melding
+    )
+
     form = TaakBehandelForm(
-        volgende_taaktypes=taak.taaktype.volgende_taaktypes.all().exclude(
-            id=taak.taaktype.id
-        ),
+        volgende_taaktypes=volgende_taaktypes,
         initial={"resolutie": resolutie},
     )
-    warnings = []
-    errors = []
-    messages = []
-    form_submitted = False
-    is_handled = False
+
+    # Alle andere actieve /openstaande taken voor deze melding
+    actieve_vervolg_taken = openstaande_taken_voor_melding.filter(
+        taaktype__in=context.taaktypes.all(),
+    ).exclude(
+        id=taak.id,
+    )
 
     if request.POST:
         form = TaakBehandelForm(
             request.POST,
-            volgende_taaktypes=taak.taaktype.volgende_taaktypes.all().exclude(
-                id=taak.taaktype.id
-            ),
+            volgende_taaktypes=volgende_taaktypes,
             initial={"resolutie": resolutie},
         )
         if form.is_valid():
@@ -441,15 +464,7 @@ def incident_modal_handle(request, id):
         {
             "taak": taak,
             "form": form,
-            "form_submitted": form_submitted,
-            "HANDLED_OPTIONS": HANDLED_OPTIONS,
-            "parent_context": {
-                "form_submitted": form_submitted,
-                "errors": errors,
-                "warnings": warnings,
-                "messages": messages,
-                "is_handled": is_handled,
-            },
+            "actieve_vervolg_taken": actieve_vervolg_taken,
         },
     )
 

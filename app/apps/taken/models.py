@@ -75,6 +75,14 @@ class Taakstatus(BasisModel):
         on_delete=models.CASCADE,
     )
 
+    @classmethod
+    def niet_voltooid_statussen(cls):
+        return [
+            choice[0]
+            for choice in Taakstatus.NaamOpties.choices
+            if choice[0] != Taakstatus.NaamOpties.VOLTOOID
+        ]
+
     def volgende_statussen(self):
         naam_opties = [no[0] for no in Taakstatus.NaamOpties.choices]
         if self.naam not in naam_opties:

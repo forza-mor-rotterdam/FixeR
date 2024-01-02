@@ -33,6 +33,19 @@
                 {% endif %}
                 <div class="form-control__with-helptext label-strong" data-incidentHandleForm-target="internalText">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
             </div>
+            {% if actieve_vervolg_taken %}
+            <div class="wrapper--flex-order">
+                <div>
+                    <h3 class="h5">Andere taken voor deze melding</h3>
+                    <ul>
+                        {% for vervolg_taak in actieve_vervolg_taken %}
+                            <li>{{ vervolg_taak.titel }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="form-row">
                 <button type="submit" class="btn btn-action" data-action="incidentHandleForm#onSubmit">
                     <span>Taak afhandelen</span>
