@@ -184,6 +184,10 @@ class Taak(BasisModel):
     def __str__(self) -> str:
         return f"{self.taaktype.omschrijving} - {self.titel}({self.pk})"
 
+    def get_melding_alias(self):
+        self.melding.save()
+        return self.melding
+
     def render_onderwerpen(self):
         return ", ".join(
             [

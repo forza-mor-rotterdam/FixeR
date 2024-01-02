@@ -266,8 +266,7 @@ def kaart_modus(request):
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
-    melding_response = MeldingenService().get_by_uri(taak.melding.bron_url)
-    melding = melding_response.json()
+    melding = taak.get_melding_alias().response_json
     tijdlijn_data = melding_naar_tijdlijn(melding)
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
