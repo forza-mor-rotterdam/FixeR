@@ -187,8 +187,10 @@ STATICFILES_DIRS = (
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "static"))
 
-MEDIA_URL = "/bijlagen/"
-MEDIA_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "bijlagen"))
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "media"))
+
+MOR_CORE_URL_PREFIX = "/core"
 
 WEBPACK_LOADER = {
     "DEFAULT": {

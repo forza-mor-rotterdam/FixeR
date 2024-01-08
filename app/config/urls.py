@@ -225,7 +225,7 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
-    re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
+    re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
 ]
 
 if settings.OIDC_ENABLED:

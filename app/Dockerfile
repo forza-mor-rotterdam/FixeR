@@ -73,13 +73,10 @@ COPY --from=node_step /srv/web/public/build /static/
 
 RUN mkdir -p /media \
     && mkdir -p /static \
-    && mkdir -p /bijlagen \
     && chown -R $APP_USER:$APP_USER /media \
     && chown -R $APP_USER:$APP_USER /static \
-    && chown -R $APP_USER:$APP_USER /bijlagen \
     && chmod -R 744 /media \
     && chmod -R 744 /static \
-    && chmod -R 744 /bijlagen \
     && mkdir -p /srv/web/var/cache \
     && chown $APP_USER:$APP_USER /srv/web/var/cache \
     && chmod -R ugo+rwx /srv/web/var/cache \

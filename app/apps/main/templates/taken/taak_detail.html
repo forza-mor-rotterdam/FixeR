@@ -4,6 +4,7 @@
 {% load taakopdracht render_onderwerp from melding_tags %}
 {% load to_date replace_comma_by_dot vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
+{% load mor_core_url from main_tags %}
 {% load context_template from context_tags %}
 {% load gebruiker_middels_email from gebruikers_tags %}
 {% block title %}
@@ -119,8 +120,8 @@
                                 <ul class="list-clean imageslider"
                                     style="width: calc(100% * {{ melding.bijlagen|length }})">
                                     {% for foto in melding.bijlagen %}
-                                        <li class="container__image" id="{{ foto.afbeelding_relative_url }}">
-                                            <img src="{{ foto.afbeelding_relative_url }}"
+                                        <li class="container__image" id="{{ foto.afbeelding_relative_url|mor_core_url }}">
+                                            <img src="{{ foto.afbeelding_relative_url|mor_core_url }}"
                                                 alt=""
                                                 data-detail-target="selectedImage"
                                                 {% comment %} data-action="click->detail#openImageInPopup"   {% endcomment %}
@@ -136,7 +137,7 @@
                                             <li data-action="click->detail#selectImage"
                                                 data-detail-image-index-param="{{ forloop.counter }}">
                                                 <div class="container__image">
-                                                    <img src="{{ foto.afbeelding_verkleind_relative_url }}" alt="" />
+                                                    <img src="{{ foto.afbeelding_verkleind_relative_url|mor_core_url }}" alt="" />
                                                 </div>
                                             </li>
                                         {% endfor %}
