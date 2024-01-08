@@ -1,3 +1,4 @@
+from apps.main.templatetags.main_tags import mor_core_url
 from apps.services.onderwerpen import render_onderwerp
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
@@ -239,8 +240,10 @@ class Taak(BasisModel):
     def afbeelding_url(self):
         if not self.melding.response_json.get("bijlagen", []):
             return ""
-        return self.melding.response_json.get("bijlagen", [])[0].get(
-            "afbeelding_verkleind_relative_url"
+        return mor_core_url(
+            self.melding.response_json.get("bijlagen", [])[0].get(
+                "afbeelding_verkleind_relative_url"
+            )
         )
 
     class Meta:
