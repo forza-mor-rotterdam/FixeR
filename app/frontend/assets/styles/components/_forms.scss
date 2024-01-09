@@ -411,10 +411,6 @@ ul.list--form-radio-input {
 
         li {
             border: 0;
-            &:first-child {
-                margin: 0 0 0 0.25rem;
-            }
-
             label {
                 line-height: 1.25rem;
             }
@@ -477,6 +473,10 @@ ul.list--form-radio-input {
 .form--beheer {
     .btn-row {
         margin-top: 40px;
+    }
+
+    .container__checkbox--single label  {
+        padding-left: $input-padding-y;
     }
 }
 
