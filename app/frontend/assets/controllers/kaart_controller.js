@@ -221,8 +221,8 @@ export default class extends Controller {
   plotMarkers(coordinatenlijst) {
     if (coordinatenlijst) {
       for (let i = 0; i < coordinatenlijst.length; i++) {
-        const lat = coordinatenlijst[i].geometrie.coordinates[1];
-        const long = coordinatenlijst[i].geometrie.coordinates[0];
+        const lat = coordinatenlijst[i].geometrie.coordinates ? coordinatenlijst[i].geometrie.coordinates[1] : 51.9247772;
+        const long = coordinatenlijst[i].geometrie.coordinates ? coordinatenlijst[i].geometrie.coordinates[0] : 4.4780972;
         const adres = coordinatenlijst[i].adres;
         const afbeelding = coordinatenlijst[i].afbeeldingUrl;
         const titel = coordinatenlijst[i].titel
