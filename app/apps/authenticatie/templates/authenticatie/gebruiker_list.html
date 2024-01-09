@@ -52,7 +52,11 @@
                 <td data-row-search-target="searchable">{% if object.last_name %}{{object.last_name}}{% else %}-{% endif %}</td>
                 <td data-row-search-target="searchable">{% if object.profiel.context %}{{object.profiel.context}}{% else %}-{% endif %}</td>
                 <td data-row-search-target="searchable">{% if object.groups.all %}{{object.groups.all.0}}{% else %}-{% endif %}</td>
-                <td><a href="{% url 'gebruiker_aanpassen' object.pk %}">Aanpassen</a></td>
+                <td>
+                    <a href="{% url 'gebruiker_aanpassen' object.pk %}" aria-label="Aanpassen">
+                        {% include "icons/edit.svg" %}
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -87,7 +91,11 @@
                 <td data-row-search-target="searchable">{% if object.last_name %}{{object.last_name}}{% else %}-{% endif %}</td>
                 <td data-row-search-target="searchable">{% if object.profiel.context %}{{object.profiel.context}}{% else %}-{% endif %}</td>
                 <td data-row-search-target="searchable">{% if object.groups.all %}{{object.groups.all.0}}{% else %}-{% endif %}</td>
-                <td><a href="{% url 'gebruiker_aanpassen' object.pk %}">Aanpassen</a></td>
+                <td>
+                    <a href="{% url 'gebruiker_aanpassen' object.pk %}" aria-label="Aanpassen">
+                        {% include "icons/edit.svg" %}
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

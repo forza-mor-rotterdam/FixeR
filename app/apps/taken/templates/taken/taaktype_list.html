@@ -55,7 +55,11 @@
                 <td data-row-search-target="searchable">{% if object.volgende_taaktypes.all %}{% for taaktype in object.volgende_taaktypes.all %}{{taaktype.omschrijving}}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
                 <td data-row-search-target="searchable">{% if object.actief %}{% include "icons/checkmark.svg" %}{% else %}{% include "icons/close.svg" %}{% endif %}</td>
                 <td data-row-search-target="searchable">{{object.contexten_voor_taaktypes.all|length}}</td>
-                <td><a href="{% url 'taaktype_aanpassen' object.pk %}">Aanpassen</a></td>
+                <td>
+                    <a href="{% url 'taaktype_aanpassen' object.pk %}" aria-label="Aanpassen">
+                        {% include "icons/edit.svg" %}
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
