@@ -6,6 +6,7 @@
 @mixin modalVisible {
     opacity: 1;
     visibility: visible;
+    -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(10px);
 
     .modal-backdrop {
