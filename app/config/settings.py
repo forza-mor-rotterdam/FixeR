@@ -190,6 +190,9 @@ STATIC_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "static"))
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "media"))
 
+ALLOW_UNAUTHORIZED_MEDIA_ACCESS = (
+    os.getenv("ALLOW_UNAUTHORIZED_MEDIA_ACCESS", False) in TRUE_VALUES
+)
 MOR_CORE_URL_PREFIX = "/core"
 
 WEBPACK_LOADER = {

@@ -40,7 +40,7 @@ from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import Value
 from django.db.models.functions import Concat
-from django.http import HttpResponse, StreamingHttpResponse
+from django.http import HttpResponse, HttpResponseForbidden, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -70,6 +70,16 @@ def informatie(request):
         "auth/informatie.html",
         {},
     )
+
+
+def serve_protected_media(request):
+    if request.user.is_authenticated or settings.ALLOW_UNAUTHORIZED_MEDIA_ACCESS:
+        url = request.path.replace("media", "media-protected")
+        response = HttpResponse("")
+        response["X-Accel-Redirect"] = url
+        response["Content-Type"] = ""
+        return response
+    return HttpResponseForbidden()
 
 
 # Verander hier de instellingen voor de nieuwe homepagina.

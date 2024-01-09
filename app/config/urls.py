@@ -29,6 +29,7 @@ from apps.main.views import (
     meldingen_bestand,
     onderwerp,
     root,
+    serve_protected_media,
     sorteer_filter,
     taak_detail,
     taak_toewijzen,
@@ -53,7 +54,6 @@ from apps.taken.views import (
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
@@ -226,6 +226,7 @@ urlpatterns = [
         name="redoc",
     ),
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
+    re_path(r"^media", serve_protected_media, name="protected_media"),
 ]
 
 if settings.OIDC_ENABLED:
@@ -249,7 +250,7 @@ if settings.OIDC_ENABLED:
     ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
         path("404/", http_404, name="404"),
         path("500/", http_500, name="500"),
