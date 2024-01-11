@@ -151,7 +151,7 @@ export default class extends Controller {
     }
 
     toggleMapView(e) {
-        document.getElementById('taken_lijst').classList.toggle('showMap')
+        this.element.classList.toggle('showMap')
     }
     onGroup(e) {
         console.log("onGroup", e.target.checked)
