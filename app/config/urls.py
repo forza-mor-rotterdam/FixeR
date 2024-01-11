@@ -20,7 +20,6 @@ from apps.main.views import (
     HomepageView,
     clear_melding_token_from_cache,
     config,
-    filter,
     http_404,
     http_500,
     incident_modal_handle,
@@ -34,8 +33,6 @@ from apps.main.views import (
     taak_detail,
     taak_toewijzen,
     taak_toewijzing_intrekken,
-    taken_afgerond_overzicht,
-    taken_lijst,
     taken_overzicht,
     ui_settings_handler,
 )
@@ -95,11 +92,6 @@ urlpatterns = [
         taken_overzicht,
         name="incident_index",
     ),
-    path(
-        "taken-afgerond/",
-        taken_afgerond_overzicht,
-        name="taken_afgerond_overzicht",
-    ),
     path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
@@ -112,8 +104,6 @@ urlpatterns = [
     # END taken
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
-    path("part/filter/<str:status>/", filter, name="filter_part"),
-    path("part/taken/<str:status>/", taken_lijst, name="taken_lijst_part"),
     path("onderwerp/", onderwerp, name="onderwerp"),
     path(
         "part/taak-modal-handle/<int:id>/",

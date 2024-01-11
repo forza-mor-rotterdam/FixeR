@@ -114,94 +114,29 @@ def ui_settings_handler(request):
 
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def filter(request, status="nieuw"):
+def taken_overzicht(request):
+    taken = Taak.objects.get_taken_recent(request.user)
+
     filters = (
         get_filters(request.user.profiel.context)
         if request.user.profiel.context
         else []
     )
-    # haal actieve filters op uit profiel
-    actieve_filters = get_actieve_filters(request.user, filters, status)
-
     foldout_states = []
     request_type = "get"
     if request.POST:
         request_type = "post"
         actieve_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
-
-    taken = Taak.objects.get_taken_recent(request.user)
+    else:
+        actieve_filters = get_actieve_filters(request.user, filters)
 
     filter_manager = FilterManager(taken, actieve_filters, foldout_states)
 
     taken_gefilterd = filter_manager.filter_taken()
 
-    # sla actieve filters op in profiel
-    set_actieve_filters(request.user, filter_manager.active_filters, status)
-
-    return render(
-        request,
-        "filters/form.html",
-        {
-            "filter_manager": filter_manager,
-            "this_url": reverse("filter_part", kwargs={"status": status}),
-            "taken_aantal": taken_gefilterd.count(),
-            "foldout_states": json.dumps(foldout_states),
-            "request_type": request_type,
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken_overzicht(request):
-    url_kwargs = {"status": "nieuw"}
-    return render(
-        request,
-        "taken/taken_lijst.html",
-        {
-            "taken_lijst_url": reverse("taken_lijst_part", kwargs=url_kwargs),
-            "filter_url": reverse("filter_part", kwargs=url_kwargs),
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken_afgerond_overzicht(request):
-    url_kwargs = {"status": "voltooid"}
-    return render(
-        request,
-        "taken/taken_lijst.html",
-        {
-            "taken_lijst_url": reverse(
-                "taken_lijst_part",
-                kwargs=url_kwargs,
-            ),
-            "filter_url": reverse(
-                "filter_part",
-                kwargs=url_kwargs,
-            ),
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken_lijst(request, status="nieuw"):
-    taken = Taak.objects.get_taken_recent(request.user)
-
-    filters = (
-        get_filters(request.user.profiel.context)
-        if request.user.profiel.context
-        else []
-    )
-
-    actieve_filters = get_actieve_filters(request.user, filters, status)
-
-    filter_manager = FilterManager(taken, actieve_filters)
-
-    taken_gefilterd = filter_manager.filter_taken()
+    if request.POST:
+        set_actieve_filters(request.user, filter_manager.active_filters)
 
     taken_aantal = len(taken_gefilterd)
     paginator = Paginator(taken_gefilterd, 500)
@@ -228,14 +163,16 @@ def taken_lijst(request, status="nieuw"):
     taken_paginated = page_obj.object_list
     return render(
         request,
-        "incident/part_list_base.html",
+        "taken/taken_lijst.html",
         {
-            "this_url": reverse("taken_lijst_part", kwargs={"status": status}),
+            "this_url": reverse("incident_index"),
             "taken": taken_paginated,
             "taken_aantal": taken_aantal,
             "page_obj": page_obj,
             "filter_manager": filter_manager,
             "taken_sorted_by_adres": taken_sorted_by_adres,
+            "foldout_states": json.dumps(foldout_states),
+            "request_type": request_type,
         },
     )
 
