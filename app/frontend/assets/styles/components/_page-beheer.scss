@@ -37,9 +37,12 @@
     }
 
     .container__flex {
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            display: flex;
+            justify-content: space-between;
+        }
         margin: 32px 0;
-        display: flex;
-        justify-content: space-between;
+
         >* {
             flex: 1;
         }
@@ -54,6 +57,10 @@
 
         + .alert {
             margin-top: -32px;
+        }
+        &.flex--end {
+            justify-content: flex-end;
+            gap: 1rem;
         }
     }
 
