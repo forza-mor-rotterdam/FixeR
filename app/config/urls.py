@@ -2,6 +2,7 @@ from apps.authenticatie.views import (
     GebruikerAanmakenView,
     GebruikerAanpassenView,
     GebruikerLijstView,
+    gebruiker_bulk_import,
 )
 from apps.authorisatie.views import (
     RechtengroepAanmakenView,
@@ -114,6 +115,11 @@ urlpatterns = [
     # START beheer
     path("beheer/", beheer, name="beheer"),
     path("beheer/gebruiker/", GebruikerLijstView.as_view(), name="gebruiker_lijst"),
+    path(
+        "beheer/gebruiker/bulk-import/",
+        gebruiker_bulk_import,
+        name="gebruiker_bulk_import",
+    ),
     path(
         "beheer/gebruiker/aanmaken/",
         GebruikerAanmakenView.as_view(),
