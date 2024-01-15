@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from main_tags %}
 {% block body %}
@@ -80,8 +80,9 @@
                 <div class="form-row btn-row">
                     <button type="reset"
                             class="btn btn-tertiary"
-                            data-controller="detail"
-                            data-action="detail#closeModal">
+                            data-controller="utils"
+                            data-action="utils#goToUrl"
+                            data-utils-url-param="{% url 'gebruiker_lijst' %}">
                         <span>Annuleren</span>
                     </button>
                     <button type="submit"class="btn btn-action">
