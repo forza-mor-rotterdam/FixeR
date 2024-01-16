@@ -81,9 +81,10 @@
 
 .no-image {
     background-color: $gray-tint02;
-    height: 40px;
+    height: 70px;
     background-repeat: no-repeat;
     background-position: center;
+    background-size: 60px auto;
     margin: 0 $container-padding-x;
 }
 
