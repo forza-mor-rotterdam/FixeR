@@ -109,6 +109,7 @@ export default class extends Controller {
   }
 
   selectTaakMarker(taakId) {
+    let self = this
     let obj = self.markerList.find((obj) => obj.options.taakId == taakId);
     obj.openPopup();
   }
