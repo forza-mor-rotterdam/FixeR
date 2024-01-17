@@ -234,7 +234,7 @@ def taken_lijst(request):
         reverse=sort_reverse,
     )
 
-    paginator = Paginator(taken_gefilterd, 8)
+    paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     taken_paginated = page_obj.object_list
