@@ -1,33 +1,15 @@
-{% extends 'base.html' %}
+{% load webpack_static from webpack_loader %}
+{% load to_date from main_tags %}
 {% load json_encode from main_tags %}
+{% load context_template from context_tags %}
 
-{% block title %}Taken{% endblock %}
-
-{% block body %}
-<turbo-frame id="taak_basis" data-turbo-action="advance">
-    {% include "taken/taken_overzicht.html" %}
-    <div
-        class="full-page-view full-page-view__filters"
-        tabindex="0"
-    >
-        <div class="full-page-view__main">
-            <div class="full-page-view__header">
-                <div class="full-page-view__action_container">
-                    <h2 class="full-page-view__title">Filters</h2>
-                    <button
-                        type="button"
-                        class="btn btn-close"
-                        aria-label="Sluit"
-                        data-action="main#hideFilters"
-                    ></button>
-                </div>
-            </div>
-            <div class="full-page-view__scroll-pane">
-                <div class="full-page-view__content">
-                    {% include "taken/taken_filter_form.html" %}
-                </div>
-            </div>
+<turbo-frame id="taken_lijst">
+    {% include "snippets/paginator.html" with page_obj=page_obj %}
+        <div class="list__incidents__scroll-wrapper" data-incidentlist-target="taakItemLijst">
+            {% for taak in taken %}
+                {% include "taken/taak_lijst_item.html" %}
+            {% endfor %}
         </div>
-    </div>
+    {% include "snippets/paginator.html" with page_obj=page_obj %}
+
 </turbo-frame>
-{% endblock %}

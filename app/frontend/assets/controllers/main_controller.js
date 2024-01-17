@@ -46,16 +46,11 @@ export default class extends Controller {
         });
     }
     connect() {}
-    takenOutletConnected(outlet, element){
-        let self = this
-        console.log(self.takenListOutlet)
-    }
     getCurrentPositionSuccess(position){
         let self = this
         self.positionWatchSuccess(position)
     }
     positionWatchSuccess(position){
-        let self = this
         currentPosition = position
         if (incidentlist) {
             incidentlist.positionWatchSuccess(position)

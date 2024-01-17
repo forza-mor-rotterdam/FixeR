@@ -34,3 +34,4 @@ mozilla-django-oidc==3.0.0
 PyJWT<2.4.0
 
 device-detector==5.0.1
+geopy==2.4.1
