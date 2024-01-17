@@ -1,3 +1,4 @@
+from apps.main.templatetags.main_tags import mor_core_url
 from apps.services.onderwerpen import render_onderwerp
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
@@ -74,6 +75,14 @@ class Taakstatus(BasisModel):
         related_name="taakstatussen_voor_taak",
         on_delete=models.CASCADE,
     )
+
+    @classmethod
+    def niet_voltooid_statussen(cls):
+        return [
+            choice[0]
+            for choice in Taakstatus.NaamOpties.choices
+            if choice[0] != Taakstatus.NaamOpties.VOLTOOID
+        ]
 
     def volgende_statussen(self):
         naam_opties = [no[0] for no in Taakstatus.NaamOpties.choices]
@@ -176,6 +185,27 @@ class Taak(BasisModel):
     def __str__(self) -> str:
         return f"{self.taaktype.omschrijving} - {self.titel}({self.pk})"
 
+    def get_melding_alias(self):
+        self.melding.save()
+        return self.melding
+
+    @classmethod
+    def behandel_opties(cls):
+        return (
+            (
+                Taak.ResolutieOpties.OPGELOST,
+                "De taak is afgerond",
+            ),
+            (
+                Taak.ResolutieOpties.NIET_GEVONDEN,
+                "Niets aangetroffen",
+            ),
+            (
+                Taak.ResolutieOpties.NIET_OPGELOST,
+                "Kan niet worden uitgevoerd",
+            ),
+        )
+
     def render_onderwerpen(self):
         return ", ".join(
             [
@@ -210,8 +240,10 @@ class Taak(BasisModel):
     def afbeelding_url(self):
         if not self.melding.response_json.get("bijlagen", []):
             return ""
-        return self.melding.response_json.get("bijlagen", [])[0].get(
-            "afbeelding_verkleind_relative_url"
+        return mor_core_url(
+            self.melding.response_json.get("bijlagen", [])[0].get(
+                "afbeelding_verkleind_relative_url"
+            )
         )
 
     class Meta:

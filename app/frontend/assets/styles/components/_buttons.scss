@@ -140,6 +140,12 @@ button {
         border-color: $gray-tint08;
         color: $gray-tint11;
 
+        svg {
+            path {
+                fill: currentColor;
+            }
+        }
+
         &:hover,
         &:focus {
             color: $primary;
@@ -258,4 +264,13 @@ button {
     &:not(:disabled) {
         cursor: pointer;
     }
+}
+
+a.btn {
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
 }

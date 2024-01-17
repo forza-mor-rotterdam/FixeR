@@ -5,9 +5,6 @@ import requests
 from apps.authenticatie.models import Gebruiker
 from apps.context.filters import FilterManager
 from apps.main.forms import (
-    HANDLED_OPTIONS,
-    TAAK_BEHANDEL_RESOLUTIE,
-    TAAK_BEHANDEL_STATUS,
     KaartModusForm,
     SorteerFilterForm,
     TaakBehandelForm,
@@ -27,21 +24,28 @@ from apps.main.utils import (
 )
 from apps.meldingen.service import MeldingenService
 from apps.release_notes.models import ReleaseNote
-from apps.taken.models import Taak, Taaktype
+from apps.services.onderwerpen import render_onderwerp
+from apps.taken.models import Taak, Taakstatus, Taaktype
 from device_detector import DeviceDetector
 from django.conf import settings
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import (
+    login_required,
+    permission_required,
+    user_passes_test,
+)
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import Value
+from django.db.models import F, Value
 from django.db.models.functions import Concat
-from django.http import StreamingHttpResponse
+from django.http import HttpResponse, HttpResponseForbidden, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import View
+from geopy.distance import distance
 from rest_framework.reverse import reverse as drf_reverse
 
 logger = logging.getLogger(__name__)
@@ -69,11 +73,21 @@ def informatie(request):
     )
 
 
+def serve_protected_media(request):
+    if request.user.is_authenticated or settings.ALLOW_UNAUTHORIZED_MEDIA_ACCESS:
+        url = request.path.replace("media", "media-protected")
+        response = HttpResponse("")
+        response["X-Accel-Redirect"] = url
+        response["Content-Type"] = ""
+        return response
+    return HttpResponseForbidden()
+
+
 # Verander hier de instellingen voor de nieuwe homepagina.
 @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
-        return redirect(reverse("incident_index"), False)
+        return redirect(reverse("taken"), False)
     if request.user.has_perms(["authorisatie.beheer_bekijken"]):
         return redirect(reverse("beheer"), False)
     return render(
@@ -101,128 +115,138 @@ def ui_settings_handler(request):
 
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def filter(request, status="nieuw"):
+def taken(request):
+    taken = Taak.objects.get_taken_recent(request.user)
+
     filters = (
         get_filters(request.user.profiel.context)
         if request.user.profiel.context
         else []
     )
-    # haal actieve filters op uit profiel
-    actieve_filters = get_actieve_filters(request.user, filters, status)
-
     foldout_states = []
-    request_type = "get"
     if request.POST:
-        request_type = "post"
         actieve_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
-
-    taken = Taak.objects.get_taken_recent(request.user)
+    else:
+        actieve_filters = get_actieve_filters(request.user, filters)
 
     filter_manager = FilterManager(taken, actieve_filters, foldout_states)
 
     taken_gefilterd = filter_manager.filter_taken()
 
-    # sla actieve filters op in profiel
-    set_actieve_filters(request.user, filter_manager.active_filters, status)
+    request.session["taken_gefilterd"] = taken_gefilterd
 
-    return render(
-        request,
-        "filters/form.html",
-        {
-            "filter_manager": filter_manager,
-            "this_url": reverse("filter_part", kwargs={"status": status}),
-            "taken_aantal": taken_gefilterd.count(),
-            "foldout_states": json.dumps(foldout_states),
-            "request_type": request_type,
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken_overzicht(request):
-    url_kwargs = {"status": "nieuw"}
-    return render(
-        request,
-        "taken/taken_lijst.html",
-        {
-            "taken_lijst_url": reverse("taken_lijst_part", kwargs=url_kwargs),
-            "filter_url": reverse("filter_part", kwargs=url_kwargs),
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken_afgerond_overzicht(request):
-    url_kwargs = {"status": "voltooid"}
-    return render(
-        request,
-        "taken/taken_lijst.html",
-        {
-            "taken_lijst_url": reverse(
-                "taken_lijst_part",
-                kwargs=url_kwargs,
-            ),
-            "filter_url": reverse(
-                "filter_part",
-                kwargs=url_kwargs,
-            ),
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken_lijst(request, status="nieuw"):
-    taken = Taak.objects.get_taken_recent(request.user)
-
-    filters = (
-        get_filters(request.user.profiel.context)
-        if request.user.profiel.context
-        else []
-    )
-
-    actieve_filters = get_actieve_filters(request.user, filters, status)
-
-    filter_manager = FilterManager(taken, actieve_filters)
-
-    taken_gefilterd = filter_manager.filter_taken()
+    if request.POST:
+        set_actieve_filters(request.user, filter_manager.active_filters)
 
     taken_aantal = len(taken_gefilterd)
-    paginator = Paginator(taken_gefilterd, 500)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
 
-    # get css order numbers for adres of taak
-    taken_sorted_by_adres = {
-        id: i
-        for i, id in enumerate(
-            taken_gefilterd.annotate(
-                adres=Concat(
-                    "melding__response_json__locaties_voor_melding__0__straatnaam",
-                    Value(" "),
-                    "melding__response_json__locaties_voor_melding__0__huisnummer",
-                    output_field=models.CharField(),
-                )
-            )
-            .order_by("adres")
-            .values_list("id", flat=True)
-        )
-    }
-
-    taken_paginated = page_obj.object_list
     return render(
         request,
-        "incident/part_list_base.html",
+        "taken/taken.html",
         {
-            "this_url": reverse("taken_lijst_part", kwargs={"status": status}),
-            "taken": taken_paginated,
             "taken_aantal": taken_aantal,
-            "page_obj": page_obj,
             "filter_manager": filter_manager,
-            "taken_sorted_by_adres": taken_sorted_by_adres,
+            "foldout_states": json.dumps(foldout_states),
+        },
+    )
+
+
+@login_required
+@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
+def taken_lijst(request):
+    ref_location = (request.GET.get("lat"), request.GET.get("lon"))
+
+    sortering = get_sortering(request.user)
+    sort_reverse = len(sortering.split("-")) > 1
+    sortering = sortering.split("-")[0]
+    sorting_fields = {
+        "Postcode": lambda t: t.get("melding_data", {})
+        .get("locaties_voor_melding", [{}])[0]
+        .get("postcode")
+        if t.get("melding_data", {})
+        .get("locaties_voor_melding", [{}])[0]
+        .get("postcode")
+        else "0000zz",
+        "Adres": lambda t: t.get("adres"),
+        "Datum": lambda t: t.get("taakstatus__aangemaakt_op"),
+        "Afstand": lambda t: t.get("afstand"),
+    }
+
+    def get_point(taak):
+        default_coordinates = [0, 0]
+        coordinates = (
+            taak.get("melding_data", {})
+            .get("locaties_voor_melding", [{}])[0]
+            .get("geometrie", {})
+            .get("coordinates", default_coordinates)
+            if taak.get("melding_data", {})
+            .get("locaties_voor_melding", [{}])[0]
+            .get("geometrie", {})
+            else default_coordinates
+        )
+        return (coordinates[1], coordinates[0])
+
+    def get_distance(ref_location, taak):
+        return distance(ref_location, get_point(taak)).m
+
+    taken_gefilterd = request.session.get("taken_gefilterd")
+    if not taken_gefilterd:
+        taken = Taak.objects.get_taken_recent(request.user)
+        filters = (
+            get_filters(request.user.profiel.context)
+            if request.user.profiel.context
+            else []
+        )
+        actieve_filters = get_actieve_filters(request.user, filters)
+        filter_manager = FilterManager(taken, actieve_filters)
+        taken_gefilterd = filter_manager.filter_taken()
+
+    taken_gefilterd = taken_gefilterd.annotate(
+        adres=Concat(
+            "melding__response_json__locaties_voor_melding__0__straatnaam",
+            Value(" "),
+            "melding__response_json__locaties_voor_melding__0__huisnummer",
+            output_field=models.CharField(),
+        )
+    )
+
+    taken_gefilterd = taken_gefilterd.values(
+        "id",
+        "adres",
+        "titel",
+        "titel",
+        "afgesloten_op",
+        "taakstatus__naam",
+        "taakstatus__aangemaakt_op",
+        melding_data=F("melding__response_json"),
+    )
+
+    taken_gefilterd = sorted(
+        [
+            {
+                **taak,
+                "afstand": int(get_distance(ref_location, taak)),
+            }
+            for taak in taken_gefilterd
+        ],
+        key=sorting_fields.get(sortering),
+        reverse=sort_reverse,
+    )
+
+    paginator = Paginator(taken_gefilterd, 50)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    taken_paginated = page_obj.object_list
+    if request.session.get("taken_gefilterd"):
+        del request.session["taken_gefilterd"]
+
+    return render(
+        request,
+        "taken/taken_lijst.html",
+        {
+            "taken": taken_paginated,
+            "page_obj": page_obj,
         },
     )
 
@@ -269,8 +293,7 @@ def kaart_modus(request):
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
-    melding_response = MeldingenService().get_by_uri(taak.melding.bron_url)
-    melding = melding_response.json()
+    melding = taak.get_melding_alias().response_json
     tijdlijn_data = melding_naar_tijdlijn(melding)
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
@@ -285,6 +308,29 @@ def taak_detail(request, id):
             "device_os": device.os_name().lower(),
         },
     )
+
+
+@login_required
+def onderwerp(request):
+    url = request.GET.get("url")
+    if not url:
+        return http_404()
+
+    onderwerp = render_onderwerp(request.GET.get("url"))
+    return render(
+        request,
+        "onderwerpen/onderwerp.html",
+        {
+            "url": url,
+            "onderwerp": onderwerp,
+        },
+    )
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def clear_melding_token_from_cache(request):
+    cache.delete("meldingen_token")
+    return HttpResponse("melding_token removed from cache")
 
 
 @login_required
@@ -357,26 +403,52 @@ def taak_toewijzing_intrekken(request, id):
 @login_required
 @permission_required("authorisatie.taak_afronden", raise_exception=True)
 def incident_modal_handle(request, id):
+    context = request.user.profiel.context
     resolutie = request.GET.get("resolutie", "opgelost")
     taak = get_object_or_404(Taak, pk=id)
+    if taak.taakstatus.naam == Taakstatus.NaamOpties.VOLTOOID:
+        # Voorkom het voltooien van een taak die reeds voltooid is.
+        return http_404(request)
+
+    # Alle taken voor deze melding
+    openstaande_taken_voor_melding = Taak.objects.filter(
+        melding__response_json__id=taak.melding.response_json.get("id"),
+        taakstatus__naam__in=Taakstatus.niet_voltooid_statussen(),
+    )
+
+    # Alle taaktype ids voor deze melding
+    openstaande_taaktype_ids_voor_melding = list(
+        {
+            taaktype_id
+            for taaktype_id in openstaande_taken_voor_melding.values_list(
+                "taaktype__id", flat=True
+            )
+            .order_by("taaktype__id")
+            .distinct()
+        }
+    )
+
+    # Exclude alle taaktype ids voor vervolgtaken
+    volgende_taaktypes = taak.taaktype.volgende_taaktypes.all().exclude(
+        id__in=openstaande_taaktype_ids_voor_melding
+    )
+
     form = TaakBehandelForm(
-        volgende_taaktypes=taak.taaktype.volgende_taaktypes.all().exclude(
-            id=taak.taaktype.id
-        ),
+        volgende_taaktypes=volgende_taaktypes,
         initial={"resolutie": resolutie},
     )
-    warnings = []
-    errors = []
-    messages = []
-    form_submitted = False
-    is_handled = False
+
+    # Alle andere actieve /openstaande taken voor deze melding
+    actieve_vervolg_taken = openstaande_taken_voor_melding.filter(
+        taaktype__in=context.taaktypes.all(),
+    ).exclude(
+        id=taak.id,
+    )
 
     if request.POST:
         form = TaakBehandelForm(
             request.POST,
-            volgende_taaktypes=taak.taaktype.volgende_taaktypes.all().exclude(
-                id=taak.taaktype.id
-            ),
+            volgende_taaktypes=volgende_taaktypes,
             initial={"resolutie": resolutie},
         )
         if form.is_valid():
@@ -433,7 +505,7 @@ def incident_modal_handle(request, id):
                                 f"taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
                             )
 
-            return redirect("incident_index")
+            return redirect("taken")
 
     return render(
         request,
@@ -441,15 +513,7 @@ def incident_modal_handle(request, id):
         {
             "taak": taak,
             "form": form,
-            "form_submitted": form_submitted,
-            "HANDLED_OPTIONS": HANDLED_OPTIONS,
-            "parent_context": {
-                "form_submitted": form_submitted,
-                "errors": errors,
-                "warnings": warnings,
-                "messages": messages,
-                "is_handled": is_handled,
-            },
+            "actieve_vervolg_taken": actieve_vervolg_taken,
         },
     )
 
@@ -463,7 +527,8 @@ def config(request):
 
 
 def meldingen_bestand(request):
-    url = f"{settings.MELDINGEN_URL}{request.path}"
+    modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
+    url = f"{settings.MELDINGEN_URL}{modified_path}"
     headers = {"Authorization": f"Token {MeldingenService().haal_token()}"}
     response = requests.get(url, stream=True, headers=headers)
     return StreamingHttpResponse(

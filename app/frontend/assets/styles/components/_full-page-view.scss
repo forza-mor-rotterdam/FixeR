@@ -1,4 +1,6 @@
 .full-page-view {
+    z-index: 99999;
+    position: relative;
     &__main {
         // opacity: 0;
         background-color: $white;
