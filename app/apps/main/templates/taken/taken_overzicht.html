@@ -14,7 +14,7 @@
         class="container__header"
     >
         <div class="row">
-            <h1 class="h3">Taken ({{taken_aantal}})</h1>
+            <h1 class="h3">Taken (<span data-incidentlist-target="takenCount"></span>)</h1>
             <div class="container__controls">
                 <button
                     type="button"
@@ -43,7 +43,7 @@
                         </svg>
                     </span>
                     <span>Filter</span>
-                    <span class="count count--filter">{{ filter_manager.active_filter_count }}</span>
+                    <span class="count count--filter" data-incidentlist-target="activeFilterCount"></span>
                 </button>
             </div>
         </div>

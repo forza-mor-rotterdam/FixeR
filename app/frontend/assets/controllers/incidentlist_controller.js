@@ -6,7 +6,7 @@ let currentPosition = null
 
 export default class extends Controller {
     static outlets = [ "kaart" ]
-    static targets = [ "sorting", "toggleMapView", "taakAfstand", "taakItem", "taakItemLijst"]
+    static targets = [ "sorting", "toggleMapView", "taakAfstand", "taakItem", "taakItemLijst", "activeFilterCount", "takenCount"]
 
     initialize() {
         let self = this
@@ -41,6 +41,14 @@ export default class extends Controller {
         }});
 
         window.dispatchEvent(childControllerConnectedEvent);
+
+        window.addEventListener("childControllerConnectedEvent", function(e){
+            if (e.detail.controller.identifier == "filter"){
+                self.activeFilterCountTarget.textContent = e.detail.controller.activeFilterCountValue
+                self.reloadTakenLijst()
+            }
+
+        });
     }
     connect() {}
     taakAfstandTargetConnected(element) {
@@ -109,6 +117,7 @@ export default class extends Controller {
     taakItemLijstTargetConnected(){
         let self = this
         self.lastRefreshPosition = [currentPosition[0], currentPosition[1]]
+        self.takenCountTarget.textContent = self.taakItemLijstTarget.dataset.takenCount
         self.kaartOutlet.clearMarkers()
         let kaartMarkers = []
         for (let i = 0; i < self.taakItemTargets.length; i++){

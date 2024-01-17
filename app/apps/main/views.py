@@ -116,6 +116,16 @@ def ui_settings_handler(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken(request):
+    return render(
+        request,
+        "taken/taken.html",
+        {},
+    )
+
+
+@login_required
+@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
+def taken_filter(request):
     taken = Taak.objects.get_taken_recent(request.user)
 
     filters = (
@@ -140,10 +150,9 @@ def taken(request):
         set_actieve_filters(request.user, filter_manager.active_filters)
 
     taken_aantal = len(taken_gefilterd)
-
     return render(
         request,
-        "taken/taken.html",
+        "taken/taken_filter_form.html",
         {
             "taken_aantal": taken_aantal,
             "filter_manager": filter_manager,
