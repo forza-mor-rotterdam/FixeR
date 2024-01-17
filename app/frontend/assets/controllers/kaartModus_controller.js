@@ -15,9 +15,6 @@ export default class extends Controller {
         this.element.dispatchEvent(kaartModusChangeEvent);
         field.parentNode.classList.add("active")
     }
-    onChangeHandler(e){
-        // console.log("onChangeHandler", e)
-    }
     kaartModusOptionClickHandler(e){
         this.formTarget.requestSubmit()
     }

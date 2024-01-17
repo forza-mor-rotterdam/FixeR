@@ -35,6 +35,7 @@ from apps.main.views import (
     taak_toewijzen,
     taak_toewijzing_intrekken,
     taken,
+    taken_filter,
     taken_lijst,
     ui_settings_handler,
 )
@@ -93,6 +94,11 @@ urlpatterns = [
         "taken/",
         taken,
         name="taken",
+    ),
+    path(
+        "taken/filter/",
+        taken_filter,
+        name="taken_filter",
     ),
     path(
         "taken/lijst/",

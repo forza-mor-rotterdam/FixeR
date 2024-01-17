@@ -1,8 +1,10 @@
 {% load json_encode from main_tags %}
-<form action="{{ this_url }}"
+<turbo-frame id="taken_filter">
+<form action="{% url 'taken_filter' %}"
       method="post"
       data-controller="filter"
       data-filter-request-type-value="{{ request_type }}"
+      data-filter-active-filter-count-value="{{ filter_manager.active_filter_count }}"
       id="incidentFilterAllForm"
       data-testid="incidentFilterAllForm">
     {% csrf_token %}
@@ -85,3 +87,4 @@
         {% endif %}
     </div>
 </form>
+</turbo-frame>

@@ -4,6 +4,17 @@ import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
     static targets = [ "foldoutStatesField", "filterInput" ]
+    static values = {
+        activeFilterCount: String,
+    }
+    initialize() {
+        let self = this
+        self.element[self.identifier] = self
+        let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', { bubbles: true, cancelable: false, detail: {
+            controller: self
+        }});
+        window.dispatchEvent(childControllerConnectedEvent);
+    }
     removeFilter(e) {
         const input = document.querySelector(`[id="${e.params.code}"]`);
         input.checked = false;
@@ -24,7 +35,6 @@ export default class extends Controller {
         }
         input.value = JSON.stringify(idArray)
     }
-
     onChangeFilter() {
         this.element.requestSubmit()
     }
