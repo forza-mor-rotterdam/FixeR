@@ -19,10 +19,10 @@ let kaartStatus = null;
 export default class extends Controller {
   static outlets = ["main"];
   initialize() {
+    let self = this;
     markerMe = null;
     kaartStatus = {};
-    markerList = [];
-    self = this;
+    self.markerList = [];
     self.element[self.identifier] = self;
 
     mapDiv = document.getElementById("incidentMap");
@@ -67,6 +67,7 @@ export default class extends Controller {
     });
   }
   kaartModusChangeHandler(_kaartModus, _requestType) {
+    let self = this
     if (!markerMe) {
       return;
     }
@@ -76,18 +77,19 @@ export default class extends Controller {
         map.flyTo(markerMe.getLatLng(), self.mainOutlet.getKaartStatus().zoom);
         break;
 
-      case "toon_alles":
-        map.fitBounds(markers.getBounds());
-        break;
-    }
-  }
+        case "toon_alles":
+          map.fitBounds(self.markers.getBounds());
+          break;
+        }
+      }
   positionChangeEvent(position) {
+    let self = this
     if (!markerMe) {
       markerMe = new L.Marker(
         [position.coords.latitude, position.coords.longitude],
         { icon: markerBlue }
       );
-      markers.addLayer(markerMe);
+      self.markers.addLayer(markerMe);
     } else {
       markerMe.setLatLng([position.coords.latitude, position.coords.longitude]);
     }
@@ -107,11 +109,12 @@ export default class extends Controller {
   }
 
   selectTaakMarker(taakId) {
-    let obj = markerList.find((obj) => obj.options.taakId == taakId);
+    let obj = self.markerList.find((obj) => obj.options.taakId == taakId);
     obj.openPopup();
   }
 
   drawMap() {
+    let self = this
     markerIcon = L.Icon.extend({
       options: {
         iconSize: [36, 36],
@@ -167,9 +170,9 @@ export default class extends Controller {
     resizeObserver.observe(mapDiv);
 
     //create the marker group
-    markers = new L.featureGroup();
+    self.markers = new L.featureGroup();
     //add the markers to the map
-    map.addLayer(markers);
+    map.addLayer(self.markers);
     //fit the map to the markers
 
     buurten = L.tileLayer.wms(
@@ -217,8 +220,15 @@ export default class extends Controller {
 
     getRoute(event);
   }
+  clearMarkers(){
+    let self = this
+    self.markerList = []
+    self.markers.clearLayers()
+    self.markers.addLayer(markerMe);
 
+  }
   plotMarkers(coordinatenlijst) {
+    let self = this
     if (coordinatenlijst) {
       for (let i = 0; i < coordinatenlijst.length; i++) {
         const lat = coordinatenlijst[i].geometrie.coordinates ? coordinatenlijst[i].geometrie.coordinates[1] : 51.9247772;
@@ -245,8 +255,8 @@ export default class extends Controller {
         }
         marker.bindPopup(popupContent);
 
-        markers.addLayer(marker);
-        markerList.push(marker);
+        self.markers.addLayer(marker);
+        self.markerList.push(marker);
       }
     }
   }

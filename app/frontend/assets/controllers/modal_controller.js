@@ -6,7 +6,6 @@ export default class extends Controller {
 
     initialize() {
         document.body.classList.remove('show-modal');
-        console.log("modal init")
 
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {

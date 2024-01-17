@@ -34,7 +34,8 @@ from apps.main.views import (
     taak_detail,
     taak_toewijzen,
     taak_toewijzing_intrekken,
-    taken_overzicht,
+    taken,
+    taken_lijst,
     ui_settings_handler,
 )
 from apps.release_notes.views import (
@@ -90,8 +91,13 @@ urlpatterns = [
     # START taken
     path(
         "taken/",
-        taken_overzicht,
-        name="incident_index",
+        taken,
+        name="taken",
+    ),
+    path(
+        "taken/lijst/",
+        taken_lijst,
+        name="taken_lijst",
     ),
     path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
     path("kaart-modus/", kaart_modus, name="kaart_modus"),

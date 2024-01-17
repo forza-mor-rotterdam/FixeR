@@ -38,13 +38,14 @@ from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import Value
+from django.db.models import F, Value
 from django.db.models.functions import Concat
 from django.http import HttpResponse, HttpResponseForbidden, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import View
+from geopy.distance import distance
 from rest_framework.reverse import reverse as drf_reverse
 
 logger = logging.getLogger(__name__)
@@ -86,7 +87,7 @@ def serve_protected_media(request):
 @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
-        return redirect(reverse("incident_index"), False)
+        return redirect(reverse("taken"), False)
     if request.user.has_perms(["authorisatie.beheer_bekijken"]):
         return redirect(reverse("beheer"), False)
     return render(
@@ -114,7 +115,7 @@ def ui_settings_handler(request):
 
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken_overzicht(request):
+def taken(request):
     taken = Taak.objects.get_taken_recent(request.user)
 
     filters = (
@@ -123,9 +124,7 @@ def taken_overzicht(request):
         else []
     )
     foldout_states = []
-    request_type = "get"
     if request.POST:
-        request_type = "post"
         actieve_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
     else:
@@ -135,44 +134,119 @@ def taken_overzicht(request):
 
     taken_gefilterd = filter_manager.filter_taken()
 
+    request.session["taken_gefilterd"] = taken_gefilterd
+
     if request.POST:
         set_actieve_filters(request.user, filter_manager.active_filters)
 
     taken_aantal = len(taken_gefilterd)
-    paginator = Paginator(taken_gefilterd, 500)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
 
-    # get css order numbers for adres of taak
-    taken_sorted_by_adres = {
-        id: i
-        for i, id in enumerate(
-            taken_gefilterd.annotate(
-                adres=Concat(
-                    "melding__response_json__locaties_voor_melding__0__straatnaam",
-                    Value(" "),
-                    "melding__response_json__locaties_voor_melding__0__huisnummer",
-                    output_field=models.CharField(),
-                )
-            )
-            .order_by("adres")
-            .values_list("id", flat=True)
-        )
+    return render(
+        request,
+        "taken/taken.html",
+        {
+            "taken_aantal": taken_aantal,
+            "filter_manager": filter_manager,
+            "foldout_states": json.dumps(foldout_states),
+        },
+    )
+
+
+@login_required
+@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
+def taken_lijst(request):
+    ref_location = (request.GET.get("lat"), request.GET.get("lon"))
+
+    sortering = get_sortering(request.user)
+    sort_reverse = len(sortering.split("-")) > 1
+    sortering = sortering.split("-")[0]
+    sorting_fields = {
+        "Postcode": lambda t: t.get("melding_data", {})
+        .get("locaties_voor_melding", [{}])[0]
+        .get("postcode")
+        if t.get("melding_data", {})
+        .get("locaties_voor_melding", [{}])[0]
+        .get("postcode")
+        else "0000zz",
+        "Adres": lambda t: t.get("adres"),
+        "Datum": lambda t: t.get("taakstatus__aangemaakt_op"),
+        "Afstand": lambda t: t.get("afstand"),
     }
 
+    def get_point(taak):
+        default_coordinates = [0, 0]
+        coordinates = (
+            taak.get("melding_data", {})
+            .get("locaties_voor_melding", [{}])[0]
+            .get("geometrie", {})
+            .get("coordinates", default_coordinates)
+            if taak.get("melding_data", {})
+            .get("locaties_voor_melding", [{}])[0]
+            .get("geometrie", {})
+            else default_coordinates
+        )
+        return (coordinates[1], coordinates[0])
+
+    def get_distance(ref_location, taak):
+        return distance(ref_location, get_point(taak)).m
+
+    taken_gefilterd = request.session.get("taken_gefilterd")
+    if not taken_gefilterd:
+        taken = Taak.objects.get_taken_recent(request.user)
+        filters = (
+            get_filters(request.user.profiel.context)
+            if request.user.profiel.context
+            else []
+        )
+        actieve_filters = get_actieve_filters(request.user, filters)
+        filter_manager = FilterManager(taken, actieve_filters)
+        taken_gefilterd = filter_manager.filter_taken()
+
+    taken_gefilterd = taken_gefilterd.annotate(
+        adres=Concat(
+            "melding__response_json__locaties_voor_melding__0__straatnaam",
+            Value(" "),
+            "melding__response_json__locaties_voor_melding__0__huisnummer",
+            output_field=models.CharField(),
+        )
+    )
+
+    taken_gefilterd = taken_gefilterd.values(
+        "id",
+        "adres",
+        "titel",
+        "titel",
+        "afgesloten_op",
+        "taakstatus__naam",
+        "taakstatus__aangemaakt_op",
+        melding_data=F("melding__response_json"),
+    )
+
+    taken_gefilterd = sorted(
+        [
+            {
+                **taak,
+                "afstand": int(get_distance(ref_location, taak)),
+            }
+            for taak in taken_gefilterd
+        ],
+        key=sorting_fields.get(sortering),
+        reverse=sort_reverse,
+    )
+
+    paginator = Paginator(taken_gefilterd, 8)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     taken_paginated = page_obj.object_list
+    if request.session.get("taken_gefilterd"):
+        del request.session["taken_gefilterd"]
+
     return render(
         request,
         "taken/taken_lijst.html",
         {
-            "this_url": reverse("incident_index"),
             "taken": taken_paginated,
-            "taken_aantal": taken_aantal,
             "page_obj": page_obj,
-            "filter_manager": filter_manager,
-            "taken_sorted_by_adres": taken_sorted_by_adres,
-            "foldout_states": json.dumps(foldout_states),
-            "request_type": request_type,
         },
     )
 
@@ -431,7 +505,7 @@ def incident_modal_handle(request, id):
                                 f"taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
                             )
 
-            return redirect("incident_index")
+            return redirect("taken")
 
     return render(
         request,
