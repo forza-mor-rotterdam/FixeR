@@ -37,7 +37,8 @@ class MeldingenService:
         )
 
     def haal_token(self):
-        meldingen_token = cache.get("meldingen_token2")
+        meldingen_token = cache.get("meldingen_token")
+        logger.info(f"meldingen_token exists: {bool(meldingen_token)}")
         if not meldingen_token:
             logger.info(
                 f"MELDINGEN_PASSWORD EXISTS: {(settings.MELDINGEN_PASSWORD is not None)}"

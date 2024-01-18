@@ -8,11 +8,6 @@ let defaultLabelInternalText = ""
 const requiredLabelInternalText = "Waarom kan de taak niet worden afgerond?"
 const defaultErrorMessage = "Vul a.u.b. dit veld in."
 export default class extends Controller {
-    static values = {
-        formIsSubmitted: Boolean,
-        parentContext: String,
-        handledOptions: String,
-    }
 
     static targets = ["externalText", "internalText", "newTask"]
 
@@ -35,7 +30,6 @@ export default class extends Controller {
             })
 
             if(input.value === "niet_opgelost" && input.checked === true) {
-                console.log("NIET OPGELOST")
                 this.onResolutionFalse()
             }
         };

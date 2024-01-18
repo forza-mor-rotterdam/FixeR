@@ -39,8 +39,6 @@ export default class extends Controller {
         const sessionCheckInterval = parseInt(self.sessionCheckIntervalValue)
         var timer = setInterval(function(){
             const currentDate = new Date();
-            console.log({"sessionExpiryTimestamp": sessionExpiryTimestamp, "countdown": sessionExpiryTimestamp - parseInt((parseInt(currentDate.getTime())))})
-            console.log({"sessionExpiryMaxTimestamp": sessionExpiryMaxTimestamp, "countdownMax": sessionExpiryMaxTimestamp - parseInt((parseInt(currentDate.getTime())))})
             const timeIsUp = sessionExpiryTimestamp <= parseInt((parseInt(currentDate.getTime())))
             const timeIsUpMax = sessionExpiryMaxTimestamp <= parseInt((parseInt(currentDate.getTime())))
             if (timeIsUp || timeIsUpMax){

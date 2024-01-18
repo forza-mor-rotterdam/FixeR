@@ -2,11 +2,11 @@
 <div>
 
     <h2 class="h5">
-        {{ taak.melding.response_json.locaties_voor_melding.0.straatnaam }} {{ taak.melding.response_json.locaties_voor_melding.0.huisnummer }}
-        {% if taak.taakstatus.naam %}<span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}{% endif %}
+        {{ taak.melding_data.locaties_voor_melding.0.straatnaam }} {{ taak.melding_data.locaties_voor_melding.0.huisnummer }}
+        {% if taak.taakstatus__naam %}<span class="badge {% if taak.taakstatus__naam == 'nieuw' or taak.taakstatus__naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus__naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus__naam|lower|capfirst }}{% endif %}
         </span>
     </h2>
-    {% if taak.melding.response_json.locaties_voor_melding.0.postcode %}<strong>{{ taak.melding.response_json.locaties_voor_melding.0.postcode }}</strong>{% endif %}
+    {% if taak.melding_data.locaties_voor_melding.0.postcode %}<strong>{{ taak.melding_data.locaties_voor_melding.0.postcode }}</strong>{% endif %}
     <div>
         <span class="incident__category">{{ taak.titel }}</span>
     </div>

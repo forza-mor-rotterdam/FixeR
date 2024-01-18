@@ -1,60 +1,5 @@
+from apps.taken.models import Taak
 from django import forms
-
-HANDLED_OPTIONS = (
-    (
-        "O",
-        "Opgeruimd",
-        "De gemeente heeft deze melding in behandeling genomen en gaat ermee aan de slag. De melding is daarom afgesloten.",
-        "-1",
-    ),
-    (
-        "N",
-        "Niets aangetroffen",
-        "In uw melding heeft u een locatie genoemd. Op deze locatie hebben wij echter niets aangetroffen. We sluiten daarom uw melding.",
-        "3",
-    ),
-    (
-        "N",
-        "De locatie is niet bereikbaar",
-        "In uw melding heeft u een locatie genoemd. We kunnen deze locatie echter niet bereiken. We sluiten daarom uw melding.",
-        "4",
-    ),
-    (
-        "N",
-        "De melding is niet voor mij",
-        "",
-        "5",
-    ),
-    (
-        "N",
-        "De gemeente gaat hier niet over",
-        "Helaas valt uw melding niet onder verantwoordelijkheid van de gemeente. We sluiten daarom uw melding.",
-        "1",
-    ),
-)
-TAAK_BEHANDEL_OPTIES = (
-    (
-        "ja",
-        "De taak is afgerond",
-        "voltooid",
-        "opgelost",
-    ),
-    (
-        "ja",
-        "Niets aangetroffen",
-        "voltooid",
-        "niet_gevonden",
-    ),
-    (
-        "nee",
-        "Kan niet worden uitgevoerd",
-        "open",
-        "niet_opgelost",
-    ),
-)
-
-TAAK_BEHANDEL_STATUS = {bo[0]: bo[2] for bo in TAAK_BEHANDEL_OPTIES}
-TAAK_BEHANDEL_RESOLUTIE = {bo[0]: bo[3] for bo in TAAK_BEHANDEL_OPTIES}
 
 
 class RadioSelect(forms.RadioSelect):
@@ -75,7 +20,7 @@ class TaakBehandelForm(forms.Form):
             }
         ),
         label="Is de taak afgehandeld?",
-        choices=[[x[3], x[1]] for x in TAAK_BEHANDEL_OPTIES],
+        choices=Taak.behandel_opties(),
         required=True,
     )
 
@@ -113,7 +58,6 @@ class TaakBehandelForm(forms.Form):
         # Vraag Vervolgtaak? Altijd tonen bij de 3 resoluties (afgehandeld, niet afgehandeld, niets aangetroffen)
         # Alle vervolgtaken als checkboxes weergeven?
         # Bij resolutie 3 ("kan  niet") is interne opmerking VERPLICHT, met tekst "Waarom kan de taak niet worden afgerond?"
-
         if volgende_taaktypes:
             self.fields["nieuwe_taak"] = forms.MultipleChoiceField(
                 widget=forms.CheckboxSelectMultiple,

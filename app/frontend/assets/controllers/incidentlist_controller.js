@@ -3,47 +3,26 @@ import { Controller } from '@hotwired/stimulus';
 let showSortingContainer = false;
 let sortDirectionReversed = false;
 let currentPosition = null
-const orderOptions = [
-    "Datum",
-    "Adres",
-    "Afstand",
-    "Postcode",
-]
-let activeOrder = orderOptions[0]
-const url = "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}";
 
 export default class extends Controller {
     static outlets = [ "kaart" ]
-    static targets = [ "sorting", "toggleMapView", "taakAfstand", "taakItem", "taakItemLijst"]
+    static targets = [ "sorting", "toggleMapView", "taakAfstand", "taakItem", "taakItemLijst", "activeFilterCount", "takenCount"]
 
     initialize() {
         let self = this
+        self.page = 1
+        self.distanceToLastRefreshPositionTreshold = 50 //meter
+        self.lastRefreshPosition = null
         self.element[self.identifier] = self
         self.element.addEventListener("orderChangeEvent", function(e){
-            self.sorterenOp(e.detail.order)
-            self.saveSortedList(e.detail.order)
+            self.currentOrder = e.detail.order
+            self.reloadTakenLijst()
         });
 
         if(self.hasSortingTarget && showSortingContainer === true ) {
             self.sortingTarget.classList.remove("hidden-vertical")
             self.sortingTarget.classList.add("show-vertical")
         }
-        self.setStyleOrder(activeOrder)
-        let kaartMarkers = []
-        for (let i = 0; i < self.taakItemTargets.length; i++){
-            const taakItem = self.taakItemTargets[i]
-            if (taakItem.dataset.geometrie != ""){
-                kaartMarkers.push({
-                    geometrie: JSON.parse(taakItem.dataset.geometrie),
-                    adres: taakItem.dataset.adres,
-                    afbeeldingUrl: taakItem.dataset.afbeeldingUrl,
-                    onderwerpen: taakItem.dataset.onderwerpen,
-                    taakId: taakItem.dataset.id,
-                    titel: taakItem.dataset.titel
-                })
-            }
-        }
-        self.kaartOutlet.plotMarkers(kaartMarkers)
 
         self.element.addEventListener("markerSelectedEvent", function(e){
             self.selecteerTaakItem(e.detail.taakId)
@@ -52,8 +31,6 @@ export default class extends Controller {
             self.deselecteerTaakItem(e.detail.taakId)
         });
         window.addEventListener("positionChangeEvent", function(e){
-            console.log("positionChangeEvent")
-            console.log(e.detail)
             self.positionWatchSuccess(e.detail.position)
         });
         self.element.addEventListener("kaartModusChangeEvent", function(e){
@@ -64,6 +41,14 @@ export default class extends Controller {
         }});
 
         window.dispatchEvent(childControllerConnectedEvent);
+
+        window.addEventListener("childControllerConnectedEvent", function(e){
+            if (e.detail.controller.identifier == "filter"){
+                self.activeFilterCountTarget.textContent = e.detail.controller.activeFilterCountValue
+                self.reloadTakenLijst()
+            }
+
+        });
     }
     connect() {}
     taakAfstandTargetConnected(element) {
@@ -89,8 +74,10 @@ export default class extends Controller {
     }
     positionWatchSuccess(position){
         let self = this
-        console.log("positionWatchSuccess")
         currentPosition = [position.coords.latitude, position.coords.longitude]
+        if (self.lastRefreshPosition == null) {
+            self.lastRefreshPosition = currentPosition
+        }
         if (self.hasKaartOutlet){
             self.kaartOutlet.positionChangeEvent(position)
         }
@@ -100,78 +87,61 @@ export default class extends Controller {
                 const markerLocation = new L.LatLng(elem.dataset.latitude, elem.dataset.longitude);
                 const afstand = Math.round(markerLocation.distanceTo(currentPosition))
                 elem.textContent = afstand
-                const listItem = elem.closest(".list-item")
-
-                if (listItem){
-                    listItem.dataset.orderAfstand = afstand
-                    if (activeOrder == "Afstand"){
-                        listItem.style.order = parseInt(afstand)
-                    }
-                }
             }
         }
+        const lastRefreshLocation = new L.LatLng(self.lastRefreshPosition[0], self.lastRefreshPosition[1]);
+        const distanceToLastRefreshPosition = Math.round(lastRefreshLocation.distanceTo(currentPosition))
+        console.log("distanceToLastRefreshPosition")
+        console.log(distanceToLastRefreshPosition)
+        if (distanceToLastRefreshPosition > self.distanceToLastRefreshPositionTreshold && self.currentOrder == "Afstand") {
+            self.reloadTakenLijst()
+        }
+    }
+    reloadTakenLijst(){
+        let self = this
+        let takenLijstElement = self.element.querySelector("#taken_lijst")
+        const url = `/taken/lijst/?lat=${currentPosition[0]}&lon=${currentPosition[1]}&page=${self.page}`
+        takenLijstElement.setAttribute("src", url)
+        takenLijstElement.reload()
     }
     selectTaakMarker(e) {
         let self = this
         self.kaartOutlet.selectTaakMarker(e.params.taakId)
     }
-    setStyleOrder(order){
+    onPageClickEvent(e) {
         let self = this
-        for(let i = 0; i < self.taakItemTargets.length; i++){
+        e.preventDefault()
+        self.page = e.params.page
+        self.reloadTakenLijst()
+    }
+    taakItemLijstTargetConnected(){
+        let self = this
+        self.lastRefreshPosition = [currentPosition[0], currentPosition[1]]
+        self.takenCountTarget.textContent = self.taakItemLijstTarget.dataset.takenCount
+        self.kaartOutlet.clearMarkers()
+        let kaartMarkers = []
+        for (let i = 0; i < self.taakItemTargets.length; i++){
             const taakItem = self.taakItemTargets[i]
-            taakItem.style.order = taakItem.dataset[`order${order}`]
+            if (taakItem.dataset.geometrie != ""){
+                kaartMarkers.push({
+                    geometrie: JSON.parse(taakItem.dataset.geometrie),
+                    adres: taakItem.dataset.adres,
+                    afbeeldingUrl: taakItem.dataset.afbeeldingUrl,
+                    taakId: taakItem.dataset.id,
+                    titel: taakItem.dataset.titel
+                })
+            }
         }
+        self.kaartOutlet.plotMarkers(kaartMarkers)
     }
-    sorterenOp(order){
-        let self = this
-        console.log('order', order)
-        let selectedOrder = order.split("-")[0]
-        if (selectedOrder != activeOrder){
-            self.setStyleOrder(selectedOrder)
-        }
-        activeOrder = selectedOrder
-        self.taakItemLijstTarget.classList[(order.split("-").length > 1) ? "remove" : "add"]("reverse")
-        self.taakItemLijstTarget.scrollTop = 0;
-    }
-
-    saveSortedList(order) {
-        let initialSortedList = Array.from(document.querySelectorAll(".list-item"))
-
-        let newSortedList = initialSortedList.map((taakItem) => {
-            return Number(taakItem.getAttribute('data-id'))
-        })
-
-        if(order.split("-").length < 2){
-            newSortedList.reverse()
-        }
-        sessionStorage.setItem("taakIdList", newSortedList)
-    }
-
-    disconnect() {
-        console.log("disconnect")
-    }
-
     toggleMapView(e) {
-        document.getElementById('taken_lijst').classList.toggle('showMap')
+        this.element.classList.toggle('showMap')
     }
-    onGroup(e) {
-        console.log("onGroup", e.target.checked)
-        const frame = document.getElementById('incidents_list');
-        const url = `${frame.dataset.src}?grouped-by=${e.target.checked}`
-        frame.setAttribute('src', url);
-    }
-
     onToggleSortingContainer() {
         let self = this
         self.sortingTarget.classList.toggle("hidden-vertical")
         self.sortingTarget.classList.toggle("show-vertical")
         showSortingContainer = !showSortingContainer
         sortDirectionReversed = sortDirectionReversed === undefined ? false : true
-    }
-
-    onSort(e) {
-        const frame = document.getElementById('incidents_list');
-        const url = `${frame.dataset.src}?sort-by=${e.target.value}`
-        frame.setAttribute('src', url);
     }
 }

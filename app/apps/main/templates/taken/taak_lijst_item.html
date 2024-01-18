@@ -3,6 +3,7 @@
 {% load webpack_static from webpack_loader %}
 {% load to_date vind_in_dict to_timestamp from main_tags %}
 {% load json_encode replace_comma_by_dot adres_order_nummer from main_tags %}
+{% load mor_core_url from main_tags %}
 {% load context_template from context_tags %}
 
 {% block before_modal_content %}
@@ -10,16 +11,11 @@
     <div
         data-incidentlist-target="taakItem"
         data-id="{{ taak.id }}"
-        data-onderwerpen="{{ taak.render_onderwerpen }}"
         data-titel="{{ taak.titel }}"
         data-adres="{{ taak.adres }}"
-        data-geometrie="{{ taak.geometrie|json_encode }}"
+        data-geometrie="{% if taak.melding_data.locaties_voor_melding.0.geometrie %}{{ taak.melding_data.locaties_voor_melding.0.geometrie|json_encode }}{% else %}{% endif %}"
         data-afbeelding-url="{{ taak.afbeelding_url }}"
-        data-order-datum="{{ taak.taakstatus.aangemaakt_op|to_date|to_timestamp }}"
-        data-order-adres="{{ taak|adres_order_nummer:taken_sorted_by_adres }}"
-        data-order-afstand="0"
-        data-order-postcode="{{ taak.postcode_digits }}"
-        class="list-item{% if form_submitted %} form-is-submitted{% endif %}{% if errors and warnings %} has-errors{% endif %}"
+        class="list-item"
         {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}
             data-controller="taak modal"
             data-action="formHandleIsConnected->taak#formHandleIsConnectedHandler"
@@ -61,14 +57,14 @@
         {% endif %}
             <div class="container__flex">
                 <a href="{% url 'taak_detail' taak.id %}" data-turbo-frame="taak_basis" aria-label="Bekijk taak {{ taak.id }}">
-                    <div class="container__image">
+                    <div class="container__image" data-controller="incidentlistItem">
 
-                        {% if taak.melding.response_json.bijlagen %}
-                        {% with taak.melding.response_json.bijlagen|first as first_foto %}
-                        <div class="background-image" style="background-image: url('{{ first_foto.afbeelding_verkleind_relative_url }}')"></div>
+                        {% if taak.melding_data.bijlagen %}
+                        {% with taak.melding_data.bijlagen|first as first_foto %}
+                        <div class="background-image" data-src="background-image: url('{{ first_foto.afbeelding_verkleind_relative_url|mor_core_url }}')"></div>
                         {% endwith %}
                         {% else %}
-                            <div class="background-image" style="background-image: url('{% webpack_static 'icons/noimage.svg' %}'); background-size: 40%;"></div>
+                            <div class="background-image" data-src="background-image: url('{% webpack_static 'icons/noimage.svg' %}'); background-size: 60%;"></div>
                         {% endif %}
                     </div>
 
@@ -78,13 +74,13 @@
                         <div class="incident__moment">
                             <span data-taak-target="incidentDate">
                                 {% localize on %}
-                                {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|to_date|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|to_date|time:"H:i" }}<br>
+                                {{ taak.taakstatus__naam }}: {{ taak.taakstatus__aangemaakt_op|to_date|date:"D d M Y"|lower }} {{ taak.taakstatus__aangemaakt_op|to_date|time:"H:i" }}<br>
                                 {% endlocalize %}
                             </span>
                         </div>
                         <div class="incident__distance">
-                            {% with taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates as geo %}
-                            <span><span data-incidentlist-target="taakAfstand"  data-latitude="{{geo.1|replace_comma_by_dot}}" data-longitude="{{geo.0|replace_comma_by_dot}}" ></span> meter</span>
+                            {% with taak.melding_data.locaties_voor_melding.0.geometrie.coordinates as geo %}
+                            <span><span data-incidentlist-target="taakAfstand"  data-latitude="{{geo.1|replace_comma_by_dot}}" data-longitude="{{geo.0|replace_comma_by_dot}}" >{{taak.afstand}}</span> meter</span>
                             {% endwith %}
                         </div>
                     </div>

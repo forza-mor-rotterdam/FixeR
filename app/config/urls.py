@@ -2,6 +2,7 @@ from apps.authenticatie.views import (
     GebruikerAanmakenView,
     GebruikerAanpassenView,
     GebruikerLijstView,
+    gebruiker_bulk_import,
 )
 from apps.authorisatie.views import (
     RechtengroepAanmakenView,
@@ -18,22 +19,24 @@ from apps.context.views import (
 )
 from apps.main.views import (
     HomepageView,
+    clear_melding_token_from_cache,
     config,
-    filter,
     http_404,
     http_500,
     incident_modal_handle,
     informatie,
     kaart_modus,
     meldingen_bestand,
+    onderwerp,
     root,
+    serve_protected_media,
     sorteer_filter,
     taak_detail,
     taak_toewijzen,
     taak_toewijzing_intrekken,
-    taken_afgerond_overzicht,
+    taken,
+    taken_filter,
     taken_lijst,
-    taken_overzicht,
     ui_settings_handler,
 )
 from apps.release_notes.views import (
@@ -51,7 +54,6 @@ from apps.taken.views import (
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
@@ -78,6 +80,11 @@ urlpatterns = [
     path("informatie/", informatie, name="informatie"),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path("api-token-auth/", views.obtain_auth_token),
+    path(
+        "admin/clear-melding-token-from-cache/",
+        clear_melding_token_from_cache,
+        name="clear_melding_token_from_cache",
+    ),
     path("admin/", admin.site.urls),
     path("oidc/", include("mozilla_django_oidc.urls")),
     path("config/", config, name="config"),
@@ -85,13 +92,18 @@ urlpatterns = [
     # START taken
     path(
         "taken/",
-        taken_overzicht,
-        name="incident_index",
+        taken,
+        name="taken",
     ),
     path(
-        "taken-afgerond/",
-        taken_afgerond_overzicht,
-        name="taken_afgerond_overzicht",
+        "taken/filter/",
+        taken_filter,
+        name="taken_filter",
+    ),
+    path(
+        "taken/lijst/",
+        taken_lijst,
+        name="taken_lijst",
     ),
     path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
@@ -105,8 +117,7 @@ urlpatterns = [
     # END taken
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
-    path("part/filter/<str:status>/", filter, name="filter_part"),
-    path("part/taken/<str:status>/", taken_lijst, name="taken_lijst_part"),
+    path("onderwerp/", onderwerp, name="onderwerp"),
     path(
         "part/taak-modal-handle/<int:id>/",
         incident_modal_handle,
@@ -116,6 +127,11 @@ urlpatterns = [
     # START beheer
     path("beheer/", beheer, name="beheer"),
     path("beheer/gebruiker/", GebruikerLijstView.as_view(), name="gebruiker_lijst"),
+    path(
+        "beheer/gebruiker/bulk-import/",
+        gebruiker_bulk_import,
+        name="gebruiker_bulk_import",
+    ),
     path(
         "beheer/gebruiker/aanmaken/",
         GebruikerAanmakenView.as_view(),
@@ -217,7 +233,8 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
-    re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
+    re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
+    re_path(r"^media", serve_protected_media, name="protected_media"),
 ]
 
 if settings.OIDC_ENABLED:
@@ -241,7 +258,7 @@ if settings.OIDC_ENABLED:
     ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
         path("404/", http_404, name="404"),
         path("500/", http_500, name="500"),

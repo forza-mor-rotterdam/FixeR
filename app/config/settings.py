@@ -42,7 +42,7 @@ MELDINGEN_API_HEALTH_CHECK_URL = os.getenv(
 MELDINGEN_TOKEN_API = os.getenv(
     "MELDINGEN_TOKEN_API", f"{MELDINGEN_URL}/api-token-auth/"
 )
-MELDINGEN_TOKEN_TIMEOUT = 60
+MELDINGEN_TOKEN_TIMEOUT = 60 * 60 * 24
 MELDINGEN_USERNAME = os.getenv("MELDINGEN_USERNAME")
 MELDINGEN_PASSWORD = os.getenv("MELDINGEN_PASSWORD")
 
@@ -187,8 +187,13 @@ STATICFILES_DIRS = (
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "static"))
 
-MEDIA_URL = "/bijlagen/"
-MEDIA_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "bijlagen"))
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "media"))
+
+ALLOW_UNAUTHORIZED_MEDIA_ACCESS = (
+    os.getenv("ALLOW_UNAUTHORIZED_MEDIA_ACCESS", False) in TRUE_VALUES
+)
+MOR_CORE_URL_PREFIX = "/core"
 
 WEBPACK_LOADER = {
     "DEFAULT": {
@@ -339,11 +344,11 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Session settings for django-session-timeout-joinup
 SESSION_EXPIRE_MAXIMUM_SECONDS = int(
-    os.getenv("SESSION_EXPIRE_MAXIMUM_SECONDS", "28800")
+    os.getenv("SESSION_EXPIRE_MAXIMUM_SECONDS", 60 * 60 * 24 * 7)
 )
-SESSION_EXPIRE_SECONDS = int(os.getenv("SESSION_EXPIRE_SECONDS", "3600"))
+SESSION_EXPIRE_SECONDS = int(os.getenv("SESSION_EXPIRE_SECONDS", 60 * 60 * 24))
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
-    os.getenv("SESSION_EXPIRE_SECONDS", "3600")
+    os.getenv("SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD", 60 * 60 * 24)
 )
 SESSION_CHECK_INTERVAL_SECONDS = int(os.getenv("SESSION_CHECK_INTERVAL_SECONDS", "60"))
 

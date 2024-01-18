@@ -55,7 +55,11 @@
                 <td data-row-search-target="searchable">{{object.name}}</td>
                 <td data-row-search-target="searchable">{% if object.permissions.all %}{{object.permissions.all|length}}{% else %}-{% endif %}</td>
                 <td data-row-search-target="searchable">{{object.user_set.all|length}}</td>
-                <td><a href="{% url 'rechtengroep_aanpassen' object.pk %}">Aanpassen</a></td>
+                <td>
+                    <a href="{% url 'rechtengroep_aanpassen' object.pk %}" aria-label="Aanpassen">
+                        {% include "icons/edit.svg" %}
+                    </a>
+                </td>
                 <td>{% if not object.user_set.all %}<a href="{% url 'rechtengroep_aanpassen' object.pk %}"  onclick="return confirm('Weet je zeker dat je deze rechtengroep wil verwijderen?')">Verwijderen</a>{% endif %}</td>
             </tr>
             {% endfor %}

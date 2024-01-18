@@ -178,13 +178,6 @@ class TaakStatusFilter(StandaardFilter):
     _label = "Taakstatus"
 
 
-class WijkFilter(StandaardFilter):
-    _key = "wijk"
-    _option_key_lookup = "melding__response_json__locaties_voor_melding__0__wijknaam"
-    _filter_lookup = "melding__response_json__locaties_voor_melding__0__wijknaam__in"
-    _label = "Wijk"
-
-
 class WijkBuurtFilter(StandaardFilter):
     _key = "buurt"
     _option_key_lookup = "melding__response_json__locaties_voor_melding__0__buurtnaam"
@@ -202,7 +195,6 @@ class FilterManager:
         BegraafplaatsFilter,
         TaaktypeFilter,
         TaakStatusFilter,
-        WijkFilter,
         WijkBuurtFilter,
     )
     _foldout_states = None

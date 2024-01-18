@@ -5,13 +5,15 @@ import { Controller } from '@hotwired/stimulus';
 export default class extends Controller {
     static targets = [ "foldoutStatesField", "filterInput" ]
     static values = {
-        requestType: String,
+        activeFilterCount: String,
     }
-    initialize(){
-        if (this.requestTypeValue == "post"){
-            const frame = document.getElementById('taken_lijst');
-            frame.reload()
-        }
+    initialize() {
+        let self = this
+        self.element[self.identifier] = self
+        let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', { bubbles: true, cancelable: false, detail: {
+            controller: self
+        }});
+        window.dispatchEvent(childControllerConnectedEvent);
     }
     removeFilter(e) {
         const input = document.querySelector(`[id="${e.params.code}"]`);
@@ -21,7 +23,6 @@ export default class extends Controller {
     toggleActiveFilter(e) {
         e.preventDefault()
         const input = this.foldoutStatesFieldTarget;
-        console.log(input.value)
         let idArray = JSON.parse(input.value)
         const idAttr = e.target.getAttribute("id")
         const isOpen = e.target.hasAttribute("open")
@@ -34,23 +35,15 @@ export default class extends Controller {
         }
         input.value = JSON.stringify(idArray)
     }
-
     onChangeFilter() {
         this.element.requestSubmit()
     }
-
-    onSubmitFilter() {
-        this.hideFilters()
-    }
-
     selectAll(e) {
-        e.preventDefault()
         const checkList = Array.from(e.target.closest('details').querySelectorAll('.form-check-input'))
         const doCheck = e.params.filterType === 'all'
         checkList.forEach(element => {
             element.checked = doCheck
         });
-        this.element.requestSubmit()
     }
 
     removeAllFilters(e) {
@@ -58,6 +51,5 @@ export default class extends Controller {
         this.filterInputTargets.forEach(input => {
             input.checked = false;
         })
-        this.element.requestSubmit()
     }
 }
