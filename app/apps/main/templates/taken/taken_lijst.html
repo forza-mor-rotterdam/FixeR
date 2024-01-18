@@ -5,7 +5,7 @@
 
 <turbo-frame id="taken_lijst">
     {% include "snippets/paginator.html" with page_obj=page_obj %}
-        <div class="list__incidents__scroll-wrapper" data-incidentlist-target="taakItemLijst" data-taken-count="{{ page_obj.object_list|length }}">
+        <div class="list__incidents__scroll-wrapper" data-incidentlist-target="taakItemLijst" data-taken-count="{{ page_obj.paginator.count }}">
             {% for taak in taken %}
                 {% include "taken/taak_lijst_item.html" %}
             {% endfor %}
