@@ -7,10 +7,10 @@ export default class extends Controller {
         observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    const container = entry.target.querySelectorAll('.background-image')[0]
+                    const container = entry.target.querySelectorAll('.background-image img')[0]
                     const imageSrc = container.getAttribute('data-src')
                     if(imageSrc){
-                        container.style = imageSrc
+                        container.src = imageSrc
                         container.removeAttribute('data-src');
                     }
                 }
