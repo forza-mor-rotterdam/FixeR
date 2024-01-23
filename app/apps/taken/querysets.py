@@ -7,10 +7,17 @@ class TaakQuerySet(QuerySet):
 
     def get_taken_recent(self, user):
         taak_types = self._get_taak_types(user)
-        return self.filter(
-            # aangemaakt_op__gt=timezone.now() - timedelta(days=50),
-            taaktype__in=taak_types,
-        ).order_by("-aangemaakt_op")
+        return (
+            self.filter(
+                # aangemaakt_op__gt=timezone.now() - timedelta(days=50),
+                taaktype__in=taak_types,
+            )
+            .select_related(
+                "taakstatus",
+                "melding",
+            )
+            .order_by("-aangemaakt_op")
+        )
 
     def get_taken_nieuw(self, user):
         taak_types = self._get_taak_types(user)

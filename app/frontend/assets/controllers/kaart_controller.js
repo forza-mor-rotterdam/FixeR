@@ -232,8 +232,8 @@ export default class extends Controller {
     let self = this
     if (coordinatenlijst) {
       for (let i = 0; i < coordinatenlijst.length; i++) {
-        const lat = coordinatenlijst[i].geometrie.coordinates ? coordinatenlijst[i].geometrie.coordinates[1] : 51.9247772;
-        const long = coordinatenlijst[i].geometrie.coordinates ? coordinatenlijst[i].geometrie.coordinates[0] : 4.4780972;
+        const lat = coordinatenlijst[i].coordinates ? coordinatenlijst[i].coordinates[1] : 51.9247772;
+        const long = coordinatenlijst[i].coordinates ? coordinatenlijst[i].coordinates[0] : 4.4780972;
         const adres = coordinatenlijst[i].adres;
         const afbeelding = coordinatenlijst[i].afbeeldingUrl;
         const titel = coordinatenlijst[i].titel

@@ -122,9 +122,9 @@ export default class extends Controller {
         let kaartMarkers = []
         for (let i = 0; i < self.taakItemTargets.length; i++){
             const taakItem = self.taakItemTargets[i]
-            if (taakItem.dataset.geometrie != ""){
+            if (taakItem.dataset.coordinates != ""){
                 kaartMarkers.push({
-                    geometrie: JSON.parse(taakItem.dataset.geometrie),
+                    coordinates: JSON.parse(taakItem.dataset.coordinates),
                     adres: taakItem.dataset.adres,
                     afbeeldingUrl: taakItem.dataset.afbeeldingUrl,
                     taakId: taakItem.dataset.id,

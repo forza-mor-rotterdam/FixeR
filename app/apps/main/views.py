@@ -39,7 +39,7 @@ from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import F, Value
-from django.db.models.functions import Concat
+from django.db.models.functions import Cast, Concat, Replace
 from django.http import HttpResponse, HttpResponseForbidden, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -164,19 +164,20 @@ def taken_filter(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_lijst(request):
+    from datetime import datetime
+
+    ts_now = datetime.now().timestamp()
+    print("")
+    print("prepare")
     ref_location = (request.GET.get("lat"), request.GET.get("lon"))
 
     sortering = get_sortering(request.user)
     sort_reverse = len(sortering.split("-")) > 1
     sortering = sortering.split("-")[0]
     sorting_fields = {
-        "Postcode": lambda t: t.get("melding_data", {})
-        .get("locaties_voor_melding", [{}])[0]
-        .get("postcode")
-        if t.get("melding_data", {})
-        .get("locaties_voor_melding", [{}])[0]
-        .get("postcode")
-        else "0000zz",
+        "Postcode": lambda t: t.get("postcode", "9999zz")
+        if t.get("postcode")
+        else "9999zz",
         "Adres": lambda t: t.get("adres"),
         "Datum": lambda t: t.get("taakstatus__aangemaakt_op"),
         "Afstand": lambda t: t.get("afstand"),
@@ -199,8 +200,17 @@ def taken_lijst(request):
     def get_distance(ref_location, taak):
         return distance(ref_location, get_point(taak)).m
 
+    print((datetime.now().timestamp() - ts_now) * 1000)
+
+    ts_now = datetime.now().timestamp()
+    print("")
+    print("get from session")
     taken_gefilterd = request.session.get("taken_gefilterd")
+    print((datetime.now().timestamp() - ts_now) * 1000)
     if not taken_gefilterd:
+        ts_now = datetime.now().timestamp()
+        print("")
+        print("get all taken")
         taken = Taak.objects.get_taken_recent(request.user)
         filters = (
             get_filters(request.user.profiel.context)
@@ -210,45 +220,94 @@ def taken_lijst(request):
         actieve_filters = get_actieve_filters(request.user, filters)
         filter_manager = FilterManager(taken, actieve_filters)
         taken_gefilterd = filter_manager.filter_taken()
+        print((datetime.now().timestamp() - ts_now) * 1000)
+    else:
+        print("FROM SESSION")
+    # ts_now = datetime.now().timestamp()
+    # print("")
+    # print("annotate adres")
+    # taken_gefilterd = taken_gefilterd.annotate(
+    #     adres=Concat(
+    #         "melding__response_json__locaties_voor_melding__0__straatnaam",
+    #         Value(" "),
+    #         "melding__response_json__locaties_voor_melding__0__huisnummer",
+    #         output_field=models.CharField(),
+    #     )
+    # )
+    # print((datetime.now().timestamp() - ts_now) * 1000)
 
-    taken_gefilterd = taken_gefilterd.annotate(
-        adres=Concat(
-            "melding__response_json__locaties_voor_melding__0__straatnaam",
-            Value(" "),
-            "melding__response_json__locaties_voor_melding__0__huisnummer",
-            output_field=models.CharField(),
-        )
-    )
-
+    ts_now = datetime.now().timestamp()
+    print("")
+    print("get taken values")
     taken_gefilterd = taken_gefilterd.values(
         "id",
         "adres",
         "titel",
-        "titel",
         "afgesloten_op",
         "taakstatus__naam",
         "taakstatus__aangemaakt_op",
-        melding_data=F("melding__response_json"),
-    )
+        adres=Concat(
+            Replace(
+                Cast(
+                    "melding__response_json__locaties_voor_melding__0__straatnaam",
+                    output_field=models.CharField(),
+                ),
+                Value('"'),
+                Value(""),
+            ),
+            Value(" "),
+            F("melding__response_json__locaties_voor_melding__0__huisnummer"),
+            output_field=models.CharField(),
+        ),
+        postcode=F("melding__response_json__locaties_voor_melding__0__postcode"),
+        coordinates=F(
+            "melding__response_json__locaties_voor_melding__0__geometrie__coordinates"
+        ),
+        afbeelding_verkleind_relative_url=F(
+            "melding__response_json__bijlagen__0__afbeelding_verkleind_relative_url"
+        ),
+    )  # .order_by(f"{'-' if sort_reverse else ''}{sortering.lower()}")
 
+    # taken_gefilterd = taken_gefilterd.order_by(f"{'-' if sort_reverse else ''}melding__response_json__locaties_voor_melding__0__postcode")
+    print((datetime.now().timestamp() - ts_now) * 1000)
+
+    ts_now = datetime.now().timestamp()
+    print("")
+    print("add afstand to taken")
+    taken_gefilterd = [
+        {
+            **taak,
+            "afstand": int(get_distance(ref_location, taak)),
+        }
+        for taak in taken_gefilterd
+    ]
+    print((datetime.now().timestamp() - ts_now) * 1000)
+
+    ts_now = datetime.now().timestamp()
+    print("")
+    print("sort taken")
     taken_gefilterd = sorted(
-        [
-            {
-                **taak,
-                "afstand": int(get_distance(ref_location, taak)),
-            }
-            for taak in taken_gefilterd
-        ],
+        taken_gefilterd,
         key=sorting_fields.get(sortering),
         reverse=sort_reverse,
     )
+    print((datetime.now().timestamp() - ts_now) * 1000)
 
+    ts_now = datetime.now().timestamp()
+    print("")
+    print("paginate taken")
     paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     taken_paginated = page_obj.object_list
+    print((datetime.now().timestamp() - ts_now) * 1000)
+
+    ts_now = datetime.now().timestamp()
+    print("")
+    print("del session taken")
     if request.session.get("taken_gefilterd"):
         del request.session["taken_gefilterd"]
+    print((datetime.now().timestamp() - ts_now) * 1000)
 
     return render(
         request,

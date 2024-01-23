@@ -220,13 +220,13 @@ class Taak(BasisModel):
             return ""
         return locaties[0].get("geometrie")
 
-    def adres(self):
-        locaties = self.melding.response_json.get("locaties_voor_melding")
-        if not locaties or not locaties[0].get("straatnaam"):
-            return ""
-        if locaties[0].get("huisnummer"):
-            return f"{locaties[0].get('straatnaam')} {locaties[0].get('huisnummer')}"
-        return locaties[0].get("straatnaam")
+    # def adres(self):
+    #     locaties = self.melding.response_json.get("locaties_voor_melding")
+    #     if not locaties or not locaties[0].get("straatnaam"):
+    #         return ""
+    #     if locaties[0].get("huisnummer"):
+    #         return f"{locaties[0].get('straatnaam')} {locaties[0].get('huisnummer')}"
+    #     return locaties[0].get("straatnaam")
 
     def postcode_digits(self):
         locaties = self.melding.response_json.get("locaties_voor_melding")
