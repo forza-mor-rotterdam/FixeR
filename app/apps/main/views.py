@@ -116,6 +116,9 @@ def ui_settings_handler(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken(request):
+    MeldingenService().set_gebruiker(
+        gebruiker=request.user.serialized_instance(),
+    )
     return render(
         request,
         "taken/taken.html",

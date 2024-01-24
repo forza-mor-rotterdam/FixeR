@@ -10,7 +10,7 @@
         <span class="incident__category">{{ taak.titel }}</span>
         <div class="incident__moment">
             <span data-taak-target="incidentDate">
-                {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|to_date }}
+                {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|date:"d-m-Y H:i" }}
             </span>
         </div>
     </div>
