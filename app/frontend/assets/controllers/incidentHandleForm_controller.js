@@ -30,7 +30,6 @@ export default class extends Controller {
             })
 
             if(input.value === "niet_opgelost" && input.checked === true) {
-                console.log("NIET OPGELOST")
                 this.onResolutionFalse()
             }
         };

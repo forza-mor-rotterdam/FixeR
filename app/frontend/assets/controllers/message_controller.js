@@ -34,7 +34,6 @@ export default class extends Controller {
     }
     onMessage(e){
         let data  = JSON.parse(e.data)
-        console.log(data)
     }
     onMessageError(e){
         let self = this

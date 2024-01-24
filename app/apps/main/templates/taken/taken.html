@@ -24,7 +24,8 @@
             </div>
             <div class="full-page-view__scroll-pane">
                 <div class="full-page-view__content">
-                    {% include "taken/taken_filter_form.html" %}
+                    <turbo-frame id="taken_filter" src="{% url 'taken_filter' %}" data-spinner="hide">
+                    </turbo-frame>
                 </div>
             </div>
         </div>
