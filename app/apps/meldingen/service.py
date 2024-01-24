@@ -145,3 +145,14 @@ class MeldingenService:
         return self.do_request(
             f"{taakopdracht_url}status-aanpassen/", method="patch", data=data
         )
+
+    def get_gebruiker(self, gebruiker_email):
+        return self.do_request(
+            f"{self._api_path}/gebruiker/{gebruiker_email}/",
+            method="get",
+        )
+
+    def set_gebruiker(self, gebruiker):
+        return self.do_request(
+            f"{self._api_path}/gebruiker/", method="post", data=gebruiker
+        )
