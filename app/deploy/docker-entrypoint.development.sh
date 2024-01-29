@@ -16,6 +16,10 @@ echo "Docker development entrypoint script has started."
 echo "Applying migrations..."
 python manage.py migrate --noinput
 
+# Collect static files
+echo "Collecting static files..."
+python manage.py collectstatic --no-input
+
 # Create a superuser (if not already created)
 echo "Creating superuser..."
 if ! python manage.py createsuperuser --noinput; then

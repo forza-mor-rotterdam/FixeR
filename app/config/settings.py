@@ -261,10 +261,7 @@ CSRF_COOKIE_SAMESITE = "Lax"  # Strict does not work well together with OIDC
 # Settings for Content-Security-Policy header
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_FRAME_ANCESTORS = ("'self'",)
-CSP_FRAME_SRC = (
-    "'self'",
-    "iam.forzamor.nl",
-)
+CSP_FRAME_SRC = ("'self'", "iam.forzamor.nl", "https://www.youtube.com/")
 CSP_SCRIPT_SRC = (
     "'self'",
     "'unsafe-inline'",
@@ -467,6 +464,14 @@ MERCURE_SUBSCRIBER_JWT_KEY = os.getenv("MERCURE_SUBSCRIBER_JWT_KEY")
 
 CKEDITOR_CONFIGS = {
     "default": {
+        "external_plugin_resources": [
+            (
+                "youtube",
+                "/static/ckeditor/ckeditor/plugins/youtube/",
+                "plugin.js",
+            )
+        ],
+        "extraPlugins": "youtube",
         "toolbar": "Custom",  # change to Custom if you want the below settings
         # create custom config here: https://ckeditor.com/latest/samples/toolbarconfigurator/index.html#advanced
         "toolbar_Custom": [
@@ -492,6 +497,10 @@ CKEDITOR_CONFIGS = {
             {"name": "styles", "items": ["Format", "FontSize"]},
             {"name": "links", "items": ["Link", "Unlink"]},
             {"name": "format", "items": ["CopyFormatting", "RemoveFormat"]},
+            {
+                "name": "youtube",
+                "items": ["Youtube", "Source", "Iframe"],
+            },
         ],
         "height": 300,
     },

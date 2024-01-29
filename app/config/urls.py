@@ -234,6 +234,7 @@ urlpatterns = [
         name="redoc",
     ),
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
+    path("ckeditor/", include("ckeditor_uploader.urls")),
 ]
 
 if settings.OIDC_ENABLED:
@@ -257,6 +258,11 @@ if settings.OIDC_ENABLED:
     ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(
+        settings.STATIC_URL + "ckeditor/",
+        document_root=settings.STATIC_ROOT + "ckeditor/",
+    )
+
     urlpatterns += [
         path("404/", http_404, name="404"),
         path("500/", http_500, name="500"),

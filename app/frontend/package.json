@@ -41,6 +41,8 @@
         ]
     },
     "dependencies": {
+        "ckeditor": "^4.12.1",
+        "ckeditor-youtube-plugin": "^2.1.19",
         "styles-loader": "^4.0.1"
     }
 }
