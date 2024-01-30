@@ -415,18 +415,26 @@ def taak_toewijzing_intrekken(request, id):
 @login_required
 @permission_required("authorisatie.taak_afronden", raise_exception=True)
 def incident_modal_handle(request, id):
+    logger.error(f"a incident_modal_handle: id: {id}")
     context = request.user.profiel.context
+    logger.error(f"b incident_modal_handle: context: {context}")
     resolutie = request.GET.get("resolutie", "opgelost")
+    logger.error(f"c incident_modal_handle: resolutie: {resolutie}")
     taak = get_object_or_404(Taak, pk=id)
+    logger.error(f"d incident_modal_handle: taak: {taak}")
     if taak.taakstatus.naam == Taakstatus.NaamOpties.VOLTOOID:
         # Voorkom het voltooien van een taak die reeds voltooid is.
         return http_404(request)
 
+    logger.error(
+        f"e incident_modal_handle: taak.taakstatus.naam: {taak.taakstatus.naam}"
+    )
     # Alle taken voor deze melding
     openstaande_taken_voor_melding = Taak.objects.filter(
         melding__response_json__id=taak.melding.response_json.get("id"),
         taakstatus__naam__in=Taakstatus.niet_voltooid_statussen(),
     )
+    logger.error("f incident_modal_handle")
 
     # Alle taaktype ids voor deze melding
     openstaande_taaktype_ids_voor_melding = list(
@@ -439,16 +447,19 @@ def incident_modal_handle(request, id):
             .distinct()
         }
     )
+    logger.error("g incident_modal_handle")
 
     # Exclude alle taaktype ids voor vervolgtaken
     volgende_taaktypes = taak.taaktype.volgende_taaktypes.all().exclude(
         id__in=openstaande_taaktype_ids_voor_melding
     )
+    logger.error("h incident_modal_handle")
 
     form = TaakBehandelForm(
         volgende_taaktypes=volgende_taaktypes,
         initial={"resolutie": resolutie},
     )
+    logger.error("i incident_modal_handle")
 
     # Alle andere actieve /openstaande taken voor deze melding
     actieve_vervolg_taken = openstaande_taken_voor_melding.filter(
@@ -456,20 +467,25 @@ def incident_modal_handle(request, id):
     ).exclude(
         id=taak.id,
     )
-
+    logger.error("j incident_modal_handle")
     if request.POST:
+        logger.error("ja incident_modal_handle")
         form = TaakBehandelForm(
             request.POST,
             volgende_taaktypes=volgende_taaktypes,
             initial={"resolutie": resolutie},
         )
+        logger.error("jb incident_modal_handle")
         if form.is_valid():
+            logger.error("jba incident_modal_handle")
             # Afhandelen bijlagen
             bijlagen = request.FILES.getlist("bijlagen", [])
+            logger.error("jbb incident_modal_handle")
             bijlagen_base64 = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
+            logger.error("jbc incident_modal_handle")
 
             # Taak status aanpassen
             taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
@@ -480,18 +496,23 @@ def incident_modal_handle(request, id):
                 bijlagen=bijlagen_base64,
                 gebruiker=request.user.email,
             )
+            logger.error("jbd incident_modal_handle")
             if taak_status_aanpassen_response.status_code != 200:
+                logger.error("jbda incident_modal_handle")
                 logger.error(
                     f"taak_status_aanpassen: status code: {taak_status_aanpassen_response.status_code}, taak id: {id}"
                 )
+            logger.error("jbc incident_modal_handle")
 
             # Aanmaken extra taken
             if (
                 taak_status_aanpassen_response.status_code == 200
                 and form.cleaned_data.get("nieuwe_taak")
             ):
+                logger.error("jbda incident_modal_handle")
                 taken = form.cleaned_data.get("nieuwe_taak", [])
                 for vervolg_taak in taken:
+                    logger.error("jbdba incident_modal_handle taak")
                     taaktype = Taaktype.objects.filter(id=vervolg_taak).first()
                     taaktype_url = (
                         drf_reverse(
@@ -504,6 +525,7 @@ def incident_modal_handle(request, id):
                     )
 
                     if taaktype_url:
+                        logger.error("jbdbba incident_modal_handle taak")
                         taak_aanmaken_response = MeldingenService().taak_aanmaken(
                             melding_uuid=taak.melding.response_json.get("uuid"),
                             taaktype_url=taaktype_url,
@@ -511,15 +533,19 @@ def incident_modal_handle(request, id):
                             bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
                             gebruiker=request.user.email,
                         )
+                        logger.error("jbdbbb incident_modal_handle taak")
 
                         if taak_aanmaken_response.status_code != 200:
+                            logger.error("jbdbbca incident_modal_handle taak")
                             logger.error(
                                 f"taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
                             )
-
+            logger.error("jbd incident_modal_handle")
             return redirect("taken")
         else:
+            logger.error("jbe incident_modal_handle")
             logger.error(f"incident_modal_handle: for errors: {form.errors}")
+    logger.error("k incident_modal_handle")
     return render(
         request,
         "incident/modal_handle.html",
