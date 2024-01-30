@@ -518,7 +518,8 @@ def incident_modal_handle(request, id):
                             )
 
             return redirect("taken")
-
+        else:
+            logger.error(f"incident_modal_handle: for errors: {form.errors}")
     return render(
         request,
         "incident/modal_handle.html",
