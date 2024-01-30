@@ -11,6 +11,8 @@
               method="post"
               data-testid="handleIncidentForm"
               class="form--incident-handle"
+              data-incidentHandleForm-target="form"
+              data-turbo-frame="_top"
               enctype="multipart/form-data">
             {% csrf_token %}
             <div data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
