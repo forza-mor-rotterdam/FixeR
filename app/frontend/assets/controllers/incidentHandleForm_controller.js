@@ -1,56 +1,34 @@
 import { Controller } from '@hotwired/stimulus';
 
-let form = null
-let inputList = null
-let input = null
-let error = null
-let defaultLabelInternalText = ""
-const requiredLabelInternalText = "Waarom kan de taak niet worden afgerond?"
-const defaultErrorMessage = "Vul a.u.b. dit veld in."
+
 export default class extends Controller {
 
-    static targets = ["externalText", "internalText", "newTask"]
+    static targets = ["externalText", "internalText", "newTask", "form"]
 
     connect() {
-
-        form = document.querySelector("form");
-        inputList = Array.from(document.querySelectorAll('[type="radio"]'))
-
-        const btn = inputList.find((input) => {
-            input.value == "niet_opgelost"
-        })
-
-        for (let i=0; i<inputList.length; i++){
-            input = inputList[i]
-            error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
-
-            input.addEventListener("input", (event) => {
-                input.closest('.form-row').classList.remove('is-invalid')
-                error.textContent = "";
-            })
-
-            if(input.value === "niet_opgelost" && input.checked === true) {
-                this.onResolutionFalse()
-            }
-        };
-
-        if(this.hasInternalTextTarget) {
-            defaultLabelInternalText = this.internalTextTarget.querySelector('label').textContent
+        this.requiredLabelInternalText = "Waarom kan de taak niet worden afgerond?"
+        this.defaultLabelInternalText = "Interne opmerking"
+        this.defaultErrorMessage = "Vul a.u.b. dit veld in."
+        const btn = this.element.querySelector('[type="radio"][value="niet_opgelost"]')
+        if(btn.checked) {
+            this.onResolutionFalse()
+        }else{
+            this.onResolutionTrue()
         }
     }
 
     onResolutionFalse() {
         if(this.hasInternalTextTarget) {
-            this.internalTextTarget.querySelector('label').textContent = requiredLabelInternalText
-            this.internalTextTarget.querySelector('textarea').setAttribute("required", true)
+            this.internalTextTarget.querySelector('label').textContent = this.requiredLabelInternalText
+            this.internalTextTarget.querySelector('textarea').classList.add("required")
             this.internalTextTarget.closest(".wrapper--flex-order").style.flexDirection='column-reverse'
         }
     }
 
     onResolutionTrue() {
         if(this.hasInternalTextTarget) {
-            this.internalTextTarget.querySelector('label').textContent = defaultLabelInternalText
-            this.internalTextTarget.querySelector('textarea').removeAttribute("required")
+            this.internalTextTarget.querySelector('label').textContent = this.defaultLabelInternalText
+            this.internalTextTarget.querySelector('textarea').classList.remove("required")
             this.internalTextTarget.closest(".wrapper--flex-order").style.flexDirection='column'
         }
     }
@@ -64,39 +42,23 @@ export default class extends Controller {
     }
 
     checkValids() {
-        inputList = document.querySelectorAll('textarea[required]')
-        let count = 0
-
-        if(inputList.length > 0) {
-            for (let i=0; i<inputList.length; i++){
-                input = inputList[i]
-                error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
-                if (input.value.length > 0) {
-                    count++
-                }
-
-            }
-            if (count > 0) {
-                input.closest('.form-row').classList.remove("is-invalid")
-                error.textContent = ""
-                return true
-            }else {
-                error.textContent = defaultErrorMessage
-                input.closest('.form-row').classList.add("is-invalid")
-                return false
-            }
-        } else {
-            return true
-        }
+        let errorCount = 0
+        Array.from(this.element.querySelectorAll('textarea')).map(input => {
+            let error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
+            let invalid = input.value.length == 0 && input.classList.contains("required")
+            error.textContent = invalid ? this.defaultErrorMessage : ""
+            input.closest('.form-row').classList[invalid ? "add" : "remove"]("is-invalid")
+            errorCount += invalid ? 1 : 0
+        })
+        return errorCount == 0
 
     }
 
     onSubmit(event) {
         const allFieldsValid = this.checkValids()
-        if(!(allFieldsValid)){
-            event.preventDefault();
-        } else {
-            form.requestSubmit()
+        event.preventDefault();
+        if(allFieldsValid){
+            this.formTarget.requestSubmit()
         }
     }
 }
