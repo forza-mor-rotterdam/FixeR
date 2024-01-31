@@ -20,9 +20,13 @@
         <div class="container">
             <ul class="list--images">
                 {% for bijlage in release_note.bijlagen.all %}
-                    {% if bijlage.bestand %}
+                    {% if bijlage.mimetype == "image/gif" and bijlage.bestand %}
                         <li class="">
-                            <img src="{{ bijlage.bestand.url }}" alt="">
+                            <img src="{{ bijlage.bestand.url }}" alt="GIF">
+                        </li>
+                    {% elif bijlage.afbeelding %}
+                        <li class="">
+                            <img src="{{ bijlage.afbeelding.url }}" alt="Afbeelding">
                         </li>
                     {% endif %}
                 {% endfor %}

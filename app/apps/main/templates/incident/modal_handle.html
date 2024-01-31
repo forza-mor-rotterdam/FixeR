@@ -11,13 +11,15 @@
               method="post"
               data-testid="handleIncidentForm"
               class="form--incident-handle"
+              data-incidentHandleForm-target="form"
+              data-turbo-frame="_top"
               enctype="multipart/form-data">
             {% csrf_token %}
+            {{ form.errors }}
             <div data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
             {{ form.resolutie|render_rotterdam_formulier }}
 
             <div class="wrapper--flex-order">
-
                 <div>
                     {% if form.nieuwe_taak %}
                     <h3 class="h5">Moet er nog iets gebeuren?</h3>
