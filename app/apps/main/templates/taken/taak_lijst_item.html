@@ -5,6 +5,7 @@
 {% load json_encode replace_comma_by_dot adres_order_nummer from main_tags %}
 {% load mor_core_url from main_tags %}
 {% load context_template from context_tags %}
+{% load get_bijlagen from melding_tags %}
 
 {% block before_modal_content %}
 
@@ -55,11 +56,12 @@
         </button>
         {% comment %} Add other resolutions? Niets aangetroffen {% endcomment %}
         {% endif %}
+            {% get_bijlagen taak.melding_data as bijlagen %}
             <div class="container__flex">
                 <a href="{% url 'taak_detail' taak.id %}" data-turbo-frame="taak_basis" aria-label="Bekijk taak {{ taak.id }}">
                     <div class="container__image" data-controller="incidentlistItem">
-                        {% if taak.melding_data.bijlagen %}
-                        {% with taak.melding_data.bijlagen|first as first_foto %}
+                        {% if bijlagen %}
+                        {% with bijlagen|first as first_foto %}
                         <div class="background-image" data-src="{{ first_foto.afbeelding_verkleind_relative_url|mor_core_url }}">
                             <img />
                         </div>
