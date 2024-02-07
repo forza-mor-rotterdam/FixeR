@@ -23,7 +23,7 @@
 
         </div>
         {% if form %}
-        <form method="post" action="{% url 'gebruiker_bulk_import' %}" novalidate enctype="multipart/form-data">
+        <form method="post" action="{% url 'gebruiker_bulk_import' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <fieldset>
                 {% if form.cleaned_data.csv_file.all_rows %}
@@ -78,14 +78,16 @@
                     <p>Er kunnen geen gebruikers worden aangemaakt met deze csv data</p>
                     {% endif %}
                 {% endif %}
-                <div class="form-control__with-helptext padding--bottom">
-                    {{ form.csv_file.label }}<br>
-                    {{ form.csv_file }}
+                <div class="form-control__with-helptext">
+                    <div class="form-row">
+                        <label class="padding-bottom-half">{{ form.csv_file.label }}</label>
+                        <div>{{ form.csv_file }}</div>
+                    </div>
                 </div>
-                <div class="form-control__with-helptext padding--bottom">
+                <div class="form-control__with-helptext">
                     {{ form.context|render_rotterdam_formulier }}
                 </div>
-                <div class="form-control__with-helptext padding--bottom">
+                <div class="form-control__with-helptext">
                     {{ form.group|render_rotterdam_formulier }}
                 </div>
             </fieldset>
