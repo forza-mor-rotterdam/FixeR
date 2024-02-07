@@ -3,22 +3,21 @@ from django import forms
 
 
 class TaaktypeAanpassenForm(forms.ModelForm):
+    def __init__(self, *args, current_taaktype=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if current_taaktype:
+            self.fields["volgende_taaktypes"].queryset = Taaktype.objects.filter(
+                actief=True
+            ).exclude(id=current_taaktype.id)
+
     volgende_taaktypes = forms.ModelMultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(
-            attrs={
-                "class": "form-check-input",
-            }
-        ),
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
         queryset=Taaktype.objects.filter(actief=True),
         label="Volgende taaktypes",
         required=False,
     )
     actief = forms.BooleanField(
-        widget=forms.CheckboxInput(
-            attrs={
-                "class": "form-check-input",
-            }
-        ),
+        widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
         label="Actief",
         required=False,
     )
