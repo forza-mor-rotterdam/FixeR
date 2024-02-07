@@ -240,14 +240,14 @@
 
         .container__image {
             margin: $input-padding-y 16px 14px 0;
+
             .background-image {
                 width: calc(78px + 2vw);
-                height: calc(58px + 1vw);
-                background-repeat: no-repeat;
-                background-size: contain;
-                background-position: center;
+                height: calc(56px + 1vw);
                 background-color: $gray-tint02;
-                box-sizing: border-box;
+                text-align: center;
+                display: flex;
+                justify-content: center;
 
                 @media (min-width: map-get($grid-breakpoints, md)) {
                     width: calc(173px + 2vw);
@@ -257,6 +257,11 @@
                     width: calc(94px + 2vw);
                     height: calc(70px + 1vw);
                 }
+            }
+
+            img {
+                max-width: 100%;
+                max-height: 100%;
             }
         }
 
