@@ -1,18 +1,22 @@
 {% load to_date vind_in_dict from main_tags %}
+{% load l10n %}
 <div>
-    {% with grafnummer=taak.melding.response_json.meta.grafnummer vak=taak.melding.response_json.meta.vak plaats=taak.melding.response_json.meta.begraafplaats %}
+    {% with grafnummer=taak.melding_data.locaties_voor_melding.0.grafnummer vak=taak.melding_data.locaties_voor_melding.0.vak plaats=taak.melding_data.locaties_voor_melding.0.begraafplaats %}
     <h2 class="h4">
-        {% if plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}, {% endif %}
+        {% if plaats %}{% vind_in_dict taak.melding_data.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats %}, {% endif %}
         {% if vak %}Vak {{ vak }}, {% endif %}{% if grafnummer %} Graf {{ grafnummer }}{% endif %}
-        {% if not grafnummer and not vak and plaats %}{% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
+        {% if not grafnummer and not vak and plaats %}{% vind_in_dict taak.melding_data.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
+        {% if taak.taakstatus__naam %}<span class="badge {% if taak.taakstatus__naam == 'nieuw' or taak.taakstatus__naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus__naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus__naam|lower|capfirst }}{% endif %}
     </h2>
     <div>
         <span class="incident__category">{{ taak.titel }}</span>
-        <div class="incident__moment">
-            <span data-taak-target="incidentDate">
-                {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|date:"d-m-Y H:i" }}
-            </span>
-        </div>
+    </div>
+    <div class="incident__moment">
+        <span data-taak-target="incidentDate">
+            {% localize on %}
+            {{ taak.taakstatus__naam }}: {{ taak.taakstatus__aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus__aangemaakt_op|time:"H:i" }}<br>
+            {% endlocalize %}
+        </span>
     </div>
     {% endwith %}
 </div>
