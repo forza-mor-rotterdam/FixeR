@@ -12,11 +12,14 @@
         {{ melding.locatie.adres.straatNaam|lower|capfirst }}
         {% if melding.locatie.adres.huisnummer %}{{ melding.locatie.adres.huisnummer }}{% endif %}
     {% else %}
-        {% with grafnummer=melding.meta.grafnummer vak=melding.meta.vak plaats=melding.meta.begraafplaats %}
+        {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
             {% if grafnummer %}Graf {{ grafnummer }}{% endif %}
             {% if vak %}, Vak {{ vak }}{% endif %}
-            {% if not grafnummer and not vak and plaats %}
+            {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
+            {% if signaal_begraafplaats_naam == melding.locaties_voor_melding.0.begraafplaats %}
                 {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
+            {% else %}
+                {{ signaal_begraafplaats_naam }}
             {% endif %}
         {% endwith %}
     {% endif %}
@@ -66,7 +69,8 @@
                                         {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
                                     {% else %}
                                         {{ signaal_begraafplaats_naam }}
-                                    {% endif %}                                {% endif %}
+                                    {% endif %}
+                                {% endif %}
                                 <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
                                     {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
                                 </span>
@@ -325,9 +329,9 @@
                                         <h3 class="h5">Grafnummer</h3>
                                         <p>{{ melding.locaties_voor_melding.0.grafnummer }}</p>
                                     {% endif %}
-                                    {% if melding.locaties_voor_melding.0.meta.vak %}
+                                    {% if melding.locaties_voor_melding.0.vak %}
                                         <h3 class="h5">Vak</h3>
-                                        <p>{{ melding.locaties_voor_melding.0.meta.vak }}</p>
+                                        <p>{{ melding.locaties_voor_melding.0.vak }}</p>
                                     {% endif %}
                                     {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
                                         <h3 class="h5">Naam overledene</h3>
@@ -411,6 +415,7 @@
                         </details>
                     </div>
                 </section>
+                {% context_template "taak_afhandelen_subtitel.html" as subtitel_template %}
                 <section class="section--seperated section--seperated__no-border-bottom"
                          data-testid="detailActions">
                     <div class="container__details container__details--sticky-bottom">
@@ -418,62 +423,29 @@
                             <div class="sticky sticky--bottom">
                                 <div class="form-row">
                                     <button class="btn btn-action" data-modal-title-param="Taak afhandelen" data-modal-sub-title-param="<strong>
-                                        {% if melding.locaties_voor_melding.0.straatnaam %}
-                                            {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                                        {% endif %}
-                                        {% if melding.locaties_voor_melding.0.huisnummer %}{{ melding.locaties_voor_melding.0.huisnummer }}{% endif %}
-                                        {% if melding.locaties_voor_melding.0.begraafplaats %}
-                                            {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
-                                                {% if vak %}Vak {{ vak }},{% endif %}
-                                                {% if grafnummer %}Graf {{ grafnummer }}{% endif %}
-                                                {% if not grafnummer and not vak and plaats %}
-                                                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats %}
-                                                {% endif %}
-                                            {% endwith %}
-                                        {% endif %}
+                                        {% include subtitel_template %}
                                     </strong>
-                                    <br> {{ taak.titel }}" data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}" data-modal-id-param="incident_modal_handle_{{ taak.id }}" data-action="modal#openModal">
+                                    <br>
+                                    {{ taak.titel }}" data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}" data-modal-id-param="incident_modal_handle_{{ taak.id }}" data-action="modal#openModal">
                                     Taak afhandelen
                                 </button>
                                 {% if taak.taakstatus.naam == "openstaand" or taak.taakstatus.naam == "nieuw" %}
                                     {% if perms.authorisatie.taak_toewijzen %}
                                         <button class="btn btn-tertiary" data-modal-title-param="Toewijzen" data-modal-sub-title-param="<strong>
-                                            {% if melding.locaties_voor_melding.0.straatnaam %}
-                                                {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                                            {% endif %}
-                                            {% if melding.locaties_voor_melding.0.huisnummer %}{{ melding.locaties_voor_melding.0.huisnummer }}{% endif %}
-                                            {% if melding.locaties_voor_melding.0.begraafplaats %}
-                                                {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
-                                                    {% if vak %}Vak {{ vak }},{% endif %}
-                                                    {% if grafnummer %}Graf {{ grafnummer }}{% endif %}
-                                                    {% if not grafnummer and not vak and plaats %}
-                                                        {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats %}
-                                                    {% endif %}
-                                                {% endwith %}
-                                            {% endif %}
+                                            {% include subtitel_template %}
                                         </strong>
-                                        <br> {{ taak.titel }}" data-modal-url-param="{% url 'taak_toewijzen' taak.id %}" data-modal-id-param="taak_toewijzen" data-action="modal#openModal">
+                                        <br>
+                                        {{ taak.titel }}" data-modal-url-param="{% url 'taak_toewijzen' taak.id %}" data-modal-id-param="taak_toewijzen" data-action="modal#openModal">
                                         Toewijzen
                                     </button>
                                 {% endif %}
                             {% elif taak.taakstatus.naam == "toegewezen" and perms.authorisatie.taak_toewijzing_intrekken %}
                                 {% if perms.authorisatie.taak_toewijzing_intrekken %}
                                     <button class="btn btn-tertiary" data-id="{{ taak.id }}" data-modal-title-param="Toewijzing intrekken" data-modal-sub-title-param="<strong>
-                                        {% if melding.locaties_voor_melding.0.straatnaam %}
-                                            {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                                        {% endif %}
-                                        {% if melding.locaties_voor_melding.0.huisnummer %}{{ melding.locaties_voor_melding.0.huisnummer }}{% endif %}
-                                        {% if melding.locaties_voor_melding.0.begraafplaats %}
-                                            {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
-                                                {% if vak %}Vak {{ vak }},{% endif %}
-                                                {% if grafnummer %}Graf {{ grafnummer }}{% endif %}
-                                                {% if not grafnummer and not vak and plaats %}
-                                                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats %}
-                                                {% endif %}
-                                            {% endwith %}
-                                        {% endif %}
+                                        {% include subtitel_template %}
                                     </strong>
-                                    <br> {{ taak.titel }}" data-modal-url-param="{% url 'taak_toewijzing_intrekken' taak.id %}" data-modal-id-param="taak_toewijzing_intrekken" data-action="modal#openModal">
+                                    <br>
+                                    {{ taak.titel }}" data-modal-url-param="{% url 'taak_toewijzing_intrekken' taak.id %}" data-modal-id-param="taak_toewijzing_intrekken" data-action="modal#openModal">
                                     Toewijzing intrekken
                                 </button>
                             {% endif %}

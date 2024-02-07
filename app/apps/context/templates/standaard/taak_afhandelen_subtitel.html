@@ -1,0 +1,6 @@
+{% load to_date vind_in_dict from main_tags %}
+{% load l10n %}
+{% if melding.locaties_voor_melding.0.straatnaam %}
+    {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
+{% endif %}
+{% if melding.locaties_voor_melding.0.huisnummer %}{{ melding.locaties_voor_melding.0.huisnummer }}{% endif %}
