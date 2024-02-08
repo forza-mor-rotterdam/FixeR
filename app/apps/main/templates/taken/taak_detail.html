@@ -12,11 +12,14 @@
         {{ melding.locatie.adres.straatNaam|lower|capfirst }}
         {% if melding.locatie.adres.huisnummer %}{{ melding.locatie.adres.huisnummer }}{% endif %}
     {% else %}
-        {% with grafnummer=melding.meta.grafnummer vak=melding.meta.vak plaats=melding.meta.begraafplaats %}
+        {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
             {% if grafnummer %}Graf {{ grafnummer }}{% endif %}
             {% if vak %}, Vak {{ vak }}{% endif %}
-            {% if not grafnummer and not vak and plaats %}
+            {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
+            {% if signaal_begraafplaats_naam == melding.locaties_voor_melding.0.begraafplaats %}
                 {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
+            {% else %}
+                {{ signaal_begraafplaats_naam }}
             {% endif %}
         {% endwith %}
     {% endif %}
@@ -50,20 +53,23 @@
                     {% if TEMPLATE_BASIS != "benc" %}
                         <h1 class="h3">
                             {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                            {% if melding.locaties_voor_melding.0.huisnummer %}
-                                {{ melding.locaties_voor_melding.0.huisnummer }}
-                            {% endif %}
+                            {% if melding.locaties_voor_melding.0.huisnummer %}{{ melding.locaties_voor_melding.0.huisnummer }}{% endif %}
                             <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
                                 {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
                             </span>
                         </h1>
                     {% else %}
-                        {% with grafnummer=melding.signalen_voor_melding.0.meta.grafnummer vak=melding.signalen_voor_melding.0.meta.vak plaats=melding.signalen_voor_melding.0.meta.begraafplaats %}
+                        {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
                             <h1 class="h3">
                                 {% if grafnummer %}Graf {{ grafnummer }}{% endif %}
                                 {% if vak %}, Vak {{ vak }}{% endif %}
                                 {% if not grafnummer and not vak and plaats %}
-                                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats %}
+                                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
+                                    {% if signaal_begraafplaats_naam == melding.locaties_voor_melding.0.begraafplaats %}
+                                        {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
+                                    {% else %}
+                                        {{ signaal_begraafplaats_naam }}
+                                    {% endif %}
                                 {% endif %}
                                 <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
                                     {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
@@ -73,18 +79,32 @@
                     {% endif %}
                     <div class="container__flex">
                         <div>
-                            <span>{{ taak.titel }}</span><br>
-                            <span class="lighter"><span data-detail-target="taakAfstand" data-latitude="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-longitude="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" ></span> meter afstand</span>
+                            <span>{{ taak.titel }}</span>
+                            <br>
+                            <span class="lighter"><span data-detail-target="taakAfstand"
+      data-latitude="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}"
+      data-longitude="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}"></span> meter afstand</span>
                         </div>
                         <div class="textalign--right">
                             {% if device_os == "ios" %}
-                            <small><a class="link" href="http://maps.apple.com/?saddr=''&daddr={{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}&z=10&" target="_top" aria-label="Navigeer naar taak" data-detail-target="navigeerLink">
-                                {%include "icons/navigate.svg"%}Navigeren
-                            </a></small>
+                                <small><a class="link"
+   href="http://maps.apple.com/?saddr=''&daddr={{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}&z=10&"
+   target="_top"
+   aria-label="Navigeer naar taak"
+   data-detail-target="navigeerLink">
+                                    {% include "icons/navigate.svg" %}
+                                    Navigeren
+                                </a></small>
                             {% else %}
-                            <a class="link" data-action="detail#makeRoute" data-detail-lat-param="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">
-                                {%include "icons/navigate.svg"%}Navigeren
-                            </a>
+                                <a class="link"
+                                   data-action="detail#makeRoute"
+                                   data-detail-lat-param="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}"
+                                   data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}"
+                                   target="_top"
+                                   aria-label="Navigeer naar taak">
+                                    {% include "icons/navigate.svg" %}
+                                    Navigeren
+                                </a>
                             {% endif %}
                         </div>
                     </div>
@@ -121,12 +141,14 @@
                                 <ul class="list-clean imageslider"
                                     style="width: calc(100% * {{ bijlagen|length }})">
                                     {% for foto in bijlagen %}
-                                        <li class="container__image" id="{{ foto.afbeelding_relative_url|mor_core_url }}">
+                                        <li class="container__image"
+                                            id="{{ foto.afbeelding_relative_url|mor_core_url }}">
                                             <img src="{{ foto.afbeelding_relative_url|mor_core_url }}"
-                                                alt=""
-                                                data-detail-target="selectedImage"
-                                                {% comment %} data-action="click->detail#openImageInPopup"   {% endcomment %}
-                                                />
+                                                 alt=""
+                                                 data-detail-target="selectedImage"
+                                                 {% comment %}
+                                                 data-action="click->detail#openImageInPopup"
+                                                 {% endcomment %} />
                                         </li>
                                     {% endfor %}
                                 </ul>
@@ -138,7 +160,8 @@
                                             <li data-action="click->detail#selectImage"
                                                 data-detail-image-index-param="{{ forloop.counter }}">
                                                 <div class="container__image">
-                                                    <img src="{{ foto.afbeelding_verkleind_relative_url|mor_core_url }}" alt="" />
+                                                    <img src="{{ foto.afbeelding_verkleind_relative_url|mor_core_url }}"
+                                                         alt="" />
                                                 </div>
                                             </li>
                                         {% endfor %}
@@ -228,13 +251,24 @@
                                         {% endif %}
                                     </p>
                                     {% if device_os == "ios" %}
-                                    <small><a class="link" href="http://maps.apple.com/?saddr=''&daddr={{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}&z=10&" target="_top" aria-label="Navigeer naar taak" data-detail-target="navigeerLink">
-                                        {%include "icons/navigate.svg"%}Navigeren
-                                    </a></small>
+                                        <small><a class="link"
+   href="http://maps.apple.com/?saddr=''&daddr={{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}&z=10&"
+   target="_top"
+   aria-label="Navigeer naar taak"
+   data-detail-target="navigeerLink">
+                                            {% include "icons/navigate.svg" %}
+                                            Navigeren
+                                        </a></small>
                                     {% else %}
-                                    <a class="link" data-action="detail#makeRoute" data-detail-lat-param="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}" data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}" target="_top" aria-label="Navigeer naar taak">
-                                        {%include "icons/navigate.svg"%}Navigeren
-                                    </a>
+                                        <a class="link"
+                                           data-action="detail#makeRoute"
+                                           data-detail-lat-param="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}"
+                                           data-detail-long-param="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}"
+                                           target="_top"
+                                           aria-label="Navigeer naar taak">
+                                            {% include "icons/navigate.svg" %}
+                                            Navigeren
+                                        </a>
                                     {% endif %}
                                 </div>
                                 <dl>
@@ -281,20 +315,32 @@
                                     </div>
                                 </div>
                             {% else %}
-                                <h3 class="h5">Begraafplaats</h3>
-                                <p>{% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices melding.signalen_voor_melding.0.meta.begraafplaats %}</p>
-                                {% if melding.signalen_voor_melding.0.meta.grafnummer %}
-                                    <h3 class="h5">Grafnummer</h3>
-                                    <p>{{ melding.signalen_voor_melding.0.meta.grafnummer }}</p>
-                                {% endif %}
-                                {% if melding.signalen_voor_melding.0.meta.vak %}
-                                    <h3 class="h5">Vak</h3>
-                                    <p>{{ melding.signalen_voor_melding.0.meta.vak }}</p>
-                                {% endif %}
-                                {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
-                                    <h3 class="h5">Naam overledene</h3>
-                                    <p>{{ melding.signalen_voor_melding.0.meta.naam_overledene }}</p>
-                                {% endif %}
+                                {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
+                                    <h3 class="h5">Begraafplaats</h3>
+                                    <p>
+                                        {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
+                                        {% if signaal_begraafplaats_naam == melding.locaties_voor_melding.0.begraafplaats %}
+                                            {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
+                                        {% else %}
+                                            {{ signaal_begraafplaats_naam }}
+                                        {% endif %}
+                                    </p>
+                                    {% if melding.locaties_voor_melding.0.grafnummer %}
+                                        <h3 class="h5">Grafnummer</h3>
+                                        <p>{{ melding.locaties_voor_melding.0.grafnummer }}</p>
+                                    {% endif %}
+                                    {% if melding.locaties_voor_melding.0.vak %}
+                                        <h3 class="h5">Vak</h3>
+                                        <p>{{ melding.locaties_voor_melding.0.vak }}</p>
+                                    {% endif %}
+                                    {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
+                                        <h3 class="h5">Naam overledene</h3>
+                                        <p>{{ melding.signalen_voor_melding.0.meta.naam_overledene }}</p>
+                                    {% elif melding.meta.naam_overledene %}
+                                        <h3 class="h5">Naam overledene</h3>
+                                        <p>{{ melding.meta.naam_overledene }}</p>
+                                    {% endif %}
+                                {% endwith %}
                             {% endif %}
                         </details>
                         <details>
@@ -369,106 +415,63 @@
                         </details>
                     </div>
                 </section>
+                {% context_template "taak_afhandelen_subtitel.html" as subtitel_template %}
                 <section class="section--seperated section--seperated__no-border-bottom"
                          data-testid="detailActions">
                     <div class="container__details container__details--sticky-bottom">
                         {% if not taak.afgesloten_op %}
                             <div class="sticky sticky--bottom">
                                 <div class="form-row">
-                                    <button class="btn btn-action"
-                                            data-modal-title-param="Taak afhandelen"
-                                            data-modal-sub-title-param="<strong>
-                                                    {% if melding.locaties_voor_melding.0.straatnaam %}
-                                                        {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                                                    {% endif %}
-                                                    {% if melding.locaties_voor_melding.0.huisnummer %}
-                                                        {{ melding.locaties_voor_melding.0.huisnummer }}
-                                                    {% endif %}
-                                                    {% if melding.locaties_voor_melding.0.begraafplaats %}
-                                                        {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
-                                                            {% if vak %}Vak {{ vak }}, {% endif %}{% if grafnummer %} Graf {{ grafnummer }}{% endif %}
-                                                            {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
-                                                        {% endwith %}
-                                                    {% endif %}
-                                                </strong><br>
-                                                {{ taak.titel }}"
-                                            data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}"
-                                            data-modal-id-param="incident_modal_handle_{{ taak.id }}"
-                                            data-action="modal#openModal">Taak afhandelen</button>
-                                    {% if taak.taakstatus.naam == "openstaand" or taak.taakstatus.naam == "nieuw" %}
-                                        {% if perms.authorisatie.taak_toewijzen %}
-                                        <button class="btn btn-tertiary"
-                                                data-modal-title-param="Toewijzen"
-                                                data-modal-sub-title-param="<strong>
-                                                    {% if melding.locaties_voor_melding.0.straatnaam %}
-                                                        {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                                                    {% endif %}
-                                                    {% if melding.locaties_voor_melding.0.huisnummer %}
-                                                        {{ melding.locaties_voor_melding.0.huisnummer }}
-                                                    {% endif %}
-                                                    {% if melding.locaties_voor_melding.0.begraafplaats %}
-                                                        {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
-                                                            {% if vak %}Vak {{ vak }}, {% endif %}{% if grafnummer %} Graf {{ grafnummer }}{% endif %}
-                                                            {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
-                                                        {% endwith %}
-                                                    {% endif %}
-                                                    </strong><br>
-                                                    {{ taak.titel }}"
-                                                data-modal-url-param="{% url 'taak_toewijzen' taak.id %}"
-                                                data-modal-id-param="taak_toewijzen"
-                                                data-action="modal#openModal">Toewijzen</button>
-                                        {% endif %}
-                                    {% elif taak.taakstatus.naam == "toegewezen" and perms.authorisatie.taak_toewijzing_intrekken %}
-                                        {% if perms.authorisatie.taak_toewijzing_intrekken %}
-                                        <button class="btn btn-tertiary"
-                                                data-id="{{ taak.id }}"
-                                                data-modal-title-param="Toewijzing intrekken"
-                                                data-modal-sub-title-param="<strong>
-                                                    {% if melding.locaties_voor_melding.0.straatnaam %}
-                                                        {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                                                    {% endif %}
-                                                    {% if melding.locaties_voor_melding.0.huisnummer %}
-                                                        {{ melding.locaties_voor_melding.0.huisnummer }}
-                                                    {% endif %}
-                                                    {% if melding.locaties_voor_melding.0.begraafplaats %}
-                                                        {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
-                                                            {% if vak %}Vak {{ vak }}, {% endif %}{% if grafnummer %} Graf {{ grafnummer }}{% endif %}
-                                                            {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
-                                                        {% endwith %}
-                                                    {% endif %}
-                                                    </strong><br>
-                                                    {{ taak.titel }}"
-                                                data-modal-url-param="{% url 'taak_toewijzing_intrekken' taak.id %}"
-                                                data-modal-id-param="taak_toewijzing_intrekken"
-                                                data-action="modal#openModal">Toewijzing intrekken</button>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-                            </div>
+                                    <button class="btn btn-action" data-modal-title-param="Taak afhandelen" data-modal-sub-title-param="<strong>
+                                        {% include subtitel_template %}
+                                    </strong>
+                                    <br>
+                                    {{ taak.titel }}" data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}" data-modal-id-param="incident_modal_handle_{{ taak.id }}" data-action="modal#openModal">
+                                    Taak afhandelen
+                                </button>
+                                {% if taak.taakstatus.naam == "openstaand" or taak.taakstatus.naam == "nieuw" %}
+                                    {% if perms.authorisatie.taak_toewijzen %}
+                                        <button class="btn btn-tertiary" data-modal-title-param="Toewijzen" data-modal-sub-title-param="<strong>
+                                            {% include subtitel_template %}
+                                        </strong>
+                                        <br>
+                                        {{ taak.titel }}" data-modal-url-param="{% url 'taak_toewijzen' taak.id %}" data-modal-id-param="taak_toewijzen" data-action="modal#openModal">
+                                        Toewijzen
+                                    </button>
+                                {% endif %}
+                            {% elif taak.taakstatus.naam == "toegewezen" and perms.authorisatie.taak_toewijzing_intrekken %}
+                                {% if perms.authorisatie.taak_toewijzing_intrekken %}
+                                    <button class="btn btn-tertiary" data-id="{{ taak.id }}" data-modal-title-param="Toewijzing intrekken" data-modal-sub-title-param="<strong>
+                                        {% include subtitel_template %}
+                                    </strong>
+                                    <br>
+                                    {{ taak.titel }}" data-modal-url-param="{% url 'taak_toewijzing_intrekken' taak.id %}" data-modal-id-param="taak_toewijzing_intrekken" data-action="modal#openModal">
+                                    Toewijzing intrekken
+                                </button>
+                            {% endif %}
                         {% endif %}
                     </div>
-                </section>
-            </div>
-            {% comment %} <div class="modal modal--transparent">
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% comment %} <div class="modal modal--transparent">
                 <div class="modal-dialog">
-                    <div class="modal-backdrop modal-exit"
-                         data-action="click->modal#closeModal"></div>
+                    <div class="modal-backdrop modal-exit" data-action="click->modal#closeModal"></div>
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button"
-                                    class="btn-close"
-                                    aria-label="Sluit"
-                                    data-action="modal#closeModal"></button>
+                            <button type="button" class="btn-close" aria-label="Sluit" data-action="modal#closeModal"></button>
                         </div>
                         <div class="modal-body">
                             <div id="container-image"></div>
                         </div>
                     </div>
                 </div>
-            </div> {% endcomment %}
-        {% endblock before_modal_content %}
-        {% block after_modal_content %}
-        </div>
-    </div>
-    </turbo-frame>
+</div> {% endcomment %}
+{% endblock before_modal_content %}
+{% block after_modal_content %}
+</div>
+</div>
+</turbo-frame>
 {% endblock after_modal_content %}
