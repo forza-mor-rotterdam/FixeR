@@ -9,6 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -64,9 +65,11 @@ class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(publicatie_datum__isnull=False).order_by(
-            "-publicatie_datum", "-aangemaakt_op"
-        )
+        five_weeks_ago = timezone.now() - timezone.timedelta(weeks=5)
+
+        queryset = queryset.filter(
+            publicatie_datum__isnull=False, publicatie_datum__gte=five_weeks_ago
+        ).order_by("-publicatie_datum", "-aangemaakt_op")
 
         return queryset
 
