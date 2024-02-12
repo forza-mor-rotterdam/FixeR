@@ -221,7 +221,7 @@
                                 <p>{{ taak.resolutie }}</p>
                             {% endif %}
                             {% if taak.taakgebeurtenissen_voor_taak.all.0.gebruiker %}
-                                <h3 class="h5">Taak voltooid door</h3>
+                                <h3 class="h5">{% if taak.taakstatus.naam == "voltooid" %}Taak voltooid door{% elif taak.taakstatus.naam == "nieuw" %}Taak gestart door{% endif %}</h3>
                                 {{ taak.taakgebeurtenissen_voor_taak.all.0.gebruiker|gebruiker_middels_email }}
                             {% endif %}
                         </details>
