@@ -104,25 +104,6 @@ export default class extends Controller {
        }
    }
 
-    formHandleIsConnectedHandler(event) {
-        let self = this
-        const removeElem = self.element.parentNode;
-
-        const frame = document.getElementById('incident_detail_part');
-        frame?.reload()
-
-        if (event.detail.is_handled){
-            self.element.classList.add("hide");
-            if(event.detail.handled_type) {
-                self.showAlert(event.detail.handled_type)
-            }
-            self.element.addEventListener('transitionend', function(e){
-                removeElem.parentNode?.removeChild(removeElem);
-            });
-            self.buttonTarget.textContent = event.detail.messages.join(",")
-        }
-    }
-
     showAlert(type) {
         let self = this
         const div = document.createElement('div')
