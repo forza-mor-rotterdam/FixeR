@@ -218,14 +218,16 @@
                         {{ field.help_text|safe }}
                     </p>
                 {% endif %}
+                {% for error in field.errors %}
+                    <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
+                {% endfor %}
                 <div class="file-upload multiple hidden" tabindex="1">
                     <div class="file-upload-mask">
                         Sleep één of meer bestanden hier naartoe, of klik hier om bestanden te uploaden
                     </div>
-                    {% comment %} {{ field }} {% endcomment %}
                     <input id="{{ field.auto_id }}" name="{{ field.html_name }}" type="file"
                         {% if field.value != None %} value="{{ field.value|stringformat:'s' }}"{% endif %}
-                        {% render_attrs field class="file-upload-input" multiple="multiple" %}
+                        {% render_attrs field class="file-upload-input" %}
                     >
                     <div id="imagesPreview" class="preview"></div>
                 </div>
