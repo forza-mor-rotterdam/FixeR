@@ -46,6 +46,7 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
                 "accept": ".jpg, .jpeg, .png, .heic, .gif",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenExtra",
+                "multiple": "multiple",
                 "hideLabel": True,
             }
         ),
