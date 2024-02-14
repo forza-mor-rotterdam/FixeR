@@ -81,17 +81,20 @@
                         <div>
                             <span>{{ taak.titel }}</span>
                             <br>
-                            <span class="lighter"><span data-detail-target="taakAfstand"
-      data-latitude="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}"
-      data-longitude="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}"></span> meter afstand</span>
+                            <span class="lighter">
+                                <span data-detail-target="taakAfstand"
+                                    data-latitude="{{ taak.geometrie.coordinates.1|replace_comma_by_dot }}"
+                                    data-longitude="{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}">
+                                </span> meter afstand
+                            </span>
                         </div>
                         <div class="textalign--right">
                             {% if device_os == "ios" %}
                                 <small><a class="link"
-   href="http://maps.apple.com/?saddr=''&daddr={{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}&z=10&"
-   target="_top"
-   aria-label="Navigeer naar taak"
-   data-detail-target="navigeerLink">
+                                    href="http://maps.apple.com/?saddr=''&daddr={{ taak.geometrie.coordinates.1|replace_comma_by_dot }},{{ taak.geometrie.coordinates.0|replace_comma_by_dot }}&z=10&"
+                                    target="_top"
+                                    aria-label="Navigeer naar taak"
+                                    data-detail-target="navigeerLink">
                                     {% include "icons/navigate.svg" %}
                                     Navigeren
                                 </a></small>
@@ -230,7 +233,7 @@
                                 {{ taak.taakgebeurtenissen_voor_taak.all.0.gebruiker|gebruiker_middels_email }}
                             {% endif %}
                         </details>
-                        <details>
+                        <details data-action="toggle->detail#toggleDetailLocatie">
                             <summary>
                                 <h2>
                                     <svg width="20"
