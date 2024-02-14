@@ -70,9 +70,11 @@
             a {
                 line-height: 3.2rem;
                 text-decoration: none;
-                padding: 1rem 0;
                 color: $gray-tint11;
                 position: relative;
+                display: flex;
+                align-items: center;
+                gap: .5rem;
 
                 &:active,
                 &:hover {
