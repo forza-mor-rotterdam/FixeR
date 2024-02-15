@@ -58,6 +58,13 @@ class GebruikerAanmakenForm(GebruikerAanpassenForm):
 
 class GebruikerBulkImportForm(forms.Form):
     csv_file = forms.FileField(
+        widget=forms.FileInput(
+            attrs={
+                "data-action": "change->bijlagen#updateImageDisplay",
+                "accept": ".csv",
+                "required_css_class": "required",
+            }
+        ),
         label="CSV Bestand",
     )
     context = forms.ModelChoiceField(
@@ -103,11 +110,11 @@ class GebruikerBulkImportForm(forms.Form):
             errors.append(f"{email} is geen e-mailadres")
         if Gebruiker.objects.all().filter(email=email):
             errors.append("Een gebruiker met dit e-mailadres bestaat reeds")
-        if len(first_name) > 150:
+        if first_name and len(first_name) > 150:
             errors.append("voornaam mag niet langer zijn dan 150 karakters")
-        if len(last_name) > 150:
+        if last_name and len(last_name) > 150:
             errors.append("achternaam mag niet langer zijn dan 150 karakters")
-        if len(telefoonnummer) > 17:
+        if telefoonnummer and len(telefoonnummer) > 17:
             errors.append("telefoonnummer mag niet langer zijn dan 17 karakters")
         return ", ".join(errors)
 
