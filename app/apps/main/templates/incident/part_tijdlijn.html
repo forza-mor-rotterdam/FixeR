@@ -78,7 +78,7 @@
                                         <dd>
                                             {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_date }}
                                         </dd>
-                                        {% include "incident/part_gebruiker_telefoon.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email tekst="Gebruiker" %}
+                                        {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email tekst="Gebruiker" %}
                                         {% if row_data.mg.taakgebeurtenis.omschrijving_intern %}
                                             <dt>Interne opmerking</dt>
                                             <dd>
@@ -86,7 +86,7 @@
                                             </dd>
                                         {% endif %}
                                     {% elif row_data.mg.locatie %}
-                                        {% include "incident/part_gebruiker_telefoon.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Gewijzigd door" %}
+                                        {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Gewijzigd door" %}
                                         <dt>Datum</dt>
                                         <dd>
                                             {{ row_data.mg.aangemaakt_op|to_date }}
@@ -97,9 +97,9 @@
                                                 {{ row_data.mg.omschrijving_intern }}
                                             </dd>
                                         {% endif %}
-                                        {% include "incident/part_gebruiker_telefoon.html" with gebruiker=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|get_gebruiker_object_middels_email tekst="Uitvoerder" %}
+                                        {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|get_gebruiker_object_middels_email tekst="Uitvoerder" %}
                                     {% else %}
-                                        {% include "incident/part_gebruiker_telefoon.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Afgehandeld door" %}
+                                        {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Afgehandeld door" %}
                                         <dt>Datum</dt>
                                         <dd>
                                             {{ row_data.mg.aangemaakt_op|to_date }}

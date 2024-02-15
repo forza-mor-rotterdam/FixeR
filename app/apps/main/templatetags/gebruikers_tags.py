@@ -60,3 +60,12 @@ def get_gebruiker_object_middels_email(value):
             gebruiker["full_name"] = full_name or gebruiker["email"]
 
     return gebruiker
+
+
+@register.filter
+def get_taakgebeurtenis_voor_taakstatus(taak_gebeurtenissen, taakstatus):
+    # Leave field_name empty to return the name
+    if not taak_gebeurtenissen:
+        return ""
+
+    return taak_gebeurtenissen.filter(taakstatus__naam=taakstatus).first()
