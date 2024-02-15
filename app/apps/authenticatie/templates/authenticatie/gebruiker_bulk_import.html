@@ -23,13 +23,17 @@
 
         </div>
         {% if form %}
-        <form method="post" action="{% url 'gebruiker_bulk_import' %}" enctype="multipart/form-data">
+        <form method="post" action="{% url 'gebruiker_bulk_import' %}" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
             <fieldset>
-                {% if form.cleaned_data.csv_file.all_rows %}
+                {% if not form.errors and form.cleaned_data.csv_file.all_rows %}
                 <div>
                     <h2 class="h3">Validatie resultaat</h2>
                 </div>
+                {% if not form.errors and form.cleaned_data.csv_file.valid_rows %}
+                <p>{{ form.cleaned_data.csv_file.valid_rows|length }} van de {{ form.cleaned_data.csv_file.all_rows|length }} gebruiker{% if form.cleaned_data.csv_file.all_rows|length > 1 %}s{% endif %}, {% if form.cleaned_data.csv_file.valid_rows|length > 1 %}kunnen{% else  %}kan{% endif %} worden aangemaakt.</p>
+
+                <p>Onderstaande gebruikers kunnen worden geïmporteerd:</p>
                 <table>
                     <thead>
                         <th>email</th>
@@ -39,7 +43,7 @@
                         <th>Wordt geïmporteerd</th>
                     </thead>
                     <tbody>
-                        {% for row in form.cleaned_data.csv_file.all_rows %}
+                        {% for row in form.cleaned_data.csv_file.valid_rows %}
                         <tr>
                             {% for cell in row %}
                             <td>
@@ -63,26 +67,64 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                {% endif %}
-                {% if form.cleaned_data.csv_file.all_rows %}
-                    {% if form.cleaned_data.csv_file.valid_rows %}
-                    <p>{{ form.cleaned_data.csv_file.valid_rows|length }} van de {{ form.cleaned_data.csv_file.all_rows|length }} gebruiker{% if form.cleaned_data.csv_file.all_rows|length > 1 %}s{% endif %}, {% if form.cleaned_data.csv_file.valid_rows|length > 1 %}kunnen{% else  %}kan{% endif %} worden aangemaakt.</p>
-                    <div class="form-row container__button">
-                        <div class="form-row btn-row">
-                            <button type="submit" name="aanmaken" value="ja" class="btn btn-action">
-                                <span style="white-space: nowrap;">Gebruiker{% if form.cleaned_data.csv_file.valid_rows|length > 1 %}s{% endif %} aanmaken</span>
-                            </button>
-                        </div>
+                <div class="form-row container__button">
+                    <div class="form-row btn-row">
+                        <button type="submit" name="aanmaken" value="ja" class="btn btn-action">
+                            <span style="white-space: nowrap;">
+                                {% if form.cleaned_data.csv_file.valid_rows|length != form.cleaned_data.csv_file.all_rows|length %}
+                                    Alleen deze gebruiker{% if form.cleaned_data.csv_file.valid_rows|length > 1 %}s{% endif %} aanmaken
+                                {% else %}
+                                    Gebruiker{% if form.cleaned_data.csv_file.valid_rows|length > 1 %}s{% endif %} aanmaken
+                                {% endif %}
+                            </span>
+                        </button>
                     </div>
-                    {% else %}
-                    <p>Er kunnen geen gebruikers worden aangemaakt met deze csv data</p>
-                    {% endif %}
+                </div>
+                {% elif not form.errors %}
+                <p>Er kunnen geen gebruikers worden aangemaakt met deze csv data</p>
                 {% endif %}
-                <div class="form-control__with-helptext">
-                    <div class="form-row">
-                        <label class="padding-bottom-half">{{ form.csv_file.label }}</label>
-                        <div>{{ form.csv_file }}</div>
-                    </div>
+                {% if not form.errors and form.cleaned_data.csv_file.valid_rows|length != form.cleaned_data.csv_file.all_rows|length %}
+                <p>Onderstaande gebruikers kunnen <strong>niet</strong> worden geïmporteerd:</p>
+                <table>
+                    <thead>
+                        <th>email</th>
+                        <th>voornaam</th>
+                        <th>achternaam</th>
+                        <th>telefoonnummer</th>
+                        <th>Wordt geïmporteerd</th>
+                    </thead>
+                    <tbody>
+                        {% for row in form.cleaned_data.csv_file.all_rows %}
+                        {% if row.4 %}
+                        <tr>
+                            {% for cell in row %}
+                            <td>
+                                {% if forloop.last %}
+                                    {% if cell %}
+                                        {% include "icons/close.svg" %}
+                                        {{ cell }}
+                                    {% else %}
+                                        {% include "icons/checkmark.svg" %}
+                                    {% endif %}
+                                {% else %}
+                                    {% if cell %}
+                                        {{cell}}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+                {% endif %}
+
+                <div class="form-control__with-helptext" data-controller="bijlagen">
+                    {{ form.csv_file|render_rotterdam_formulier }}
                 </div>
                 <div class="form-control__with-helptext">
                     {{ form.context|render_rotterdam_formulier }}

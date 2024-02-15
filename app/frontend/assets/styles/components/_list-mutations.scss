@@ -136,6 +136,14 @@
             }
         }
 
+        .link--phone {
+            line-height: 1.5rem;
+
+            svg {
+                top: 0;
+            }
+        }
+
         &[open] {
             > summary {
                 &::before {

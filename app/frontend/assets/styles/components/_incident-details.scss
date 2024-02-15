@@ -66,6 +66,16 @@
             }
         }
 
+        .link--phone {
+            line-height: 2rem;
+
+            svg {
+                position: absolute;
+                top: 6px;
+                left: -27px;
+            }
+        }
+
         &[open]{
 
             >summary {

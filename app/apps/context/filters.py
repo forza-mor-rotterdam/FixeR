@@ -6,6 +6,7 @@ class StandaardFilter:
     _key = None
     _option_key_lookup = None
     _option_value_lookup = None
+    _option_value_fallback_lookup = None
     _option_group_lookup = None
     _filter_lookup = None
     _taken = None
@@ -36,6 +37,13 @@ class StandaardFilter:
             else self._option_key_lookup
         )
 
+    def get_option_value_fallback_lookup(self):
+        return (
+            self._option_value_fallback_lookup
+            if self._option_value_fallback_lookup
+            else self.get_option_value_lookup()
+        )
+
     def get_option_group_lookup(self):
         return (
             self._option_group_lookup
@@ -62,25 +70,28 @@ class StandaardFilter:
     def _set_options(self, selected_options):
         option_key = self.get_option_key_lookup()
         option_value = self.get_option_value_lookup()
+        option_value_fallback = self.get_option_value_fallback_lookup()
         option_group = self.get_option_group_lookup()
 
-        def value_lookup(obj, key):
-            if isinstance(obj, dict):
+        def value_lookup(obj, key, fallback_obj=None):
+            if isinstance(obj, dict) and obj.get(key, key):
                 return obj.get(key, key)
+            if isinstance(fallback_obj, dict) and fallback_obj.get(key, key):
+                return fallback_obj.get(key, key)
             if isinstance(obj, (str, int)):
                 return obj
             return key
 
         f_dict = {
-            ll[0]: (value_lookup(ll[1], ll[0]), ll[2], 0)
+            ll[0]: (value_lookup(ll[1], ll[0], ll[2]), ll[3], 0)
             for ll in self._filter_manager.taken.order_by(option_key)
-            .values_list(option_key, option_value, option_group)
+            .values_list(option_key, option_value, option_value_fallback, option_group)
             .distinct(option_key)
         }
         ff_dict = {
-            fl[0]: (value_lookup(fl[1], fl[0]), fl[2], fl[3])
+            fl[0]: (value_lookup(fl[1], fl[0], fl[2]), fl[3], fl[4])
             for fl in self._filter_manager.taken_filtered.order_by(option_key)
-            .values_list(option_key, option_value, option_group)
+            .values_list(option_key, option_value, option_value_fallback, option_group)
             .annotate(count=Count(option_key))
         }
         f_dict.update(ff_dict)
@@ -156,6 +167,7 @@ class BegraafplaatsFilter(StandaardFilter):
     _option_value_lookup = (
         "melding__response_json__meta_uitgebreid__begraafplaats__choices"
     )
+    _option_value_fallback_lookup = "melding__response_json__signalen_voor_melding__0__meta_uitgebreid__begraafplaats__choices"
     _filter_lookup = (
         "melding__response_json__locaties_voor_melding__0__begraafplaats__in"
     )

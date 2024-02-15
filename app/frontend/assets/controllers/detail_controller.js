@@ -78,7 +78,6 @@ export default class extends Controller {
                 markers.addLayer(markerMe);
                 markerMe.setLatLng([currentPosition[0], currentPosition[1]]);
                 L.marker(currentPosition, {icon: markerBlue}).addTo(map);
-                map.fitBounds(markers.getBounds())
             }
 
             window.addEventListener("positionChangeEvent", function(e){
@@ -122,8 +121,12 @@ export default class extends Controller {
         }
     }
 
-    disconnect(){
+    disconnect(){}
 
+    toggleDetailLocatie(element) {
+        if(element.target.open){
+            map._onResize()
+        }
     }
 
     taakAfstandTargetConnected(element) {
