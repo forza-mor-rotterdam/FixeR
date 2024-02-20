@@ -57,7 +57,9 @@
                 {% for release_note in release_notes %}
                     <tr data-row-search-target="row">
                         <td data-row-search-target="searchable">{{ release_note.titel }}</td>
+                        {% autoescape off %}
                         <td data-row-search-target="searchable">{{ release_note.beschrijving|striptags|safe|truncate_text:200 }}</td>
+                        {% endautoescape %}
                         <td data-row-search-target="searchable">{{ release_note.aangemaakt_op }}</td>
                         <td data-row-search-target="searchable">{{ release_note.publicatie_datum }}</td>
                         <td>

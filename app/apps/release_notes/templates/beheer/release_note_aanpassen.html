@@ -3,9 +3,8 @@
 {% load json_encode from main_tags %}
 {% load static %}
 <script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
-<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
-
-
+<script type="text/javascript"
+        src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer">
@@ -50,11 +49,11 @@
                                             <img src="{{ bijlage_form.instance.afbeelding.url }}" alt="Afbeelding">
                                         {% endif %}
                                         {% if formset.can_delete %}<label>{{ bijlage_form.DELETE }} Bestand verwijderen</label>{% endif %}
-                                            <div class="">
+                                        <div>
                                             <input type="hidden"
-                                                name="{{ bijlage_form.id.html_name }}"
-                                                value="{{ bijlage_form.instance.id|stringformat:'s' }}"
-                                                id="{{ bijlage_form.id.id_for_label }}">
+                                                   name="{{ bijlage_form.id.html_name }}"
+                                                   value="{{ bijlage_form.instance.id|stringformat:'s' }}"
+                                                   id="{{ bijlage_form.id.id_for_label }}">
                                         </div>
                                     </div>
                                 </div>
@@ -63,12 +62,13 @@
                         <div class="form-control__with-helptext js-validation full-width"
                              data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation">{{ form.publicatie_datum|render_rotterdam_formulier }}</div>
-                        <div class="form-control__with-helptext js-validation">{{ form.versie|render_rotterdam_formulier }}</div>
+                        {% if form.versie %}
+                            <div class="form-control__with-helptext js-validation">{{ form.versie|render_rotterdam_formulier }}</div>
+                        {% endif %}
                     </fieldset>
                     <div class="form-row container__button">
                         <div class="form-row btn-row">
-                            <button type="reset"
-                                    class="btn btn-tertiary">
+                            <button type="reset" class="btn btn-tertiary">
                                 <span>Annuleren</span>
                             </button>
                             <button type="submit" class="btn btn-action">

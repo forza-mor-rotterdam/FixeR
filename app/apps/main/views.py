@@ -43,7 +43,6 @@ from django.db.models.functions import Concat
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views.generic import View
 from geopy.distance import distance
 from rest_framework.reverse import reverse as drf_reverse
@@ -173,13 +172,15 @@ def taken_lijst(request):
     sort_reverse = len(sortering.split("-")) > 1
     sortering = sortering.split("-")[0]
     sorting_fields = {
-        "Postcode": lambda t: t.get("melding_data", {})
-        .get("locaties_voor_melding", [{}])[0]
-        .get("postcode")
-        if t.get("melding_data", {})
-        .get("locaties_voor_melding", [{}])[0]
-        .get("postcode")
-        else "0000zz",
+        "Postcode": lambda t: (
+            t.get("melding_data", {})
+            .get("locaties_voor_melding", [{}])[0]
+            .get("postcode")
+            if t.get("melding_data", {})
+            .get("locaties_voor_melding", [{}])[0]
+            .get("postcode")
+            else "0000zz"
+        ),
         "Adres": lambda t: t.get("adres"),
         "Datum": lambda t: t.get("taakstatus__aangemaakt_op"),
         "Afstand": lambda t: t.get("afstand"),
@@ -559,11 +560,12 @@ class HomepageView(PermissionRequiredMixin, View):
         }
         return render(request, self.template_name, context)
 
+    # Get release notes published within 5 weeks and not in future
     def get_release_notes(self):
-        five_weeks_ago = timezone.now() - timezone.timedelta(weeks=5)
-
-        release_notes = ReleaseNote.objects.filter(
-            publicatie_datum__gte=five_weeks_ago
-        ).order_by("-publicatie_datum")[:6]
+        release_notes = [
+            release_note
+            for release_note in ReleaseNote.objects.all().order_by("-publicatie_datum")
+            if release_note.is_published()
+        ][:6]
 
         return release_notes

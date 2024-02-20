@@ -9,7 +9,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -51,6 +50,7 @@ class ReleaseNoteDetailView(LoginRequiredMixin, ReleaseNoteView, DetailView):
 
     def get(self, request, *args, **kwargs):
         release_note = get_object_or_404(ReleaseNote, pk=kwargs["pk"])
+        release_note.bekeken_door_gebruikers.add(request.user)
         origine = request.session.pop("origine", "home")
         context = {"release_note": release_note, "origine": origine}
         return render(request, self.template_name, context)
@@ -63,14 +63,14 @@ class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):
     context_object_name = "release_notes"
     # form_class = ReleaseNoteSearchForm
 
+    # Get release notes published within 5 weeks and not in future
     def get_queryset(self):
-        queryset = super().get_queryset()
-        five_weeks_ago = timezone.now() - timezone.timedelta(weeks=5)
-
-        queryset = queryset.filter(
-            publicatie_datum__isnull=False, publicatie_datum__gte=five_weeks_ago
-        ).order_by("-publicatie_datum", "-aangemaakt_op")
-
+        queryset = (
+            super().get_queryset().order_by("-publicatie_datum", "-aangemaakt_op")
+        )
+        queryset = [
+            release_note for release_note in queryset if release_note.is_published()
+        ]
         return queryset
 
     def get(self, request, *args, **kwargs):

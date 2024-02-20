@@ -222,6 +222,11 @@ a,
             }
         }
     }
+    &.no--link {
+        text-decoration: none;
+        color: inherit;
+        outline: none !important;
+    }
 
     &.link--file {
         @include has-icon();
@@ -477,4 +482,15 @@ h1 + .section--seperated {
 
 .textalign--right {
     text-align: right;
+}
+
+.unread-count-badge {
+    background-color: red;
+    color: white;
+    border-radius: 50%; /* Make it round */
+    padding: 5px 10px; /* Adjust padding as needed */
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%); /* Center the badge */
 }
