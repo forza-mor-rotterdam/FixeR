@@ -42,28 +42,30 @@
                                 {% endif %}
                             {% endfor %}
                             {% if not forloop.first %}
-                                <strong>
-                                    {% if row_data.mg.taakgebeurtenis %}
-                                        {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
-                                            {{ taakopdracht.titel }}
-                                            {% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
-                                                :
-                                                {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
-                                                    {{ taakopdracht.resolutie|vertaal }}
-                                                {% else %}
-                                                    {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
-                                                {% endif %}
+                            <strong>
+                                {% if row_data.mg.taakgebeurtenis %}
+                                    {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
+                                        {{ taakopdracht.titel }}
+                                        {% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
+                                            :
+                                            {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
+                                                {{ taakopdracht.resolutie|vertaal }}
+                                                <span class="visually-hidden" data-datetime-target="resolutie">{{ taakopdracht.resolutie }}</span>
+                                            {% else %}
+                                                {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
                                             {% endif %}
-                                        {% endwith %}
-                                    {% else %}
-                                        melding:
-                                        {% if row_data.mg.status %}
-                                            {{ row_data.mg.status.naam }}
-                                        {% else %}
-                                            communicatie
                                         {% endif %}
+                                    {% endwith %}
+                                {% elif row_data.mg.locatie %}
+                                    Locatie aangepast
+                                {% else %}
+                                    {% if row_data.mg.status %}
+                                        {{ row_data.mg.status.naam|vertaal }}
+                                    {% elif row_data.mg.gebeurtenis_type %}
+                                        {{ row_data.mg.gebeurtenis_type|vertaal }}
                                     {% endif %}
-                                </strong>
+                                {% endif %}
+                            </strong>
                             {% endif %}
                         </summary>
                         <div class="content">

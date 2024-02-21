@@ -7,20 +7,24 @@
             <h1 class="pagetitle">Nieuw in FixeR</h1>
             <ul class="list-clean border-top">
                 {% for release_note in release_notes %}
-                    <li class="list-item">
-                        <h2>{{ release_note.titel|capfirst }}</h2>
-                        {% if release_note.publicatie_datum %}<p class="release-date">{{ release_note.publicatie_datum }}</p>{% endif %}
-                        <p class="description">
-                            {{ release_note.beschrijving|striptags|safe|truncate_text:200 }}
-                            <br />
-                            <small><a href="{% url 'release_note_detail' release_note.pk %}">Lees meer</a></small>
-                        </p>
+                    <li class="list-item{% if not release_note.is_unwatched %} inactive{% endif %}">
+                        <a class="no--link" href="{% url 'release_note_detail' release_note.pk %}">
+                            <h2>{{ release_note.titel|capfirst }}</h2>
+                            {% if release_note.publicatie_datum %}<p class="release-date">{{ release_note.publicatie_datum }}</p>{% endif %}
+                            <p class="description">
+                                {% autoescape off %}
+                                    {{ release_note.beschrijving|striptags|safe|truncate_text:200 }}
+                                {% endautoescape %}
+                                <br />
+                                <small><a href="{% url 'release_note_detail' release_note.pk %}">Lees meer</a></small>
+                            </p>
+                        </a>
                     </li>
                 {% endfor %}
             </ul>
-            <div class="container">
+            {% comment %} <div class="container">
                 <a href="{% url 'taken' %}" class="btn btn-action">Bekijk mijn taken</a>
-            </div>
+            </div> {% endcomment %}
         </div>
     </div>
     </turbo-frame>

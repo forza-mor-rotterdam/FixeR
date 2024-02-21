@@ -222,6 +222,12 @@ a,
             }
         }
     }
+    &.no--link {
+        text-decoration: none;
+        color: inherit;
+        outline: none !important;
+        display: inline-block;
+    }
 
     &.link--file {
         @include has-icon();

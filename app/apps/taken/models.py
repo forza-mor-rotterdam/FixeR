@@ -178,6 +178,7 @@ class Taak(BasisModel):
         null=True,
     )
     additionele_informatie = models.JSONField(default=dict)
+    geometrie = models.GeometryField(null=True, blank=True)
 
     objects = TaakQuerySet.as_manager()
     acties = TaakManager()
@@ -213,12 +214,6 @@ class Taak(BasisModel):
                 for onderwerp_url in self.melding.response_json.get("onderwerpen", [])
             ]
         )
-
-    def geometrie(self):
-        locaties = self.melding.response_json.get("locaties_voor_melding")
-        if not locaties or not locaties[0].get("geometrie"):
-            return ""
-        return locaties[0].get("geometrie")
 
     def adres(self):
         locaties = self.melding.response_json.get("locaties_voor_melding")

@@ -7,13 +7,15 @@
 {% load get_bijlagen from melding_tags %}
 
 {% block before_modal_content %}
-    {% get_bijlagen taak.melding_data as bijlagen %}
+    {% get_bijlagen taak.melding.response_json as bijlagen %}
     <div
         data-incidentlist-target="taakItem"
         data-id="{{ taak.id }}"
+        data-uuid="{{ taak.uuid }}"
+        data-melding-id="{{ taak.melding.response_json.id }}"
         data-titel="{{ taak.titel }}"
         data-adres="{{ taak.adres }}"
-        data-geometrie="{% if taak.melding_data.locaties_voor_melding.0.geometrie %}{{ taak.melding_data.locaties_voor_melding.0.geometrie|json_encode }}{% else %}{% endif %}"
+        data-geometrie="{% if taak.melding.response_json.locaties_voor_melding.0.geometrie %}{{ taak.melding.response_json.locaties_voor_melding.0.geometrie|json_encode }}{% else %}{% endif %}"
         {% if bijlagen %}data-afbeelding-url="{{ bijlagen.0.afbeelding_verkleind_relative_url|mor_core_url }}"{% endif %}
         class="list-item"
         {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}

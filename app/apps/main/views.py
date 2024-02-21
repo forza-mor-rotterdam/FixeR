@@ -34,18 +34,18 @@ from django.contrib.auth.decorators import (
     user_passes_test,
 )
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import F, Value
+from django.db.models import Value
 from django.db.models.functions import Concat
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views.generic import View
-from geopy.distance import distance
 from rest_framework.reverse import reverse as drf_reverse
 
 logger = logging.getLogger(__name__)
@@ -167,41 +167,24 @@ def taken_filter(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_lijst(request):
-    ref_location = (request.GET.get("lat"), request.GET.get("lon"))
+    try:
+        pnt = Point(
+            float(request.GET.get("lon", 0)),
+            float(request.GET.get("lat", 0)),
+            srid=4326,
+        )
+    except Exception:
+        pnt = Point(0, 0, srid=4326)
 
     sortering = get_sortering(request.user)
     sort_reverse = len(sortering.split("-")) > 1
     sortering = sortering.split("-")[0]
     sorting_fields = {
-        "Postcode": lambda t: t.get("melding_data", {})
-        .get("locaties_voor_melding", [{}])[0]
-        .get("postcode")
-        if t.get("melding_data", {})
-        .get("locaties_voor_melding", [{}])[0]
-        .get("postcode")
-        else "0000zz",
-        "Adres": lambda t: t.get("adres"),
-        "Datum": lambda t: t.get("taakstatus__aangemaakt_op"),
-        "Afstand": lambda t: t.get("afstand"),
+        "Postcode": "melding__response_json__locaties_voor_melding__0__postcode",
+        "Adres": "adres",
+        "Datum": "taakstatus__aangemaakt_op",
+        "Afstand": "afstand",
     }
-
-    def get_point(taak):
-        default_coordinates = [0, 0]
-        coordinates = (
-            taak.get("melding_data", {})
-            .get("locaties_voor_melding", [{}])[0]
-            .get("geometrie", {})
-            .get("coordinates", default_coordinates)
-            if taak.get("melding_data", {})
-            .get("locaties_voor_melding", [{}])[0]
-            .get("geometrie", {})
-            else default_coordinates
-        )
-        return (coordinates[1], coordinates[0])
-
-    def get_distance(ref_location, taak):
-        return distance(ref_location, get_point(taak)).m
-
     taken_gefilterd = request.session.get("taken_gefilterd")
     if not taken_gefilterd:
         taken = Taak.objects.get_taken_recent(request.user)
@@ -214,36 +197,17 @@ def taken_lijst(request):
         filter_manager = FilterManager(taken, actieve_filters)
         taken_gefilterd = filter_manager.filter_taken()
 
-    taken_gefilterd = taken_gefilterd.annotate(
-        adres=Concat(
-            "melding__response_json__locaties_voor_melding__0__straatnaam",
-            Value(" "),
-            "melding__response_json__locaties_voor_melding__0__huisnummer",
-            output_field=models.CharField(),
+    taken_gefilterd = (
+        taken_gefilterd.annotate(
+            adres=Concat(
+                "melding__response_json__locaties_voor_melding__0__straatnaam",
+                Value(" "),
+                "melding__response_json__locaties_voor_melding__0__huisnummer",
+                output_field=models.CharField(),
+            )
         )
-    )
-
-    taken_gefilterd = taken_gefilterd.values(
-        "id",
-        "adres",
-        "titel",
-        "titel",
-        "afgesloten_op",
-        "taakstatus__naam",
-        "taakstatus__aangemaakt_op",
-        melding_data=F("melding__response_json"),
-    )
-
-    taken_gefilterd = sorted(
-        [
-            {
-                **taak,
-                "afstand": int(get_distance(ref_location, taak)),
-            }
-            for taak in taken_gefilterd
-        ],
-        key=sorting_fields.get(sortering),
-        reverse=sort_reverse,
+        .annotate(afstand=Distance("geometrie", pnt))
+        .order_by(f"{'-' if sort_reverse else ''}{sorting_fields.get(sortering)}")
     )
 
     paginator = Paginator(taken_gefilterd, 50)
@@ -559,11 +523,12 @@ class HomepageView(PermissionRequiredMixin, View):
         }
         return render(request, self.template_name, context)
 
+    # Get release notes published within 5 weeks and not in future
     def get_release_notes(self):
-        five_weeks_ago = timezone.now() - timezone.timedelta(weeks=5)
-
-        release_notes = ReleaseNote.objects.filter(
-            publicatie_datum__gte=five_weeks_ago
-        ).order_by("-publicatie_datum")[:6]
+        release_notes = [
+            release_note
+            for release_note in ReleaseNote.objects.all().order_by("-publicatie_datum")
+            if release_note.is_published()
+        ][:6]
 
         return release_notes

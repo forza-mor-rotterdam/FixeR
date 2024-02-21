@@ -1,3 +1,4 @@
+from apps.aliassen.views import MeldingNotificatieAPIView
 from apps.authenticatie.views import (
     GebruikerAanmakenView,
     GebruikerAanpassenView,
@@ -79,6 +80,11 @@ urlpatterns = [
     ),
     path("informatie/", informatie, name="informatie"),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
+    path(
+        "api/v1/melding/",
+        MeldingNotificatieAPIView.as_view(),
+        name="melding_notificatie",
+    ),
     path("api-token-auth/", views.obtain_auth_token),
     path(
         "admin/clear-melding-token-from-cache/",
