@@ -20,6 +20,9 @@
 
         svg {
             left: -30px;
+            path {
+                fill: $green-tint01;
+            }
         }
     }
 
@@ -113,12 +116,29 @@
         }
     }
 
-    .form-row {
+    li {
+        &.list-item {
+        border-bottom: 1px solid $gray-tint04;
+        padding-bottom: 1rem;
 
-        input + p,
-        select + p,
-        .list--form-check-input + p {
-            margin-top: -16px;
+        &.inactive {
+            * {
+                opacity: 0.6;
+            }
         }
+        > .description {
+            margin-top: 0;
+            margin-bottom: 0;
+            > a {
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+            }
+            small {
+                a {
+                    display: block;
+                }
+            }
+        }
+      }
     }
 }

@@ -100,6 +100,7 @@
 
                 .wrapper-horizontal {
                     line-height: 1rem;
+                    position: relative;
 
                     a {
                         &:hover,
@@ -109,7 +110,7 @@
                     }
 
                     button,
-                    span {
+                    span:not(.badge--unread-count) {
                         padding: 0 0.5rem;
                         display: inline-block;
                         box-sizing: content-box;
