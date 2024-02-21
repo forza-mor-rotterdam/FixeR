@@ -5,6 +5,7 @@ from django.contrib import admin
 class TaakAdmin(admin.ModelAdmin):
     list_display = (
         "id",
+        "uuid",
         "titel",
         "taaktype",
         "melding",
@@ -12,6 +13,7 @@ class TaakAdmin(admin.ModelAdmin):
         "resolutie",
         "aangemaakt_op",
         "aangepast_op",
+        "geometrie",
     )
     list_editable = ("melding",)
 
