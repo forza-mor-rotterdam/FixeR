@@ -35,6 +35,9 @@
                     <path d="m4 24h24v2h-24z"></path>
                     </g>
                 </svg>
+                {% if UNWATCHED_COUNT > 0 %}
+                    <span class="badge--unread-count">{% if UNWATCHED_COUNT  < 101 %}{{ UNWATCHED_COUNT }}{% else %}+99{% endif %}</span>
+                {% endif %}
             </button>
         {% endif %}
     </div>
