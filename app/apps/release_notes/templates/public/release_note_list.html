@@ -7,7 +7,9 @@
             <h1 class="pagetitle">Nieuw in FixeR</h1>
             <ul class="list-clean border-top">
                 {% for release_note in release_notes %}
-                    <a class="no--link" href="{% url 'release_note_detail' release_note.pk %}">
+                    Unwatched: {{ release_note.is_unwatched }}
+                    <a class="no--link"
+                       href="{% url 'release_note_detail' release_note.pk %}">
                         <li class="list-item">
                             <h2>{{ release_note.titel|capfirst }}</h2>
                             {% if release_note.publicatie_datum %}<p class="release-date">{{ release_note.publicatie_datum }}</p>{% endif %}
