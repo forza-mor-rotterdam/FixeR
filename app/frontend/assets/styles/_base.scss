@@ -226,6 +226,7 @@ a,
         text-decoration: none;
         color: inherit;
         outline: none !important;
+        display: inline-block;
     }
 
     &.link--file {
@@ -322,6 +323,14 @@ ul {
 li {
     &.list-item {
     border-bottom: 1px solid $gray-tint04;
+    > .description {
+        margin-top: 0;
+        margin-bottom: 0;
+        > a {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    }
   }
 
   .border-top & {

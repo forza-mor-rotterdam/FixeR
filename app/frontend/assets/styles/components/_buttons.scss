@@ -109,7 +109,7 @@ button {
         max-width: none;
     }
 
-    span {
+    span:not(.badge--unread-count) {
         padding: 0 16px;
     }
 
@@ -216,7 +216,7 @@ button {
 
         &--small {
             span {
-                padding: 0 2px;
+                padding: 0 2px !important;
             }
         }
     }
@@ -258,6 +258,14 @@ button {
         background: transparent;
         margin-right: -16px;
         padding-top: 16px;
+        position: relative;
+
+        .badge--unread-count {
+            position: absolute;
+            right: 5px;
+            top: 0;
+            transform: translateY(40%);
+        }
     }
 
 
