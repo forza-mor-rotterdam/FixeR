@@ -8,25 +8,29 @@
 {% load context_template from context_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
 {% block title %}
+    {% with melding=taak.melding.response_json %}
+    {% with locatie=melding.locaties_voor_melding.0 %}
     {% if TEMPLATE_BASIS != "benc" %}
-        {{ melding.locatie.adres.straatNaam|lower|capfirst }}
-        {% if melding.locatie.adres.huisnummer %}{{ melding.locatie.adres.huisnummer }}{% endif %}
+        {{ locatie.adres.straatNaam|lower|capfirst }}
+        {% if locatie.adres.huisnummer %}{{ locatie.adres.huisnummer }}{% endif %}
     {% else %}
-        {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
-            {% if grafnummer %}Graf {{ grafnummer }}{% endif %}
-            {% if vak %}, Vak {{ vak }}{% endif %}
-            {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
-            {% if signaal_begraafplaats_naam == melding.locaties_voor_melding.0.begraafplaats %}
-                {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
-            {% else %}
-                {{ signaal_begraafplaats_naam }}
-            {% endif %}
-        {% endwith %}
+        {% if locatie.grafnummer %}Graf {{ locatie.grafnummer }}{% endif %}
+        {% if locatie.vak %}, Vak {{ locatie.vak }}{% endif %}
+        {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices locatie.plaats as signaal_begraafplaats_naam %}
+        {% if signaal_begraafplaats_naam == locatie.begraafplaats %}
+            {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices locatie.plaats %}
+        {% else %}
+            {{ signaal_begraafplaats_naam }}
+        {% endif %}
     {% endif %}
+    {% endwith %}
+    {% endwith %}
 {% endblock title %}
 {% block before_modal_content %}
     <turbo-frame id="taak_basis">
-    {% with geometrie=taak.melding.response_json.locaties_voor_melding.0.geometrie %}
+    {% with melding=taak.melding.response_json %}
+    {% with locatie=melding.locaties_voor_melding.0 %}
+    {% with geometrie=locatie.geometrie %}
     <div data-controller="modal">
         <div>
             <a href="{% url 'taken' %}"
@@ -53,31 +57,28 @@
                 <div class="container__header-taaknavigatie">
                     {% if TEMPLATE_BASIS != "benc" %}
                         <h1 class="h3">
-                            {{geometrie}}
-                            {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                            {% if melding.locaties_voor_melding.0.huisnummer %}{{ melding.locaties_voor_melding.0.huisnummer }}{% endif %}
+                            {{ locatie.straatnaam|lower|capfirst }}
+                            {% if locatie.huisnummer %}{{ locatie.huisnummer }}{% endif %}
                             <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
                                 {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
                             </span>
                         </h1>
                     {% else %}
-                        {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
-                            <h1 class="h3">
-                                {% if grafnummer %}Graf {{ grafnummer }}{% endif %}
-                                {% if vak %}, Vak {{ vak }}{% endif %}
-                                {% if not grafnummer and not vak and plaats %}
-                                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
-                                    {% if signaal_begraafplaats_naam == melding.locaties_voor_melding.0.begraafplaats %}
-                                        {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
-                                    {% else %}
-                                        {{ signaal_begraafplaats_naam }}
-                                    {% endif %}
+                        <h1 class="h3">
+                            {% if locatie.grafnummer %}Graf {{ locatie.grafnummer }}{% endif %}
+                            {% if locatie.vak %}, Vak {{ locatie.vak }}{% endif %}
+                            {% if not locatie.grafnummer and not locatie.vak and locatie.begraafplaats %}
+                                {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices locatie.begraafplaats as signaal_begraafplaats_naam %}
+                                {% if signaal_begraafplaats_naam == locatie.begraafplaats %}
+                                    {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
+                                {% else %}
+                                    {{ signaal_begraafplaats_naam }}
                                 {% endif %}
-                                <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
-                                    {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
-                                </span>
-                            </h1>
-                        {% endwith %}
+                            {% endif %}
+                            <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
+                                {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
+                            </span>
+                        </h1>
                     {% endif %}
                     <div class="container__flex">
                         <div>
@@ -255,9 +256,9 @@
                                     </svg> {% endcomment %}
                                     <h3 class="h5">Ter hoogte van</h3>
                                     <p>
-                                        {{ melding.locaties_voor_melding.0.straatnaam|lower|capfirst }}
-                                        {% if melding.locaties_voor_melding.0.huisnummer %}
-                                            {{ melding.locaties_voor_melding.0.huisnummer }}
+                                        {{ locatie.straatnaam|lower|capfirst }}
+                                        {% if locatie.huisnummer %}
+                                            {{ locatie.huisnummer }}
                                         {% endif %}
                                     </p>
                                     {% if device_os == "ios" %}
@@ -284,16 +285,16 @@
                                     {% endif %}
                                 </div>
                                 <div>
-                                    {% if melding.locaties_voor_melding.0.wijknaam %}
+                                    {% if locatie.wijknaam %}
                                         <div>
                                             <h3 class="h5">Wijk</h3>
-                                            <p>{{ melding.locaties_voor_melding.0.wijknaam }}</p>
+                                            <p>{{ locatie.wijknaam }}</p>
                                         </div>
                                     {% endif %}
-                                    {% if melding.locaties_voor_melding.0.buurtnaam %}
+                                    {% if locatie.buurtnaam %}
                                         <div>
                                             <h3 class="h5">Buurt</h3>
-                                            <p>{{ melding.locaties_voor_melding.0.buurtnaam }}</p>
+                                            <p>{{ locatie.buurtnaam }}</p>
                                         </div>
                                     {% endif %}
                                     {% if taak.locatie.subbuurt %}
@@ -323,32 +324,30 @@
                                     </div>
                                 </div>
                             {% else %}
-                                {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
-                                    <h3 class="h5">Begraafplaats</h3>
-                                    <p>
-                                        {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
-                                        {% if signaal_begraafplaats_naam == melding.locaties_voor_melding.0.begraafplaats %}
-                                            {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
-                                        {% else %}
-                                            {{ signaal_begraafplaats_naam }}
-                                        {% endif %}
-                                    </p>
-                                    {% if melding.locaties_voor_melding.0.grafnummer %}
-                                        <h3 class="h5">Grafnummer</h3>
-                                        <p>{{ melding.locaties_voor_melding.0.grafnummer }}</p>
+                                <h3 class="h5">Begraafplaats</h3>
+                                <p>
+                                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices locatie.begraafplaats as signaal_begraafplaats_naam %}
+                                    {% if signaal_begraafplaats_naam == locatie.begraafplaats %}
+                                        {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices locatie.begraafplaats %}
+                                    {% else %}
+                                        {{ signaal_begraafplaats_naam }}
                                     {% endif %}
-                                    {% if melding.locaties_voor_melding.0.vak %}
-                                        <h3 class="h5">Vak</h3>
-                                        <p>{{ melding.locaties_voor_melding.0.vak }}</p>
-                                    {% endif %}
-                                    {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
-                                        <h3 class="h5">Naam overledene</h3>
-                                        <p>{{ melding.signalen_voor_melding.0.meta.naam_overledene }}</p>
-                                    {% elif melding.meta.naam_overledene %}
-                                        <h3 class="h5">Naam overledene</h3>
-                                        <p>{{ melding.meta.naam_overledene }}</p>
-                                    {% endif %}
-                                {% endwith %}
+                                </p>
+                                {% if locatie.grafnummer %}
+                                    <h3 class="h5">Grafnummer</h3>
+                                    <p>{{ locatie.grafnummer }}</p>
+                                {% endif %}
+                                {% if locatie.vak %}
+                                    <h3 class="h5">Vak</h3>
+                                    <p>{{ locatie.vak }}</p>
+                                {% endif %}
+                                {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
+                                    <h3 class="h5">Naam overledene</h3>
+                                    <p>{{ melding.signalen_voor_melding.0.meta.naam_overledene }}</p>
+                                {% elif melding.meta.naam_overledene %}
+                                    <h3 class="h5">Naam overledene</h3>
+                                    <p>{{ melding.meta.naam_overledene }}</p>
+                                {% endif %}
                             {% endif %}
                         </details>
                         <details>
@@ -465,19 +464,9 @@
     </section>
 </div>
 {% endwith %}
-{% comment %} <div class="modal modal--transparent">
-                <div class="modal-dialog">
-                    <div class="modal-backdrop modal-exit" data-action="click->modal#closeModal"></div>
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="btn-close" aria-label="Sluit" data-action="modal#closeModal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="container-image"></div>
-                        </div>
-                    </div>
-                </div>
-</div> {% endcomment %}
+{% endwith %}
+{% endwith %}
+
 {% endblock before_modal_content %}
 {% block after_modal_content %}
 </div>
