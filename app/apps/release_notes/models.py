@@ -133,8 +133,6 @@ class ReleaseNote(BasisModel):
         """
         Check if the release note is unwatched by the user and meets the specified conditions.
         """
-        print(" = = = = = = = = ")
-        print(self.bekeken_door_gebruikers.filter(pk=user.pk).exists())
         return not self.bekeken_door_gebruikers.filter(pk=user.pk).exists()
 
     @staticmethod

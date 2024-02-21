@@ -139,3 +139,9 @@ class GebruikerBulkImportForm(forms.Form):
             )
             gebruiker.save()
         return aangemaakte_gebruikers
+
+
+class GebruikerProfielForm(forms.ModelForm):
+    class Meta:
+        model = Gebruiker
+        fields = ("telefoonnummer", "first_name", "last_name")
