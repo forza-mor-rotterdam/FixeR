@@ -261,10 +261,14 @@ button {
         position: relative;
 
         .badge--unread-count {
+            width: 18px;
+            height: 18px;
+            line-height: 18px;
+            font-size: 10px;
             position: absolute;
             right: 5px;
             top: 0;
-            transform: translateY(40%);
+            transform: translateY(70%);
         }
     }
 
