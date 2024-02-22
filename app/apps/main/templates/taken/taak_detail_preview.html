@@ -7,38 +7,27 @@
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
+
 {% block title %}
     {% with melding=taak.melding.response_json %}
     {% with locatie=melding.locaties_voor_melding.0 %}
-    {% if TEMPLATE_BASIS != "benc" %}
-        {{ locatie.adres.straatNaam|lower|capfirst }}
-        {% if locatie.adres.huisnummer %}{{ locatie.adres.huisnummer }}{% endif %}
-    {% else %}
-        {% if locatie.grafnummer %}Graf {{ locatie.grafnummer }}{% endif %}
-        {% if locatie.vak %}, Vak {{ locatie.vak }}{% endif %}
-        {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices locatie.plaats as signaal_begraafplaats_naam %}
-        {% if signaal_begraafplaats_naam == locatie.begraafplaats %}
-            {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices locatie.plaats %}
-        {% else %}
-            {{ signaal_begraafplaats_naam }}
-        {% endif %}
-    {% endif %}
+    Taak: {{ taak.titel }}, {{ locatie.straatnaam|lower|capfirst }}{% if locatie.huisnummer %} {{ locatie.huisnummer }}{% endif %}
     {% endwith %}
     {% endwith %}
-{% endblock title %}
+{% endblock %}
 
 {% block extra_head %}
 {% if gebruiker_email %}
 {% with melding=taak.melding.response_json %}
 {% with locatie=melding.locaties_voor_melding.0 %}
-{% get_bijlagen melding as bijlagen %}
 <meta property="og:title" content="Taak: {{ taak.titel }}, {{ locatie.straatnaam|lower|capfirst }}{% if locatie.huisnummer %} {{ locatie.huisnummer }}{% endif %}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="{{ ABSOLUTE_ROOT }}{% url 'taak_detail_preview' taak.id signed_data %}" />
 <meta property="og:description" content="Deze link is gedeeld door: {{gebruiker_email}}" />
 
+{% get_bijlagen melding as bijlagen %}
 {% if bijlagen %}
-<meta property="og:image" content="{{ foto.afbeelding_relative_url|mor_core_url:signed_data }}" />
+<meta property="og:image" content="{{ ABSOLUTE_ROOT }}{{ bijlagen.0.afbeelding_relative_url|mor_core_url:signed_data }}" />
 <meta property="og:image:width" content="600" />
 <meta property="og:image:height" content="600" />
 {% endif %}

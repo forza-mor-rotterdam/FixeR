@@ -49,7 +49,7 @@ from django.urls import reverse
 from django.views.generic import View
 from rest_framework.reverse import reverse as drf_reverse
 
-SIGNED_DATA_MAX_AGE_SECONDS = 60
+SIGNED_DATA_MAX_AGE_SECONDS = 120
 logger = logging.getLogger(__name__)
 
 
