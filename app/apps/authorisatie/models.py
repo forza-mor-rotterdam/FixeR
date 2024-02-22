@@ -36,6 +36,11 @@ class TaakToewijzingIntrekkenPermissie(BasisPermissie):
     codenaam = "taak_toewijzing_intrekken"
 
 
+class TaakDelenPermissie(BasisPermissie):
+    naam = "Taak delen"
+    codenaam = "taak_delen"
+
+
 class GebruikerLijstBekijkenPermissie(BasisPermissie):
     naam = "Gebruiker lijst bekijken"
     codenaam = "gebruiker_lijst_bekijken"
@@ -177,6 +182,7 @@ gebruikersgroep_permissies = (
     TaakAfrondenPermissie,
     TaakToewijzenPermissie,
     TaakToewijzingIntrekkenPermissie,
+    TaakDelenPermissie,
     GebruikerLijstBekijkenPermissie,
     GebruikerAanmakenPermissie,
     GebruikerAanpassenPermissie,
