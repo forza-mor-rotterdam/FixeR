@@ -403,6 +403,10 @@
                                     {{ melding.afdeling.omschrijving }}
                                 </p>
                             {% endif %}
+                            <h3 class="h5">Met spoed oppakken</h3>
+                            <p>
+                                {% if melding.urgentie >= 0.5 %}Ja{% else %}Nee{% endif %}
+                            </p>
                         </details>
                         <details>
                             <summary>
