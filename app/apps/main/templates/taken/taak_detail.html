@@ -4,7 +4,7 @@
 {% load taakopdracht render_onderwerp get_bijlagen from melding_tags %}
 {% load to_date replace_comma_by_dot vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
-{% load mor_core_url from main_tags %}
+{% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
 {% block title %}
@@ -56,6 +56,15 @@
             <div class="taak-detail">
                 <div class="container__header-taaknavigatie">
                     {% if TEMPLATE_BASIS != "benc" %}
+                        {% if perms.authorisatie.taak_delen %}
+                        <br>
+                        {% if signed_data %}
+                        <a href="{% url 'taak_detail_preview' taak.id signed_data %}" data-turbo-action="replace">Taak preview</a>
+                        <br>
+                        <a href="https://web.whatsapp.com/send?text={{ ABSOLUTE_ROOT }}{% url 'taak_detail_preview' taak.id signed_data %}" data-action="share/whatsapp/share" >WhatsApp link</a>
+                        {% endif %}
+                        <br>
+                        {% endif %}
                         <h1 class="h3">
                             {{ locatie.straatnaam|lower|capfirst }}
                             {% if locatie.huisnummer %}{{ locatie.huisnummer }}{% endif %}
@@ -149,8 +158,8 @@
                                     style="width: calc(100% * {{ bijlagen|length }})">
                                     {% for foto in bijlagen %}
                                         <li class="container__image"
-                                            id="{{ foto.afbeelding_relative_url|mor_core_url }}">
-                                            <img src="{{ foto.afbeelding_relative_url|mor_core_url }}"
+                                            id="{{ foto.afbeelding_relative_url|mor_core_protected_url }}">
+                                            <img src="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
                                                  alt=""
                                                  data-detail-target="selectedImage"
                                                  {% comment %}
@@ -167,7 +176,7 @@
                                             <li data-action="click->detail#selectImage"
                                                 data-detail-image-index-param="{{ forloop.counter }}">
                                                 <div class="container__image">
-                                                    <img src="{{ foto.afbeelding_verkleind_relative_url|mor_core_url }}"
+                                                    <img src="{{ foto.afbeelding_verkleind_relative_url|mor_core_protected_url }}"
                                                          alt="" />
                                                 </div>
                                             </li>
