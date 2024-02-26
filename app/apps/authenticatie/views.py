@@ -143,5 +143,5 @@ class GebruikerProfielView(GebruikerView, UpdateView):
         MeldingenService().set_gebruiker(
             gebruiker=self.request.user.serialized_instance(),
         )
-        messages.success(self.request, "Gebruikers gegevens succesvol opgeslagen.")
+        messages.success(self.request, "Gebruikersgegevens succesvol opgeslagen.")
         return super().form_valid(form)
