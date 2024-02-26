@@ -3,6 +3,7 @@ from apps.authenticatie.views import (
     GebruikerAanmakenView,
     GebruikerAanpassenView,
     GebruikerLijstView,
+    GebruikerProfielView,
     gebruiker_bulk_import,
 )
 from apps.authorisatie.views import (
@@ -126,6 +127,12 @@ urlpatterns = [
         "taak-toewijzing-intrekken/<int:id>/",
         taak_toewijzing_intrekken,
         name="taak_toewijzing_intrekken",
+    ),
+    # Gebruikers
+    path(
+        "gebruiker/profiel/",
+        GebruikerProfielView.as_view(),
+        name="gebruiker_profiel",
     ),
     # END taken
     # START partials
