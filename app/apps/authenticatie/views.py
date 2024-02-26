@@ -6,6 +6,7 @@ from apps.authenticatie.forms import (
     GebruikerBulkImportForm,
     GebruikerProfielForm,
 )
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render
@@ -119,6 +120,11 @@ class GebruikerProfielView(GebruikerView, UpdateView):
     form_class = GebruikerProfielForm
     template_name = "authenticatie/gebruiker_profiel.html"
     success_url = reverse_lazy("gebruiker_profiel")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["email_beheer"] = settings.EMAIL_BEHEER
+        return context
 
     def get_object(self, queryset=None):
         return self.request.user
