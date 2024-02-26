@@ -68,10 +68,12 @@
     </div>
     {% block messages %}
         {% if messages %}
-            <div class="messages-container">
-                <ul class="messages">
-                    {% for message in messages %}<li class="message message-{{ message.tags }}">{{ message }}</li>{% endfor %}
-                </ul>
+            <div class="messages-container" data-controller="messages">
+                <div class="wrapper">
+                    <ul class="messages">
+                        {% for message in messages %}<li class="message message-{{ message.tags }}">{{ message }}</li>{% endfor %}
+                    </ul>
+                </div>
             </div>
         {% endif %}
     {% endblock messages %}
