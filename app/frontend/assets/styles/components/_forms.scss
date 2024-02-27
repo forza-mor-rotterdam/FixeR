@@ -54,6 +54,14 @@ fieldset {
     padding: 0;
     border: 0;
     min-width: 0;
+
+    &.no-margin-bottom {
+        > div {
+            &:last-child {
+                margin-bottom: 0 !important;
+            }
+        }
+    }
 }
 
 .form-control, .form-select {

@@ -2,7 +2,7 @@
 {% load webpack_static from webpack_loader %}
 {% load to_date vind_in_dict to_timestamp from main_tags %}
 {% load json_encode replace_comma_by_dot adres_order_nummer from main_tags %}
-{% load mor_core_url from main_tags %}
+{% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
 {% load get_bijlagen from melding_tags %}
 
@@ -16,7 +16,7 @@
         data-titel="{{ taak.titel }}"
         data-adres="{{ taak.adres }}"
         data-geometrie="{% if taak.melding.response_json.locaties_voor_melding.0.geometrie %}{{ taak.melding.response_json.locaties_voor_melding.0.geometrie|json_encode }}{% else %}{% endif %}"
-        {% if bijlagen %}data-afbeelding-url="{{ bijlagen.0.afbeelding_verkleind_relative_url|mor_core_url }}"{% endif %}
+        {% if bijlagen %}data-afbeelding-url="{{ bijlagen.0.afbeelding_verkleind_relative_url|mor_core_protected_url }}"{% endif %}
         class="list-item"
         {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}
             data-controller="taak modal"
@@ -58,7 +58,7 @@
                     <div class="container__image" data-controller="incidentlistItem">
                         {% if bijlagen %}
                         {% with bijlagen|first as first_foto %}
-                        <div class="background-image" data-src="{{ first_foto.afbeelding_verkleind_relative_url|mor_core_url }}">
+                        <div class="background-image" data-src="{{ first_foto.afbeelding_verkleind_relative_url|mor_core_protected_url }}">
                             <img />
                         </div>
                         {% endwith %}

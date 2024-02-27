@@ -36,6 +36,7 @@ from django.contrib.auth.decorators import (
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.core import signing
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
@@ -48,6 +49,7 @@ from django.urls import reverse
 from django.views.generic import View
 from rest_framework.reverse import reverse as drf_reverse
 
+SIGNED_DATA_MAX_AGE_SECONDS = 120
 logger = logging.getLogger(__name__)
 
 
@@ -269,8 +271,7 @@ def kaart_modus(request):
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
-    melding = taak.get_melding_alias().response_json
-    tijdlijn_data = melding_naar_tijdlijn(melding)
+    tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
     return render(
@@ -279,9 +280,34 @@ def taak_detail(request, id):
         {
             "id": id,
             "taak": taak,
-            "melding": melding,
             "tijdlijn_data": tijdlijn_data,
             "device_os": device.os_name().lower(),
+            "signed_data": signing.dumps(request.user.email),
+        },
+    )
+
+
+def taak_detail_preview(request, id, signed_data):
+    gebruiker_email = None
+    try:
+        gebruiker_email = signing.loads(
+            signed_data, max_age=SIGNED_DATA_MAX_AGE_SECONDS
+        )
+    except signing.BadSignature:
+        ...
+
+    taak = get_object_or_404(Taak, pk=id)
+    ua = request.META.get("HTTP_USER_AGENT")
+    device = DeviceDetector(ua).parse()
+    return render(
+        request,
+        "taken/taak_detail_preview.html",
+        {
+            "id": id,
+            "taak": taak,
+            "device_os": device.os_name().lower(),
+            "signed_data": signed_data,
+            "gebruiker_email": gebruiker_email,
         },
     )
 
@@ -497,8 +523,7 @@ def config(request):
     )
 
 
-def meldingen_bestand(request):
-    modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
+def _meldingen_bestand(request, modified_path):
     url = f"{settings.MELDINGEN_URL}{modified_path}"
     headers = {"Authorization": f"Token {MeldingenService().haal_token()}"}
     response = requests.get(url, stream=True, headers=headers)
@@ -508,6 +533,26 @@ def meldingen_bestand(request):
         status=response.status_code,
         reason=response.reason,
     )
+
+
+def meldingen_bestand(request):
+    modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
+    if request.GET.get("signed-data"):
+        try:
+            signing.loads(
+                request.GET.get("signed-data"), max_age=SIGNED_DATA_MAX_AGE_SECONDS
+            )
+            return _meldingen_bestand(request, modified_path)
+        except signing.BadSignature:
+            ...
+    return meldingen_bestand_protected(request)
+
+
+@login_required
+@permission_required("authorisatie.taak_bekijken", raise_exception=True)
+def meldingen_bestand_protected(request):
+    modified_path = request.path.replace(settings.MOR_CORE_PROTECTED_URL_PREFIX, "")
+    return _meldingen_bestand(request, modified_path)
 
 
 class HomepageView(PermissionRequiredMixin, View):

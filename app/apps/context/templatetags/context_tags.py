@@ -9,7 +9,9 @@ def context_template(context, template_name):
     gebruiker = context.get("request").user
     context_instance = (
         gebruiker.profiel.context
-        if gebruiker and gebruiker.profiel and gebruiker.profiel.context
+        if gebruiker
+        and hasattr(gebruiker, "profiel")
+        and hasattr(gebruiker.profiel, "context")
         else None
     )
     default_template = f"standaard/{template_name}"

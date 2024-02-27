@@ -6,9 +6,10 @@ from apps.release_notes.forms import (
 from apps.release_notes.tasks import task_aanmaken_afbeelding_versies
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import BooleanField, Case, Q, When
+from django.db.models import BooleanField, Case, Exists, OuterRef, Q, Value, When
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -63,21 +64,32 @@ class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):
     context_object_name = "release_notes"
     # form_class = ReleaseNoteSearchForm
 
-    # Get release notes published within 5 weeks and not in future
     def get_queryset(self):
+        five_weeks_ago = timezone.now() - timezone.timedelta(weeks=5)
         queryset = (
-            super().get_queryset().order_by("-publicatie_datum", "-aangemaakt_op")
-        )
-        queryset = queryset.annotate(
-            is_unwatched=Case(
-                When(bekeken_door_gebruikers=self.request.user, then=False),
-                default=True,
-                output_field=BooleanField(),
+            super()
+            .get_queryset()
+            .annotate(
+                is_unwatched=Case(
+                    When(
+                        Exists(
+                            ReleaseNote.bekeken_door_gebruikers.through.objects.filter(
+                                releasenote_id=OuterRef("pk"),
+                                gebruiker_id=self.request.user.id,
+                            )
+                        ),
+                        then=Value(False),
+                    ),
+                    default=Value(True),
+                    output_field=BooleanField(),
+                )
             )
-        ).distinct()
-        queryset = [
-            release_note for release_note in queryset if release_note.is_published()
-        ]
+            .filter(
+                publicatie_datum__lte=timezone.now(),
+                publicatie_datum__gte=five_weeks_ago,
+            )
+            .order_by("-publicatie_datum", "-aangemaakt_op")
+        )
 
         return queryset
 
