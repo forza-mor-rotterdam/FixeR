@@ -63,9 +63,10 @@ class GebruikerBulkImportForm(forms.Form):
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "accept": ".csv",
                 "required_css_class": "required",
+                "button_text": "CSV bestand",
             }
         ),
-        label="CSV Bestand",
+        label="CSV upload",
     )
     context = forms.ModelChoiceField(
         widget=forms.Select(attrs={"class": "form-control"}),
@@ -86,11 +87,18 @@ class GebruikerBulkImportForm(forms.Form):
         csv_file = self.cleaned_data["csv_file"]
         csv_fo = StringIO(csv_file.read().decode("utf-8"))
         spamreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
+        valid_checked_rows_email = []
         for row in spamreader:
             default_row = [row[r] if r < len(row) else None for r in range(0, 4)]
-            row_is_not_valid = self.validate_row(default_row)
+            errors = []
+            if default_row[0] in valid_checked_rows_email:
+                errors.append(
+                    "Er is al een gebruiker met dit e-mailadres in deze lijst aanwezig"
+                )
+            row_is_not_valid = self.validate_row(default_row, errors)
             if not row_is_not_valid:
                 valid_rows.append(default_row)
+                valid_checked_rows_email.append(default_row[0])
             default_row.append(row_is_not_valid)
             all_rows.append(default_row)
         return {
@@ -98,8 +106,7 @@ class GebruikerBulkImportForm(forms.Form):
             "valid_rows": valid_rows,
         }
 
-    def validate_row(self, row):
-        errors = []
+    def validate_row(self, row, errors=[]):
         email = row[0]
         first_name = row[1]
         last_name = row[2]
