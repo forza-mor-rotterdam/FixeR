@@ -9,6 +9,7 @@
         {% with previous_row_data=tijdlijn_data|previous:forloop.counter0 %}
             {% with next_row_data=tijdlijn_data|next:forloop.counter0 %}
                 <li data-controller="datetime">
+                {{ row_data }}
                     <details class="timeline">
                         {% if not melding.afgesloten_op or not forloop.first %}
                             {% for cel in next_row_data.row %}
@@ -58,6 +59,8 @@
                                     {% endwith %}
                                 {% elif row_data.mg.locatie %}
                                     Locatie aangepast
+                                {% elif row_data.mg.gebeurtenis_type == "status_wijziging" %}
+                                        Status {{ row_data.mg.status.naam|vertaal|lower }}
                                 {% else %}
                                     {% if row_data.mg.status.naam == 'afgehandeld' %}
                                         {{ row_data.mg.status.naam|vertaal }}
