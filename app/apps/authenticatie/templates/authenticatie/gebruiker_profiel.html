@@ -5,6 +5,17 @@
 {% block title %}FixeR{% endblock %}
 {% block body %}
     <turbo-frame id="gebruiker_profiel">
+    {% block messages %}
+    {% if messages %}
+        <div class="messages-container" data-controller="messages">
+            <div class="wrapper">
+                <ul class="messages">
+                    {% for message in messages %}<li class="message message-{{ message.tags }}">{{ message }}</li>{% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+    {% endblock messages %}
     <div class="page__beheer">
         <h1>
             <svg width="26"
@@ -49,7 +60,7 @@
                     {% if object.profiel.context %}
                         <div class="padding-bottom">
                             <h2 class="h5">Rol</h2>
-                            <p class="text-no-margin-top">{{ object.profiel.context }}</p>
+                            <p class="no-margin-top">{{ object.profiel.context }}</p>
                         </div>
                     {% endif %}
                     {% if email_beheer %}
@@ -82,15 +93,5 @@
             <div class="grid-item"></div>
         </div>
     </div>
-    {% block messages %}
-        {% if messages %}
-            <div class="messages-container" data-controller="messages">
-                <div class="wrapper">
-                    <ul class="messages">
-                        {% for message in messages %}<li class="message message-{{ message.tags }}">{{ message }}</li>{% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-        {% endblock messages %}
-        </turbo-frame>
-    {% endblock body %}
+</turbo-frame>
+{% endblock body %}
