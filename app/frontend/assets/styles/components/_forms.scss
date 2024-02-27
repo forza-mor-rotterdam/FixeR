@@ -74,12 +74,21 @@ fieldset {
     border-color: $hover-border-color;
     box-shadow: 0 0 0 1px $hover-border-color;
   }
+  &:hover:not(:focus):not([readonly]) {
+    border-color: $hover-border-color;
+    box-shadow: 0 0 0 1px $hover-border-color;
+  }
   &:focus {
     border-color: $focus-border-color;
     box-shadow: 0 0 0 1px $focus-border-color;
   }
   &:disabled {
     color: $text-muted;
+  }
+  &:read-only {
+    color: $text-muted;
+    cursor: pointer;
+
   }
   &.search {
     padding-left: 40px;
@@ -210,7 +219,19 @@ textarea {
         color: $gray-tint08;
         }
     }
+    &:read-only {
+        background-color: $gray-tint01;
+        opacity: 1;
+        ~ .form-check-label {
+        color: $gray-tint08;
+        }
+    }
     &:disabled:checked {
+        background-color: $gray-tint08;
+        border-color: $gray-tint08;
+        opacity: 1;
+    }
+    &:read-only:checked {
         background-color: $gray-tint08;
         border-color: $gray-tint08;
         opacity: 1;
