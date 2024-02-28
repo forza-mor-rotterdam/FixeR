@@ -67,9 +67,14 @@
         }
     }
 
-    ul.list--images li img {
-        max-width: map-get($container-max-widths , lg );
-        width: 100%;
+    ul.list--images {
+        margin: 0 -16px;
+        li {
+            img {
+                max-width: map-get($container-max-widths , lg );
+                width: 100%;
+            }
+        }
     }
 
     table tbody {
