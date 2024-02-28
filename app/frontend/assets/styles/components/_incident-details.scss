@@ -9,7 +9,7 @@
             width: 24px;
             height: 24px;
             vertical-align: middle;
-            margin-right: 10px;
+            margin-left: 10px;
             path{
                 fill: $green-tint01;
             }
@@ -298,5 +298,28 @@
                 }
             }
         }
+    }
+}
+
+.taak-detail--preview {
+    section {
+        padding: 1rem 0;
+        .container__details.taak {
+            padding: 0 26px;
+        }
+        h2 {
+            border-bottom: 1px solid $gray-tint04;
+            padding-bottom: 1rem;
+        }
+    }
+}
+
+.link--whatsapp {
+    vertical-align: middle;
+    display: inline-block;
+    margin-left: 20px;
+    margin-right: -10px;
+    .icon--whatsapp {
+        width: 40px;
     }
 }
