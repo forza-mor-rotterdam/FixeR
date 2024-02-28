@@ -13,6 +13,7 @@
         data-id="{{ taak.id }}"
         data-uuid="{{ taak.uuid }}"
         data-melding-id="{{ taak.melding.response_json.id }}"
+        data-melding-uuid="{{ taak.melding.response_json.uuid }}"
         data-titel="{{ taak.titel }}"
         data-adres="{{ taak.adres }}"
         data-geometrie="{% if taak.melding.response_json.locaties_voor_melding.0.geometrie %}{{ taak.melding.response_json.locaties_voor_melding.0.geometrie|json_encode }}{% else %}{% endif %}"

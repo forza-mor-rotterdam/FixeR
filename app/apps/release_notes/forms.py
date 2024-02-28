@@ -37,6 +37,7 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
     publicatie_datum = forms.DateTimeField(
         label="Publicatie datum",
         required=True,
+        help_text="Release notes worden vanaf de publicatie datum 5 weken lang getoond.",
     )
 
     bijlagen = forms.FileField(

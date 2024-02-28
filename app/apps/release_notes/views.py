@@ -40,7 +40,7 @@ class ReleaseNoteListView(PermissionRequiredMixin, ReleaseNoteView, ListView):
             queryset = queryset.filter(
                 Q(titel__icontains=search) | Q(tekst__icontains=search)
             )
-        queryset = queryset.order_by("-aangemaakt_op")
+        queryset = queryset.order_by("-publicatie_datum", "-aangemaakt_op")
 
         return queryset
 
@@ -52,7 +52,7 @@ class ReleaseNoteDetailView(LoginRequiredMixin, ReleaseNoteView, DetailView):
     def get(self, request, *args, **kwargs):
         release_note = get_object_or_404(ReleaseNote, pk=kwargs["pk"])
         release_note.bekeken_door_gebruikers.add(request.user)
-        origine = request.session.pop("origine", "home")
+        origine = request.session.pop("origine", "release_note_lijst_public")
         context = {"release_note": release_note, "origine": origine}
         return render(request, self.template_name, context)
 
