@@ -29,7 +29,8 @@
                       method="post"
                       novalidate
                       id="releaseNoteForm"
-                      enctype="multipart/form-data">
+                      enctype="multipart/form-data"
+                      data-turbo-frame="_top">
                     {% csrf_token %}
                     {{ form.management_form }}
                     {{ form.media }}
