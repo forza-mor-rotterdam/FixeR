@@ -54,9 +54,6 @@
              {% if not DEBUG %}data-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
              {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
             <div class="taak-detail">
-            <section class="padding-bottom-2x">
-        <a href="{% url 'taak_detail_preview' taak.id signed_data %}" data-turbo-action="replace">Taak preview</a>
-    </section>
                 <div class="container__header-taaknavigatie">
                     {% if TEMPLATE_BASIS != "benc" %}
 
@@ -95,6 +92,7 @@
                             </span>
                         </div>
                         <div class="textalign--right">
+                        {% if TEMPLATE_BASIS != "benc" %}
                             {% if device_os == "ios" %}
                                 <small>
                                     <a class="link"
@@ -110,6 +108,7 @@
                                    target="_top"
                                    aria-label="Navigeer naar taak">Navigeren{% include "icons/navigate.svg" %}</a>
                             {% endif %}
+                        {% endif %}
                             {% if perms.authorisatie.taak_delen %}
                             {% if signed_data %}
                             <a class="link--whatsapp" href="https://web.whatsapp.com/send?text={{ ABSOLUTE_ROOT }}{% url 'taak_detail_preview' taak.id signed_data %}" data-action="share/whatsapp/share" target="_blank" >
@@ -185,7 +184,7 @@
                         {% endif %}
                     </div>
                 </section>
-                <section data-testid="detailTaak">
+                <section data-testid="detailTaak" class="padding-bottom">
                     <div class="container__details taak">
                         <details>
                             <summary>
@@ -430,6 +429,9 @@
                         </details>
                     </div>
                 </section>
+                <section class="padding-bottom-2x">
+                    <a href="{% url 'taak_detail_preview' taak.id signed_data %}" data-turbo-action="replace">Taak preview</a>
+                </section>
                 {% context_template "taak_afhandelen_subtitel.html" as subtitel_template %}
                 <section class="section--seperated section--seperated__no-border-bottom"
                          data-testid="detailActions">
@@ -466,11 +468,10 @@
                             {% endif %}
                         {% endif %}
                     </div>
-                </div>
-            {% endif %}
-        </div>
-    </section>
-
+                </section>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endwith %}
 {% endwith %}

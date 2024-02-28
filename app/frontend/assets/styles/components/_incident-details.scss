@@ -3,7 +3,7 @@
     max-width: map-get($container-max-widths , md );
     margin: 0 auto;
 
-    .link {
+    .link:not(.link--phone) {
 
         svg {
             width: 24px;
@@ -310,6 +310,12 @@
         h2 {
             border-bottom: 1px solid $gray-tint04;
             padding-bottom: 1rem;
+        }
+    }
+
+    .link--phone {
+        svg {
+            top: 0;
         }
     }
 }

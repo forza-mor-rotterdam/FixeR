@@ -76,6 +76,7 @@
                                       data-longitude="{{ geometrie.coordinates.0|replace_comma_by_dot }}"></span> meter afstand
                             </span>
                         </div>
+                        {% if TEMPLATE_BASIS != "benc" %}
                         <div class="textalign--right">
                             {% if device_os == "ios" %}
                                 <small>
@@ -100,6 +101,7 @@
                                 </a>
                             {% endif %}
                         </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% get_bijlagen melding as bijlagen %}
@@ -338,9 +340,12 @@
                 </section>
                 <section class="padding-bottom-2x">
                     <p>Deze link is gedeeld door <a href="mailto:{{ gebruiker_email }}">{{ gebruiker_email }}</a></p>
-                    {% comment %} TOON TELEFOONNUMMER {% endcomment %}
 
-                    <a href="{% url 'taak_detail' taak.id %}" data-turbo-action="replace">Naar orginele taak</a>
+                    {% include "incident/part_gebruiker_telefoon.html" with gebruiker=gebruiker_email|get_gebruiker_object_middels_email %}
+
+                    <p>
+                        <a href="{% url 'taak_detail' taak.id %}" data-turbo-action="replace">Naar orginele taak</a>
+                    </p>
 
                 </section>
             </div>
