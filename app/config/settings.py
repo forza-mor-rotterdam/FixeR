@@ -504,4 +504,5 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
 
+SIGNED_DATA_MAX_AGE_SECONDS = os.getenv("SIGNED_DATA_MAX_AGE_SECONDS", 259200)  # 3 days
 WHATSAPP_URL = os.getenv("WHATSAPP_URL", "https://web.whatsapp.com/")

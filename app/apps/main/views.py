@@ -49,7 +49,6 @@ from django.urls import reverse
 from django.views.generic import View
 from rest_framework.reverse import reverse as drf_reverse
 
-SIGNED_DATA_MAX_AGE_SECONDS = 120
 logger = logging.getLogger(__name__)
 
 
@@ -294,7 +293,7 @@ def taak_detail_preview(request, id, signed_data):
     gebruiker_email = None
     try:
         gebruiker_email = signing.loads(
-            signed_data, max_age=SIGNED_DATA_MAX_AGE_SECONDS
+            signed_data, max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS
         )
     except signing.BadSignature:
         ...
@@ -543,7 +542,8 @@ def meldingen_bestand(request):
     if request.GET.get("signed-data"):
         try:
             signing.loads(
-                request.GET.get("signed-data"), max_age=SIGNED_DATA_MAX_AGE_SECONDS
+                request.GET.get("signed-data"),
+                max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS,
             )
             return _meldingen_bestand(request, modified_path)
         except signing.BadSignature:
