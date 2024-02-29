@@ -504,4 +504,4 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
 
-WHATSAPP_URL = os.getenv("WHATSAPP_URL", "https://web.whatsapp.com")
+WHATSAPP_URL = os.getenv("WHATSAPP_URL", "https://api.whatsapp.com")
