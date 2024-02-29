@@ -456,10 +456,6 @@
                                         </details>
                                     </div>
                                 </section>
-                                <section class="padding-bottom-2x">
-                                    <a href="{% url 'taak_detail_preview' taak.id signed_data %}"
-                                       data-turbo-action="replace">Taak preview</a>
-                                </section>
                                 {% context_template "taak_afhandelen_subtitel.html" as subtitel_template %}
                                 <section class="section--seperated section--seperated__no-border-bottom"
                                          data-testid="detailActions">
