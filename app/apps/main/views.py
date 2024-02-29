@@ -274,6 +274,8 @@ def taak_detail(request, id):
     tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
+    whatsapp_url = "whatsapp://" if device.is_mobile() else settings.WHATSAPP_URL
+
     return render(
         request,
         "taken/taak_detail.html",
@@ -283,6 +285,7 @@ def taak_detail(request, id):
             "tijdlijn_data": tijdlijn_data,
             "device_os": device.os_name().lower(),
             "signed_data": signing.dumps(request.user.email),
+            "whatsapp_url": whatsapp_url,
         },
     )
 

@@ -58,5 +58,4 @@ def general_settings(context):
         "GIT_SHA": settings.GIT_SHA,
         "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
         "UNWATCHED_COUNT": unwatched_count,
-        "WHATSAPP_URL": settings.WHATSAPP_URL,
     }
