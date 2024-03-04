@@ -98,9 +98,9 @@ class GebruikerBulkImportForm(forms.Form):
         valid_rows = []
         csv_fo = StringIO(str_data)
 
-        spamreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
+        csvreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
         valid_checked_rows_email = []
-        for row in spamreader:
+        for row in csvreader:
             if len(row) and not row[0]:
                 continue
             default_row = [row[r] if r < len(row) else None for r in range(0, 4)]
