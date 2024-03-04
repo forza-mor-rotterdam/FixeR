@@ -1,7 +1,9 @@
+from apps.aliassen.views import MeldingNotificatieAPIView
 from apps.authenticatie.views import (
     GebruikerAanmakenView,
     GebruikerAanpassenView,
     GebruikerLijstView,
+    GebruikerProfielView,
     gebruiker_bulk_import,
 )
 from apps.authorisatie.views import (
@@ -27,10 +29,12 @@ from apps.main.views import (
     informatie,
     kaart_modus,
     meldingen_bestand,
+    meldingen_bestand_protected,
     onderwerp,
     root,
     sorteer_filter,
     taak_detail,
+    taak_detail_preview,
     taak_toewijzen,
     taak_toewijzing_intrekken,
     taken,
@@ -79,6 +83,11 @@ urlpatterns = [
     ),
     path("informatie/", informatie, name="informatie"),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
+    path(
+        "api/v1/melding/",
+        MeldingNotificatieAPIView.as_view(),
+        name="melding_notificatie",
+    ),
     path("api-token-auth/", views.obtain_auth_token),
     path(
         "admin/clear-melding-token-from-cache/",
@@ -108,11 +117,22 @@ urlpatterns = [
     path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
+    path(
+        "taak/<int:id>/<str:signed_data>/",
+        taak_detail_preview,
+        name="taak_detail_preview",
+    ),
     path("taak-toewijzen/<int:id>/", taak_toewijzen, name="taak_toewijzen"),
     path(
         "taak-toewijzing-intrekken/<int:id>/",
         taak_toewijzing_intrekken,
         name="taak_toewijzing_intrekken",
+    ),
+    # Gebruikers
+    path(
+        "gebruiker/profiel/",
+        GebruikerProfielView.as_view(),
+        name="gebruiker_profiel",
     ),
     # END taken
     # START partials
@@ -234,6 +254,11 @@ urlpatterns = [
         name="redoc",
     ),
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
+    re_path(
+        r"core-protected/media/",
+        meldingen_bestand_protected,
+        name="meldingen_bestand_protected",
+    ),
 ]
 
 if settings.OIDC_ENABLED:

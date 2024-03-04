@@ -6,7 +6,7 @@ from apps.release_notes.forms import (
 from apps.release_notes.tasks import task_aanmaken_afbeelding_versies
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
+from django.db.models import BooleanField, Case, Exists, OuterRef, Q, Value, When
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -40,7 +40,7 @@ class ReleaseNoteListView(PermissionRequiredMixin, ReleaseNoteView, ListView):
             queryset = queryset.filter(
                 Q(titel__icontains=search) | Q(tekst__icontains=search)
             )
-        queryset = queryset.order_by("-aangemaakt_op")
+        queryset = queryset.order_by("-publicatie_datum", "-aangemaakt_op")
 
         return queryset
 
@@ -51,7 +51,8 @@ class ReleaseNoteDetailView(LoginRequiredMixin, ReleaseNoteView, DetailView):
 
     def get(self, request, *args, **kwargs):
         release_note = get_object_or_404(ReleaseNote, pk=kwargs["pk"])
-        origine = request.session.pop("origine", "home")
+        release_note.bekeken_door_gebruikers.add(request.user)
+        origine = request.session.pop("origine", "release_note_lijst_public")
         context = {"release_note": release_note, "origine": origine}
         return render(request, self.template_name, context)
 
@@ -64,12 +65,31 @@ class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):
     # form_class = ReleaseNoteSearchForm
 
     def get_queryset(self):
-        queryset = super().get_queryset()
         five_weeks_ago = timezone.now() - timezone.timedelta(weeks=5)
-
-        queryset = queryset.filter(
-            publicatie_datum__isnull=False, publicatie_datum__gte=five_weeks_ago
-        ).order_by("-publicatie_datum", "-aangemaakt_op")
+        queryset = (
+            super()
+            .get_queryset()
+            .annotate(
+                is_unwatched=Case(
+                    When(
+                        Exists(
+                            ReleaseNote.bekeken_door_gebruikers.through.objects.filter(
+                                releasenote_id=OuterRef("pk"),
+                                gebruiker_id=self.request.user.id,
+                            )
+                        ),
+                        then=Value(False),
+                    ),
+                    default=Value(True),
+                    output_field=BooleanField(),
+                )
+            )
+            .filter(
+                publicatie_datum__lte=timezone.now(),
+                publicatie_datum__gte=five_weeks_ago,
+            )
+            .order_by("-publicatie_datum", "-aangemaakt_op")
+        )
 
         return queryset
 
@@ -98,7 +118,6 @@ class ReleaseNoteAanmakenView(PermissionRequiredMixin, ReleaseNoteView, CreateVi
                 is_afbeelding=False,
             )
             bijlage.save()
-            print(f"--- Bijlage: {bijlage} ---")
 
             task_aanmaken_afbeelding_versies.delay(bijlage.pk)
         return response
@@ -136,7 +155,6 @@ class ReleaseNoteAanpassenView(PermissionRequiredMixin, ReleaseNoteView, UpdateV
             self.object = form.save()
             formset.instance = self.object
             for bijlage_form in formset.forms:
-                print(f"Bijlage form cleaned data: {bijlage_form.cleaned_data}")
                 if bijlage_form.is_valid():
                     bijlage = bijlage_form.save(commit=False)
                     bijlage.content_object = self.object

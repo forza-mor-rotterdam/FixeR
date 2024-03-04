@@ -1,6 +1,7 @@
 import csv
 from io import StringIO
 
+import chardet
 from apps.authenticatie.models import Profiel
 from apps.context.models import Context
 from django import forms
@@ -63,9 +64,10 @@ class GebruikerBulkImportForm(forms.Form):
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "accept": ".csv",
                 "required_css_class": "required",
+                "button_text": "CSV bestand",
             }
         ),
-        label="CSV Bestand",
+        label="CSV upload",
     )
     context = forms.ModelChoiceField(
         widget=forms.Select(attrs={"class": "form-control"}),
@@ -81,16 +83,36 @@ class GebruikerBulkImportForm(forms.Form):
     )
 
     def clean_csv_file(self):
+        csv_file = self.cleaned_data["csv_file"]
+        file_read = csv_file.read()
+
+        encoding = "utf-8"
+        auto_detect_encoding = chardet.detect(file_read)
+        if auto_detect_encoding.get("confidence") > 0.5:
+            encoding = auto_detect_encoding.get("encoding")
+
+        return self._get_rows(file_read.decode(encoding, "ignore"))
+
+    def _get_rows(self, str_data):
         all_rows = []
         valid_rows = []
-        csv_file = self.cleaned_data["csv_file"]
-        csv_fo = StringIO(csv_file.read().decode("utf-8"))
-        spamreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
-        for row in spamreader:
+        csv_fo = StringIO(str_data)
+
+        csvreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
+        valid_checked_rows_email = []
+        for row in csvreader:
+            if len(row) and not row[0]:
+                continue
             default_row = [row[r] if r < len(row) else None for r in range(0, 4)]
-            row_is_not_valid = self.validate_row(default_row)
+            errors = []
+            if default_row[0] in valid_checked_rows_email:
+                errors.append(
+                    "Er is al een gebruiker met dit e-mailadres in deze lijst aanwezig"
+                )
+            row_is_not_valid = self.validate_row(default_row, errors)
             if not row_is_not_valid:
                 valid_rows.append(default_row)
+                valid_checked_rows_email.append(default_row[0])
             default_row.append(row_is_not_valid)
             all_rows.append(default_row)
         return {
@@ -98,8 +120,7 @@ class GebruikerBulkImportForm(forms.Form):
             "valid_rows": valid_rows,
         }
 
-    def validate_row(self, row):
-        errors = []
+    def validate_row(self, row, errors=[]):
         email = row[0]
         first_name = row[1]
         last_name = row[2]
@@ -139,3 +160,27 @@ class GebruikerBulkImportForm(forms.Form):
             )
             gebruiker.save()
         return aangemaakte_gebruikers
+
+
+class GebruikerProfielForm(forms.ModelForm):
+    telefoonnummer = forms.CharField(
+        label="Telefoonnummer",
+        required=False,
+        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+    )
+
+    first_name = forms.CharField(
+        label="Voornaam",
+        required=False,
+        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+    )
+
+    last_name = forms.CharField(
+        label="Achternaam",
+        required=False,
+        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+    )
+
+    class Meta:
+        model = Gebruiker
+        fields = ("telefoonnummer", "first_name", "last_name")

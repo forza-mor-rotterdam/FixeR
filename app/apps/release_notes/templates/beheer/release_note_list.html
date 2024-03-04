@@ -57,18 +57,20 @@
                 {% for release_note in release_notes %}
                     <tr data-row-search-target="row">
                         <td data-row-search-target="searchable">{{ release_note.titel }}</td>
-                        <td data-row-search-target="searchable">{{ release_note.beschrijving|striptags|safe|truncate_text:200 }}</td>
+                        {% autoescape off %}
+                            <td data-row-search-target="searchable">{{ release_note.beschrijving|striptags|safe|truncate_text:200 }}</td>
+                        {% endautoescape %}
                         <td data-row-search-target="searchable">{{ release_note.aangemaakt_op }}</td>
                         <td data-row-search-target="searchable">{{ release_note.publicatie_datum }}</td>
                         <td>
-                            <a href="{% url 'release_note_aanpassen' release_note.pk %}" aria-label="Aanpassen">
-                                {% include "icons/edit.svg" %}
-                            </a>
+                            <a href="{% url 'release_note_aanpassen' release_note.pk %}"
+                               aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
                         </td>
                         <td>
-                            <a href="{% url 'release_note_verwijderen' release_note.pk %}" onclick="return confirm('Weet je zeker dat je deze release note wil verwijderen?')" aria-label="Verwijderen">
-                                {% include "icons/bin.svg" %}
-                            </a>
+                            <a href="{% url 'release_note_verwijderen' release_note.pk %}"
+                               data-turbo-frame="_top"
+                               onclick="return confirm('Weet je zeker dat je deze release note wil verwijderen?')"
+                               aria-label="Verwijderen">{% include "icons/bin.svg" %}</a>
                         </td>
                     </tr>
                 {% endfor %}

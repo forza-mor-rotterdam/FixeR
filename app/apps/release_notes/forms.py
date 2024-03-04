@@ -31,11 +31,13 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
         max_length=1000,
     )
 
-    versie = forms.CharField(label="Versie", widget=forms.TextInput(), required=False)
+    # Currently not used
+    # versie = forms.CharField(label="Versie", widget=forms.TextInput(), required=False)
 
     publicatie_datum = forms.DateTimeField(
         label="Publicatie datum",
-        required=False,
+        required=True,
+        help_text="Release notes worden vanaf de publicatie datum 5 weken lang getoond.",
     )
 
     bijlagen = forms.FileField(
@@ -59,7 +61,7 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
         fields = [
             "titel",
             "beschrijving",
-            "versie",
+            # "versie",
             "publicatie_datum",
         ]
 

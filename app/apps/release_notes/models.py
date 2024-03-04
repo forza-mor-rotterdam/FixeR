@@ -3,10 +3,12 @@ import mimetypes
 import os
 from os.path import exists
 
+from apps.authenticatie.forms import Gebruiker
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
+from django.utils import timezone
 from PIL import Image, UnidentifiedImageError
 from pillow_heif import register_heif_opener
 from sorl.thumbnail import get_thumbnail
@@ -110,9 +112,38 @@ class Bijlage(BasisModel):
 class ReleaseNote(BasisModel):
     titel = models.CharField(max_length=255)
     beschrijving = models.TextField(blank=True, max_length=1000)
-    publicatie_datum = models.DateTimeField(null=True, blank=True)
+    publicatie_datum = models.DateTimeField(null=False, blank=False)
     bijlagen = GenericRelation(Bijlage)
     versie = models.CharField(max_length=20, blank=True, null=True)
+    bekeken_door_gebruikers = models.ManyToManyField(
+        Gebruiker, blank=True, related_name="bekeken_release_notes"
+    )
+
+    def is_published(self):
+        """
+        Check if the release note is valid, i.e., not in the future and not older than five weeks.
+        """
+        five_weeks_ago = timezone.now() - timezone.timedelta(weeks=5)
+        return not (
+            self.publicatie_datum > timezone.now()
+            or self.publicatie_datum < five_weeks_ago
+        )
+
+    def is_unwatched_by_user(self, user):
+        """
+        Check if the release note is unwatched by the user and meets the specified conditions.
+        """
+        return not self.bekeken_door_gebruikers.filter(pk=user.pk).exists()
+
+    @staticmethod
+    def count_unwatched(user):
+        """
+        Count the number of unwatched release notes for the user.
+        """
+        return sum(
+            release_note.is_published() and release_note.is_unwatched_by_user(user)
+            for release_note in ReleaseNote.objects.all()
+        )
 
     def __str__(self):
         formatted_date = self.aangemaakt_op.strftime("%d-%m-%Y %H:%M:%S")

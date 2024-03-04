@@ -54,5 +54,14 @@ def adres_order_nummer(taak, taken_sorted):
 
 
 @register.filter
-def mor_core_url(initial_url):
-    return f"{settings.MOR_CORE_URL_PREFIX}{initial_url}"
+def mor_core_url(initial_url, signed_data=None):
+    return (
+        f"{settings.MOR_CORE_URL_PREFIX}{initial_url}?signed-data={signed_data}"
+        if signed_data
+        else f"{settings.MOR_CORE_URL_PREFIX}{initial_url}"
+    )
+
+
+@register.filter
+def mor_core_protected_url(initial_url):
+    return f"{settings.MOR_CORE_PROTECTED_URL_PREFIX}{initial_url}"

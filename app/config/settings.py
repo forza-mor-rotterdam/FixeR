@@ -194,6 +194,7 @@ ALLOW_UNAUTHORIZED_MEDIA_ACCESS = (
     os.getenv("ALLOW_UNAUTHORIZED_MEDIA_ACCESS", False) in TRUE_VALUES
 )
 MOR_CORE_URL_PREFIX = "/core"
+MOR_CORE_PROTECTED_URL_PREFIX = "/core-protected"
 
 WEBPACK_LOADER = {
     "DEFAULT": {
@@ -201,9 +202,11 @@ WEBPACK_LOADER = {
         "POLL_INTERVAL": 0.1,
         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
         "LOADER_CLASS": "webpack_loader.loader.WebpackLoader",
-        "STATS_FILE": "/static/webpack-stats.json"
-        if not DEBUG
-        else "/app/frontend/public/build/webpack-stats.json",
+        "STATS_FILE": (
+            "/static/webpack-stats.json"
+            if not DEBUG
+            else "/app/frontend/public/build/webpack-stats.json"
+        ),
     }
 }
 
@@ -498,3 +501,8 @@ CKEDITOR_CONFIGS = {
 }
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
+
+EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
+
+SIGNED_DATA_MAX_AGE_SECONDS = os.getenv("SIGNED_DATA_MAX_AGE_SECONDS", 259200)  # 3 days
+WHATSAPP_URL = os.getenv("WHATSAPP_URL", "https://web.whatsapp.com/")

@@ -222,6 +222,12 @@ a,
             }
         }
     }
+    &.no--link {
+        text-decoration: none;
+        color: inherit;
+        outline: none !important;
+        display: inline-block;
+    }
 
     &.link--file {
         @include has-icon();
@@ -472,7 +478,7 @@ h1 + .section--seperated {
 }
 
 .padding-bottom-2x {
-    padding-bottom: 2rem;
+    padding-bottom: 2rem !important;
 }
 
 .textalign--right {

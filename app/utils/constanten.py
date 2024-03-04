@@ -13,9 +13,11 @@ VERTALINGEN = {
     "openstaand": "Openstaand",
     "controle": "Controle",
     "afgehandeld": "Afgehandeld",
+    "geannuleerd": "Geannuleerd",
     "nieuw": "Nieuw",
     "bezig": "Bezig",
     "voltooid": "Voltooid",
+    "toegewezen": "Toegewezen",
     "adres": "Ter hoogte van",
     "lichtmast": "Lichtmast",
     "graf": "Graf",
@@ -33,10 +35,12 @@ VERTALINGEN = {
     "naam_overledene": "Naam overledene",
     "telefoon_melder": "Telefoonnummer",
     "terugkoppeling_gewenst": "Is terugkoppeling gewenst?",
-    "wachten_melder": "Wachten op melder",
-    "pauze": "Gepauzeerd",
+    "wachten_melder": "Wachten melder",
+    "pauze": "Pauze",
     "standaard": "Opmerking/foto toegevoegd",
-    "signaal_toegevoegd": "Melding samengevoegd",
+    "signaal_toegevoegd": "Samengevoegd",
+    "urgentie_aangepast": "Spoed aangepast",
+    "melding_heropend": "Heropend",
 }
 
 MSB_WIJKEN = [

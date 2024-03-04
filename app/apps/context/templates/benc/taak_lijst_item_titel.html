@@ -1,11 +1,11 @@
 {% load to_date vind_in_dict from main_tags %}
 {% load l10n %}
 <div>
-    {% with grafnummer=taak.melding_data.locaties_voor_melding.0.grafnummer vak=taak.melding_data.locaties_voor_melding.0.vak plaats=taak.melding_data.locaties_voor_melding.0.begraafplaats %}
+    {% with grafnummer=taak.melding.response_json.locaties_voor_melding.0.grafnummer vak=taak.melding.response_json.locaties_voor_melding.0.vak plaats=taak.melding.response_json.locaties_voor_melding.0.begraafplaats %}
         <h2 class="h4">
-            {% vind_in_dict taak.melding_data.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
-            {% if signaal_begraafplaats_naam == taak.melding_data.locaties_voor_melding.0.begraafplaats %}
-                {% vind_in_dict taak.melding_data.meta_uitgebreid.begraafplaats.choices plaats %},
+            {% vind_in_dict taak.melding.response_json.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
+            {% if signaal_begraafplaats_naam == taak.melding.response_json.locaties_voor_melding.0.begraafplaats %}
+                {% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %},
             {% else %}
                 {{ signaal_begraafplaats_naam }},
             {% endif %}

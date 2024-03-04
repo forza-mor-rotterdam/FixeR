@@ -1,5 +1,5 @@
 import logging
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
 
 import requests
 from django.conf import settings
@@ -73,18 +73,32 @@ class MeldingenService:
         headers = {"Authorization": f"Token {self.haal_token()}"}
         return headers
 
-    def do_request(self, url, method="get", data={}, raw_response=True):
+    def do_request(
+        self, url, method="get", data={}, params={}, raw_response=True, cache_timeout=0
+    ) -> Response | dict:
         action: Request = getattr(requests, method)
+        url = self.get_url(url)
         action_params: dict = {
-            "url": self.get_url(url),
+            "url": url,
             "headers": self.get_headers(),
             "json": data,
+            "params": params,
             "timeout": self._timeout,
         }
-        response: Response = action(**action_params)
+
+        if cache_timeout and method == "get":
+            cache_key = f"{url}?{urlencode(params)}"
+            response = cache.get(cache_key)
+            if not response:
+                response: Response = action(**action_params)
+                if int(response.status_code) == 200:
+                    cache.set(cache_key, response, cache_timeout)
+        else:
+            response: Response = action(**action_params)
+
         if raw_response:
             return response
-        return response.json()
+        return self.naar_json(response)
 
     def get_melding_lijst(self, query_string=""):
         return self.do_request(
@@ -150,6 +164,7 @@ class MeldingenService:
         return self.do_request(
             f"{self._api_path}/gebruiker/{gebruiker_email}/",
             method="get",
+            cache_timeout=120,
         )
 
     def set_gebruiker(self, gebruiker):
