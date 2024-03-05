@@ -19,7 +19,7 @@
     </div>
     <div class="incident__distance">
         {% with taak.melding.response_json.locaties_voor_melding.0.geometrie.coordinates as geo %}
-        <span><span data-incidentlist-target="taakAfstand" data-latitude="{{geo.1|replace_comma_by_dot}}" data-longitude="{{geo.0|replace_comma_by_dot}}" >{{taak.afstand}}</span> meter {{taak.afstand}}</span>
+        <span><span data-incidentlist-target="taakAfstand" data-latitude="{{geo.1|replace_comma_by_dot}}" data-longitude="{{geo.0|replace_comma_by_dot}}" >{{taak.afstand}}</span> meter</span>
         {% endwith %}
     </div>
 </div>
