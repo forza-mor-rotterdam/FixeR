@@ -67,8 +67,7 @@
         {% if perms.authorisatie.taak_delen %}
             {% if signed_data %}
                 <a class="link--whatsapp"
-                    data-action="detail#shareTaak"
-                    data-detail-link-param="{% url 'taak_delen' taak.id %}"
+                    href="{{ whatsapp_url }}send?text={{ ABSOLUTE_ROOT }}{% url 'taak_detail_preview' taak.id signed_data %}%0aDeze link is 3 dagen geldig"
                     data-action="share/whatsapp/share"
                     target="_blank">
                     <svg class="icon--whatsapp"
