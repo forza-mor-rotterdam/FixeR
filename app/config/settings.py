@@ -283,6 +283,8 @@ CSP_IMG_SRC = (
     "service.pdok.nl",
     "mor-core-acc.forzamor.nl",
     "cdn.jsdelivr.net",
+    "ows.gis.rotterdam.nl",
+    "www.gis.rotterdam.nl",
 )
 CSP_STYLE_SRC = (
     "'self'",
