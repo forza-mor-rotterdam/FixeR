@@ -1,16 +1,14 @@
-
 .taak-detail {
-    max-width: map-get($container-max-widths , md );
+    max-width: map-get($container-max-widths, md);
     margin: 0 auto;
 
     .link:not(.link--phone) {
-
         svg {
             width: 24px;
             height: 24px;
             vertical-align: middle;
             margin-left: 10px;
-            path{
+            path {
                 fill: $green-tint01;
             }
         }
@@ -130,8 +128,8 @@
         margin-bottom: 0;
     }
 
-    >details {
-        >summary {
+    > details {
+        > summary {
             padding-left: 0;
             border-top: none;
             border-bottom: 1px solid $gray-tint04;
@@ -161,9 +159,8 @@
             }
         }
 
-        &[open]{
-
-            >summary {
+        &[open] {
+            > summary {
                 &::before {
                     left: auto;
                     right: 12px;
@@ -235,7 +232,6 @@
                 .container__image {
                     opacity: 1;
                     outline: 2px solid $primary;
-
                 }
             }
         }
@@ -245,7 +241,7 @@
         height: calc(50px + 2vw);
         width: calc(66px + 2vw);
         background-color: $gray-tint02;
-        opacity: .5;
+        opacity: 0.5;
         outline: none;
 
         img {
@@ -257,7 +253,6 @@
     }
 }
 
-
 .incident-meta-list {
     li {
         margin-bottom: 1rem;
@@ -268,13 +263,12 @@
 }
 
 .section--seperated {
-
     .full-width {
         margin: 0 (-(map-get($container-margin, md)));
     }
 }
 
-.section--location{
+.section--location {
     margin-bottom: 50px;
 }
 
@@ -302,11 +296,11 @@
             color: $gray-tint08;
         }
     }
-    >.container__flex {
+    > .container__flex {
         display: flex;
         justify-content: space-between;
 
-        >div {
+        > div {
             flex: 1 1 auto;
         }
     }
@@ -361,7 +355,6 @@
                 path {
                     fill: $gray-tint11;
                 }
-
             }
 
             &.previous {

@@ -1,20 +1,13 @@
-import { Controller } from '@hotwired/stimulus';
-
-
+import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
+  // static params = ["url"]
 
-    // static params = ["url"]
+  initialize() {}
 
-    initialize() {
+  connect() {}
 
-    }
-
-    connect() {}
-
-    goToUrl(e) {
-        window.location.href = e.params.url
-
-    }
-
+  goToUrl(e) {
+    window.location.href = e.params.url
+  }
 }
