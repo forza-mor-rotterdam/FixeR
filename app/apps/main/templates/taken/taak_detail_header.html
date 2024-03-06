@@ -6,7 +6,6 @@
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
-
 {% if TEMPLATE_BASIS != "benc" %}
     <h1 class="h3">
         {{ locatie.straatnaam|lower|capfirst }}
@@ -38,28 +37,29 @@
         <br>
         <span class="lighter">
             <span data-detail-target="taakAfstand"
-                    data-latitude="{{ geometrie.coordinates.1|replace_comma_by_dot }}"
-                    data-longitude="{{ geometrie.coordinates.0|replace_comma_by_dot }}"></span> meter afstand
+                  data-latitude="{{ geometrie.coordinates.1|replace_comma_by_dot }}"
+                  data-longitude="{{ geometrie.coordinates.0|replace_comma_by_dot }}"></span> meter afstand
         </span>
     </div>
     <div class="textalign--right">
         {% if TEMPLATE_BASIS != "benc" %}
             {% if device_os == "ios" %}
-            <small>
-                <a class="link"
-                    href="https://maps.apple.com/?saddr=''&daddr={{ geometrie.coordinates.1|replace_comma_by_dot }},{{ geometrie.coordinates.0|replace_comma_by_dot }}&z=10&"
-                    target="_top"
-                    aria-label="Navigeer naar taak"
-                    data-detail-target="navigeerLink">Navigeren
-                    {% include "icons/navigate.svg" %}
-                </a></small>
+                <small>
+                    <a class="link"
+                       href="https://maps.apple.com/?saddr=''&daddr={{ geometrie.coordinates.1|replace_comma_by_dot }},{{ geometrie.coordinates.0|replace_comma_by_dot }}&z=10&"
+                       target="_top"
+                       aria-label="Navigeer naar taak"
+                       data-detail-target="navigeerLink">Navigeren
+                        {% include "icons/navigate.svg" %}
+                    </a>
+                </small>
             {% else %}
                 <a class="link"
-                    data-action="detail#makeRoute"
-                    data-detail-lat-param="{{ geometrie.coordinates.1|replace_comma_by_dot }}"
-                    data-detail-long-param="{{ geometrie.coordinates.0|replace_comma_by_dot }}"
-                    target="_top"
-                    aria-label="Navigeer naar taak">Navigeren
+                   data-action="detail#makeRoute"
+                   data-detail-lat-param="{{ geometrie.coordinates.1|replace_comma_by_dot }}"
+                   data-detail-long-param="{{ geometrie.coordinates.0|replace_comma_by_dot }}"
+                   target="_top"
+                   aria-label="Navigeer naar taak">Navigeren
                     {% include "icons/navigate.svg" %}
                 </a>
             {% endif %}

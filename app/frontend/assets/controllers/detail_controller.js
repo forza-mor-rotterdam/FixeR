@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import L from 'leaflet'
 
 let markerIcon, markerBlue, markerGreen, markerMagenta, markerMe, markers, map, currentImg, imageContainer, modal, modalBackdrop, isMobileDevice, currentPosition = null
 let dist, elapsedTime, startX, startY, startTime = 0
@@ -36,6 +37,34 @@ export default class extends Controller {
         }
 
         const mapDiv = document.getElementById('incidentMap')
+        this.mapLayers = {
+            containers: {
+              layer: L.tileLayer.wms(
+                'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
+                {
+                  layers: 'OBS.OO.CONTAINER',
+                  format: 'image/png',
+                  transparent: true,
+                  minZoom: 10,
+                  maxZoom: 19,
+                }
+              ),
+              legend: [],
+            },
+            EGD: {
+              layer: L.tileLayer.wms(
+                'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
+                {
+                  layers: 'BSB.OBJ.EGD',
+                  format: 'image/png',
+                  transparent: true,
+                  minZoom: 10,
+                  maxZoom: 19,
+                }
+              ),
+            },
+          }
+
         if(mapDiv){
             markers = new L.featureGroup();
             markerIcon = L.Icon.extend({
@@ -122,6 +151,14 @@ export default class extends Controller {
     }
 
     disconnect(){}
+
+    onMapLayerChange(e) {
+        if (e.target.checked) {
+          this.mapLayers[e.params.mapLayerType].layer.addTo(map)
+        } else {
+          map.removeLayer(this.mapLayers[e.params.mapLayerType].layer)
+        }
+      }
 
     toggleDetailLocatie(element) {
         if(element.target.open){
