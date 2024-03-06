@@ -64,7 +64,7 @@
                 </a>
             {% endif %}
         {% endif %}
-        {% if perms.authorisatie.taak_delen %}
+        {% if perms.authorisatie.taak_delen and not taak.afgesloten_op %}
             <br>
             <span>Gedeeld/bezocht: {{ taakdeellinks|length }}/{{ taakdeellinks_bezoekers|length }}</span>
             <a class="link--whatsapp"
