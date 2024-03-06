@@ -6,28 +6,26 @@
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
-
 {% get_bijlagen melding as bijlagen %}
 <section class="section--seperated"
-        data-testid="detailPhotoviewer"
-        {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}
-    >
+         data-testid="detailPhotoviewer"
+         {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
     <div class="full-width">
         {% if bijlagen %}
             <div class="container__imageslider"
-                    data-detail-target="imageSliderContainer"
-                    data-action="scroll->detail#onScrollSlider">
+                 data-detail-target="imageSliderContainer"
+                 data-action="scroll->detail#onScrollSlider">
                 <ul class="list-clean imageslider"
                     style="width: calc(100% * {{ bijlagen|length }})">
                     {% for foto in bijlagen %}
                         <li class="container__image"
                             id="{{ foto.afbeelding_relative_url|mor_core_protected_url }}">
                             <img src="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
-                                    alt=""
-                                    data-detail-target="selectedImage"
-                                    {% comment %}
-                                    data-action="click->detail#openImageInPopup"
-                                    {% endcomment %} />
+                                 alt=""
+                                 data-detail-target="selectedImage"
+                                 {% comment %}
+                                 data-action="click->detail#openImageInPopup"
+                                 {% endcomment %} />
                         </li>
                     {% endfor %}
                 </ul>
@@ -40,7 +38,7 @@
                                 data-detail-image-index-param="{{ forloop.counter }}">
                                 <div class="container__image">
                                     <img src="{{ foto.afbeelding_verkleind_relative_url|mor_core_protected_url }}"
-                                            alt="" />
+                                         alt="" />
                                 </div>
                             </li>
                         {% endfor %}
@@ -49,8 +47,7 @@
             {% endif %}
         {% else %}
             <div class="no-image"
-                    style="background-image: url('{% webpack_static 'icons/noimage.svg' %}')">
-            </div>
+                 style="background-image: url('{% webpack_static 'icons/noimage.svg' %}')"></div>
         {% endif %}
     </div>
 </section>

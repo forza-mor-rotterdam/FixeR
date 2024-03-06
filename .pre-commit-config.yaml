@@ -40,3 +40,9 @@ repos:
         additional_dependencies:
           - prettier@3.0.3
         files: '\.(js|ts|jsx|tsx|scss|css)$'
+  - repo: https://github.com/djlint/djLint
+    rev: v1.34.1
+    hooks:
+      - id: djlint-reformat-django
+      - id: djlint-django
+        args: ["--ignore", "H006,H013,H023"]

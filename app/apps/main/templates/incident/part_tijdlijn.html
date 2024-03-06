@@ -42,32 +42,32 @@
                                 {% endif %}
                             {% endfor %}
                             {% if not forloop.first %}
-                            <strong>
-                                {% if row_data.mg.taakgebeurtenis %}
-                                    {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
-                                        {{ taakopdracht.titel }}
-                                        {% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
-                                            :
-                                            {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
-                                                {{ taakopdracht.resolutie|vertaal }}
-                                                <span class="visually-hidden" data-datetime-target="resolutie">{{ taakopdracht.resolutie }}</span>
-                                            {% else %}
-                                                {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
+                                <strong>
+                                    {% if row_data.mg.taakgebeurtenis %}
+                                        {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
+                                            {{ taakopdracht.titel }}
+                                            {% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
+                                                :
+                                                {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
+                                                    {{ taakopdracht.resolutie|vertaal }}
+                                                    <span class="visually-hidden" data-datetime-target="resolutie">{{ taakopdracht.resolutie }}</span>
+                                                {% else %}
+                                                    {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
+                                                {% endif %}
                                             {% endif %}
-                                        {% endif %}
-                                    {% endwith %}
-                                {% elif row_data.mg.locatie %}
-                                    Locatie aangepast
-                                {% elif row_data.mg.gebeurtenis_type == "status_wijziging" %}
+                                        {% endwith %}
+                                    {% elif row_data.mg.locatie %}
+                                        Locatie aangepast
+                                    {% elif row_data.mg.gebeurtenis_type == "status_wijziging" %}
                                         Status {{ row_data.mg.status.naam|vertaal|lower }}
-                                {% else %}
-                                    {% if row_data.mg.status.naam == 'afgehandeld' %}
-                                        {{ row_data.mg.status.naam|vertaal }}
-                                    {% elif row_data.mg.gebeurtenis_type %}
-                                        {{ row_data.mg.gebeurtenis_type|vertaal }}
+                                    {% else %}
+                                        {% if row_data.mg.status.naam == 'afgehandeld' %}
+                                            {{ row_data.mg.status.naam|vertaal }}
+                                        {% elif row_data.mg.gebeurtenis_type %}
+                                            {{ row_data.mg.gebeurtenis_type|vertaal }}
+                                        {% endif %}
                                     {% endif %}
-                                {% endif %}
-                            </strong>
+                                </strong>
                             {% endif %}
                         </summary>
                         <div class="content">
@@ -88,7 +88,6 @@
                                                     {{ taakopdracht.resolutie|vertaal }}
                                                 {% endwith %}
                                             </dd>
-
                                         {% else %}
                                             {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
                                                 <dt>Taak aangemaakt</dt>
@@ -101,9 +100,7 @@
                                             <dd>
                                                 {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
                                             </dd>
-
                                         {% endif %}
-
                                         {% if row_data.mg.taakgebeurtenis.omschrijving_intern %}
                                             <dt>Interne opmerking</dt>
                                             <dd>
@@ -138,7 +135,11 @@
                                         {% endif %}
                                         <dt>Verandering</dt>
                                         <dd>
-                                            {% if row_data.mg.urgentie >= .5 %}Melding veranderd naar spoed{% else %}Melding veranderd naar standaard{% endif %}
+                                            {% if row_data.mg.urgentie >= .5 %}
+                                                Melding veranderd naar spoed
+                                            {% else %}
+                                                Melding veranderd naar standaard
+                                            {% endif %}
                                         </dd>
                                         {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Veranderd door" %}
                                     {% else %}
@@ -153,7 +154,7 @@
                                                 {{ row_data.mg.omschrijving_extern }}
                                             </dd>
                                         {% endif %}
-                                        {% if row_data.mg.omschrijving_intern and row_data.mg.gebeurtenis_type != "signaal_toegevoegd"  %}
+                                        {% if row_data.mg.omschrijving_intern and row_data.mg.gebeurtenis_type != "signaal_toegevoegd" %}
                                             <dt>Interne opmerking</dt>
                                             <dd>
                                                 {{ row_data.mg.omschrijving_intern }}

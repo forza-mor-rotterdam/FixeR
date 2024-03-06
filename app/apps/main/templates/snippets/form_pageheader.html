@@ -1,6 +1,6 @@
 {% load gebruikersnaam from gebruikers_tags %}
 <turbo-frame id="form_pageheader">
-<form action="{% url 'pageheader_form_part' %}" method="POST">
+<form action="{% url 'pageheader_form_part' %}" method="post">
     {% csrf_token %}
     <ul class="list-clean list-nav--tertiary">
         <li class="wrapper-horizontal">
