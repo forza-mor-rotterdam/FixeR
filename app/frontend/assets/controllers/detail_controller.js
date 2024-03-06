@@ -293,6 +293,7 @@ export default class extends Controller {
     console.log('An error occurred while attempting to connect.')
     self.eventSource.close()
   }
+  // This used to be isrightswipe
   handleswipe(isRightSwipe) {
     const imgIndex = imageSrcList.indexOf(currentImg)
     const lastImgInList = imgIndex === imageSrcList.length - 1
@@ -374,7 +375,20 @@ export default class extends Controller {
       item.classList.remove('selected')
     }
   }
-
+  async shareTaak(e) {
+    try {
+      const response = await fetch(`${e.params.link}`)
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+      const data = await response.json()
+      if (data.url) {
+        window.open(data.url, '_blank')
+      }
+    } catch (error) {
+      console.error('Error fetching address details:', error.message)
+    }
+  }
   loadImage(imgSrc) {
     while (imageContainer.firstChild) {
       imageContainer.removeChild(imageContainer.firstChild)
