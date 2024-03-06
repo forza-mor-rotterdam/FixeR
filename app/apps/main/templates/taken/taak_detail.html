@@ -11,8 +11,8 @@
     {% with melding=taak.melding.response_json %}
         {% with locatie=melding.locaties_voor_melding.0 %}
             {% if TEMPLATE_BASIS != "benc" %}
-                {{ locatie.adres.straatNaam|lower|capfirst }}
-                {% if locatie.adres.huisnummer %}{{ locatie.adres.huisnummer }}{% endif %}
+                {{ locatie.straatnaam }}
+                {% if locatie.huisnummer %}{{ locatie.huisnummer }}{% endif %}
             {% else %}
                 {% if locatie.grafnummer %}Graf {{ locatie.grafnummer }}{% endif %}
                 {% if locatie.vak %}, Vak {{ locatie.vak }}{% endif %}
