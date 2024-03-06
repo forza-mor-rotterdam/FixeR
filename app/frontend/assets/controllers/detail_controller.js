@@ -328,7 +328,20 @@ export default class extends Controller {
             item.classList.remove('selected');
         }
     }
-
+    async shareTaak(e){
+        try {
+            const response = await fetch(`${e.params.link}`)
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`)
+            }
+            const data = await response.json()
+            if (data.url){
+                window.open( data.url,'_blank')
+            }
+          } catch (error) {
+            console.error('Error fetching address details:', error.message)
+          }
+    }
     loadImage(imgSrc) {
         while (imageContainer.firstChild) {
             imageContainer.removeChild(imageContainer.firstChild)

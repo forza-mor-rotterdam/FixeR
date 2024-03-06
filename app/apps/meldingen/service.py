@@ -160,6 +160,24 @@ class MeldingenService:
             f"{taakopdracht_url}status-aanpassen/", method="patch", data=data
         )
 
+    def taak_gebeurtenis_toevoegen(
+        self,
+        taakopdracht_url,
+        gebeurtenis_type=None,
+        omschrijving_intern=None,
+        bijlagen=[],
+        gebruiker=None,
+    ):
+        data = {
+            "gebeurtenis_type": gebeurtenis_type,
+            "omschrijving_intern": omschrijving_intern,
+            "bijlagen": bijlagen,
+            "gebruiker": gebruiker,
+        }
+        return self.do_request(
+            f"{taakopdracht_url}gebeurtenis-toevoegen/", method="post", data=data
+        )
+
     def get_gebruiker(self, gebruiker_email):
         return self.do_request(
             f"{self._api_path}/gebruiker/{gebruiker_email}/",

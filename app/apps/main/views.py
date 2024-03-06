@@ -25,7 +25,7 @@ from apps.main.utils import (
 from apps.meldingen.service import MeldingenService
 from apps.release_notes.models import ReleaseNote
 from apps.services.onderwerpen import render_onderwerp
-from apps.taken.models import Taak, Taakstatus, Taaktype
+from apps.taken.models import Taak, TaakDeellink, Taakstatus, Taaktype
 from device_detector import DeviceDetector
 from django.conf import settings
 from django.contrib.auth.decorators import (
@@ -43,7 +43,7 @@ from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import Value
 from django.db.models.functions import Concat
-from django.http import HttpResponse, StreamingHttpResponse
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import View
@@ -273,8 +273,7 @@ def taak_detail(request, id):
     tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
-    whatsapp_url = "whatsapp://" if device.is_mobile() else settings.WHATSAPP_URL
-
+    taakdeellinks = TaakDeellink.objects.filter(taak=taak)
     return render(
         request,
         "taken/taak_detail.html",
@@ -283,22 +282,81 @@ def taak_detail(request, id):
             "taak": taak,
             "tijdlijn_data": tijdlijn_data,
             "device_os": device.os_name().lower(),
-            "signed_data": signing.dumps(request.user.email),
-            "whatsapp_url": whatsapp_url,
+            "taakdeellinks": taakdeellinks,
+            "taakdeellinks_bezoekers": [
+                b for link in taakdeellinks for b in link.bezoekers
+            ],
         },
     )
 
 
-def taak_detail_preview(request, id, signed_data):
-    gebruiker_email = None
-    try:
-        gebruiker_email = signing.loads(
-            signed_data, max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS
-        )
-    except signing.BadSignature:
-        ...
-
+@permission_required("authorisatie.taak_delen", raise_exception=True)
+def taak_delen(request, id):
     taak = get_object_or_404(Taak, pk=id)
+    gebruiker_email = request.user.email
+    """
+    Standaard worden links die gedeeld worden alleen in FixeR opgeslagen
+    Met de code hieronder kan ook MOR-Core deze info opslaan in context met de melding
+
+    response = MeldingenService().taak_gebeurtenis_toevoegen(
+        taakopdracht_url=taak.taakopdracht,
+        gebeurtenis_type="gedeeld",
+        gebruiker=gebruiker_email,
+    )
+    if response.status_code not in [200]:
+        return JsonResponse({})
+    """
+
+    ua = request.META.get("HTTP_USER_AGENT")
+    device = DeviceDetector(ua).parse()
+    whatsapp_url = "whatsapp://" if device.is_mobile() else settings.WHATSAPP_URL
+
+    taak_gedeeld = TaakDeellink.objects.create(
+        taak=taak,
+        gedeeld_door=gebruiker_email,
+        signed_data=TaakDeellink.get_signed_data(gebruiker_email),
+    )
+
+    return JsonResponse(
+        {
+            "url": f"{whatsapp_url}send?text={taak_gedeeld.get_absolute_url(request)}",
+        }
+    )
+
+
+def taak_detail_preview(request, id, signed_data):
+    taak = get_object_or_404(Taak, pk=id)
+    gebruiker_email = None
+    link_actief = False
+
+    taak_gedeeld = TaakDeellink.objects.filter(
+        taak=taak,
+        signed_data=signed_data,
+    ).first()
+    if taak_gedeeld:
+        link_actief = taak_gedeeld.actief()
+
+    # links die gedeeld zijn voor dat het TaakDeellink object geimplementeerd was
+    else:
+        try:
+            gebruiker_email = signing.loads(
+                signed_data, max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS
+            )
+            link_actief = True
+        except signing.BadSignature:
+            ...
+
+    # redirect ingelogde gebruikers
+    if request.user.has_perms(["authorisatie.taak_bekijken"]):
+        return redirect(reverse("taak_detail", args=[taak.id]))
+
+    # sla alle gebruikers op in het taakdeellink object
+    if taak_gedeeld and link_actief:
+        taak_gedeeld.bezoekers.append(
+            request.user.email if request.user.is_authenticated else None
+        )
+        taak_gedeeld.save()
+
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
     return render(
@@ -309,7 +367,11 @@ def taak_detail_preview(request, id, signed_data):
             "taak": taak,
             "device_os": device.os_name().lower(),
             "signed_data": signed_data,
-            "gebruiker_email": gebruiker_email,
+            "gebruiker_email": taak_gedeeld.gedeeld_door
+            if taak_gedeeld
+            else gebruiker_email,
+            "link_actief": link_actief,
+            "taak_gedeeld": taak_gedeeld,
         },
     )
 
