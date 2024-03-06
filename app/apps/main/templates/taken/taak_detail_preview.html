@@ -170,9 +170,7 @@
                                             <h3 class="h5">Ter hoogte van</h3>
                                             <p>
                                                 {{ locatie.straatnaam|lower|capfirst }}
-                                                {% if locatie.huisnummer %}
-                                                    {{ locatie.huisnummer }}
-                                                {% endif %}
+                                                {% if locatie.huisnummer %}{{ locatie.huisnummer }}{% endif %}
                                             </p>
                                         </div>
                                         <div class="container__details taak">

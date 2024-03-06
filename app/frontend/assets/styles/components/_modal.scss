@@ -24,7 +24,7 @@ body.show-modal {
     }
 
     .modal.show {
-        @include modalVisible()
+        @include modalVisible();
     }
 }
 
@@ -37,13 +37,13 @@ body.show-modal--transparent {
     }
 
     .modal--transparent.show {
-        @include modalVisible()
+        @include modalVisible();
     }
 }
 
 body.show-modal--first-filter {
     .modal--first-filter {
-        @include modalVisible()
+        @include modalVisible();
     }
 }
 
@@ -129,7 +129,6 @@ body.show-modal--first-filter {
     //     opacity: 0;
     //     display: none;
     // }
-
 }
 
 .modal-backdrop {
@@ -153,10 +152,9 @@ body.show-modal--first-filter {
         display: inline-block;
         width: auto;
 
-
         .modal-content {
             background: transparent;
-            pointer-events:initial;
+            pointer-events: initial;
         }
     }
 

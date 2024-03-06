@@ -15,12 +15,16 @@
 
                 &:not(.has-text) {
                     width: 32px;
-                    label, span, a {
+                    label,
+                    span,
+                    a {
                         width: 32px;
                     }
                 }
 
-                label, span, a {
+                label,
+                span,
+                a {
                     font-weight: 400;
                     font-size: 16px;
                     display: block;
@@ -37,13 +41,12 @@
                     text-decoration: none;
                     color: $gray-tint11;
                     &.btn--next {
-
-                        path{
+                        path {
                             fill: $gray-tint11;
                         }
                     }
                     &.btn--previous {
-                        svg{
+                        svg {
                             transform: rotate(180deg);
                             fill: $gray-tint11;
                         }
@@ -54,7 +57,7 @@
                     border: 0;
                     box-shadow: none;
                     color: $primary;
-                    background-color: #E0EEE2;
+                    background-color: #e0eee2;
                 }
 
                 &.has-text {
@@ -65,16 +68,15 @@
                         align-items: center;
                     }
 
-                    svg{
-                        &:last-child{
+                    svg {
+                        &:last-child {
                             margin-left: 6px;
                         }
-                        &:first-child{
+                        &:first-child {
                             margin-right: 6px;
                         }
                     }
                 }
-
             }
         }
     }

@@ -46,7 +46,7 @@
         }
         margin: 32px 0;
 
-        >* {
+        > * {
             flex: 1;
         }
 
@@ -71,14 +71,15 @@
         margin: 0 -16px;
         li {
             img {
-                max-width: map-get($container-max-widths , lg );
+                max-width: map-get($container-max-widths, lg);
                 width: 100%;
             }
         }
     }
 
     table tbody {
-        th, td {
+        th,
+        td {
             text-align: left;
             padding-left: 0.5rem;
             padding-right: 0.5rem;
@@ -99,7 +100,7 @@
     }
 
     form {
-        max-width: map-get($container-max-widths , md );
+        max-width: map-get($container-max-widths, md);
         margin: 0 auto;
     }
     .btn-row {
@@ -123,27 +124,27 @@
 
     li {
         &.list-item {
-        border-bottom: 1px solid $gray-tint04;
-        padding-bottom: 1rem;
+            border-bottom: 1px solid $gray-tint04;
+            padding-bottom: 1rem;
 
-        &.inactive {
-            * {
-                opacity: 0.8;
+            &.inactive {
+                * {
+                    opacity: 0.8;
+                }
             }
-        }
-        > .description {
-            margin-top: 0;
-            margin-bottom: 0;
-            > a {
-                padding-top: 1rem;
-                padding-bottom: 1rem;
-            }
-            small {
-                a {
-                    display: block;
+            > .description {
+                margin-top: 0;
+                margin-bottom: 0;
+                > a {
+                    padding-top: 1rem;
+                    padding-bottom: 1rem;
+                }
+                small {
+                    a {
+                        display: block;
+                    }
                 }
             }
         }
-      }
     }
 }

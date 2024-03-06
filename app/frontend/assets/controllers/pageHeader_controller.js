@@ -1,17 +1,17 @@
-import { Controller } from '@hotwired/stimulus';
+import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-    connect() {}
+  connect() {}
 
-    resetFontSize(e) {
-        document.body.classList.remove('fz-medium', 'fz-large', 'fz-xlarge')
-    }
+  resetFontSize() {
+    document.body.classList.remove('fz-medium', 'fz-large', 'fz-xlarge')
+  }
 
-    setFontSize(e) {
-        const size = e.params.size;
-        if(size) {
-            this.resetFontSize()
-            document.body.classList.add(size)
-        }
+  setFontSize(e) {
+    const size = e.params.size
+    if (size) {
+      this.resetFontSize()
+      document.body.classList.add(size)
     }
+  }
 }
