@@ -1,5 +1,13 @@
 {% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
+{% block title %}
+    {% if object %}
+        Rechtengroep '{{ object.name }}' aanpassen
+    {% else %}
+        Rechtengroep aanmaken
+    {% endif %}
+    | Beheer | FixeR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="context_aanmaken">
     <div class="page__beheer">

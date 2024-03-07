@@ -1,6 +1,14 @@
 {% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from main_tags %}
+{% block title %}
+    {% if object %}
+        Taaktype '{{ object.omschrijving }}' aanpassen
+    {% else %}
+        Taaktype aanmaken
+    {% endif %}
+    | FixeR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="context_aanmaken">
     <div class="page__beheer">
