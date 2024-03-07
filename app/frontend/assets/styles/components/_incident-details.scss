@@ -398,13 +398,23 @@
     }
 }
 
-.link--whatsapp {
-    vertical-align: middle;
-    display: inline-block;
-    margin-left: 20px;
-    margin-right: -5px;
-    .icon--whatsapp {
-        width: 26px;
-        height: 26px;
+.container__share {
+    white-space: nowrap;
+    font-size: 12px;
+    line-height: 2.5rem;
+
+    span {
+        color: $gray-tint08;
+    }
+
+    .link--whatsapp {
+        vertical-align: middle;
+        display: inline-block;
+        margin-left: 5px;
+        margin-right: -5px;
+        .icon--whatsapp {
+            width: 26px;
+            height: 26px;
+        }
     }
 }
