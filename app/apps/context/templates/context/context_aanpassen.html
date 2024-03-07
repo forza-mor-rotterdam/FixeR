@@ -1,6 +1,9 @@
 {% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from main_tags %}
+{% block title %}
+    UI groep {{ object.naam }} | Beheer | FixeR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="context_aanmaken">
     <div class="page__beheer">

@@ -1,6 +1,9 @@
 {% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from main_tags %}
+{% block title %}
+    Gebruiker bulk import | Beheer | FixeR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
