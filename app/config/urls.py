@@ -283,11 +283,11 @@ if settings.OIDC_ENABLED:
             ),
             name="admin_logout",
         ),
-        path("oidc/", include("mozilla_django_oidc.urls")),
     ]
 
 urlpatterns += [
     path("admin/", admin.site.urls),
+    path("oidc/", include("mozilla_django_oidc.urls")),
 ]
 
 if settings.DEBUG:
