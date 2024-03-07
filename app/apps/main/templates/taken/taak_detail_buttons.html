@@ -1,3 +1,5 @@
+{% load context_template from context_tags %}
+{% context_template "taak_afhandelen_subtitel.html" as subtitel_template %}
 <section class="section--seperated section--seperated__no-border-bottom"
          data-testid="detailActions">
     <div class="container__details container__details--sticky-bottom">
@@ -12,9 +14,7 @@
                             {{ taak.titel }}" data-modal-url-param="{% url 'taak_toewijzen' taak.id %}" data-modal-id-param="taak_toewijzen" data-action="modal#openModal">
                             Toewijzen
                         </button>
-                    {% elif taak.taakstatus.naam == "toegewezen" and
-                        perms.authorisatie.taak_toewijzing_intrekken and
-                        perms.authorisatie.taak_toewijzing_intrekken %}
+                    {% elif taak.taakstatus.naam == "toegewezen" and perms.authorisatie.taak_toewijzing_intrekken %}
                         <button class="btn btn-tertiary"
                                 data-id="{{ taak.id }}"
                                 data-modal-title-param="Toewijzing intrekken"
