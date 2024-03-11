@@ -507,6 +507,8 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
 
+APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
+
 SIGNED_DATA_MAX_AGE_SECONDS = int(
     os.getenv("SIGNED_DATA_MAX_AGE_SECONDS", 259200)
 )  # 3 days

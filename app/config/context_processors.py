@@ -58,4 +58,5 @@ def general_settings(context):
         "GIT_SHA": settings.GIT_SHA,
         "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
         "UNWATCHED_COUNT": unwatched_count,
+        "APP_ENV": settings.APP_ENV,
     }

@@ -49,3 +49,18 @@
     background-color: $red-tint02;
     transform: translateY(-50%);
 }
+
+.container--env {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 200;
+
+    .badge {
+        height: 42px;
+        line-height: 42px;
+        font-size: 18px;
+    }
+}
