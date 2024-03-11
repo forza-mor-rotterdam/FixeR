@@ -53,6 +53,7 @@ UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
 INSTALLED_APPS = (
     # templates override
     "apps.health",
+    "django.contrib.humanize",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "django.contrib.messages",
@@ -202,9 +203,11 @@ WEBPACK_LOADER = {
         "POLL_INTERVAL": 0.1,
         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
         "LOADER_CLASS": "webpack_loader.loader.WebpackLoader",
-        "STATS_FILE": "/static/webpack-stats.json"
-        if not DEBUG
-        else "/app/frontend/public/build/webpack-stats.json",
+        "STATS_FILE": (
+            "/static/webpack-stats.json"
+            if not DEBUG
+            else "/app/frontend/public/build/webpack-stats.json"
+        ),
     }
 }
 
@@ -281,6 +284,8 @@ CSP_IMG_SRC = (
     "service.pdok.nl",
     "mor-core-acc.forzamor.nl",
     "cdn.jsdelivr.net",
+    "ows.gis.rotterdam.nl",
+    "www.gis.rotterdam.nl",
 )
 CSP_STYLE_SRC = (
     "'self'",
@@ -501,3 +506,8 @@ CKEDITOR_CONFIGS = {
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
+
+SIGNED_DATA_MAX_AGE_SECONDS = int(
+    os.getenv("SIGNED_DATA_MAX_AGE_SECONDS", 259200)
+)  # 3 days
+WHATSAPP_URL = os.getenv("WHATSAPP_URL", "https://web.whatsapp.com/")

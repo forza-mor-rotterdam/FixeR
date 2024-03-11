@@ -1,4 +1,4 @@
-from apps.taken.models import Taak, Taakgebeurtenis, Taaktype
+from apps.taken.models import Taak, TaakDeellink, Taakgebeurtenis, Taaktype
 from django.contrib import admin
 
 
@@ -33,6 +33,17 @@ class TaakgebeurtenisAdmin(admin.ModelAdmin):
     )
 
 
+class TaakDeellinkAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "gedeeld_door",
+        "bezoekers",
+        "signed_data",
+        "taak",
+    )
+
+
 admin.site.register(Taak, TaakAdmin)
 admin.site.register(Taaktype, TaaktypeAdmin)
 admin.site.register(Taakgebeurtenis, TaakgebeurtenisAdmin)
+admin.site.register(TaakDeellink, TaakDeellinkAdmin)

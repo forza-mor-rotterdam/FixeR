@@ -12,14 +12,14 @@
         top: 0;
         left: 0;
         width: 100%;
-        color: #00689E;
-        background-color: #EAF4FA;
+        color: #00689e;
+        background-color: #eaf4fa;
         box-sizing: border-box;
         transform: translateY(-100%);
         transition: transform 1s;
-            a {
-                color: inherit;
-            }
+        a {
+            color: inherit;
+        }
         .messages {
             margin: $breadcrumb-padding-y $input-padding-x;
             @include list-clean();

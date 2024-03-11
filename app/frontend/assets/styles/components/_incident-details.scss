@@ -1,16 +1,14 @@
-
 .taak-detail {
-    max-width: map-get($container-max-widths , md );
+    max-width: map-get($container-max-widths, md);
     margin: 0 auto;
 
-    .link {
-
+    .link:not(.link--phone) {
         svg {
             width: 24px;
             height: 24px;
             vertical-align: middle;
-            margin-right: 10px;
-            path{
+            margin-left: 10px;
+            path {
                 fill: $green-tint01;
             }
         }
@@ -19,6 +17,91 @@
 .container__details {
     &--sticky-bottom {
         min-height: 150px;
+    }
+
+    .locatie-container {
+        flex: 1 1 auto;
+        margin-top: 2rem;
+
+        .list-clean:not(.has-padding) {
+            margin-top: 0;
+        }
+
+        input[type="checkbox"] {
+            @include form-check-input();
+            vertical-align: top;
+            margin-bottom: 1em;
+        }
+    }
+
+    .container__uitklapper {
+        position: relative;
+        z-index: 2000;
+        display: inline;
+        vertical-align: middle;
+
+        > span {
+            margin-left: $input-padding-y;
+            svg {
+                path {
+                    fill: $green-tint01;
+                }
+            }
+        }
+
+        .legenda {
+            position: absolute;
+            top: 20px;
+            left: -45px;
+            background-color: $white;
+            width: auto;
+            white-space: nowrap;
+            padding: $input-padding-x;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+            display: none;
+
+            ul {
+                margin: 0;
+            }
+
+            li:not(:last-child) {
+                margin-bottom: $input-padding-y;
+            }
+        }
+
+        .legenda-item {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background-color: #78b4ff;
+            margin-right: $input-padding-y;
+            vertical-align: bottom;
+
+            &.openbaar {
+                background-color: #00ad00;
+            }
+            &.ret {
+                background-color: #ffff64;
+            }
+            &.kunst {
+                background-color: #d700b0;
+            }
+            &.begraafplaats {
+                background-color: #ffaeff;
+            }
+            &.aquisitie {
+                background-color: #3c3cff;
+            }
+            &.vastgoed {
+                background-color: #d36000;
+            }
+        }
+
+        &:hover {
+            .legenda {
+                display: block;
+            }
+        }
     }
 }
 .container__details.taak {
@@ -45,8 +128,8 @@
         margin-bottom: 0;
     }
 
-    >details {
-        >summary {
+    > details {
+        > summary {
             padding-left: 0;
             border-top: none;
             border-bottom: 1px solid $gray-tint04;
@@ -76,9 +159,8 @@
             }
         }
 
-        &[open]{
-
-            >summary {
+        &[open] {
+            > summary {
                 &::before {
                     left: auto;
                     right: 12px;
@@ -150,7 +232,6 @@
                 .container__image {
                     opacity: 1;
                     outline: 2px solid $primary;
-
                 }
             }
         }
@@ -160,7 +241,7 @@
         height: calc(50px + 2vw);
         width: calc(66px + 2vw);
         background-color: $gray-tint02;
-        opacity: .5;
+        opacity: 0.5;
         outline: none;
 
         img {
@@ -172,7 +253,6 @@
     }
 }
 
-
 .incident-meta-list {
     li {
         margin-bottom: 1rem;
@@ -183,13 +263,12 @@
 }
 
 .section--seperated {
-
     .full-width {
         margin: 0 (-(map-get($container-margin, md)));
     }
 }
 
-.section--location{
+.section--location {
     margin-bottom: 50px;
 }
 
@@ -217,11 +296,11 @@
             color: $gray-tint08;
         }
     }
-    >.container__flex {
+    > .container__flex {
         display: flex;
         justify-content: space-between;
 
-        >div {
+        > div {
             flex: 1 1 auto;
         }
     }
@@ -276,7 +355,6 @@
                 path {
                     fill: $gray-tint11;
                 }
-
             }
 
             &.previous {
@@ -297,6 +375,46 @@
                     }
                 }
             }
+        }
+    }
+}
+
+.taak-detail--preview {
+    section {
+        padding: 1rem 0;
+        .container__details.taak {
+            padding: 0 26px;
+        }
+        h2 {
+            border-bottom: 1px solid $gray-tint04;
+            padding-bottom: 1rem;
+        }
+    }
+
+    .link--phone {
+        svg {
+            top: 0;
+        }
+    }
+}
+
+.container__share {
+    white-space: nowrap;
+    font-size: 12px;
+    line-height: 2.5rem;
+
+    span {
+        color: $gray-tint08;
+    }
+
+    .link--whatsapp {
+        vertical-align: middle;
+        display: inline-block;
+        margin-left: 5px;
+        margin-right: -5px;
+        .icon--whatsapp {
+            width: 26px;
+            height: 26px;
         }
     }
 }

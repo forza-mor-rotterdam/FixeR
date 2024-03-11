@@ -33,6 +33,7 @@ from apps.main.views import (
     onderwerp,
     root,
     sorteer_filter,
+    taak_delen,
     taak_detail,
     taak_detail_preview,
     taak_toewijzen,
@@ -94,8 +95,6 @@ urlpatterns = [
         clear_melding_token_from_cache,
         name="clear_melding_token_from_cache",
     ),
-    path("admin/", admin.site.urls),
-    path("oidc/", include("mozilla_django_oidc.urls")),
     path("config/", config, name="config"),
     path("health/", include("health_check.urls")),
     # START taken
@@ -118,9 +117,14 @@ urlpatterns = [
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
     path(
-        "taak/<int:id>/<str:signed_data>/",
+        "taak/<int:id>/delen/<str:signed_data>/",
         taak_detail_preview,
         name="taak_detail_preview",
+    ),
+    path(
+        "taak/<int:id>/delen/",
+        taak_delen,
+        name="taak_delen",
     ),
     path("taak-toewijzen/<int:id>/", taak_toewijzen, name="taak_toewijzen"),
     path(
@@ -280,6 +284,12 @@ if settings.OIDC_ENABLED:
             name="admin_logout",
         ),
     ]
+
+urlpatterns += [
+    path("admin/", admin.site.urls),
+    path("oidc/", include("mozilla_django_oidc.urls")),
+]
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [

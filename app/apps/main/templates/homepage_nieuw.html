@@ -5,6 +5,9 @@
 {% block container_class %}
     container
 {% endblock container_class %}
+{% block title %}
+    Home | FixeR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="overview">
     <div class="border-green print-only"></div>
@@ -18,7 +21,8 @@
                         <div>
                             <p>
                                 {{ release_note.titel }}
-                                <small><a href="{% url 'release_note_detail' release_note.pk %}" data-turbo-frame="_top">Lees meer</a></small>
+                                <small><a href="{% url 'release_note_detail' release_note.pk %}"
+   data-turbo-frame="_top">Lees meer</a></small>
                             </p>
                         </div>
                     </div>
