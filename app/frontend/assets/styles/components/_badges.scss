@@ -8,10 +8,10 @@
     margin-right: 4px;
 
     h1 & {
-        vertical-align: middle;
-        margin-left: 12px;
         padding: 2px $input-padding-y;
-        margin-top: -4px;
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 
     &--lightblue {
