@@ -243,7 +243,7 @@ export default class extends Controller {
           // popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
           popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
         }
-        marker.bindPopup(popupContent)
+        marker.bindPopup(popupContent, { maxWidth: 460 })
 
         self.markers.addLayer(marker)
         self.markerList.push(marker)
