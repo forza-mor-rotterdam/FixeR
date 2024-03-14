@@ -256,7 +256,9 @@ def zoek_filter(request):
     if request.POST:
         request_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
-        if request_filters.get("q") != request.session.get("q"):
+        if not request_filters.get("q") and request.session.get("q"):
+            del request.session["q"]
+        elif request_filters.get("q") != request.session.get("q"):
             request.session["q"] = request_filters.get("q")
         form = ZoekFilterForm(
             request.POST, initial={"q": request.session.get("q", [""])[0]}
