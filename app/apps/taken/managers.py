@@ -39,7 +39,9 @@ class TaakManager(models.Manager):
                 defaults={
                     "geometrie": GEOSGeometry(
                         json.dumps(location_data.get("geometrie"))
-                    ),
+                    )
+                    if location_data.get("geometrie")
+                    else None,
                     "locatie_type": location_data.get("locatie_type"),
                     "plaatsnaam": location_data.get("plaatsnaam"),
                     "straatnaam": location_data.get("straatnaam"),

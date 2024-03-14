@@ -247,16 +247,12 @@ def zoek_filter(request):
     )
     filters += ["q"]
     actieve_filters = get_actieve_filters(request.user, filters)
-    initial_q = ""
-    if actieve_q := actieve_filters.get("q"):
-        initial_q = actieve_q[0]
 
     foldout_states = []
 
-    form = ZoekFilterForm(request.GET, initial={"q": initial_q})
+    form = ZoekFilterForm(request.GET, initial={"q": actieve_filters.get("q", [""])[0]})
 
     if request.POST:
-        form = ZoekFilterForm(request.POST, initial={"q": initial_q})
         request_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
 
@@ -264,7 +260,9 @@ def zoek_filter(request):
             actieve_filters["q"] = request_filters.get("q")
 
         set_actieve_filters(request.user, actieve_filters)
-        form.fields["q"].initial = actieve_filters["q"][0]
+        form = ZoekFilterForm(
+            request.POST, initial={"q": actieve_filters.get("q", [""])[0]}
+        )
 
     filter_manager = FilterManager(taken, actieve_filters, foldout_states)
 
