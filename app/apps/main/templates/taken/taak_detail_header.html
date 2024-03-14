@@ -8,20 +8,20 @@
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
 {% if TEMPLATE_BASIS != "benc" %}
     <h1 class="h3">
-        {{ locatie.straatnaam|lower|capfirst }}
-        {% if locatie.huisnummer %}{{ locatie.huisnummer }}{% endif %}
+        {{ taak_zoek_data.straatnaam|lower|capfirst }}
+        {% if taak_zoek_data.huisnummer %}{{ taak_zoek_data.huisnummer }}{% endif %}
         <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
             {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
         </span>
     </h1>
 {% else %}
     <h1 class="h3">
-        {% if locatie.grafnummer %}Graf {{ locatie.grafnummer }}{% endif %}
-        {% if locatie.vak %}, Vak {{ locatie.vak }}{% endif %}
-        {% if not locatie.grafnummer and not locatie.vak and locatie.begraafplaats %}
-            {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices locatie.begraafplaats as signaal_begraafplaats_naam %}
-            {% if signaal_begraafplaats_naam == locatie.begraafplaats %}
-                {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
+        {% if taak_zoek_data.grafnummer %}Graf {{ taak_zoek_data.grafnummer }}{% endif %}
+        {% if taak_zoek_data.vak %}, Vak {{ taak_zoek_data.vak }}{% endif %}
+        {% if not taak_zoek_data.grafnummer and not taak_zoek_data.vak and taak_zoek_data.begraafplaats %}
+            {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats as signaal_begraafplaats_naam %}
+            {% if signaal_begraafplaats_naam == taak_zoek_data.begraafplaats %}
+                {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats %}
             {% else %}
                 {{ signaal_begraafplaats_naam }}
             {% endif %}
@@ -37,8 +37,8 @@
         <br>
         <span class="lighter">
             <span data-detail-target="taakAfstand"
-                  data-latitude="{{ geometrie.coordinates.1|replace_comma_by_dot }}"
-                  data-longitude="{{ geometrie.coordinates.0|replace_comma_by_dot }}"></span> meter afstand
+                  data-latitude="{{ geometrie.1|replace_comma_by_dot }}"
+                  data-longitude="{{ geometrie.0|replace_comma_by_dot }}"></span> meter afstand
         </span>
     </div>
     <div class="textalign--right">
@@ -52,8 +52,8 @@
             {% else %}
                 <a class="link link--navigate"
                    data-action="detail#makeRoute"
-                   data-detail-lat-param="{{ geometrie.coordinates.1|replace_comma_by_dot }}"
-                   data-detail-long-param="{{ geometrie.coordinates.0|replace_comma_by_dot }}"
+                   data-detail-lat-param="{{ geometrie.1|replace_comma_by_dot }}"
+                   data-detail-long-param="{{ geometrie.0|replace_comma_by_dot }}"
                    target="_top"
                    aria-label="Navigeer naar taak">{% include "icons/navigate.svg" %}</a>
             {% endif %}

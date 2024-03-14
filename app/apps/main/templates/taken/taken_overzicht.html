@@ -56,6 +56,11 @@
                 <turbo-frame id="sorteer_filter" src="{% url 'sorteer_filter' %}" data-spinner="hide">
                 </turbo-frame>
             </div>
+            <div class="container__sorting hidden-vertical"
+                 data-incidentlist-target="zoeken">
+                <turbo-frame id="zoek_filter" src="{% url 'zoek_filter' %}" data-spinner="hide">
+                </turbo-frame>
+            </div>
             <div class="list__incidents" data-testid="incidentsList">
                 {% if taken_aantal != 0 %}
                     <turbo-frame id="taken_lijst" data-spinner="hide">

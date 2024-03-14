@@ -1,0 +1,11 @@
+<turbo-frame id="zoek_filter">
+<div class="wrapper" data-controller="zoekFilter">
+    <form action="{% url 'zoek_filter' %}"
+          method="post"
+          data-zoekFilter-target="form">
+        {% csrf_token %}
+        {{ form.q }}
+        {% comment %} {{ form.initial.q }} @TODO @Remco Currently isnt filled on page load {% endcomment %}
+    </form>
+</div>
+</turbo-frame>
