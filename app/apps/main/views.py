@@ -10,6 +10,7 @@ from apps.main.forms import (
     TaakBehandelForm,
     TaakToewijzenForm,
     TaakToewijzingIntrekkenForm,
+    ZoekFilterForm,
 )
 from apps.main.utils import (
     get_actieve_filters,
@@ -137,21 +138,23 @@ def taken_filter(request):
         if request.user.profiel.context
         else []
     )
+    filters += ["q"]
+    actieve_filters = get_actieve_filters(request.user, filters)
     foldout_states = []
+
     if request.POST:
-        actieve_filters = {f: request.POST.getlist(f) for f in filters}
+        request_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
-    else:
-        actieve_filters = get_actieve_filters(request.user, filters)
+        for filter_name, new_value in request_filters.items():
+            if filter_name != "q" and new_value != actieve_filters.get(filter_name):
+                actieve_filters[filter_name] = new_value
+        set_actieve_filters(request.user, actieve_filters)
 
     filter_manager = FilterManager(taken, actieve_filters, foldout_states)
 
     taken_gefilterd = filter_manager.filter_taken()
 
     request.session["taken_gefilterd"] = taken_gefilterd
-
-    if request.POST:
-        set_actieve_filters(request.user, filter_manager.active_filters)
 
     taken_aantal = len(taken_gefilterd)
     return render(
@@ -168,6 +171,9 @@ def taken_filter(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_lijst(request):
+    MeldingenService().set_gebruiker(
+        gebruiker=request.user.serialized_instance(),
+    )
     try:
         pnt = Point(
             float(request.GET.get("lon", 0)),
@@ -181,7 +187,7 @@ def taken_lijst(request):
     sort_reverse = len(sortering.split("-")) > 1
     sortering = sortering.split("-")[0]
     sorting_fields = {
-        "Postcode": "melding__response_json__locaties_voor_melding__0__postcode",
+        "Postcode": "taak_zoek_data__postcode",
         "Adres": "adres",
         "Datum": "taakstatus__aangemaakt_op",
         "Afstand": "afstand",
@@ -194,6 +200,7 @@ def taken_lijst(request):
             if request.user.profiel.context
             else []
         )
+        filters += ["q"]
         actieve_filters = get_actieve_filters(request.user, filters)
         filter_manager = FilterManager(taken, actieve_filters)
         taken_gefilterd = filter_manager.filter_taken()
@@ -201,13 +208,13 @@ def taken_lijst(request):
     taken_gefilterd = (
         taken_gefilterd.annotate(
             adres=Concat(
-                "melding__response_json__locaties_voor_melding__0__straatnaam",
+                "taak_zoek_data__straatnaam",
                 Value(" "),
-                "melding__response_json__locaties_voor_melding__0__huisnummer",
+                "taak_zoek_data__huisnummer",
                 output_field=models.CharField(),
             )
         )
-        .annotate(afstand=Distance("geometrie", pnt))
+        .annotate(afstand=Distance("taak_zoek_data__geometrie", pnt))
         .order_by(f"{'-' if sort_reverse else ''}{sorting_fields.get(sortering)}")
     )
 
@@ -224,6 +231,56 @@ def taken_lijst(request):
         {
             "taken": taken_paginated,
             "page_obj": page_obj,
+        },
+    )
+
+
+@login_required
+@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
+def zoek_filter(request):
+    taken = Taak.objects.get_taken_recent(request.user)
+
+    filters = (
+        get_filters(request.user.profiel.context)
+        if request.user.profiel.context
+        else []
+    )
+    filters += ["q"]
+    actieve_filters = get_actieve_filters(request.user, filters)
+    initial_q = ""
+    if actieve_q := actieve_filters.get("q"):
+        initial_q = actieve_q[0]
+
+    foldout_states = []
+
+    form = ZoekFilterForm(request.GET, initial={"q": initial_q})
+
+    if request.POST:
+        form = ZoekFilterForm(request.POST, initial={"q": initial_q})
+        request_filters = {f: request.POST.getlist(f) for f in filters}
+        foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
+
+        if request_filters.get("q") != actieve_filters.get("q"):
+            actieve_filters["q"] = request_filters.get("q")
+
+        set_actieve_filters(request.user, actieve_filters)
+        form.fields["q"].initial = actieve_filters["q"][0]
+
+    filter_manager = FilterManager(taken, actieve_filters, foldout_states)
+
+    taken_gefilterd = filter_manager.filter_taken()
+
+    request.session["taken_gefilterd"] = taken_gefilterd
+
+    taken_aantal = len(taken_gefilterd)
+    return render(
+        request,
+        "snippets/zoek_filter_form.html",
+        {
+            "taken_aantal": taken_aantal,
+            "filter_manager": filter_manager,
+            "form": form,
+            "foldout_states": json.dumps(foldout_states),
         },
     )
 
@@ -367,9 +424,9 @@ def taak_detail_preview(request, id, signed_data):
             "taak": taak,
             "device_os": device.os_name().lower(),
             "signed_data": signed_data,
-            "gebruiker_email": taak_gedeeld.gedeeld_door
-            if taak_gedeeld
-            else gebruiker_email,
+            "gebruiker_email": (
+                taak_gedeeld.gedeeld_door if taak_gedeeld else gebruiker_email
+            ),
             "link_actief": link_actief,
             "taak_gedeeld": taak_gedeeld,
         },

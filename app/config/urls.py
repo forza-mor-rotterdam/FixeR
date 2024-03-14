@@ -42,6 +42,7 @@ from apps.main.views import (
     taken_filter,
     taken_lijst,
     ui_settings_handler,
+    zoek_filter,
 )
 from apps.release_notes.views import (
     ReleaseNoteAanmakenView,
@@ -114,6 +115,7 @@ urlpatterns = [
         name="taken_lijst",
     ),
     path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
+    path("zoek-filter/", zoek_filter, name="zoek_filter"),
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
     path(

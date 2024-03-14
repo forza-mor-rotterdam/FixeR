@@ -1,4 +1,4 @@
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.template.defaultfilters import slugify
 
 
@@ -161,16 +161,12 @@ class StandaardFilter:
 
 class BegraafplaatsFilter(StandaardFilter):
     _key = "begraafplaats"
-    _option_key_lookup = (
-        "melding__response_json__locaties_voor_melding__0__begraafplaats"
-    )
+    _option_key_lookup = "taak_zoek_data__begraafplaats"
     _option_value_lookup = (
         "melding__response_json__meta_uitgebreid__begraafplaats__choices"
     )
     _option_value_fallback_lookup = "melding__response_json__signalen_voor_melding__0__meta_uitgebreid__begraafplaats__choices"
-    _filter_lookup = (
-        "melding__response_json__locaties_voor_melding__0__begraafplaats__in"
-    )
+    _filter_lookup = "taak_zoek_data__begraafplaats__in"
     _label = "Begraafplaats"
 
 
@@ -192,12 +188,27 @@ class TaakStatusFilter(StandaardFilter):
 
 class WijkBuurtFilter(StandaardFilter):
     _key = "buurt"
-    _option_key_lookup = "melding__response_json__locaties_voor_melding__0__buurtnaam"
-    _option_group_lookup = "melding__response_json__locaties_voor_melding__0__wijknaam"
-    _filter_lookup = "melding__response_json__locaties_voor_melding__0__buurtnaam__in"
+    _option_key_lookup = "taak_zoek_data__buurtnaam"
+    _option_group_lookup = "taak_zoek_data__wijknaam"
+    _filter_lookup = "taak_zoek_data__buurtnaam__in"
     _label = "Buurten"
     _group_key = "wijken"
     _group_label = "Wijken & buurten"
+
+
+class ZoekFilter(StandaardFilter):
+    _key = "q"
+    _label = "Zoek"
+
+    @classmethod
+    def get_filter_lookup(cls, search_query):
+        return Q(taak_zoek_data__straatnaam__iregex=search_query) | Q(
+            taak_zoek_data__bron_signaal_ids__icontains=search_query
+        )
+
+    def _set_options(self, selected_options):
+        # For search filter, we don't need to set specific options
+        self._options = []
 
 
 class FilterManager:
@@ -208,6 +219,7 @@ class FilterManager:
         TaaktypeFilter,
         TaakStatusFilter,
         WijkBuurtFilter,
+        ZoekFilter,
     )
     _foldout_states = None
 
@@ -252,12 +264,24 @@ class FilterManager:
         return self._active_filters
 
     def filter_taken(self):
-        queryset_filter = {
-            self._get_filter_class(k).get_filter_lookup(): v
-            for k, v in self._active_filters.items()
-            if v
-        }
-        self._taken_filtered = self._taken.filter(**queryset_filter)
+        search_query = self._active_filters.pop("q", "")
+        queryset_filter = Q()
+
+        if search_query and search_query[0]:
+            print(f"SEARCH QUERY 0: {search_query[0]}")
+            search_conditions = ZoekFilter.get_filter_lookup(search_query[0])
+            queryset_filter &= search_conditions
+
+        print(f"Active filters: {self._active_filters}")
+        for k, v in self._active_filters.items():
+            if v:
+                print(f"K: {k}, V: {v}")
+                filter_class = self._get_filter_class(k)
+                if filter_class:
+                    queryset_filter &= Q(**{filter_class.get_filter_lookup(): v})
+
+        print(f"queryset_filter: {queryset_filter}")
+        self._taken_filtered = self._taken.filter(queryset_filter)
         self._set_filter_options()
         return self._taken_filtered
 
