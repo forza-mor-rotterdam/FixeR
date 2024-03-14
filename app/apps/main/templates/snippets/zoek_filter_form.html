@@ -4,8 +4,8 @@
           method="post"
           data-zoekFilter-target="form">
         {% csrf_token %}
+        Initial q: "{{ form.initial.q }}" . Momenteel wordt hij niet ingevuld in het zoekveld bij laden pagina.
         {{ form.q }}
-        {% comment %} {{ form.initial.q }} @TODO @Remco Currently isnt filled on page load {% endcomment %}
     </form>
 </div>
 </turbo-frame>

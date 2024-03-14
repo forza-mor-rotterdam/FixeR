@@ -57,7 +57,9 @@ def task_update_melding_alias_data(self, cache_timeout=0):
         taak_zoek_data_instance, _ = TaakZoekData.objects.update_or_create(
             melding_alias=melding_alias,
             defaults={
-                "geometrie": GEOSGeometry(json.dumps(location_data.get("geometrie"))),
+                "geometrie": GEOSGeometry(json.dumps(location_data.get("geometrie")))
+                if location_data.get("geometrie")
+                else None,
                 "locatie_type": location_data.get("locatie_type"),
                 "plaatsnaam": location_data.get("plaatsnaam"),
                 "straatnaam": location_data.get("straatnaam"),
