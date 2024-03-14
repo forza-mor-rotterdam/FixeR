@@ -9,7 +9,9 @@
 {% endblock body_class %}
 <main data-controller="main">
     <div class="{% block container_class %}container container--wide{% endblock container_class %}">
+        <turbo-frame id="beheer">
         {% block body %}
         {% endblock body %}
+        </turbo-frame>
     </div>
 </main>

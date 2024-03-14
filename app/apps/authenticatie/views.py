@@ -118,7 +118,8 @@ def gebruiker_bulk_import(request):
 
 
 @method_decorator(login_required, name="dispatch")
-class GebruikerProfielView(GebruikerView, UpdateView):
+class GebruikerProfielView(UpdateView):
+    model = Gebruiker
     form_class = GebruikerProfielForm
     template_name = "authenticatie/gebruiker_profiel.html"
     success_url = reverse_lazy("gebruiker_profiel")
