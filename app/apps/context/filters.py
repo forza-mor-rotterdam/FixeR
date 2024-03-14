@@ -268,19 +268,15 @@ class FilterManager:
         queryset_filter = Q()
 
         if search_query and search_query[0]:
-            print(f"SEARCH QUERY 0: {search_query[0]}")
             search_conditions = ZoekFilter.get_filter_lookup(search_query[0])
             queryset_filter &= search_conditions
 
-        print(f"Active filters: {self._active_filters}")
         for k, v in self._active_filters.items():
             if v:
-                print(f"K: {k}, V: {v}")
                 filter_class = self._get_filter_class(k)
                 if filter_class:
                     queryset_filter &= Q(**{filter_class.get_filter_lookup(): v})
 
-        print(f"queryset_filter: {queryset_filter}")
         self._taken_filtered = self._taken.filter(queryset_filter)
         self._set_filter_options()
         return self._taken_filtered

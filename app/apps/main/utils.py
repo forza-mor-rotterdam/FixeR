@@ -23,6 +23,11 @@ def get_actieve_filters(gebruiker, filters, status="nieuw"):
     return actieve_filters
 
 
+def set_actieve_filters(gebruiker, actieve_filters, status="nieuw"):
+    gebruiker.profiel.filters.update({status: actieve_filters})
+    return gebruiker.profiel.save()
+
+
 def get_sortering(gebruiker):
     return gebruiker.profiel.ui_instellingen.get("sortering", "Datum-reverse")
 
@@ -38,11 +43,6 @@ def get_kaart_modus(gebruiker):
 
 def set_kaart_modus(gebruiker, nieuwe_kaart_modus):
     gebruiker.profiel.ui_instellingen.update({"kaart_modus": nieuwe_kaart_modus})
-    return gebruiker.profiel.save()
-
-
-def set_actieve_filters(gebruiker, actieve_filters, status="nieuw"):
-    gebruiker.profiel.filters.update({status: actieve_filters})
     return gebruiker.profiel.save()
 
 

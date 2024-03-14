@@ -140,6 +140,7 @@ def taken_filter(request):
     )
     filters += ["q"]
     actieve_filters = get_actieve_filters(request.user, filters)
+    actieve_filters["q"] = request.session.get("q", [""])
     foldout_states = []
 
     if request.POST:
@@ -202,6 +203,8 @@ def taken_lijst(request):
         )
         filters += ["q"]
         actieve_filters = get_actieve_filters(request.user, filters)
+        actieve_filters["q"] = request.session.get("q", [""])
+
         filter_manager = FilterManager(taken, actieve_filters)
         taken_gefilterd = filter_manager.filter_taken()
 
@@ -246,23 +249,21 @@ def zoek_filter(request):
         else []
     )
     filters += ["q"]
-    actieve_filters = get_actieve_filters(request.user, filters)
 
     foldout_states = []
-
-    form = ZoekFilterForm(request.GET, initial={"q": actieve_filters.get("q", [""])[0]})
+    form = ZoekFilterForm(request.GET, initial={"q": request.session.get("q", [""])[0]})
 
     if request.POST:
         request_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
-
-        if request_filters.get("q") != actieve_filters.get("q"):
-            actieve_filters["q"] = request_filters.get("q")
-
-        set_actieve_filters(request.user, actieve_filters)
+        if request_filters.get("q") != request.session.get("q"):
+            request.session["q"] = request_filters.get("q")
         form = ZoekFilterForm(
-            request.POST, initial={"q": actieve_filters.get("q", [""])[0]}
+            request.POST, initial={"q": request.session.get("q", [""])[0]}
         )
+
+    actieve_filters = get_actieve_filters(request.user, filters)
+    actieve_filters["q"] = request.session.get("q", [""])
 
     filter_manager = FilterManager(taken, actieve_filters, foldout_states)
 
