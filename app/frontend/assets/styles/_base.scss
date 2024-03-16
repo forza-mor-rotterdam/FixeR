@@ -244,6 +244,11 @@ a,
     &.link--bin {
         @include has-icon();
     }
+
+    &.link--navigate {
+        text-decoration: none;
+        padding: 5px;
+    }
 }
 
 button {

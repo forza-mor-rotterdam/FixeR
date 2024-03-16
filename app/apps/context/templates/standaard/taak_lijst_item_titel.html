@@ -15,7 +15,7 @@
     <div class="incident__moment">
         <span data-taak-target="incidentDate">
             {% localize on %}
-            {{ taak.taakstatus.naam }}: {{ taak.taakstatus.aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}
+            {{ taak.taakstatus.aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}
             <br>
         {% endlocalize %}
     </span>
