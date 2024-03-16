@@ -117,8 +117,3 @@ def melding_naar_tijdlijn(melding: dict):
     tijdlijn_data.append(row_dict)
     tijdlijn_data = [t for t in reversed(tijdlijn_data)]
     return tijdlijn_data
-
-
-def update_meldingen(meldingen_qs):
-    for melding_alias in meldingen_qs:
-        melding_alias.save()

@@ -27,6 +27,9 @@ export default class extends Controller {
       self.currentOrder = e.detail.order
       self.reloadTakenLijst()
     })
+    self.element.addEventListener('searchChangeEvent', function (e) {
+      self.reloadTakenLijst()
+    })
 
     if (self.hasSortingTarget && showSortingContainer === true) {
       self.sortingTarget.classList.remove('hidden-vertical')

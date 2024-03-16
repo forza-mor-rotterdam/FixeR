@@ -114,6 +114,7 @@ class ZoekFilterForm(forms.Form):
                 "type": "search",
                 "placeholder": "Zoek op straatnaam of MeldR-nummer",
                 "data-zoekFilter-target": "zoekField",
+                "data-action": "zoekFilter#onChangeHandler",
             }
         ),
         help_text="Maak gebruik van komma's om op meerdere termen te zoeken",

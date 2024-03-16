@@ -1,8 +1,6 @@
-import json
 import logging
 
 from django.contrib.gis.db import models
-from django.contrib.gis.geos import GEOSGeometry
 from django.db import OperationalError, transaction
 from django.dispatch import Signal
 from django.utils import timezone
@@ -20,7 +18,7 @@ class TaakManager(models.Manager):
 
     def aanmaken(self, serializer, db="default"):
         from apps.aliassen.models import MeldingAlias
-        from apps.taken.models import Taakgebeurtenis, Taakstatus, TaakZoekData
+        from apps.taken.models import Taakgebeurtenis, Taakstatus
 
         with transaction.atomic():
             meldingalias, meldingalias_aangemaakt = MeldingAlias.objects.get_or_create(
@@ -29,37 +27,6 @@ class TaakManager(models.Manager):
             serializer.validated_data["melding"] = meldingalias
             gebruiker = serializer.validated_data.pop("gebruiker", None)
             taak = serializer.save()
-
-            location_data = meldingalias.response_json.get("locaties_voor_melding")[0]
-            signalen = meldingalias.response_json.get("signalen_voor_melding", [])
-            signaal_ids = [signaal.get("bron_signaal_id") for signaal in signalen]
-
-            taak_zoek_data_instance, _ = TaakZoekData.objects.update_or_create(
-                melding_alias=meldingalias,
-                defaults={
-                    "geometrie": GEOSGeometry(
-                        json.dumps(location_data.get("geometrie"))
-                    )
-                    if location_data.get("geometrie")
-                    else None,
-                    "locatie_type": location_data.get("locatie_type"),
-                    "plaatsnaam": location_data.get("plaatsnaam"),
-                    "straatnaam": location_data.get("straatnaam"),
-                    "huisnummer": location_data.get("huisnummer"),
-                    "huisletter": location_data.get("huisletter"),
-                    "toevoeging": location_data.get("toevoeging"),
-                    "postcode": location_data.get("postcode"),
-                    "wijknaam": location_data.get("wijknaam"),
-                    "buurtnaam": location_data.get("buurtnaam"),
-                    "begraafplaats": location_data.get("begraafplaats"),
-                    "grafnummer": location_data.get("grafnummer"),
-                    "vak": location_data.get("vak"),
-                    "lichtmast_id": location_data.get("lichtmast_id"),
-                    "bron_signaal_ids": signaal_ids,
-                },
-            )
-
-            taak.taak_zoek_data = taak_zoek_data_instance
 
             taakstatus = Taakstatus.objects.create(
                 taak=taak,

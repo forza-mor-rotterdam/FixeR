@@ -42,7 +42,7 @@ from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import Value
+from django.db.models import Q, Value
 from django.db.models.functions import Concat
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -193,6 +193,8 @@ def taken_lijst(request):
         "Datum": "taakstatus__aangemaakt_op",
         "Afstand": "afstand",
     }
+
+    # filteren
     taken_gefilterd = request.session.get("taken_gefilterd")
     if not taken_gefilterd:
         taken = Taak.objects.get_taken_recent(request.user)
@@ -201,13 +203,19 @@ def taken_lijst(request):
             if request.user.profiel.context
             else []
         )
-        filters += ["q"]
         actieve_filters = get_actieve_filters(request.user, filters)
-        actieve_filters["q"] = request.session.get("q", [""])
-
         filter_manager = FilterManager(taken, actieve_filters)
         taken_gefilterd = filter_manager.filter_taken()
 
+    # zoeken
+    if request.session.get("q"):
+        taken_gefilterd = taken_gefilterd.filter(
+            Q(taak_zoek_data__straatnaam__iregex=request.session.get("q"))
+            | Q(taak_zoek_data__huisnummer__iregex=request.session.get("q"))
+            | Q(taak_zoek_data__bron_signaal_ids__icontains=request.session.get("q"))
+        )
+
+    # sorteren
     taken_gefilterd = (
         taken_gefilterd.annotate(
             adres=Concat(
@@ -221,6 +229,7 @@ def taken_lijst(request):
         .order_by(f"{'-' if sort_reverse else ''}{sorting_fields.get(sortering)}")
     )
 
+    # paginate
     paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -240,50 +249,10 @@ def taken_lijst(request):
 
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def zoek_filter(request):
-    taken = Taak.objects.get_taken_recent(request.user)
-
-    filters = (
-        get_filters(request.user.profiel.context)
-        if request.user.profiel.context
-        else []
-    )
-    filters += ["q"]
-
-    foldout_states = []
-    form = ZoekFilterForm(request.GET, initial={"q": request.session.get("q", [""])[0]})
-
-    if request.POST:
-        request_filters = {f: request.POST.getlist(f) for f in filters}
-        foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
-        if not request_filters.get("q") and request.session.get("q"):
-            del request.session["q"]
-        elif request_filters.get("q") != request.session.get("q"):
-            request.session["q"] = request_filters.get("q")
-        form = ZoekFilterForm(
-            request.POST, initial={"q": request.session.get("q", [""])[0]}
-        )
-
-    actieve_filters = get_actieve_filters(request.user, filters)
-    actieve_filters["q"] = request.session.get("q", [""])
-
-    filter_manager = FilterManager(taken, actieve_filters, foldout_states)
-
-    taken_gefilterd = filter_manager.filter_taken()
-
-    request.session["taken_gefilterd"] = taken_gefilterd
-
-    taken_aantal = len(taken_gefilterd)
-    return render(
-        request,
-        "snippets/zoek_filter_form.html",
-        {
-            "taken_aantal": taken_aantal,
-            "filter_manager": filter_manager,
-            "form": form,
-            "foldout_states": json.dumps(foldout_states),
-        },
-    )
+def taak_zoeken(request):
+    body = json.loads(request.body)
+    request.session["q"] = body.get("q", "")
+    return JsonResponse({"q": request.session.get("q", "")})
 
 
 @login_required
