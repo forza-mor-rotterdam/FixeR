@@ -44,15 +44,13 @@
     <div class="textalign--right">
         {% if TEMPLATE_BASIS != "benc" %}
             {% if device_os == "ios" %}
-                <small>
-                    <a class="link"
-                       href="https://maps.apple.com/?saddr=''&daddr={{ geometrie.1|replace_comma_by_dot }},{{ geometrie.0|replace_comma_by_dot }}&z=10&"
-                       target="_top"
-                       aria-label="Navigeer naar taak"
-                       data-detail-target="navigeerLink">Navigeren
-                        {% include "icons/navigate.svg" %}
-                    </a>
-                </small>
+                <a class="link link--navigate"
+                   href="https://maps.apple.com/?saddr=''&daddr={{ geometrie.1|replace_comma_by_dot }},{{ geometrie.0|replace_comma_by_dot }}&z=10&"
+                   target="_top"
+                   aria-label="Navigeer naar taak"
+                   data-detail-target="navigeerLink">Navigeren
+                    {% include "icons/navigate.svg" %}
+                </a>
             {% else %}
                 <a class="link"
                    data-action="detail#makeRoute"
