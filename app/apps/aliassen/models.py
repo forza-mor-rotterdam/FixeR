@@ -2,7 +2,6 @@ import json
 import logging
 
 from apps.meldingen.service import MeldingenService
-from apps.taken.models import TaakZoekData
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import GEOSGeometry
 from utils.models import BasisModel
@@ -36,6 +35,8 @@ class MeldingAlias(BasisModel):
         self.response_json = response.json()
 
     def update_zoek_data(self):
+        from apps.taken.models import TaakZoekData
+
         location_data = self.response_json.get("locaties_voor_melding")[0]
         signalen = self.response_json.get("signalen_voor_melding", [])
         signaal_ids = [signaal.get("bron_signaal_id") for signaal in signalen]
