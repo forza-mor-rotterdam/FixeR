@@ -5,7 +5,6 @@
     Gebruiker bulk import | Beheer | FixeR
 {% endblock title %}
 {% block body %}
-    <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
         <div>
             <a href="{% url 'gebruiker_lijst' %}"
@@ -189,5 +188,4 @@
             <a href="{% url 'beheer' %}">Beheer</a>
         {% endif %}
     </div>
-    </turbo-frame>
 {% endblock body %}

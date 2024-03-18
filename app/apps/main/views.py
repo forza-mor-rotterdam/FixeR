@@ -664,6 +664,7 @@ def meldingen_bestand(request):
             signing.loads(
                 request.GET.get("signed-data"),
                 max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS,
+                salt=settings.SECRET_KEY,
             )
             return _meldingen_bestand(request, modified_path)
         except signing.BadSignature:

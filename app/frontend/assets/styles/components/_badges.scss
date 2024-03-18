@@ -1,17 +1,17 @@
 .badge {
     display: inline-block;
-    padding: 0 $input-padding-y;
+    padding: 0 4px;
     color: $white;
     font-weight: 700;
-    font-size: 12px;
-    line-height: 20px;
+    font-size: 0.667em;
+    line-height: 1.5em;
     margin-right: 4px;
 
     h1 & {
-        vertical-align: middle;
-        margin-left: 12px;
         padding: 2px $input-padding-y;
-        margin-top: -4px;
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 
     &--lightblue {

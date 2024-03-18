@@ -107,7 +107,7 @@ class ZoekFilterForm(forms.Form):
     q = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                "class": "list--form-text-input",
+                "class": "form-control search",
                 "hideLabel": True,
                 "typeOfInput": "search",
                 "inputType": "search",
