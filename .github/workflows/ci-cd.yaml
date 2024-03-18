@@ -42,13 +42,16 @@ jobs:
         run: docker compose -f docker-compose.test.yaml run app python manage.py test
 
   deploy:
-    name: Deploy to Test and Acceptance environments
+    name: Deploy to test and acceptance
     if: github.ref == 'refs/heads/develop'
-    needs: [docker-build-and-test, django-lint]
     runs-on: ubuntu-latest
+    needs: [docker-build-and-test]
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        environment: [test, acc]
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -79,43 +82,20 @@ jobs:
           build-args: |
             GIT_SHA=${{ github.sha }}
 
-      - name: Start TEST rollout on k8s platform
+      - name: Start rollout on k8s platform
         uses: actions-hub/kubectl@master
         env:
-          environment: test
-          KUBE_HOST: ${{ vars.KUBE_HOST }}
-          KUBE_CERTIFICATE: ${{ vars.KUBE_CERTIFICATE }}
+          KUBE_HOST: ${{ secrets.KUBE_HOST }}
+          KUBE_CERTIFICATE: ${{ secrets.KUBE_CERTIFICATE }}
           KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
         with:
-          args: rollout restart deployment/app --namespace=${{ vars.KUBE_NAMESPACE }}
+          args: rollout restart deployment/app --namespace=${{ secrets.KUBE_NAMESPACE }}
 
-      - name: Status TEST rollout on k8s platform
+      - name: Status rollout on k8s platform
         uses: actions-hub/kubectl@master
         env:
-          environment: test
-          KUBE_HOST: ${{ vars.KUBE_HOST }}
-          KUBE_CERTIFICATE: ${{ vars.KUBE_CERTIFICATE }}
+          KUBE_HOST: ${{ secrets.KUBE_HOST }}
+          KUBE_CERTIFICATE: ${{ secrets.KUBE_CERTIFICATE }}
           KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
         with:
-          args: rollout status deployment/app --namespace=${{ vars.KUBE_NAMESPACE }}
-
-
-      - name: Start ACC rollout on k8s platform
-        uses: actions-hub/kubectl@master
-        env:
-          environment: acc
-          KUBE_HOST: ${{ vars.KUBE_HOST }}
-          KUBE_CERTIFICATE: ${{ vars.KUBE_CERTIFICATE }}
-          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
-        with:
-          args: rollout restart deployment/app --namespace=${{ vars.KUBE_NAMESPACE }}
-
-      - name: Status ACC rollout on k8s platform
-        uses: actions-hub/kubectl@master
-        env:
-          environment: acc
-          KUBE_HOST: ${{ vars.KUBE_HOST }}
-          KUBE_CERTIFICATE: ${{ vars.KUBE_CERTIFICATE }}
-          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
-        with:
-          args: rollout status deployment/app --namespace=${{ vars.KUBE_NAMESPACE }}
+          args: rollout status deployment/app --namespace=${{ secrets.KUBE_NAMESPACE }}

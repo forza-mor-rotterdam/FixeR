@@ -10,7 +10,6 @@ repos:
     rev: v1.1
     hooks:
       - id: autoflake
-        exclude: ^(frontend/|backend/apps/profilr/templates/)
         args:
           [
             "--in-place",
@@ -21,18 +20,15 @@ repos:
     rev: "5.13.2"
     hooks:
       - id: isort
-        exclude: ^(frontend/|backend/apps/profilr/templates/)
   - repo: https://github.com/ambv/black
     rev: "23.10.1"
     hooks:
       - id: black
         language_version: python3
-        exclude: ^(frontend/|backend/apps/profilr/templates/)
   - repo: https://github.com/pycqa/flake8
     rev: "6.1.0"
     hooks:
       - id: flake8
-        exclude: ^(frontend/|backend/apps/profilr/templates/)
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: "v3.0.3"
     hooks:
