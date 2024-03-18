@@ -76,10 +76,15 @@
                 overflow-y: auto;
             }
         }
+
+        .container__search {
+            display: none;
+        }
     }
 }
 
-.container__sorting {
+.container__sorting,
+.container__search {
     box-sizing: content-box;
 
     .wrapper {
@@ -111,6 +116,19 @@
         background-repeat: no-repeat;
         background-position: right 10px center;
         background-size: 24px 24px;
+    }
+}
+
+.wrapper--search {
+    display: none;
+
+    input {
+        width: 350px;
+        margin: 0;
+    }
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: block;
     }
 }
 

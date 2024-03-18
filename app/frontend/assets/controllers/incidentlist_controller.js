@@ -2,6 +2,7 @@ import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
 let showSortingContainer = false
+let showSearchContainer = false
 let sortDirectionReversed = false
 let currentPosition = null
 
@@ -9,6 +10,7 @@ export default class extends Controller {
   static outlets = ['kaart']
   static targets = [
     'sorting',
+    'search',
     'toggleMapView',
     'taakAfstand',
     'taakItem',
@@ -170,5 +172,12 @@ export default class extends Controller {
     self.sortingTarget.classList.toggle('show-vertical')
     showSortingContainer = !showSortingContainer
     sortDirectionReversed = sortDirectionReversed === undefined ? false : true
+  }
+
+  onToggleSearchContainer() {
+    let self = this
+    self.searchTarget.classList.toggle('hidden-vertical')
+    self.searchTarget.classList.toggle('show-vertical')
+    showSearchContainer = !showSearchContainer
   }
 }

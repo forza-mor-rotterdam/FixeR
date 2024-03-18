@@ -417,7 +417,8 @@ h1 + .section--seperated {
     max-height: 100%;
     transition: all 0.25s ease-in;
 
-    &.container__sorting {
+    &.container__sorting,
+    &.container__search {
         max-height: 120px;
         overflow: hidden;
     }
@@ -429,7 +430,8 @@ h1 + .section--seperated {
     overflow: hidden;
     transition: max-height 0.25s ease-in;
 
-    &.container__sorting {
+    &.container__sorting,
+    &.container__search {
         transition: all 0.25s ease-in;
 
         @media (min-width: map-get($grid-breakpoints, lg)) {
