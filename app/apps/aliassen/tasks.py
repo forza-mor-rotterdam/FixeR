@@ -1,10 +1,8 @@
-import json
 from datetime import timedelta
 
 import celery
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 
 logger = get_task_logger(__name__)
@@ -35,7 +33,7 @@ def task_maak_bijlagealias(self, bijlage_url, taakgebeurtenis_id):
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
-def task_update_melding_alias_data(self, cache_timeout=0):
+def task_update_melding_alias_data_for_all_meldingen(self, cache_timeout=0):
     from apps.aliassen.models import MeldingAlias
 
     if not isinstance(cache_timeout, int):
@@ -48,19 +46,18 @@ def task_update_melding_alias_data(self, cache_timeout=0):
     )
     for melding_alias in melding_alias_items_for_update:
         melding_alias.save()
-        if melding_alias.response_json.get(
-            "locaties_voor_melding"
-        ) and melding_alias.response_json.get("locaties_voor_melding")[0].get(
-            "geometrie"
-        ):
-            melding_alias.taken_voor_meldingalias.all().update(
-                geometrie=GEOSGeometry(
-                    json.dumps(
-                        melding_alias.response_json.get("locaties_voor_melding")[0].get(
-                            "geometrie"
-                        )
-                    )
-                )
-            )
+        melding_alias.update_zoek_data()
 
     return f"updated/totaal={melding_alias_items_for_update.count()}/{all_melding_alias_items.count()}"
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def task_update_melding_alias_data(self, melding_alias_id):
+    from apps.aliassen.models import MeldingAlias
+
+    melding_alias = MeldingAlias.objects.filter(pk=melding_alias_id).first()
+    if melding_alias:
+        melding_alias.save()
+        melding_alias.update_zoek_data()
+
+    return f"MeldingAlias with id={melding_alias_id}, updated"

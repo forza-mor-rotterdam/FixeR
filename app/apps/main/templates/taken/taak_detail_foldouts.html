@@ -88,13 +88,13 @@
                 <div>
                     <h3 class="h5">Ter hoogte van</h3>
                     <p>
-                        {{ locatie.straatnaam|lower|capfirst }}
-                        {% if locatie.huisnummer %}{{ locatie.huisnummer }}{% endif %}
+                        {{ taak_zoek_data.straatnaam|lower|capfirst }}
+                        {% if taak_zoek_data.huisnummer %}{{ taak_zoek_data.huisnummer }}{% endif %}
                     </p>
                     {% if device_os == "ios" %}
                         <small>
                             <a class="link"
-                               href="https://maps.apple.com/?saddr=''&daddr={{ geometrie.coordinates.1|replace_comma_by_dot }},{{ geometrie.coordinates.0|replace_comma_by_dot }}&z=10&"
+                               href="https://maps.apple.com/?saddr=''&daddr={{ geometrie.1|replace_comma_by_dot }},{{ geometrie.0|replace_comma_by_dot }}&z=10&"
                                target="_top"
                                aria-label="Navigeer naar taak"
                                data-detail-target="navigeerLink">
@@ -105,8 +105,8 @@
                     {% else %}
                         <a class="link"
                            data-action="detail#makeRoute"
-                           data-detail-lat-param="{{ geometrie.coordinates.1|replace_comma_by_dot }}"
-                           data-detail-long-param="{{ geometrie.coordinates.0|replace_comma_by_dot }}"
+                           data-detail-lat-param="{{ geometrie.1|replace_comma_by_dot }}"
+                           data-detail-long-param="{{ geometrie.0|replace_comma_by_dot }}"
                            target="_top"
                            aria-label="Navigeer naar taak">
                             {% include "icons/navigate.svg" %}
@@ -115,31 +115,31 @@
                     {% endif %}
                 </div>
                 <div>
-                    {% if locatie.wijknaam %}
+                    {% if taak_zoek_data.wijknaam %}
                         <div>
                             <h3 class="h5">Wijk</h3>
-                            <p>{{ locatie.wijknaam }}</p>
+                            <p>{{ taak_zoek_data.wijknaam }}</p>
                         </div>
                     {% endif %}
-                    {% if locatie.buurtnaam %}
+                    {% if taak_zoek_data.buurtnaam %}
                         <div>
                             <h3 class="h5">Buurt</h3>
-                            <p>{{ locatie.buurtnaam }}</p>
+                            <p>{{ taak_zoek_data.buurtnaam }}</p>
                         </div>
                     {% endif %}
-                    {% if taak.locatie.subbuurt %}
+                    {% if taak.taak_zoek_data.subbuurt %}
                         <div>
                             <dt>Subbuurt:</dt>
                             <dd>
-                                {{ taak.locatie.subbuurt }}
+                                {{ taak.taak_zoek_data.subbuurt }}
                             </dd>
                         </div>
                     {% endif %}
-                    {% if taak.locatie.plaatsbepaling %}
+                    {% if taak.taak_zoek_data.plaatsbepaling %}
                         <div>
                             <dt>Plaatsbepaling:</dt>
                             <dd>
-                                {{ taak.locatie.plaatsbepaling }}
+                                {{ taak.taak_zoek_data.plaatsbepaling }}
                             </dd>
                         </div>
                     {% endif %}
@@ -200,20 +200,20 @@
             {% else %}
                 <h3 class="h5">Begraafplaats</h3>
                 <p>
-                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices locatie.begraafplaats as signaal_begraafplaats_naam %}
-                    {% if signaal_begraafplaats_naam == locatie.begraafplaats %}
-                        {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices locatie.begraafplaats %}
+                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats as signaal_begraafplaats_naam %}
+                    {% if signaal_begraafplaats_naam == taak_zoek_data.begraafplaats %}
+                        {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats %}
                     {% else %}
                         {{ signaal_begraafplaats_naam }}
                     {% endif %}
                 </p>
-                {% if locatie.grafnummer %}
+                {% if taak_zoek_data.grafnummer %}
                     <h3 class="h5">Grafnummer</h3>
-                    <p>{{ locatie.grafnummer }}</p>
+                    <p>{{ taak_zoek_data.grafnummer }}</p>
                 {% endif %}
-                {% if locatie.vak %}
+                {% if taak_zoek_data.vak %}
                     <h3 class="h5">Vak</h3>
-                    <p>{{ locatie.vak }}</p>
+                    <p>{{ taak_zoek_data.vak }}</p>
                 {% endif %}
                 {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
                     <h3 class="h5">Naam overledene</h3>

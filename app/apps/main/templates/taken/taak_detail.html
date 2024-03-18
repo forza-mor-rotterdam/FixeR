@@ -8,29 +8,27 @@
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
 {% block title %}
     {% with melding=taak.melding.response_json %}
-        {% with locatie=melding.locaties_voor_melding.0 %}
-            {% if TEMPLATE_BASIS != "benc" %}
-                {{ locatie.straatnaam }}
-                {% if locatie.huisnummer %}{{ locatie.huisnummer }}{% endif %}
+        {% if TEMPLATE_BASIS != "benc" %}
+            {{ taak.taak_zoek_data.straatnaam }}
+            {% if taak.taak_zoek_data.huisnummer %}{{ taak.taak_zoek_data.huisnummer }}{% endif %}
+        {% else %}
+            {% if taak.taak_zoek_data.grafnummer %}Graf {{ taak.taak_zoek_data.grafnummer }}{% endif %}
+            {% if taak.taak_zoek_data.vak %}, Vak {{ taak.taak_zoek_data.vak }}{% endif %}
+            {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices taak.taak_zoek_data.begraafplaats as signaal_begraafplaats_naam %}
+            {% if signaal_begraafplaats_naam == taak.taak_zoek_data.begraafplaats %}
+                {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices taak.taak_zoek_data.begraafplaats %}
             {% else %}
-                {% if locatie.grafnummer %}Graf {{ locatie.grafnummer }}{% endif %}
-                {% if locatie.vak %}, Vak {{ locatie.vak }}{% endif %}
-                {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices locatie.plaats as signaal_begraafplaats_naam %}
-                {% if signaal_begraafplaats_naam == locatie.begraafplaats %}
-                    {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices locatie.plaats %}
-                {% else %}
-                    {{ signaal_begraafplaats_naam }}
-                {% endif %}
+                {{ signaal_begraafplaats_naam }}
             {% endif %}
-        {% endwith %}
+        {% endif %}
     {% endwith %}
     | FixeR
 {% endblock title %}
 {% block before_modal_content %}
     <turbo-frame id="taak_basis">
     {% with melding=taak.melding.response_json %}
-        {% with locatie=melding.locaties_voor_melding.0 %}
-            {% with geometrie=locatie.geometrie %}
+        {% with taak_zoek_data=taak.taak_zoek_data %}
+            {% with geometrie=taak_zoek_data.geometrie %}
                 <div data-controller="modal">
                     <div>
                         <div>
@@ -49,8 +47,8 @@
                         </div>
                         <div data-controller="detail"
                              data-detail-taak-object-value="{{ taak }}"
-                             data-detail-incident-y-value="{{ geometrie.coordinates.0|replace_comma_by_dot }}"
-                             data-detail-incident-x-value="{{ geometrie.coordinates.1|replace_comma_by_dot }}"
+                             data-detail-incident-y-value="{{ geometrie.x|replace_comma_by_dot }}"
+                             data-detail-incident-x-value="{{ geometrie.y|replace_comma_by_dot }}"
                              data-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
                              {% if not DEBUG %}data-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
                              {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
