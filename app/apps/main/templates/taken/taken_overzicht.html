@@ -58,8 +58,19 @@
             </div>
             <div class="container__sorting hidden-vertical"
                  data-incidentlist-target="zoeken">
-                <turbo-frame id="zoek_filter" src="{% url 'zoek_filter' %}" data-spinner="hide">
-                </turbo-frame>
+                <div class="wrapper" data-controller="zoekFilter">
+                    <form>
+                        {% csrf_token %}
+                        <input type="search"
+                               name="q"
+                               value="{{ request.session.q }}"
+                               class="list--form-text-input"
+                               placeholder="Zoek op straatnaam of MeldR-nummer"
+                               data-zoekfilter-target="zoekField"
+                               data-action="zoekFilter#onChangeHandler"
+                               id="id_q">
+                    </form>
+                </div>
             </div>
             <div class="list__incidents" data-testid="incidentsList">
                 {% if taken_aantal != 0 %}

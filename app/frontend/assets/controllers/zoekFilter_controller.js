@@ -4,27 +4,40 @@ export default class extends Controller {
   static targets = ['form', 'zoekField']
 
   connect() {
-    let orderChangeEvent = new CustomEvent('orderChangeEvent', {
+    this.to = null
+    this.csrf_token = this.element.querySelector('input[name="csrfmiddlewaretoken"]').value
+  }
+  updateTakenList() {
+    let orderChangeEvent = new CustomEvent('searchChangeEvent', {
       bubbles: true,
       cancelable: false,
-      detail: { order: this.zoekFieldTarget.value },
-    })
-    console.log(this.zoekFieldTarget)
-    console.log(this.formTarget)
-    const initialValue = this.zoekFieldTarget.value
-    const searchInput = document.querySelector('input[type=search]')
-    searchInput.value = initialValue
-    console.log({ searchInput })
-    searchInput.addEventListener('search', function () {
-      console.log('Searching on searchInput')
-      self.element.requestSubmit()
     })
     this.element.dispatchEvent(orderChangeEvent)
   }
-  onChangeHandler() {
-    console.log('CHANGING')
-    console.log(this.formTarget)
-    console.log(this.zoekFieldTarget)
-    this.formTarget.requestSubmit()
+  onChangeHandler(e) {
+    clearTimeout(this.to)
+    this.to = setTimeout(() => this.submit(this.zoekFieldTarget.value), 200)
+  }
+  async submit(q) {
+    const zoekUrl = '/taak-zoeken/'
+    try {
+      const response = await fetch(`${zoekUrl}`, {
+        method: 'post',
+        headers: {
+          'X-CSRFToken': this.csrf_token,
+        },
+        body: JSON.stringify({
+          q: q,
+        }),
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+      const data = await response.json()
+      this.updateTakenList()
+      return data.q
+    } catch (error) {
+      console.error('Error fetching address details:', error.message)
+    }
   }
 }

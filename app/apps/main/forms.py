@@ -103,25 +103,6 @@ class SorteerFilterForm(forms.Form):
     )
 
 
-class ZoekFilterForm(forms.Form):
-    q = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                "class": "form-control search",
-                "hideLabel": True,
-                "typeOfInput": "search",
-                "inputType": "search",
-                "type": "search",
-                "placeholder": "Zoek op straatnaam of MeldR-nummer",
-                "data-zoekFilter-target": "zoekField",
-            }
-        ),
-        help_text="Maak gebruik van komma's om op meerdere termen te zoeken",
-        label="Zoeken",
-        required=False,
-    )
-
-
 class KaartModusForm(forms.Form):
     kaart_modus = forms.ChoiceField(
         widget=forms.RadioSelect(

@@ -45,10 +45,12 @@
         {% if TEMPLATE_BASIS != "benc" %}
             {% if device_os == "ios" %}
                 <a class="link link--navigate"
-                   href="https://maps.apple.com/?saddr=''&daddr={{ geometrie.coordinates.1|replace_comma_by_dot }},{{ geometrie.coordinates.0|replace_comma_by_dot }}&z=10&"
+                   href="https://maps.apple.com/?saddr=''&daddr={{ geometrie.1|replace_comma_by_dot }},{{ geometrie.0|replace_comma_by_dot }}&z=10&"
                    target="_top"
                    aria-label="Navigeer naar taak"
-                   data-detail-target="navigeerLink">{% include "icons/navigate.svg" %}</a>
+                   data-detail-target="navigeerLink">Navigeren
+                    {% include "icons/navigate.svg" %}
+                </a>
             {% else %}
                 <a class="link link--navigate"
                    data-action="detail#makeRoute"
