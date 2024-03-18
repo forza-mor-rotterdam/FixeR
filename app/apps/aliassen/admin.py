@@ -1,11 +1,12 @@
 from apps.aliassen.models import BijlageAlias, MeldingAlias
-from apps.main.utils import update_meldingen
+from apps.aliassen.tasks import task_update_melding_alias_data
 from django.contrib import admin
 
 
-@admin.action(description="Update meldingen")
-def action_update_meldingen(modeladmin, request, queryset):
-    update_meldingen(queryset)
+@admin.action(description="Update melding alias data")
+def action_update_melding_alias_data(self, request, queryset):
+    for melding_alias in queryset:
+        task_update_melding_alias_data.delay(melding_alias.id)
 
 
 class MeldingAliasAdmin(admin.ModelAdmin):
@@ -15,7 +16,7 @@ class MeldingAliasAdmin(admin.ModelAdmin):
         "aangepast_op",
         "geen_data",
     )
-    actions = (action_update_meldingen,)
+    actions = (action_update_melding_alias_data,)
 
     def geen_data(self, obj):
         return bool(not obj.response_json)

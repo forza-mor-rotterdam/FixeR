@@ -6,7 +6,7 @@
     {{ object.email|get_field_from_gebruiker_middels_email }} | Profiel | FixeR
 {% endblock title %}
 {% block body %}
-    <turbo-frame id="gebruiker_profiel">
+    <turbo-frame id="taak_basis">
     {% block messages %}
         {% if messages %}
             <div class="messages-container" data-controller="messages">
@@ -37,7 +37,7 @@
         {% endif %}
         <div class="grid-container">
             <div class="grid-item">
-                <form action="." method="post" data-turbo-frame="_top">
+                <form action="." method="post">
                     {% csrf_token %}
                     <div>
                         <h2 class="h5 ">E-mailadres</h2>

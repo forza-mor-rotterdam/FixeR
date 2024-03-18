@@ -3,6 +3,7 @@ from datetime import datetime
 
 from django import template
 from django.conf import settings
+from django.contrib.gis.geos import Point
 
 register = template.Library()
 
@@ -35,6 +36,8 @@ def to_timestamp(value):
 
 @register.filter
 def json_encode(value):
+    if isinstance(value, Point):
+        return value.geojson
     return json.dumps(value)
 
 

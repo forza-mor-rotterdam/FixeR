@@ -41,7 +41,7 @@ from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import Value
+from django.db.models import Q, Value
 from django.db.models.functions import Concat
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -137,21 +137,24 @@ def taken_filter(request):
         if request.user.profiel.context
         else []
     )
+    filters += ["q"]
+    actieve_filters = get_actieve_filters(request.user, filters)
+    actieve_filters["q"] = request.session.get("q", [""])
     foldout_states = []
+
     if request.POST:
-        actieve_filters = {f: request.POST.getlist(f) for f in filters}
+        request_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
-    else:
-        actieve_filters = get_actieve_filters(request.user, filters)
+        for filter_name, new_value in request_filters.items():
+            if filter_name != "q" and new_value != actieve_filters.get(filter_name):
+                actieve_filters[filter_name] = new_value
+        set_actieve_filters(request.user, actieve_filters)
 
     filter_manager = FilterManager(taken, actieve_filters, foldout_states)
 
     taken_gefilterd = filter_manager.filter_taken()
 
     request.session["taken_gefilterd"] = taken_gefilterd
-
-    if request.POST:
-        set_actieve_filters(request.user, filter_manager.active_filters)
 
     taken_aantal = len(taken_gefilterd)
     return render(
@@ -168,6 +171,9 @@ def taken_filter(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_lijst(request):
+    MeldingenService().set_gebruiker(
+        gebruiker=request.user.serialized_instance(),
+    )
     try:
         pnt = Point(
             float(request.GET.get("lon", 0)),
@@ -181,11 +187,13 @@ def taken_lijst(request):
     sort_reverse = len(sortering.split("-")) > 1
     sortering = sortering.split("-")[0]
     sorting_fields = {
-        "Postcode": "melding__response_json__locaties_voor_melding__0__postcode",
+        "Postcode": "taak_zoek_data__postcode",
         "Adres": "adres",
         "Datum": "taakstatus__aangemaakt_op",
         "Afstand": "afstand",
     }
+
+    # filteren
     taken_gefilterd = request.session.get("taken_gefilterd")
     if not taken_gefilterd:
         taken = Taak.objects.get_taken_recent(request.user)
@@ -198,19 +206,29 @@ def taken_lijst(request):
         filter_manager = FilterManager(taken, actieve_filters)
         taken_gefilterd = filter_manager.filter_taken()
 
+    # zoeken
+    if request.session.get("q"):
+        taken_gefilterd = taken_gefilterd.filter(
+            Q(taak_zoek_data__straatnaam__iregex=request.session.get("q"))
+            | Q(taak_zoek_data__huisnummer__iregex=request.session.get("q"))
+            | Q(taak_zoek_data__bron_signaal_ids__icontains=request.session.get("q"))
+        )
+
+    # sorteren
     taken_gefilterd = (
         taken_gefilterd.annotate(
             adres=Concat(
-                "melding__response_json__locaties_voor_melding__0__straatnaam",
+                "taak_zoek_data__straatnaam",
                 Value(" "),
-                "melding__response_json__locaties_voor_melding__0__huisnummer",
+                "taak_zoek_data__huisnummer",
                 output_field=models.CharField(),
             )
         )
-        .annotate(afstand=Distance("geometrie", pnt))
+        .annotate(afstand=Distance("taak_zoek_data__geometrie", pnt))
         .order_by(f"{'-' if sort_reverse else ''}{sorting_fields.get(sortering)}")
     )
 
+    # paginate
     paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -226,6 +244,14 @@ def taken_lijst(request):
             "page_obj": page_obj,
         },
     )
+
+
+@login_required
+@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
+def taak_zoeken(request):
+    body = json.loads(request.body)
+    request.session["q"] = body.get("q", "")
+    return JsonResponse({"q": request.session.get("q", "")})
 
 
 @login_required
@@ -367,9 +393,9 @@ def taak_detail_preview(request, id, signed_data):
             "taak": taak,
             "device_os": device.os_name().lower(),
             "signed_data": signed_data,
-            "gebruiker_email": taak_gedeeld.gedeeld_door
-            if taak_gedeeld
-            else gebruiker_email,
+            "gebruiker_email": (
+                taak_gedeeld.gedeeld_door if taak_gedeeld else gebruiker_email
+            ),
             "link_actief": link_actief,
             "taak_gedeeld": taak_gedeeld,
         },
@@ -606,6 +632,7 @@ def meldingen_bestand(request):
             signing.loads(
                 request.GET.get("signed-data"),
                 max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS,
+                salt=settings.SECRET_KEY,
             )
             return _meldingen_bestand(request, modified_path)
         except signing.BadSignature:

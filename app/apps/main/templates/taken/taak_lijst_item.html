@@ -14,7 +14,7 @@
          data-melding-uuid="{{ taak.melding.response_json.uuid }}"
          data-titel="{{ taak.titel }}"
          data-adres="{{ taak.adres }}"
-         data-geometrie="{% if taak.melding.response_json.locaties_voor_melding.0.geometrie %}{{ taak.melding.response_json.locaties_voor_melding.0.geometrie|json_encode }}{% else %}{% endif %}"
+         data-geometrie="{% if taak.taak_zoek_data.geometrie %}{{ taak.taak_zoek_data.geometrie|json_encode }}{% else %}{% endif %}"
          {% if bijlagen %}data-afbeelding-url="{{ bijlagen.0.afbeelding_verkleind_relative_url|mor_core_protected_url }}"{% endif %}
          class="list-item"
          {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}data-controller="taak modal"{% endif %}>

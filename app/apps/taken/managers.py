@@ -27,6 +27,7 @@ class TaakManager(models.Manager):
             serializer.validated_data["melding"] = meldingalias
             gebruiker = serializer.validated_data.pop("gebruiker", None)
             taak = serializer.save()
+
             taakstatus = Taakstatus.objects.create(
                 taak=taak,
             )
