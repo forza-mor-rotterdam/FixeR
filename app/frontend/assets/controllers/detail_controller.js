@@ -108,9 +108,9 @@ export default class extends Controller {
           'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMy43NzgzIDYuMjI0MTJDMTkuNTAwMyAxLjk0NjEzIDEyLjQ5OTkgMS45NDYxMyA4LjIyMTkzIDYuMjI0MTJDMy45NDM5MyAxMC41MDIxIDMuOTQzOTMgMTcuNTAyNSA4LjIyMTkzIDIxLjc4MDVMMTYuMDAwMSAyOS41NTg2TDIzLjc3ODMgMjEuNzgwNUMyOC4wNTYzIDE3LjUwMjUgMjguMDU2MyAxMC41MDIxIDIzLjc3ODMgNi4yMjQxMlpNMTYuMDAwMSAxOC4wMDIzQzE4LjIwOTIgMTguMDAyMyAyMC4wMDAxIDE2LjIxMTQgMjAuMDAwMSAxNC4wMDIzQzIwLjAwMDEgMTEuNzkzMiAxOC4yMDkyIDEwLjAwMjMgMTYuMDAwMSAxMC4wMDIzQzEzLjc5MSAxMC4wMDIzIDEyLjAwMDEgMTEuNzkzMiAxMi4wMDAxIDE0LjAwMjNDMTIuMDAwMSAxNi4yMTE0IDEzLjc5MSAxOC4wMDIzIDE2LjAwMDEgMTguMDAyM1oiIGZpbGw9IiNDOTM2NzUiLz4KPC9zdmc+Cg==',
       })
 
-      var url =
+      let url =
         'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}'
-      var config = {
+      let config = {
         crs: 'EPSG:3857',
         format: 'png',
         name: 'standaard',
@@ -156,7 +156,7 @@ export default class extends Controller {
       touchsurface.addEventListener(
         'touchstart',
         function (e) {
-          var touchobj = e.changedTouches[0]
+          let touchobj = e.changedTouches[0]
           dist = 0
           startX = touchobj.pageX
           startY = touchobj.pageY
@@ -177,11 +177,11 @@ export default class extends Controller {
       touchsurface.addEventListener(
         'touchend',
         function (e) {
-          var touchobj = e.changedTouches[0]
+          let touchobj = e.changedTouches[0]
           dist = touchobj.pageX - startX // get total dist traveled by finger while in contact with surface
           elapsedTime = new Date().getTime() - startTime // get time elapsed
           // check that elapsed time is within specified, horizontal dist traveled >= threshold, and vertical dist traveled <= 100
-          var swiperightBol =
+          let swiperightBol =
             elapsedTime <= allowedTime &&
             dist >= threshold &&
             Math.abs(touchobj.pageY - startY) <= 100
@@ -327,7 +327,7 @@ export default class extends Controller {
     const result = {}
     for (const key in self.Mapping) {
       const newKey = self.Mapping[key]
-      if (Object.prototype.hasOwnProperty.call(object, key)) {
+      if (Object.hasOwn(object, key)) {
         result[newKey] = object[key]
       } else {
         result[newKey] = null

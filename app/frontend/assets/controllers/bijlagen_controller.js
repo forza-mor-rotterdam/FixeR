@@ -10,7 +10,7 @@ export default class extends Controller {
   }
 
   removeDuplicates(arr) {
-    var unique = []
+    let unique = []
     arr.forEach((element) => {
       if (!unique.includes(element)) {
         unique.push(element)

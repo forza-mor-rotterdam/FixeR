@@ -175,7 +175,7 @@ export default class extends Controller {
   }
 
   getGesturePointFromEvent = function (evt) {
-    var point = {}
+    let point = {}
 
     if (evt.targetTouches) {
       // Prefer Touch Events
@@ -203,23 +203,17 @@ export default class extends Controller {
     } else if (differenceInX <= -100) {
       self.element.style.left = '100%'
       self.lock = true
-      setTimeout(
-        function () {
-          self.buttonNietOpgelostTarget.click()
-          self.resetIncidentSwipe()
-        }.bind(self),
-        500
-      )
+      setTimeout(function () {
+        self.buttonNietOpgelostTarget.click()
+        self.resetIncidentSwipe()
+      }, 500)
     } else {
       self.lock = true
       self.element.style.left = '-100%'
-      setTimeout(
-        function () {
-          self.buttonOpgelostTarget.click()
-          self.resetIncidentSwipe()
-        }.bind(self),
-        500
-      )
+      setTimeout(function () {
+        self.buttonOpgelostTarget.click()
+        self.resetIncidentSwipe()
+      }, 500)
     }
   }
 
@@ -227,13 +221,10 @@ export default class extends Controller {
     let self = this
     self.removeAllListeners()
     self.addInitialListeners()
-    setTimeout(
-      function () {
-        self.element.style.left = '0'
-        self.lock = false
-      }.bind(self),
-      1000
-    )
+    setTimeout(function () {
+      self.element.style.left = '0'
+      self.lock = false
+    }, 1000)
   }
 
   updateSwipeRestPosition(evt) {

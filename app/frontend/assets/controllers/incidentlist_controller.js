@@ -74,23 +74,24 @@ export default class extends Controller {
   }
   selecteerTaakItem(taakId) {
     let self = this
-    for (let i = 0; i < self.taakItemTargets.length; i++) {
-      if (self.taakItemTargets[i].dataset.id == taakId) {
-        self.taakItemTargets[i].classList.add('selected')
-        self.taakItemTargets[i].scrollIntoView({
+
+    for (const taakItemTarget of self.taakItemTargets) {
+      if (taakItemTarget.dataset.id == taakId) {
+        taakItemTarget.classList.add('selected')
+        taakItemTarget.scrollIntoView({
           behavior: 'smooth',
           block: 'end',
           inline: 'nearest',
         })
       } else {
-        self.taakItemTargets[i].classList.remove('selected')
+        taakItemTarget.classList.remove('selected')
       }
     }
   }
   deselecteerTaakItem() {
     let self = this
-    for (let i = 0; i < self.taakItemTargets.length; i++) {
-      self.taakItemTargets[i].classList.remove('selected')
+    for (const taakItemTarget of self.taakItemTargets) {
+      taakItemTarget.classList.remove('selected')
     }
   }
   positionWatchSuccess(position) {
@@ -103,8 +104,7 @@ export default class extends Controller {
       self.kaartOutlet.positionChangeEvent(position)
     }
     if (self.hasTaakAfstandTarget) {
-      for (let i = 0; i < self.taakAfstandTargets.length; i++) {
-        const elem = self.taakAfstandTargets[i]
+      for (const elem of self.taakAfstandTargets) {
         const markerLocation = new L.LatLng(elem.dataset.latitude, elem.dataset.longitude)
         const afstand = Math.round(markerLocation.distanceTo(currentPosition))
         elem.textContent = afstand
@@ -149,8 +149,7 @@ export default class extends Controller {
     self.takenCountTarget.textContent = self.taakItemLijstTarget.dataset.takenCount
     self.kaartOutlet.clearMarkers()
     let kaartMarkers = []
-    for (let i = 0; i < self.taakItemTargets.length; i++) {
-      const taakItem = self.taakItemTargets[i]
+    for (const taakItem of self.taakItemTargets) {
       if (taakItem.dataset.geometrie != '') {
         kaartMarkers.push({
           geometrie: JSON.parse(taakItem.dataset.geometrie),
@@ -171,7 +170,7 @@ export default class extends Controller {
     self.sortingTarget.classList.toggle('hidden-vertical')
     self.sortingTarget.classList.toggle('show-vertical')
     showSortingContainer = !showSortingContainer
-    sortDirectionReversed = sortDirectionReversed === undefined ? false : true
+    sortDirectionReversed = sortDirectionReversed !== undefined
   }
 
   onToggleSearchContainer() {
