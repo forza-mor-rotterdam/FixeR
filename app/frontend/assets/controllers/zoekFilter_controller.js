@@ -18,6 +18,11 @@ export default class extends Controller {
     clearTimeout(this.to)
     this.to = setTimeout(() => this.submit(this.zoekFieldTarget.value), 200)
   }
+
+  onSubmit(event) {
+    event.preventDefault()
+  }
+
   async submit(q) {
     const zoekUrl = '/taak-zoeken/'
     try {
