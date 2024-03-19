@@ -128,7 +128,7 @@ export default class extends Controller {
         'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMy43NzgzIDYuMjI0MTJDMTkuNTAwMyAxLjk0NjEzIDEyLjQ5OTkgMS45NDYxMyA4LjIyMTkzIDYuMjI0MTJDMy45NDM5MyAxMC41MDIxIDMuOTQzOTMgMTcuNTAyNSA4LjIyMTkzIDIxLjc4MDVMMTYuMDAwMSAyOS41NTg2TDIzLjc3ODMgMjEuNzgwNUMyOC4wNTYzIDE3LjUwMjUgMjguMDU2MyAxMC41MDIxIDIzLjc3ODMgNi4yMjQxMlpNMTYuMDAwMSAxOC4wMDIzQzE4LjIwOTIgMTguMDAyMyAyMC4wMDAxIDE2LjIxMTQgMjAuMDAwMSAxNC4wMDIzQzIwLjAwMDEgMTEuNzkzMiAxOC4yMDkyIDEwLjAwMjMgMTYuMDAwMSAxMC4wMDIzQzEzLjc5MSAxMC4wMDIzIDEyLjAwMDEgMTEuNzkzMiAxMi4wMDAxIDE0LjAwMjNDMTIuMDAwMSAxNi4yMTE0IDEzLjc5MSAxOC4wMDIzIDE2LjAwMDEgMTguMDAyM1oiIGZpbGw9IiNDOTM2NzUiLz4KPC9zdmc+Cg==',
     })
 
-    var config = {
+    let config = {
       crs: 'EPSG:3857',
       format: 'png',
       name: 'standaard',
@@ -215,34 +215,35 @@ export default class extends Controller {
   }
   plotMarkers(coordinatenlijst) {
     let self = this
+
     if (coordinatenlijst) {
-      for (let i = 0; i < coordinatenlijst.length; i++) {
-        const lat = coordinatenlijst[i].geometrie.coordinates
-          ? coordinatenlijst[i].geometrie.coordinates[1]
-          : 51.9247772
-        const long = coordinatenlijst[i].geometrie.coordinates
-          ? coordinatenlijst[i].geometrie.coordinates[0]
-          : 4.4780972
-        const adres = coordinatenlijst[i].adres
-        const afbeelding = coordinatenlijst[i].afbeeldingUrl
-        const titel = coordinatenlijst[i].titel
-        const taakId = coordinatenlijst[i].taakId
+      for (const coord of coordinatenlijst) {
+        const lat = coord.geometrie.coordinates ? coord.geometrie.coordinates[1] : 51.9247772
+        const long = coord.geometrie.coordinates ? coord.geometrie.coordinates[0] : 4.4780972
+        const adres = coord.adres
+        const afbeelding = coord.afbeeldingUrl
+        const titel = coord.titel
+        const taakId = coord.taakId
 
         const markerLocation = new L.LatLng(lat, long)
+
         const marker = new L.Marker(markerLocation, {
           icon: markerMagenta,
           taakId: taakId,
         })
+
         const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
+
         const anchorDetail = `<a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">Details</a>`
         const anchorNavigeer = `<span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" target="_top" aria-label="Navigeer naar taak ${taakId}">Navigeren</span>`
         const divDetailNavigeer = `<div class="display-flex gap">${anchorDetail} | ${anchorNavigeer}</div>`
-        // let popupContent = `<div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
+
         let popupContent = `<div></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
+
         if (afbeelding) {
-          // popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">${adres}</a><p>${omschrijving}</p>${paragraphDistance}</div>`
           popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
         }
+
         marker.bindPopup(popupContent, { maxWidth: 460 })
 
         self.markers.addLayer(marker)

@@ -1,11 +1,13 @@
 import json
-from datetime import datetime
+import logging
 
 from django import template
 from django.conf import settings
 from django.contrib.gis.geos import Point
+from utils.datetime import stringdatetime_naar_datetime
 
 register = template.Library()
+logger = logging.getLogger(__name__)
 
 
 @register.filter
@@ -14,15 +16,9 @@ def replace_comma_by_dot(value):
 
 
 @register.filter
-def to_date(value):
-    try:
-        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f%z")
-    except Exception as e:
-        print(e)
-    try:
-        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S%z")
-    except Exception as e:
-        print(e)
+def to_datetime(value):
+    if value and isinstance(value, str):
+        return stringdatetime_naar_datetime(value)
     return value
 
 
@@ -30,8 +26,8 @@ def to_date(value):
 def to_timestamp(value):
     try:
         return int(value.timestamp())
-    except Exception:
-        print("No datatime instance")
+    except Exception as e:
+        logger.error(f"No datatime instance, value={value}: error={e}")
 
 
 @register.filter

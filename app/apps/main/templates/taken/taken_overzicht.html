@@ -1,5 +1,4 @@
 {% load webpack_static from webpack_loader %}
-{% load to_date from main_tags %}
 {% load json_encode from main_tags %}
 {% load context_template from context_tags %}
 <div class="page-incidents"
@@ -45,7 +44,7 @@
                 {% context_template "taak_toggle_kaart_button.html" as button_template %}
                 {% include button_template %}
                 <div class="wrapper wrapper--search" data-controller="zoekFilter">
-                    <form>
+                    <form data-action="submit->zoekFilter#onSubmit">
                         {% csrf_token %}
                         <input type="search"
                                name="q"
@@ -86,7 +85,7 @@
             <div class="container__search hidden-vertical"
                  data-incidentlist-target="search">
                 <div class="wrapper" data-controller="zoekFilter">
-                    <form>
+                    <form data-action="submit->zoekFilter#onSubmit">
                         {% csrf_token %}
                         <input type="search"
                                name="q"

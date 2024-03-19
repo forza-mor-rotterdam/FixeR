@@ -40,15 +40,18 @@ export default class extends Controller {
   }
 
   checkValids() {
-    let errorCount = 0
-    Array.from(this.element.querySelectorAll('textarea')).map((input) => {
+    const inputList = document.querySelectorAll('textarea')
+    let count = 0
+    for (const input of inputList) {
       let error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
       let invalid = input.value.length == 0 && input.classList.contains('required')
       error.textContent = invalid ? this.defaultErrorMessage : ''
       input.closest('.form-row').classList[invalid ? 'add' : 'remove']('is-invalid')
-      errorCount += invalid ? 1 : 0
-    })
-    return errorCount == 0
+      if (invalid) {
+        count++
+      }
+    }
+    return count === 0
   }
 
   onSubmit(event) {

@@ -1,7 +1,10 @@
+import logging
+
 from django import template
 from django.template.loader import get_template
 
 register = template.Library()
+logger = logging.getLogger(__name__)
 
 
 @register.simple_tag(takes_context=True)
@@ -20,7 +23,9 @@ def context_template(context, template_name):
     try:
         get_template(f"{context_instance.template}/{template_name}")
     except Exception as e:
-        print(e)
+        logger.error(
+            f"Specific template not found, template_name={template_name}, use default: error={e}"
+        )
         return default_template
 
     return f"{context_instance.template}/{template_name}"
