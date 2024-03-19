@@ -14,7 +14,7 @@ export default class extends Controller {
     })
     this.element.dispatchEvent(orderChangeEvent)
   }
-  onChangeHandler(e) {
+  onChangeHandler() {
     clearTimeout(this.to)
     this.to = setTimeout(() => this.submit(this.zoekFieldTarget.value), 200)
   }

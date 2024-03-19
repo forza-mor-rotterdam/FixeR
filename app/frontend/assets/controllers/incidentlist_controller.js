@@ -29,7 +29,7 @@ export default class extends Controller {
       self.currentOrder = e.detail.order
       self.reloadTakenLijst()
     })
-    self.element.addEventListener('searchChangeEvent', function (e) {
+    self.element.addEventListener('searchChangeEvent', function () {
       self.reloadTakenLijst()
     })
 
