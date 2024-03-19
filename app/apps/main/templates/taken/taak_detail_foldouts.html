@@ -1,7 +1,7 @@
 {% load webpack_static from webpack_loader %}
 {% load multiply previous next from list_tags %}
 {% load taakopdracht render_onderwerp get_bijlagen from melding_tags %}
-{% load to_date replace_comma_by_dot vind_in_dict from main_tags %}
+{% load to_datetime replace_comma_by_dot vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
@@ -33,7 +33,7 @@
             {% if taak.aangemaakt_op %}
                 <h3 class="h5">Aangemaakt</h3>
                 <p>
-                    {{ taak.aangemaakt_op|to_date|date:'d-m-Y H:i' }}
+                    {{ taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}
                     <br>
                     {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_taakgebeurtenis_voor_taakstatus:'nieuw' %}
                         {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
@@ -41,15 +41,15 @@
                 </p>
             {% endif %}
             {% if taak.aangepast_op %}
-                {% if taak.aangepast_op|to_date|date:'d-m-Y H:i' != taak.aangemaakt_op|to_date|date:'d-m-Y H:i' and taak.aangepast_op|to_date|date:'d-m-Y H:i' != taak.afgesloten_op|to_date|date:'d-m-Y H:i' %}
+                {% if taak.aangepast_op|to_datetime|date:'d-m-Y H:i' != taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' and taak.aangepast_op|to_datetime|date:'d-m-Y H:i' != taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' %}
                     <h3 class="h5">Aangepast</h3>
-                    <p>{{ taak.aangepast_op|to_date|date:'d-m-Y H:i' }}</p>
+                    <p>{{ taak.aangepast_op|to_datetime|date:'d-m-Y H:i' }}</p>
                 {% endif %}
             {% endif %}
             {% if taak.afgesloten_op %}
                 <h3 class="h5">Afgesloten</h3>
                 <p>
-                    {{ taak.afgesloten_op|to_date|date:'d-m-Y H:i' }}
+                    {{ taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' }}
                     <br>
                     {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_taakgebeurtenis_voor_taakstatus:'voltooid' %}
                         {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
@@ -248,7 +248,7 @@
             <h3 class="h5">Nummer</h3>
             <p>{{ melding.id }}</p>
             <h3 class="h5">Ingediend</h3>
-            <p>{{ melding.aangemaakt_op|to_date|date:'d-m-Y H:i' }}</p>
+            <p>{{ melding.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}</p>
             {% if melding.meta.aannemer %}
                 <h3 class="h5">Aangenomen door</h3>
                 <p>{{ melding.meta.aannemer }}</p>

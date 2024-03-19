@@ -16,8 +16,10 @@ def replace_comma_by_dot(value):
 
 
 @register.filter
-def to_date(value):
-    return stringdatetime_naar_datetime(value)
+def to_datetime(value):
+    if value and isinstance(value, str):
+        return stringdatetime_naar_datetime(value)
+    return value
 
 
 @register.filter
