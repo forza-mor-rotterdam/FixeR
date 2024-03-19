@@ -38,11 +38,7 @@ class MeldingenService:
 
     def haal_token(self):
         meldingen_token = cache.get("meldingen_token")
-        logger.info(f"meldingen_token exists: {bool(meldingen_token)}")
         if not meldingen_token:
-            logger.info(
-                f"MELDINGEN_PASSWORD EXISTS: {(settings.MELDINGEN_PASSWORD is not None)}"
-            )
             email = settings.MELDINGEN_USERNAME
             try:
                 validate_email(email)
@@ -55,8 +51,6 @@ class MeldingenService:
                     "password": settings.MELDINGEN_PASSWORD,
                 },
             )
-            logger.info(settings.MELDINGEN_TOKEN_API)
-            logger.info(settings.MELDINGEN_USERNAME)
             if token_response.status_code == 200:
                 meldingen_token = token_response.json().get("token")
                 cache.set(
