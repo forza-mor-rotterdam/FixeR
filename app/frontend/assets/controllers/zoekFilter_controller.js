@@ -21,6 +21,8 @@ export default class extends Controller {
 
   onSubmit(event) {
     event.preventDefault()
+    clearTimeout(this.to)
+    this.submit(this.zoekFieldTarget.value)
   }
 
   async submit(q) {
