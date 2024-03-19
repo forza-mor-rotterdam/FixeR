@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=Taak)
 def taak_post_save(sender, instance, created, **kwargs):
-    logger.info(f"taak_post_save instance: {instance.id}")
     taak_url = reverse("taak_detail", args=(instance.id,))
-    logger.info(f"taak_post_save url: {taak_url}")
     mercure_service = None
     try:
         mercure_service = MercureService()
