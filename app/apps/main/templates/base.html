@@ -88,7 +88,8 @@
         {% if APP_ENV != "productie" %}
             <div class="container--env">
                 <div class="container">
-                    <span class="badge badge--red">{{ APP_ENV }}</span>
+                    {% comment %} @TODO Temporary change to yellow for deployment testing {% endcomment %}
+                    <span class="badge badge--yellow">{{ APP_ENV }}</span>
                 </div>
             </div>
         {% endif %}
