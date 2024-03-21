@@ -112,7 +112,7 @@ $form-search-indicator-position: left 10px center !default;
     &.search {
         background-image: escape-svg($form-search-indicator) !important;
         background-position: $form-search-indicator-position;
-        margin-bottom: 0;
+        margin: 0;
     }
 }
 
