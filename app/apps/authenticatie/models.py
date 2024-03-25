@@ -33,6 +33,16 @@ class Gebruiker(AbstractUser):
             f"rechten: <strong>{self.groups.all().first().name if self.groups.all() else '- geen rechten - '}</strong>"
         )
 
+    @property
+    def rechtengroep(self):
+        return mark_safe(
+            f"{self.groups.all().first().name if self.groups.all() else ''}"
+        )
+
+    @property
+    def rol(self):
+        return mark_safe(f"{self.profiel.context.naam if self.profiel.context else ''}")
+
     def serialized_instance(self):
         if not self.is_authenticated:
             return None
@@ -42,10 +52,14 @@ class Gebruiker(AbstractUser):
         dict_instance.update(
             {
                 "naam": self.__str__(),
-                "rol": self.profiel.context.naam if self.profiel.context else None,
-                "rechten": self.groups.all().first().name
-                if self.groups.all()
+                "rol": self.profiel.context.naam
+                if hasattr(self, "profiel")
+                and hasattr(self.profiel, "context")
+                and hasattr(self.profiel.context, "naam")
                 else None,
+                "rechten": (
+                    self.groups.all().first().name if self.groups.all() else None
+                ),
             }
         )
 

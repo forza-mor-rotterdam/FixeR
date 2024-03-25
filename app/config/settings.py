@@ -53,6 +53,7 @@ UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
 INSTALLED_APPS = (
     # templates override
     "apps.health",
+    "django.contrib.humanize",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "django.contrib.messages",
@@ -283,6 +284,8 @@ CSP_IMG_SRC = (
     "service.pdok.nl",
     "mor-core-acc.forzamor.nl",
     "cdn.jsdelivr.net",
+    "ows.gis.rotterdam.nl",
+    "www.gis.rotterdam.nl",
 )
 CSP_STYLE_SRC = (
     "'self'",
@@ -504,5 +507,9 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
 
-SIGNED_DATA_MAX_AGE_SECONDS = os.getenv("SIGNED_DATA_MAX_AGE_SECONDS", 259200)  # 3 days
+APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
+
+SIGNED_DATA_MAX_AGE_SECONDS = int(
+    os.getenv("SIGNED_DATA_MAX_AGE_SECONDS", 259200)
+)  # 3 days
 WHATSAPP_URL = os.getenv("WHATSAPP_URL", "https://web.whatsapp.com/")

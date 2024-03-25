@@ -7,7 +7,7 @@
 html,
 body {
     margin: 0;
-    font-family: 'Bolder', sans-serif;
+    font-family: "Bolder", sans-serif;
     font-size: 1em;
     color: $gray-tint11;
 
@@ -27,11 +27,11 @@ main,
 header {
     > .container {
         display: block;
-        max-width: map-get($container-max-widths , xxl );
+        max-width: map-get($container-max-widths, xxl);
         margin: 0 auto;
 
         &.container--wide {
-            max-width: map-get($container-max-widths , xxl );
+            max-width: map-get($container-max-widths, xxl);
         }
         &.container--unlimited {
             max-width: none;
@@ -105,29 +105,35 @@ body {
 }
 
 // HEADINGS
-h1, .h1 {
+h1,
+.h1 {
     font-size: $h1-font-size;
 }
 
-h2, .h2 {
+h2,
+.h2 {
     font-size: $h2-font-size;
 }
-h3, .h3 {
+h3,
+.h3 {
     font-size: $h3-font-size;
 }
-h4, .h4 {
+h4,
+.h4 {
     font-size: $h4-font-size;
 }
-h5, .h5 {
+h5,
+.h5 {
     font-size: $h5-font-size;
 }
-h6, .h6 {
+h6,
+.h6 {
     font-size: $h6-font-size;
 }
 
 p {
     line-height: $line-height-base;
-    max-width: map-get($container-max-widths , lg );
+    max-width: map-get($container-max-widths, lg);
 }
 
 @mixin has-icon {
@@ -155,18 +161,17 @@ table {
     tr:nth-child(even) {
         background-color: $gray-tint01;
     }
-    th, td {
+    th,
+    td {
         padding: 10px 5px 10px 0;
     }
     thead {
-
         th {
             text-align: left;
             border-bottom: 2px solid $gray-tint11;
         }
     }
     tbody {
-
         td {
             vertical-align: middle;
 
@@ -239,6 +244,11 @@ a,
     &.link--bin {
         @include has-icon();
     }
+
+    &.link--navigate {
+        text-decoration: none;
+        padding: 5px;
+    }
 }
 
 button {
@@ -265,7 +275,7 @@ p {
 
     &--warning {
         &:before {
-            content: url('../icons/badge-alert.svg');
+            content: url("../icons/badge-alert.svg");
             top: -1px;
         }
     }
@@ -277,7 +287,7 @@ p {
         width: 24px;
         height: 24px;
         path {
-            fill: #DB5F06;
+            fill: #db5f06;
         }
     }
 
@@ -285,7 +295,7 @@ p {
         svg {
             vertical-align: top;
             path {
-                fill: #DB5F06;
+                fill: #db5f06;
             }
         }
     }
@@ -322,26 +332,26 @@ ul {
 }
 li {
     &.list-item {
-    border-bottom: 1px solid $gray-tint04;
-  }
-
-  .border-top & {
-    &:first-child {
-        border-top: 1px solid $gray-tint04;
+        border-bottom: 1px solid $gray-tint04;
     }
-  }
+
+    .border-top & {
+        &:first-child {
+            border-top: 1px solid $gray-tint04;
+        }
+    }
 }
 
 dl {
-    div{
+    div {
         display: flex;
 
         dd,
         dt {
-            margin: 0 0 .5em;
+            margin: 0 0 0.5em;
         }
         dt {
-            margin-right: .5rem;
+            margin-right: 0.5rem;
         }
     }
 }
@@ -356,7 +366,6 @@ dl {
         position: relative;
     }
 }
-
 
 // SECTIONS
 section {
@@ -408,8 +417,9 @@ h1 + .section--seperated {
     max-height: 100%;
     transition: all 0.25s ease-in;
 
-    &.container__sorting {
-        max-height: 100px;
+    &.container__sorting,
+    &.container__search {
+        max-height: 120px;
         overflow: hidden;
     }
 }
@@ -420,14 +430,15 @@ h1 + .section--seperated {
     overflow: hidden;
     transition: max-height 0.25s ease-in;
 
-        &.container__sorting {
-            transition: all 0.25s ease-in;
+    &.container__sorting,
+    &.container__search {
+        transition: all 0.25s ease-in;
 
-            @media (min-width: map-get($grid-breakpoints, lg)) {
-                max-height: 100px;
-                overflow: hidden;
-            }
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            max-height: 120px;
+            overflow: hidden;
         }
+    }
 }
 
 .visually-hidden {
@@ -483,4 +494,16 @@ h1 + .section--seperated {
 
 .textalign--right {
     text-align: right;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.somepadding {
+    padding: 8px 0 16px;
+}
+
+.width60 {
+    width: 60%;
 }

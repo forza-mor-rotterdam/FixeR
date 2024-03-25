@@ -25,7 +25,7 @@ from apps.main.utils import (
 from apps.meldingen.service import MeldingenService
 from apps.release_notes.models import ReleaseNote
 from apps.services.onderwerpen import render_onderwerp
-from apps.taken.models import Taak, Taakstatus, Taaktype
+from apps.taken.models import Taak, TaakDeellink, Taakstatus, Taaktype
 from device_detector import DeviceDetector
 from django.conf import settings
 from django.contrib.auth.decorators import (
@@ -41,9 +41,9 @@ from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import Value
+from django.db.models import Q, Value
 from django.db.models.functions import Concat
-from django.http import HttpResponse, StreamingHttpResponse
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import View
@@ -137,21 +137,24 @@ def taken_filter(request):
         if request.user.profiel.context
         else []
     )
+    filters += ["q"]
+    actieve_filters = get_actieve_filters(request.user, filters)
+    actieve_filters["q"] = request.session.get("q", [""])
     foldout_states = []
+
     if request.POST:
-        actieve_filters = {f: request.POST.getlist(f) for f in filters}
+        request_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
-    else:
-        actieve_filters = get_actieve_filters(request.user, filters)
+        for filter_name, new_value in request_filters.items():
+            if filter_name != "q" and new_value != actieve_filters.get(filter_name):
+                actieve_filters[filter_name] = new_value
+        set_actieve_filters(request.user, actieve_filters)
 
     filter_manager = FilterManager(taken, actieve_filters, foldout_states)
 
     taken_gefilterd = filter_manager.filter_taken()
 
     request.session["taken_gefilterd"] = taken_gefilterd
-
-    if request.POST:
-        set_actieve_filters(request.user, filter_manager.active_filters)
 
     taken_aantal = len(taken_gefilterd)
     return render(
@@ -168,6 +171,9 @@ def taken_filter(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_lijst(request):
+    MeldingenService().set_gebruiker(
+        gebruiker=request.user.serialized_instance(),
+    )
     try:
         pnt = Point(
             float(request.GET.get("lon", 0)),
@@ -181,11 +187,13 @@ def taken_lijst(request):
     sort_reverse = len(sortering.split("-")) > 1
     sortering = sortering.split("-")[0]
     sorting_fields = {
-        "Postcode": "melding__response_json__locaties_voor_melding__0__postcode",
+        "Postcode": "taak_zoek_data__postcode",
         "Adres": "adres",
         "Datum": "taakstatus__aangemaakt_op",
         "Afstand": "afstand",
     }
+
+    # filteren
     taken_gefilterd = request.session.get("taken_gefilterd")
     if not taken_gefilterd:
         taken = Taak.objects.get_taken_recent(request.user)
@@ -198,19 +206,29 @@ def taken_lijst(request):
         filter_manager = FilterManager(taken, actieve_filters)
         taken_gefilterd = filter_manager.filter_taken()
 
+    # zoeken
+    if request.session.get("q"):
+        taken_gefilterd = taken_gefilterd.filter(
+            Q(taak_zoek_data__straatnaam__iregex=request.session.get("q"))
+            | Q(taak_zoek_data__huisnummer__iregex=request.session.get("q"))
+            | Q(taak_zoek_data__bron_signaal_ids__icontains=request.session.get("q"))
+        )
+
+    # sorteren
     taken_gefilterd = (
         taken_gefilterd.annotate(
             adres=Concat(
-                "melding__response_json__locaties_voor_melding__0__straatnaam",
+                "taak_zoek_data__straatnaam",
                 Value(" "),
-                "melding__response_json__locaties_voor_melding__0__huisnummer",
+                "taak_zoek_data__huisnummer",
                 output_field=models.CharField(),
             )
         )
-        .annotate(afstand=Distance("geometrie", pnt))
+        .annotate(afstand=Distance("taak_zoek_data__geometrie", pnt))
         .order_by(f"{'-' if sort_reverse else ''}{sorting_fields.get(sortering)}")
     )
 
+    # paginate
     paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -226,6 +244,14 @@ def taken_lijst(request):
             "page_obj": page_obj,
         },
     )
+
+
+@login_required
+@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
+def taak_zoeken(request):
+    body = json.loads(request.body)
+    request.session["q"] = body.get("q", "")
+    return JsonResponse({"q": request.session.get("q", "")})
 
 
 @login_required
@@ -273,8 +299,7 @@ def taak_detail(request, id):
     tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
-    whatsapp_url = "whatsapp://" if device.is_mobile() else settings.WHATSAPP_URL
-
+    taakdeellinks = TaakDeellink.objects.filter(taak=taak)
     return render(
         request,
         "taken/taak_detail.html",
@@ -283,22 +308,81 @@ def taak_detail(request, id):
             "taak": taak,
             "tijdlijn_data": tijdlijn_data,
             "device_os": device.os_name().lower(),
-            "signed_data": signing.dumps(request.user.email),
-            "whatsapp_url": whatsapp_url,
+            "taakdeellinks": taakdeellinks,
+            "taakdeellinks_bezoekers": [
+                b for link in taakdeellinks for b in link.bezoekers
+            ],
         },
     )
 
 
-def taak_detail_preview(request, id, signed_data):
-    gebruiker_email = None
-    try:
-        gebruiker_email = signing.loads(
-            signed_data, max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS
-        )
-    except signing.BadSignature:
-        ...
-
+@permission_required("authorisatie.taak_delen", raise_exception=True)
+def taak_delen(request, id):
     taak = get_object_or_404(Taak, pk=id)
+    gebruiker_email = request.user.email
+    """
+    Standaard worden links die gedeeld worden alleen in FixeR opgeslagen
+    Met de code hieronder kan ook MOR-Core deze info opslaan in context met de melding
+
+    response = MeldingenService().taak_gebeurtenis_toevoegen(
+        taakopdracht_url=taak.taakopdracht,
+        gebeurtenis_type="gedeeld",
+        gebruiker=gebruiker_email,
+    )
+    if response.status_code not in [200]:
+        return JsonResponse({})
+    """
+
+    ua = request.META.get("HTTP_USER_AGENT")
+    device = DeviceDetector(ua).parse()
+    whatsapp_url = "whatsapp://" if device.is_mobile() else settings.WHATSAPP_URL
+
+    taak_gedeeld = TaakDeellink.objects.create(
+        taak=taak,
+        gedeeld_door=gebruiker_email,
+        signed_data=TaakDeellink.get_signed_data(gebruiker_email),
+    )
+
+    return JsonResponse(
+        {
+            "url": f"{whatsapp_url}send?text={taak_gedeeld.get_absolute_url(request)}",
+        }
+    )
+
+
+def taak_detail_preview(request, id, signed_data):
+    taak = get_object_or_404(Taak, pk=id)
+    gebruiker_email = None
+    link_actief = False
+
+    taak_gedeeld = TaakDeellink.objects.filter(
+        taak=taak,
+        signed_data=signed_data,
+    ).first()
+    if taak_gedeeld:
+        link_actief = taak_gedeeld.actief()
+
+    # links die gedeeld zijn voor dat het TaakDeellink object geimplementeerd was
+    else:
+        try:
+            gebruiker_email = signing.loads(
+                signed_data, max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS
+            )
+            link_actief = True
+        except signing.BadSignature:
+            ...
+
+    # redirect ingelogde gebruikers
+    if request.user.has_perms(["authorisatie.taak_bekijken"]):
+        return redirect(reverse("taak_detail", args=[taak.id]))
+
+    # sla alle gebruikers op in het taakdeellink object
+    if taak_gedeeld and link_actief:
+        taak_gedeeld.bezoekers.append(
+            request.user.email if request.user.is_authenticated else None
+        )
+        taak_gedeeld.save()
+
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
     return render(
@@ -309,7 +393,11 @@ def taak_detail_preview(request, id, signed_data):
             "taak": taak,
             "device_os": device.os_name().lower(),
             "signed_data": signed_data,
-            "gebruiker_email": gebruiker_email,
+            "gebruiker_email": (
+                taak_gedeeld.gedeeld_door if taak_gedeeld else gebruiker_email
+            ),
+            "link_actief": link_actief,
+            "taak_gedeeld": taak_gedeeld,
         },
     )
 
@@ -544,6 +632,7 @@ def meldingen_bestand(request):
             signing.loads(
                 request.GET.get("signed-data"),
                 max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS,
+                salt=settings.SECRET_KEY,
             )
             return _meldingen_bestand(request, modified_path)
         except signing.BadSignature:

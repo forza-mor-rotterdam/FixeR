@@ -1,6 +1,6 @@
 .list__mutations {
     @include list-clean;
-    >li {
+    > li {
         margin: 0 calc(-1 * (map-get($container-margin, md)));
         padding: 0 map-get($container-margin, md);
         position: relative;
@@ -15,7 +15,6 @@
                     height: 0;
                 }
             }
-
         }
         &:first-child {
             summary {
@@ -25,12 +24,10 @@
             }
         }
 
-
         &:first-child {
-
             details {
                 .line {
-                    &.line-melding{
+                    &.line-melding {
                         width: 0;
                         background-color: transparent;
                         border-left: 2px dashed $primary;
@@ -43,7 +40,6 @@
                 }
             }
         }
-
     }
     .line {
         width: 2px;
@@ -79,7 +75,6 @@
                 background-color: $action;
             }
         }
-
 
         position: relative;
 
@@ -119,7 +114,7 @@
             position: relative;
             margin-bottom: 20px;
             margin-left: 5px;
-            font-size: 16px;
+            font-size: 0.889em;
             text-align: right;
             display: flex;
             align-items: flex-end;
@@ -130,9 +125,7 @@
                 dl {
                     padding: 12px 12px 12px 20px;
                     margin: 0;
-
                 }
-
             }
         }
 
@@ -167,7 +160,7 @@
         }
 
         dd {
-            margin-bottom: .5rem;
+            margin-bottom: 0.5rem;
         }
     }
 
@@ -184,5 +177,4 @@
             }
         }
     }
-
 }

@@ -1,17 +1,17 @@
 .badge {
     display: inline-block;
-    padding: 0 $input-padding-y;
+    padding: 0 4px;
     color: $white;
     font-weight: 700;
-    font-size: 12px;
-    line-height: 20px;
+    font-size: 0.667em;
+    line-height: 1.5em;
     margin-right: 4px;
 
     h1 & {
-        vertical-align: middle;
-        margin-left: 12px;
         padding: 2px $input-padding-y;
-        margin-top: -4px;
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 
     &--lightblue {
@@ -48,4 +48,25 @@
     color: $white;
     background-color: $red-tint02;
     transform: translateY(-50%);
+}
+
+.container--env {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 200;
+
+    .badge {
+        height: 22px;
+        line-height: 22px;
+        font-size: 14px;
+
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            height: 42px;
+            line-height: 42px;
+            font-size: 18px;
+        }
+    }
 }

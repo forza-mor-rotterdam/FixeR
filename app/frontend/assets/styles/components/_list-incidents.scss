@@ -1,6 +1,5 @@
-
 .container__header {
-        margin-bottom: 16px;
+    margin-bottom: 16px;
 
     .row {
         display: flex;
@@ -77,18 +76,19 @@
                 overflow-y: auto;
             }
         }
+
+        .container__search {
+            display: none;
+        }
     }
-
-
-
 }
 
-.container__sorting {
+.container__sorting,
+.container__search {
     box-sizing: content-box;
 
     .wrapper {
-        background-color: $gray-tint02;
-        padding: $input-padding-x;
+        margin: $input-padding-x;
         display: flex;
         justify-content: space-between;
 
@@ -96,7 +96,6 @@
             background-color: transparent;
             padding-left: 0;
         }
-
     }
     form {
         width: 100%;
@@ -119,10 +118,22 @@
     }
 }
 
+.wrapper--search {
+    display: none;
+
+    input {
+        width: 350px;
+        margin: 0;
+    }
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: block;
+    }
+}
+
 .list__incidents {
     list-style: none;
     padding: 0;
-    margin: 0 16px 0 0;
     overflow: hidden;
 
     .list__incidents__scroll-wrapper {
@@ -131,11 +142,12 @@
         display: flex;
         flex-direction: column;
         justify-content: safe flex-end;
+        border-top: 1px solid $gray-tint04;
     }
     .container__pagination + .list-item {
         border-top: 1px solid $gray-tint04;
     }
-    &.reverse .list__incidents__scroll-wrapper{
+    &.reverse .list__incidents__scroll-wrapper {
         flex-direction: column;
         justify-content: safe flex-start;
     }
@@ -143,7 +155,9 @@
     .list-item {
         position: relative;
         box-sizing: content-box;
-        transition: height .3s ease-in-out, left .5s ease-out;
+        transition:
+            height 0.3s ease-in-out,
+            left 0.5s ease-out;
         min-height: 100px;
         touch-action: pan-y pinch-zoom;
         scrollbar-width: none;
@@ -163,11 +177,10 @@
         }
         &.hide {
             transition: all 0.5s ease-in-out 4s;
-            border-bottom: 0px solid #CAD6DA;
+            border-bottom: 0px solid #cad6da;
             min-height: 0;
             height: 0;
             overflow: hidden;
-
         }
 
         .message {
@@ -176,7 +189,7 @@
             left: 5px;
             bottom: 5px;
             right: 5px;
-            background-color: #E5F1E9;
+            background-color: #e5f1e9;
             border: 1px solid $primary;
             z-index: 2;
             display: flex;
@@ -185,11 +198,10 @@
             overflow: hidden;
 
             &:before {
-                content: url('../icons/checkmark-circle.svg');
+                content: url("../icons/checkmark-circle.svg");
                 position: absolute;
                 left: 16px;
                 top: calc(50% - 13px);
-
             }
         }
 
@@ -233,7 +245,6 @@
             @media (min-width: map-get($grid-breakpoints, lg)) {
                 .btn-icon--clean {
                     display: inline-block;
-
                 }
             }
         }
@@ -268,7 +279,7 @@
         .container__info {
             flex: 1;
             padding-top: $input-padding-y;
-            font-size: 16px;
+            font-size: 0.889em;
             position: relative;
 
             a {
@@ -312,7 +323,6 @@
                 span {
                     flex: 1;
                 }
-
             }
 
             @media (min-width: map-get($grid-breakpoints, md)) and (max-width: 1023px) {
@@ -352,18 +362,19 @@
 
                 > div {
                     margin-left: 20px;
-                    background: url('../icons/checkmark.svg') left top no-repeat;
+                    background: url("../icons/checkmark.svg") left top no-repeat;
                 }
             }
 
             &.handle--no-success {
-                background-color: #CE4C3B;
+                background-color: #ce4c3b;
                 left: -100%;
                 text-align: right;
 
                 > div {
                     margin-right: 20px;
-                    background: url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e") right top no-repeat;
+                    background: url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e")
+                        right top no-repeat;
                     background-size: contain;
                     background-position: calc(100% + 10px) -10px;
                 }
@@ -386,6 +397,10 @@
     }
     summary {
         flex-direction: row;
+    }
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        margin: 0 16px 0 0;
     }
 }
 

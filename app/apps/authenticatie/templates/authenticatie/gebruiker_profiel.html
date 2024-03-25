@@ -2,19 +2,21 @@
 {% load rotterdam_formulier_html %}
 {% load json_encode from main_tags %}
 {% load get_field_from_gebruiker_middels_email from gebruikers_tags %}
-{% block title %}FixeR{% endblock %}
+{% block title %}
+    {{ object.email|get_field_from_gebruiker_middels_email }} | Profiel | FixeR
+{% endblock title %}
 {% block body %}
-    <turbo-frame id="gebruiker_profiel">
+    <turbo-frame id="taak_basis">
     {% block messages %}
-    {% if messages %}
-        <div class="messages-container" data-controller="messages">
-            <div class="wrapper">
-                <ul class="messages">
-                    {% for message in messages %}<li class="message message-{{ message.tags }}">{{ message }}</li>{% endfor %}
-                </ul>
+        {% if messages %}
+            <div class="messages-container" data-controller="messages">
+                <div class="wrapper">
+                    <ul class="messages">
+                        {% for message in messages %}<li class="message message-{{ message.tags }}">{{ message }}</li>{% endfor %}
+                    </ul>
+                </div>
             </div>
-        </div>
-    {% endif %}
+        {% endif %}
     {% endblock messages %}
     <div class="page__beheer">
         <h1>
@@ -35,9 +37,9 @@
         {% endif %}
         <div class="grid-container">
             <div class="grid-item">
-                <form action="." method="post" data-turbo-frame="_top">
+                <form action="." method="post">
                     {% csrf_token %}
-                    <div class="">
+                    <div>
                         <h2 class="h5 ">E-mailadres</h2>
                         <p class="no-margin-top">{{ object.email }}</p>
                     </div>
@@ -48,7 +50,7 @@
                             {{ form.last_name|render_rotterdam_formulier }}
                         </fieldset>
                     {% else %}
-                        <div class="">
+                        <div>
                             <h2 class="h5 ">Telefoonnummer</h2>
                             <p class="no-margin-top">{{ object.telefoonnummer }}</p>
                             <h2 class="h5 ">Voornaam</h2>
@@ -93,5 +95,5 @@
             <div class="grid-item"></div>
         </div>
     </div>
-</turbo-frame>
+    </turbo-frame>
 {% endblock body %}

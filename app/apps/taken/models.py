@@ -1,9 +1,18 @@
+from datetime import timedelta
+
+from apps.aliassen.models import MeldingAlias
 from apps.main.templatetags.main_tags import mor_core_url
 from apps.services.onderwerpen import render_onderwerp
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
+from django.conf import settings
 from django.contrib.gis.db import models
+from django.contrib.postgres.fields import ArrayField
+from django.core import signing
 from django.core.exceptions import ValidationError
+from django.urls import reverse
+from django.utils import timezone
+from utils.diversen import absolute
 from utils.models import BasisModel
 
 
@@ -137,6 +146,53 @@ class Taakstatus(BasisModel):
         verbose_name_plural = "Taakstatussen"
 
 
+LOCATIE_TYPE_CHOICES = (
+    ("adres", "adres"),
+    ("lichtmast", "lichtmast"),
+    ("graf", "graf"),
+)
+
+
+class TaakZoekData(BasisModel):
+    locatie_type = models.CharField(
+        max_length=50, choices=LOCATIE_TYPE_CHOICES, default=LOCATIE_TYPE_CHOICES[0][0]
+    )
+    # Locatie met hoogste gewicht
+    plaatsnaam = models.CharField(max_length=255, null=True, blank=True)
+    straatnaam = models.CharField(max_length=255, null=True, blank=True)
+    huisnummer = models.IntegerField(null=True, blank=True)
+    huisletter = models.CharField(max_length=1, null=True, blank=True)
+    toevoeging = models.CharField(max_length=4, null=True, blank=True)
+    postcode = models.CharField(max_length=7, null=True, blank=True)
+    wijknaam = models.CharField(max_length=255, null=True, blank=True)
+    buurtnaam = models.CharField(max_length=255, null=True, blank=True)
+    # B&C Locatie info
+    begraafplaats = models.CharField(max_length=50, null=True, blank=True)
+    grafnummer = models.CharField(max_length=10, null=True, blank=True)
+    vak = models.CharField(max_length=10, null=True, blank=True)
+    # Lichtmast
+    lichtmast_id = models.CharField(max_length=255, null=True, blank=True)
+    # Geometrie
+    geometrie = models.GeometryField(null=True, blank=True)
+    # MeldR nummerers afkomstig uit signalen_voor_melding.bron_signaal_id
+    bron_signaal_ids = ArrayField(
+        models.CharField(max_length=500, blank=True), blank=True, null=True
+    )
+
+    melding_alias = models.ForeignKey(
+        MeldingAlias,
+        related_name="taak_zoek_data",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        ordering = ("-aangemaakt_op",)
+        verbose_name = "Taak zoek data"
+        verbose_name_plural = "Taak zoek data"
+
+
 class Taak(BasisModel):
     class ResolutieOpties(models.TextChoices):
         OPGELOST = "opgelost", "Opgelost"
@@ -180,6 +236,14 @@ class Taak(BasisModel):
     additionele_informatie = models.JSONField(default=dict)
     geometrie = models.GeometryField(null=True, blank=True)
 
+    taak_zoek_data = models.ForeignKey(
+        TaakZoekData,
+        related_name="taak",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
     objects = TaakQuerySet.as_manager()
     acties = TaakManager()
 
@@ -215,6 +279,7 @@ class Taak(BasisModel):
             ]
         )
 
+    # @TODO Could be updated to use taak_zoek_data instead
     def adres(self):
         locaties = self.melding.response_json.get("locaties_voor_melding")
         if not locaties or not locaties[0].get("straatnaam"):
@@ -223,6 +288,7 @@ class Taak(BasisModel):
             return f"{locaties[0].get('straatnaam')} {locaties[0].get('huisnummer')}"
         return locaties[0].get("straatnaam")
 
+    # @TODO Could be updated to use taak_zoek_data instead
     def postcode_digits(self):
         locaties = self.melding.response_json.get("locaties_voor_melding")
         if not locaties or not locaties[0].get("postcode"):
@@ -245,3 +311,50 @@ class Taak(BasisModel):
         ordering = ("-aangemaakt_op",)
         verbose_name = "Taak"
         verbose_name_plural = "Taken"
+
+
+class TaakDeellink(BasisModel):
+    taak = models.ForeignKey(
+        to="taken.Taak",
+        related_name="taakdeellinks_voor_taak",
+        on_delete=models.CASCADE,
+    )
+    gedeeld_door = models.CharField(max_length=200)
+    signed_data = models.CharField(unique=True, max_length=500)
+    bezoekers = ArrayField(
+        base_field=models.EmailField(
+            blank=True,
+            null=True,
+        ),
+        default=list,
+    )
+
+    def get_signed_data(gebruiker_email):
+        return signing.dumps(gebruiker_email, salt=settings.SECRET_KEY)
+
+    def actief(self):
+        try:
+            signing.loads(
+                self.signed_data,
+                max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS,
+                salt=settings.SECRET_KEY,
+            )
+            return (
+                (
+                    self.aangemaakt_op
+                    + timedelta(seconds=settings.SIGNED_DATA_MAX_AGE_SECONDS)
+                )
+                - timezone.now(),
+                self.aangemaakt_op
+                + timedelta(seconds=settings.SIGNED_DATA_MAX_AGE_SECONDS),
+            )
+        except signing.BadSignature:
+            ...
+
+    def get_absolute_url(self, request):
+        url_basis = absolute(request).get("ABSOLUTE_ROOT")
+        pad = reverse(
+            "taak_detail_preview",
+            kwargs={"id": self.taak.id, "signed_data": self.signed_data},
+        )
+        return f"{url_basis}{pad}"
