@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
+import L from 'leaflet'
 
 let currentPosition = { coords: { latitude: 51.9247772, longitude: 4.4780972 } }
 let incidentlist = null
@@ -47,12 +48,19 @@ export default class extends Controller {
     self.positionWatchSuccess(position)
   }
   positionWatchSuccess(position) {
-    currentPosition = position
-    if (incidentlist) {
-      incidentlist.positionWatchSuccess(position)
-    }
-    if (detail) {
-      detail.positionWatchSuccess(position)
+    const myLocation = new L.LatLng(
+      currentPosition.coords.latitude,
+      currentPosition.coords.longitude
+    )
+    const distance = myLocation.distanceTo([position.coords.latitude, position.coords.longitude])
+    if (distance > 5) {
+      currentPosition = position
+      if (incidentlist) {
+        incidentlist.positionWatchSuccess(position)
+      }
+      if (detail) {
+        detail.positionWatchSuccess(position)
+      }
     }
   }
   positionWatchError(error) {
