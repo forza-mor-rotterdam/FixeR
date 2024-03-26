@@ -1,5 +1,7 @@
 <turbo-frame id="sorteer_filter">
-<div class="wrapper" data-controller="sorteerFilter">
+<div class="wrapper"
+     data-controller="sorteerFilter"
+     data-sorteerFilter-request-type-value="{{ request_type }}">
     <form action="{% url 'sorteer_filter' %}"
           method="post"
           data-sorteerFilter-target="form">

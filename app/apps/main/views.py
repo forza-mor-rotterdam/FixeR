@@ -40,9 +40,7 @@ from django.core import signing
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
-from django.db import models
-from django.db.models import Q, Value
-from django.db.models.functions import Concat
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -215,17 +213,12 @@ def taken_lijst(request):
         )
 
     # sorteren
-    taken_gefilterd = (
-        taken_gefilterd.annotate(
-            adres=Concat(
-                "taak_zoek_data__straatnaam",
-                Value(" "),
-                "taak_zoek_data__huisnummer",
-                output_field=models.CharField(),
-            )
+    if sortering == "Afstand":
+        taken_gefilterd = taken_gefilterd.annotate(
+            afstand=Distance("taak_zoek_data__geometrie", pnt)
         )
-        .annotate(afstand=Distance("taak_zoek_data__geometrie", pnt))
-        .order_by(f"{'-' if sort_reverse else ''}{sorting_fields.get(sortering)}")
+    taken_gefilterd = taken_gefilterd.order_by(
+        f"{'-' if sort_reverse else ''}{sorting_fields.get(sortering)}"
     )
 
     # paginate
@@ -258,8 +251,9 @@ def taak_zoeken(request):
 def sorteer_filter(request):
     sortering = get_sortering(request.user)
     form = SorteerFilterForm({"sorteer_opties": sortering})
-
+    request_type = "get"
     if request.POST:
+        request_type = "post"
         form = SorteerFilterForm(request.POST)
         if form.is_valid():
             sortering = form.cleaned_data.get("sorteer_opties")
@@ -267,7 +261,10 @@ def sorteer_filter(request):
     return render(
         request,
         "snippets/sorteer_filter_form.html",
-        {"form": form},
+        {
+            "form": form,
+            "request_type": request_type,
+        },
     )
 
 
