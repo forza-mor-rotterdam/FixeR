@@ -4,6 +4,7 @@ from apps.release_notes.models import ReleaseNote
 from apps.services.mercure import MercureService
 from django.conf import settings
 from django.urls import reverse
+from django.utils import timezone
 from utils.diversen import absolute
 
 logger = logging.getLogger(__name__)
@@ -41,6 +42,13 @@ def general_settings(context):
     if hasattr(context, "user") and context.user.is_authenticated:
         unwatched_count = ReleaseNote.count_unwatched(context.user)
 
+    deploy_date_formatted = None
+    if settings.DEPLOY_DATE:
+        deploy_date = timezone.datetime.strptime(
+            settings.DEPLOY_DATE, "%d-%m-%Y-%H-%M-%S"
+        )
+        deploy_date_formatted = deploy_date.strftime("%d-%m-%Y %H:%M:%S")
+
     return {
         "MELDINGEN_URL": settings.MELDINGEN_URL,
         "UI_SETTINGS": settings.UI_SETTINGS,
@@ -59,4 +67,5 @@ def general_settings(context):
         "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
         "UNWATCHED_COUNT": unwatched_count,
         "APP_ENV": settings.APP_ENV,
+        "DEPLOY_DATE": deploy_date_formatted,
     }
