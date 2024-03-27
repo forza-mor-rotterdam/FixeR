@@ -103,7 +103,7 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            <section class="section--seperated"
+                            <section class="section--seperated section--imageslider"
                                      data-testid="detailPhotoviewer"
                                      {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
                                 <div class="full-width">
@@ -146,6 +146,7 @@
                                         </div>
                                     {% endif %}
                                 </div>
+                                {% include "icons/expand.svg" %}
                             </section>
                             <section class="padding-bottom-2x">
                                 <h2>
