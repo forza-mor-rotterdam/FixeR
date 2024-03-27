@@ -2,7 +2,7 @@
 {% load multiply previous next from list_tags %}
 {% load taakopdracht render_onderwerp get_bijlagen from melding_tags %}
 {% load to_datetime replace_comma_by_dot vind_in_dict from main_tags %}
-{% load json_encode from main_tags %}
+{% load json_encode json_loads from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
@@ -262,13 +262,20 @@
                     {% endfor %}
                 </p>
             {% endif %}
-            {% if melding.omschrijving_kort %}
-                <h3 class="h5">Toelichting kort</h3>
-                <p>{{ melding.omschrijving_kort }}</p>
+            {% if melding.omschrijving_melder and melding.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
+                <h3 class="h5">Omschrijving</h3>
+                <p>{{ melding.omschrijving_melder }}</p>
             {% endif %}
-            {% if melding.omschrijving %}
-                <h3 class="h5">Toelichting</h3>
-                <p>{{ melding.omschrijving }}</p>
+            {% if melding.aanvullende_vragen %}
+                {% with aanvullende_vragen=melding.aanvullende_vragen|safe|json_loads %}
+                    {% for vraag in aanvullende_vragen %}
+                        <h3 class="h5">{{ vraag.question }}</h3>
+                        <p>{{ vraag.answer }}</p>
+                    {% endfor %}
+                {% endwith %}
+            {% elif melding.aanvullende_informatie %}
+                <h3 class="h5">Aanvullende informatie</h3>
+                <p>{{ melding.aanvullende_informatie }}</p>
             {% endif %}
             {% if melding.afdeling.omschrijving %}
                 <h3 class="h5">Afdeling</h3>

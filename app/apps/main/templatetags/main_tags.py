@@ -37,6 +37,14 @@ def json_encode(value):
     return json.dumps(value)
 
 
+@register.filter
+def json_loads(value):
+    try:
+        return json.loads(value)
+    except (json.JSONDecodeError, TypeError):
+        return None
+
+
 @register.simple_tag
 def vind_in_dict(op_zoek_dict, key):
     if not isinstance(op_zoek_dict, dict):
