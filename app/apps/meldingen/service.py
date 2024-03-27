@@ -2,6 +2,7 @@ import logging
 from urllib.parse import urlencode, urlparse
 
 import requests
+from apps.instellingen.models import Instelling
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
@@ -39,16 +40,27 @@ class MeldingenService:
     def haal_token(self):
         meldingen_token = cache.get("meldingen_token")
         if not meldingen_token:
-            email = settings.MELDINGEN_USERNAME
+            instelling = Instelling.objects.first()
+            email = (
+                settings.MELDINGEN_USERNAME
+                if not instelling
+                else instelling.mor_core_gebruiker_email
+            )
             try:
                 validate_email(email)
             except ValidationError:
-                email = f"{settings.MELDINGEN_USERNAME}@forzamor.nl"
+                email = (
+                    f"{settings.MELDINGEN_USERNAME}@forzamor.nl"
+                    if not instelling
+                    else instelling.mor_core_gebruiker_email
+                )
             token_response = requests.post(
                 settings.MELDINGEN_TOKEN_API,
                 json={
                     "username": email,
-                    "password": settings.MELDINGEN_PASSWORD,
+                    "password": settings.MELDINGEN_PASSWORD
+                    if not instelling
+                    else instelling.mor_core_gebruiker_wachtwoord,
                 },
             )
             if token_response.status_code == 200:

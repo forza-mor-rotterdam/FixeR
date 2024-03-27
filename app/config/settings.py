@@ -28,6 +28,11 @@ ENVIRONMENT = os.getenv("ENVIRONMENT")
 APP_ENV = os.getenv("APP_ENV", PRODUCTIE)  # acceptatie/test/productie
 DEBUG = ENVIRONMENT == "development"
 
+# Fernet Key
+FIELD_ENCRYPTION_KEY = os.getenv(
+    "FIELD_ENCRYPTION_KEY", "Fp9p5Ml9hK2BravAUDd4O4pn9_KcBTfFbh-QEuuBN0E="
+)
+
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -126,6 +131,7 @@ INSTALLED_APPS = (
     "apps.beheer",
     "apps.release_notes",
     "apps.services",
+    "apps.instellingen",
 )
 
 LOGIN_URL = "/login/"
