@@ -36,6 +36,7 @@ export default class extends Controller {
     mercureSubscriberToken: String,
     afbeeldingen: String,
     urlPrefix: String,
+    signedData: String,
   }
   static targets = [
     'selectedImageModal',
@@ -496,7 +497,8 @@ export default class extends Controller {
   }
 
   showImage() {
-    this.selectedImageModalTarget.src = `${this.urlPrefixValue}${imagesList[selectedImageIndex]}`
+    const sd = this.signedDataValue ? `?signed-data=${this.signedDataValue}` : ''
+    this.selectedImageModalTarget.src = `${this.urlPrefixValue}${imagesList[selectedImageIndex]}${sd}`
     this.showHideImageNavigation()
     this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
     this.imageScrollInView(selectedImageIndex) //image in detailpage
