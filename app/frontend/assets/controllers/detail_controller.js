@@ -90,6 +90,45 @@ export default class extends Controller {
       }
     })
 
+    //START SWIPE
+
+    let gesture = {
+        x: [],
+      },
+      tolerance = 100
+
+    if (this.hasSelectedImageModalTarget) {
+      this.selectedImageModalTarget.addEventListener('touchstart', function (e) {
+        e.preventDefault()
+        for (let i = 0; i < e.touches.length; i++) {
+          gesture.x.push(e.touches[i].clientX)
+        }
+      })
+      this.selectedImageModalTarget.addEventListener('touchmove', function (e) {
+        e.preventDefault()
+        for (var i = 0; i < e.touches.length; i++) {
+          gesture.x.push(e.touches[i].clientX)
+        }
+      })
+      this.selectedImageModalTarget.addEventListener(
+        'touchend',
+        function () {
+          let xTravel = gesture.x[gesture.x.length - 1] - gesture.x[0]
+          console.log('xTravel', xTravel)
+          if (xTravel < -tolerance) {
+            console.log('left')
+            this.showNextImageInModal()
+          }
+          if (xTravel > tolerance) {
+            console.log('right')
+            this.showPreviousImageInModal()
+          }
+        }.bind(this)
+      )
+    }
+
+    // END SWIPE
+
     const mapDiv = document.getElementById('incidentMap')
     this.mapLayers = {
       containers: {
