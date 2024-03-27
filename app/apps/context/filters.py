@@ -219,7 +219,6 @@ class FilterManager:
         TaaktypeFilter,
         TaakStatusFilter,
         WijkBuurtFilter,
-        ZoekFilter,
     )
     _foldout_states = None
 
@@ -239,9 +238,9 @@ class FilterManager:
         ]
 
     def _get_filter_class(self, filter_key):
-        return {cls.key(): cls for cls in self._available_filter_classes}.get(
-            filter_key
-        )
+        filter_classes = self._available_filter_classes
+        filter_classes += (ZoekFilter,)
+        return {cls.key(): cls for cls in filter_classes}.get(filter_key)
 
     @property
     def taken(self):
