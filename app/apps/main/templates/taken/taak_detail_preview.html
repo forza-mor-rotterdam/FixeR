@@ -45,7 +45,7 @@
     {% else %}
         {% with melding=taak.melding.response_json %}
             {% with geometrie=taak.taak_zoek_data.geometrie %}
-                <div>
+                <div data-controller="modal">
                     {% get_bijlagen melding as bijlagen %}
                     <div data-controller="detail"
                          data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
