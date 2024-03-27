@@ -19,13 +19,13 @@
                     style="width: calc(100% * {{ bijlagen|length }})">
                     {% for foto in bijlagen %}
                         <li class="container__image"
-                            id="{{ foto.afbeelding_relative_url|mor_core_protected_url }}">
+                            id="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
+                            data-action="click->detail#showImageInModal"
+                            data-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
                             <img src="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
                                  class="image"
                                  alt=""
-                                 data-detail-target="selectedImage"
-                                 data-action="click->detail#showImageInModal"
-                                 data-detail-image-index-param="{{ forloop.counter|add:'-1' }}" />
+                                 data-detail-target="selectedImage" />
                         </li>
                     {% endfor %}
                 </ul>
