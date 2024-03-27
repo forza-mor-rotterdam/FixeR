@@ -222,11 +222,16 @@
     padding: 16px $container-padding-x 0;
     white-space: nowrap;
     overflow-x: scroll;
+    position: relative;
+    height: 98px;
 
     ul {
         list-style: none;
         padding: 0;
         margin: 0 -8px;
+        position: absolute;
+        left: 2px;
+        transition: left 0.5s;
 
         li {
             display: inline-block;
@@ -270,6 +275,18 @@
 .section--seperated {
     .full-width {
         margin: 0 (-(map-get($container-margin, md)));
+    }
+
+    &.section--imageslider {
+        position: relative;
+        > svg {
+            padding: 4px;
+            background-color: #fff;
+            position: absolute;
+            top: 30px;
+            right: 0;
+            pointer-events: none;
+        }
     }
 }
 

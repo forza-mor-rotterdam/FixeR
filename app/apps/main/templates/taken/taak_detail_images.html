@@ -7,7 +7,7 @@
 {% load context_template from context_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
 {% get_bijlagen melding as bijlagen %}
-<section class="section--seperated"
+<section class="section--seperated section--imageslider"
          data-testid="detailPhotoviewer"
          {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
     <div class="full-width">
@@ -19,19 +19,20 @@
                     style="width: calc(100% * {{ bijlagen|length }})">
                     {% for foto in bijlagen %}
                         <li class="container__image"
-                            id="{{ foto.afbeelding_relative_url|mor_core_protected_url }}">
+                            id="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
+                            data-action="click->detail#showImageInModal"
+                            data-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
                             <img src="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
+                                 class="image"
                                  alt=""
-                                 data-detail-target="selectedImage"
-                                 {% comment %}
-                                 data-action="click->detail#openImageInPopup"
-                                 {% endcomment %} />
+                                 data-detail-target="selectedImage" />
                         </li>
                     {% endfor %}
                 </ul>
             </div>
             {% if bijlagen|length > 1 %}
-                <div class="container__thumbs">
+                <div class="container__thumbs"
+                     data-detail-target="imageSliderThumbContainer">
                     <ul data-detail-target="thumbList">
                         {% for foto in bijlagen %}
                             <li data-action="click->detail#selectImage"
@@ -50,4 +51,5 @@
                  style="background-image: url('{% webpack_static 'icons/noimage.svg' %}')"></div>
         {% endif %}
     </div>
+    {% include "icons/expand.svg" %}
 </section>

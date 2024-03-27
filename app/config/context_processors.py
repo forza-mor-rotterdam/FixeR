@@ -68,4 +68,5 @@ def general_settings(context):
         "UNWATCHED_COUNT": unwatched_count,
         "APP_ENV": settings.APP_ENV,
         "DEPLOY_DATE": deploy_date_formatted,
+        "MOR_CORE_PROTECTED_URL_PREFIX": settings.MOR_CORE_PROTECTED_URL_PREFIX,
     }

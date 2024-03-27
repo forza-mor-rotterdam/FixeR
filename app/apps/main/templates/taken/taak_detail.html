@@ -45,7 +45,10 @@
                                 </svg>
                             </a>
                         </div>
+                        {% get_bijlagen melding as bijlagen %}
                         <div data-controller="detail"
+                             data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
+                             data-detail-url-prefix-value="{{ MOR_CORE_PROTECTED_URL_PREFIX }}"
                              data-detail-taak-object-value="{{ taak }}"
                              data-detail-incident-y-value="{{ geometrie.x|replace_comma_by_dot }}"
                              data-detail-incident-x-value="{{ geometrie.y|replace_comma_by_dot }}"
@@ -58,6 +61,41 @@
                                     {% include "taken/taak_detail_images.html" %}
                                     {% include "taken/taak_detail_foldouts.html" %}
                                     {% include "taken/taak_detail_buttons.html" %}
+                                </div>
+                            </div>
+                            <div class="modal modal--images"
+                                 data-detail-target="modalImages"
+                                 id="imageModal">
+                                <div class="modal-backdrop modal-exit"
+                                     id="modal-backdrop"
+                                     data-action="click->detail#closeModal"></div>
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button"
+                                                    class="btn-close"
+                                                    aria-label="Sluit"
+                                                    data-action="modal#closeModal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container__image">
+                                                <img class="image" data-detail-target="selectedImageModal" src="" alt="" />
+                                            </div>
+                                            <div class="image-counter" data-detail-target="imageCounter"></div>
+                                            <div class="container__navigate-images">
+                                                <div class="navigate-images--left inactive"
+                                                     data-detail-target="navigateImagesLeft"
+                                                     data-action="click->detail#showPreviousImageInModal">
+                                                    <span aria-label="Bekijk vorige afbeelding">{% include "icons/arrow-right.svg" %}</span>
+                                                </div>
+                                                <div class="navigate-images--right inactive"
+                                                     data-detail-target="navigateImagesRight"
+                                                     data-action="click->detail#showNextImageInModal">
+                                                    <span aria-label="Bekijk volgende afbeelding">{% include "icons/arrow-right.svg" %}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
