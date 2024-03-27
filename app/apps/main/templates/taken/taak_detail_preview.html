@@ -113,13 +113,12 @@
                                                 style="width: calc(100% * {{ bijlagen|length }})">
                                                 {% for foto in bijlagen %}
                                                     <li class="container__image"
-                                                        id="{{ foto.afbeelding_relative_url|mor_core_url:signed_data }}">
+                                                        id="{{ foto.afbeelding_relative_url|mor_core_url:signed_data }}"
+                                                        data-action="click->detail#showImageInModal"
+                                                        data-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
                                                         <img src="{{ foto.afbeelding_relative_url|mor_core_url:signed_data }}"
-                                                             alt=""
-                                                             data-detail-target="selectedImage"
-                                                             {% comment %}
-                                                             data-action="click->detail#openImageInPopup"
-                                                             {% endcomment %} />
+                                                             class="image"
+                                                             alt="" />
                                                     </li>
                                                 {% endfor %}
                                             </ul>

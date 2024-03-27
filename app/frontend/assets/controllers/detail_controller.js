@@ -38,7 +38,6 @@ export default class extends Controller {
     urlPrefix: String,
   }
   static targets = [
-    'selectedImage',
     'selectedImageModal',
     'thumbList',
     'imageSliderContainer',
