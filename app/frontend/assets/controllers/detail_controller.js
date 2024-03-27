@@ -114,13 +114,10 @@ export default class extends Controller {
         'touchend',
         function () {
           let xTravel = gesture.x[gesture.x.length - 1] - gesture.x[0]
-          console.log('xTravel', xTravel)
           if (xTravel < -tolerance) {
-            console.log('left')
             this.showNextImageInModal()
           }
           if (xTravel > tolerance) {
-            console.log('right')
             this.showPreviousImageInModal()
           }
         }.bind(this)
