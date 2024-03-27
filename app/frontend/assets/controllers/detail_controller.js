@@ -82,6 +82,15 @@ export default class extends Controller {
       })
     }
 
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') {
+        this.showPreviousImageInModal()
+      }
+      if (event.key === 'ArrowRight') {
+        this.showNextImageInModal()
+      }
+    })
+
     const mapDiv = document.getElementById('incidentMap')
     this.mapLayers = {
       containers: {
@@ -166,8 +175,6 @@ export default class extends Controller {
     }
 
     document.querySelectorAll('.container__image').forEach((element) => {
-      console.log('this', this)
-      console.log('element', element)
       self.pinchZoom(element)
     })
   }
@@ -340,12 +347,6 @@ export default class extends Controller {
     })
   }
 
-  // openImageInPopup(event) {
-  //   currentImg = event.target.src
-  //   this.openModalForImage(event)
-  //   this.saveImagesinList(event)
-  // }
-
   mappingFunction(object) {
     let self = this
     const result = {}
@@ -465,29 +466,6 @@ export default class extends Controller {
     this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
     this.imageScrollInView(selectedImageIndex) //image in detailpage
     fullSizeImageContainer = this.selectedImageModalTarget
-    this.showNormal()
-    window.addEventListener('mousemove', this.getRelativeCoordinates, true)
-    this.selectedImageModalTarget.addEventListener('click', this.showLarge)
-  }
-
-  getRelativeCoordinates(e) {
-    if (fullSizeImageContainer.classList.contains('fullSize')) {
-      fullSizeImageContainer.style.backgroundPosition = `
-        ${(e.clientX * 100) / window.innerWidth}%
-        ${(e.clientY * 100) / window.innerHeight}%
-        `
-    }
-  }
-
-  showLarge() {
-    console.log('thisssss', this)
-    if (fullSizeImageContainer.classList.contains('fullSize')) {
-      fullSizeImageContainer.classList.remove('fullSize')
-      window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
-    } else {
-      fullSizeImageContainer.classList.add('fullSize')
-      window.addEventListener('mousemove', this.getRelativeCoordinates, true)
-    }
   }
 
   showNormal() {
@@ -521,7 +499,6 @@ export default class extends Controller {
   pinchZoom(imageElement) {
     let imageElementScale = 1
     let start = {}
-    console.log('pinchZoom')
     // Calculate distance between two fingers
     const distance = (event) => {
       const dist = Math.hypot(

@@ -147,12 +147,6 @@ body.show-modal--first-filter {
                 width: 100%;
                 height: 100%;
                 object-fit: contain;
-                cursor: zoom-in;
-
-                &.fullSize {
-                    object-fit: cover;
-                    cursor: zoom-out;
-                }
             }
 
             .image-counter {
