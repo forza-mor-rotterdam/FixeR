@@ -40,7 +40,9 @@ from django.core import signing
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db import models
+from django.db.models import Q, Value
+from django.db.models.functions import Concat
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -186,7 +188,7 @@ def taken_lijst(request):
     sortering = sortering.split("-")[0]
     sorting_fields = {
         "Postcode": "taak_zoek_data__postcode",
-        "Adres": "adres",
+        "Adres": "zoekadres",
         "Datum": "taakstatus__aangemaakt_op",
         "Afstand": "afstand",
     }
@@ -213,6 +215,15 @@ def taken_lijst(request):
         )
 
     # sorteren
+    if sortering == "Adres":
+        taken_gefilterd = taken_gefilterd.annotate(
+            zoekadres=Concat(
+                "taak_zoek_data__straatnaam",
+                Value(" "),
+                "taak_zoek_data__huisnummer",
+                output_field=models.CharField(),
+            )
+        )
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(
             afstand=Distance("taak_zoek_data__geometrie", pnt)
