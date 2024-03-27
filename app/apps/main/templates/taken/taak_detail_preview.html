@@ -46,6 +46,7 @@
         {% with melding=taak.melding.response_json %}
             {% with geometrie=taak.taak_zoek_data.geometrie %}
                 <div>
+                    {% get_bijlagen melding as bijlagen %}
                     <div data-controller="detail"
                          data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
                          data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
@@ -102,7 +103,6 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            {% get_bijlagen melding as bijlagen %}
                             <section class="section--seperated"
                                      data-testid="detailPhotoviewer"
                                      {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
