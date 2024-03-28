@@ -87,10 +87,7 @@
             {% if TEMPLATE_BASIS != "benc" %}
                 <div>
                     <h3 class="h5">Ter hoogte van</h3>
-                    <p>
-                        {{ taak_zoek_data.straatnaam|lower|capfirst }}
-                        {% if taak_zoek_data.huisnummer %}{{ taak_zoek_data.huisnummer }}{% endif %}
-                    </p>
+                    <p>{{ taak.adres }}</p>
                     {% if device_os == "ios" %}
                         <small>
                             <a class="link"
