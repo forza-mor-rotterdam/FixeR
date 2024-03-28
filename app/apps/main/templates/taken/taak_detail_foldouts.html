@@ -2,7 +2,7 @@
 {% load multiply previous next from list_tags %}
 {% load taakopdracht render_onderwerp get_bijlagen from melding_tags %}
 {% load to_datetime replace_comma_by_dot vind_in_dict from main_tags %}
-{% load json_encode json_loads from main_tags %}
+{% load json_encode json_loads replace_n from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
@@ -279,7 +279,7 @@
                     {% endfor %}
                 {% elif melding.aanvullende_informatie %}
                     <h3 class="h5">Aanvullende informatie</h3>
-                    <p>{{ melding.aanvullende_informatie }}</p>
+                    <p>{{ melding.aanvullende_informatie|replace_n|safe }}</p>
                 {% endif %}
             {% endwith %}
             {% if melding.afdeling.omschrijving %}
