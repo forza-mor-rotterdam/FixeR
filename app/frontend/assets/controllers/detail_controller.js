@@ -96,7 +96,7 @@ export default class extends Controller {
     let gesture = {
         x: [],
       },
-      tolerance = 50
+      tolerance = 30
 
     if (this.hasSelectedImageModalTarget) {
       this.selectedImageModalTarget.addEventListener('touchstart', function (e) {

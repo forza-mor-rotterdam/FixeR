@@ -9,8 +9,7 @@
 {% block title %}
     {% with melding=taak.melding.response_json %}
         {% if TEMPLATE_BASIS != "benc" %}
-            {{ taak.taak_zoek_data.straatnaam }}
-            {% if taak.taak_zoek_data.huisnummer %}{{ taak.taak_zoek_data.huisnummer }}{% endif %}
+            {{ taak.adres }}
         {% else %}
             {% if taak.taak_zoek_data.grafnummer %}Graf {{ taak.taak_zoek_data.grafnummer }}{% endif %}
             {% if taak.taak_zoek_data.vak %}, Vak {{ taak.taak_zoek_data.vak }}{% endif %}

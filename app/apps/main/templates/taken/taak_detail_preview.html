@@ -16,7 +16,7 @@
     {% if link_actief %}
         {% with melding=taak.melding.response_json %}
             <meta property="og:title"
-                  content="Taak: {{ taak.titel }}, {{ taak.taak_zoek_data.straatnaam|lower|capfirst }}{% if taak.taak_zoek_data.huisnummer %} {{ taak.taak_zoek_data.huisnummer }}{% endif %}" />
+                  content="Taak: {{ taak.titel }}, {{ taak.adres }}" />
             <meta property="og:type" content="website" />
             <meta property="og:url"
                   content="{{ ABSOLUTE_ROOT }}{% url 'taak_detail_preview' taak.id signed_data %}" />
@@ -163,10 +163,7 @@
                                 {% if TEMPLATE_BASIS != "benc" %}
                                     <div class="container__details taak">
                                         <h3 class="h5">Ter hoogte van</h3>
-                                        <p>
-                                            {{ taak.taak_zoek_data.straatnaam|lower|capfirst }}
-                                            {% if taak.taak_zoek_data.huisnummer %}{{ taak.taak_zoek_data.huisnummer }}{% endif %}
-                                        </p>
+                                        <p>{{ taak.adres }}</p>
                                     </div>
                                     <div class="container__details taak">
                                         {% if taak.taak_zoek_data.wijknaam %}
