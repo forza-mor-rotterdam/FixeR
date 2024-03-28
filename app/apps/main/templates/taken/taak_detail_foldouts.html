@@ -266,17 +266,22 @@
                 <h3 class="h5">Omschrijving</h3>
                 <p>{{ melding.omschrijving_melder }}</p>
             {% endif %}
-            {% if melding.aanvullende_vragen %}
-                {% with aanvullende_vragen=melding.aanvullende_vragen|safe|json_loads %}
+            {% with aanvullende_vragen=melding.aanvullende_vragen|safe|json_loads %}
+                {% if aanvullende_vragen and melding.aanvullende_vragen %}
                     {% for vraag in aanvullende_vragen %}
                         <h3 class="h5">{{ vraag.question }}</h3>
-                        <p>{{ vraag.answer }}</p>
+                        <p>
+                            {% for answer in vraag.answers %}
+                                {{ answer }}
+                                {% if not forloop.last %},{% endif %}
+                            {% endfor %}
+                        </p>
                     {% endfor %}
-                {% endwith %}
-            {% elif melding.aanvullende_informatie %}
-                <h3 class="h5">Aanvullende informatie</h3>
-                <p>{{ melding.aanvullende_informatie }}</p>
-            {% endif %}
+                {% elif melding.aanvullende_informatie %}
+                    <h3 class="h5">Aanvullende informatie</h3>
+                    <p>{{ melding.aanvullende_informatie }}</p>
+                {% endif %}
+            {% endwith %}
             {% if melding.afdeling.omschrijving %}
                 <h3 class="h5">Afdeling</h3>
                 <p>
