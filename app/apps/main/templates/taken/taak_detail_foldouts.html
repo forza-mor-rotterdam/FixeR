@@ -262,12 +262,15 @@
                     {% endfor %}
                 </p>
             {% endif %}
-            {% if melding.omschrijving_melder and melding.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
+            {% if melding.signalen_voor_melding.0.omschrijving_melder and melding.signalen_voor_melding.0.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
                 <h3 class="h5">Omschrijving</h3>
-                <p>{{ melding.omschrijving_melder }}</p>
+                <p>{{ melding.signalen_voor_melding.0.omschrijving_melder }}</p>
+            {% elif melding.meta.omschrijvingField and melding.meta.omschrijvingField != "- geen korte omschrijving beschikbaar -" %}
+                <h3 class="h5">Omschrijving</h3>
+                <p>{{ melding.meta.omschrijvingField }}</p>
             {% endif %}
-            {% with aanvullende_vragen=melding.aanvullende_vragen|safe|json_loads %}
-                {% if aanvullende_vragen and melding.aanvullende_vragen %}
+            {% with aanvullende_vragen=melding.signalen_voor_melding.0.aanvullende_vragen|safe|json_loads %}
+                {% if aanvullende_vragen and melding.signalen_voor_melding.0.aanvullende_vragen %}
                     {% for vraag in aanvullende_vragen %}
                         <h3 class="h5">{{ vraag.question }}</h3>
                         <p>
@@ -277,9 +280,12 @@
                             {% endfor %}
                         </p>
                     {% endfor %}
-                {% elif melding.aanvullende_informatie %}
+                {% elif melding.signalen_voor_melding.0.aanvullende_informatie %}
                     <h3 class="h5">Aanvullende informatie</h3>
-                    <p>{{ melding.aanvullende_informatie|replace_n|safe }}</p>
+                    <p>{{ melding.signalen_voor_melding.0.aanvullende_informatie|replace_n|safe }}</p>
+                {% elif melding.meta.aanvullendeInformatieField %}
+                    <h3 class="h5">Aanvullende informatie</h3>
+                    <p>{{ melding.meta.aanvullendeInformatieField|replace_n|safe }}</p>
                 {% endif %}
             {% endwith %}
             {% if melding.afdeling.omschrijving %}
