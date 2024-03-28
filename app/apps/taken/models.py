@@ -280,6 +280,8 @@ class Taak(BasisModel):
         )
 
     def adres(self):
+        if not self.taak_zoek_data:
+            return ""
         if not self.taak_zoek_data.straatnaam:
             return ""
         if self.taak_zoek_data.straatnaam and not self.taak_zoek_data.huisnummer:
