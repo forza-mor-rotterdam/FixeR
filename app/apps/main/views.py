@@ -130,7 +130,11 @@ def taken(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_filter(request):
-    taken = Taak.objects.get_taken_recent(request.user)
+    taken = Taak.objects.select_related(
+        "melding",
+        "taakstatus",
+        "taak_zoek_data",
+    ).get_taken_recent(request.user)
 
     filters = (
         get_filters(request.user.profiel.context)
@@ -193,7 +197,11 @@ def taken_lijst(request):
     # filteren
     taken_gefilterd = request.session.get("taken_gefilterd")
     if not taken_gefilterd:
-        taken = Taak.objects.get_taken_recent(request.user)
+        taken = Taak.objects.select_related(
+            "melding",
+            "taakstatus",
+            "taak_zoek_data",
+        ).get_taken_recent(request.user)
         filters = (
             get_filters(request.user.profiel.context)
             if request.user.profiel.context
@@ -505,7 +513,10 @@ def incident_modal_handle(request, id):
     taak = get_object_or_404(Taak, pk=id)
 
     # Alle taken voor deze melding
-    openstaande_taken_voor_melding = Taak.objects.filter(
+    openstaande_taken_voor_melding = Taak.objects.select_related(
+        "melding",
+        "taakstatus",
+    ).filter(
         melding__response_json__id=taak.melding.response_json.get("id"),
         taakstatus__naam__in=Taakstatus.niet_voltooid_statussen(),
     )

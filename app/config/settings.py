@@ -72,6 +72,7 @@ INSTALLED_APPS = (
     "corsheaders",
     "ckeditor",
     "ckeditor_uploader",
+    "debug_toolbar",
     "mozilla_django_oidc",
     "health_check",
     "health_check.cache",
@@ -102,6 +103,7 @@ MIDDLEWARE = (
     "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django_session_timeout.middleware.SessionTimeoutMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -364,6 +366,17 @@ THUMBNAIL_PREFIX = "afbeeldingen"
 THUMBNAIL_KLEIN = "128x128"
 THUMBNAIL_STANDAARD = "1480x1480"
 BESTANDEN_PREFIX = "bestanden"
+
+
+def show_debug_toolbar(request):
+    return DEBUG and os.getenv("SHOW_DEBUG_TOOLBAR") in TRUE_VALUES
+
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": show_debug_toolbar,
+    "INSERT_BEFORE": "</head>",
+}
+
 
 LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
 

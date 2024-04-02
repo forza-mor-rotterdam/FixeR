@@ -32,7 +32,10 @@ class TaaktypeViewSet(viewsets.ReadOnlyModelViewSet):
         minimale implementatie: geef alleen taaktypes terug voor deze melding, waar nog geen openstaande taken voor zijn.
         """
         taaktypes = (
-            Taak.objects.filter(melding=melding_url)
+            Taak.objects.select_related(
+                "melding",
+            )
+            .filter(melding=melding_url)
             .values_list("taaktype", flat=True)
             .distinct()
         )
@@ -48,7 +51,11 @@ class TaakViewSet(
     viewsets.GenericViewSet,
 ):
     lookup_field = "uuid"
-    queryset = Taak.objects.all()
+    queryset = Taak.objects.select_related(
+        "melding",
+        "taakstatus",
+        "taak_zoek_data",
+    ).all()
 
     serializer_class = TaakSerializer
 
