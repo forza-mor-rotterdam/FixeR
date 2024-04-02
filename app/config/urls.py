@@ -298,3 +298,6 @@ if settings.DEBUG:
         path("404/", http_404, name="404"),
         path("500/", http_500, name="500"),
     ]
+    urlpatterns += [
+        path("__debug__/", include("debug_toolbar.urls")),
+    ]
