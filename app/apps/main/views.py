@@ -171,9 +171,6 @@ def taken_filter(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_lijst(request):
-    MeldingenService().set_gebruiker(
-        gebruiker=request.user.serialized_instance(),
-    )
     try:
         pnt = Point(
             float(request.GET.get("lon", 0)),
