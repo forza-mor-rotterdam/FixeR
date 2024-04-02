@@ -96,6 +96,11 @@ class StandaardFilter:
         }
         f_dict.update(ff_dict)
         f_dict = {str(k): v for k, v in f_dict.items() if k}
+        if hasattr(self, "_predefined_options"):
+            f_dict = {
+                o[0]: (o[1], o[1], f_dict.get(o[0], (o[1], o[1], 0))[2])
+                for o in self._predefined_options
+            }
 
         def create_option(k, label, filter_label=None):
             return {
@@ -184,6 +189,10 @@ class TaakStatusFilter(StandaardFilter):
     _option_value_lookup = "taakstatus__naam"
     _filter_lookup = "taakstatus__naam__in"
     _label = "Taakstatus"
+    _predefined_options = (
+        ("nieuw", "Nieuw"),
+        ("voltooid", "Voltooid"),
+    )
 
 
 class WijkBuurtFilter(StandaardFilter):
