@@ -7,21 +7,12 @@ let markerIcon,
   markerMe,
   markers,
   map,
-  currentImg,
-  imageContainer,
   currentPosition,
   imagesList,
   fullSizeImageContainer = null
 
-let dist,
-  elapsedTime,
-  startX,
-  startY,
-  startTime,
-  selectedImageIndex,
+let selectedImageIndex,
   sliderContainerWidth = 0
-
-let imageSrcList = []
 
 let self = null
 export default class extends Controller {
@@ -57,7 +48,7 @@ export default class extends Controller {
   }
 
   initialize() {
-    let self = this
+    self = this
     let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', {
       bubbles: true,
       cancelable: false,
@@ -215,50 +206,7 @@ export default class extends Controller {
     })
   }
 
-  connect() {
-    const touchsurface = document.querySelector('#container-image'),
-      threshold = 150, //required min distance traveled to be considered swipe
-      allowedTime = 1000 // maximum time allowed to travel that distance
-    if (touchsurface) {
-      touchsurface.addEventListener(
-        'touchstart',
-        function (e) {
-          let touchobj = e.changedTouches[0]
-          dist = 0
-          startX = touchobj.pageX
-          startY = touchobj.pageY
-          startTime = new Date().getTime() // record time when finger first makes contact with surface
-          e.preventDefault()
-        },
-        false
-      )
-
-      touchsurface.addEventListener(
-        'touchmove',
-        function (e) {
-          e.preventDefault() // prevent scrolling when inside DIV
-        },
-        false
-      )
-
-      touchsurface.addEventListener(
-        'touchend',
-        function (e) {
-          let touchobj = e.changedTouches[0]
-          dist = touchobj.pageX - startX // get total dist traveled by finger while in contact with surface
-          elapsedTime = new Date().getTime() - startTime // get time elapsed
-          // check that elapsed time is within specified, horizontal dist traveled >= threshold, and vertical dist traveled <= 100
-          let swiperightBol =
-            elapsedTime <= allowedTime &&
-            dist >= threshold &&
-            Math.abs(touchobj.pageY - startY) <= 100
-          self.handleswipe(swiperightBol)
-          e.preventDefault()
-        },
-        false
-      )
-    }
-  }
+  connect() {}
 
   disconnect() {}
 
@@ -360,28 +308,6 @@ export default class extends Controller {
     console.log('An error occurred while attempting to connect.')
     self.eventSource.close()
   }
-  // This used to be isrightswipe
-  handleswipe(isRightSwipe) {
-    const imgIndex = imageSrcList.indexOf(currentImg)
-    const lastImgInList = imgIndex === imageSrcList.length - 1
-    const firstImgInList = imgIndex === 0
-    let newImg = null
-    if (isRightSwipe && !firstImgInList) {
-      newImg = imageSrcList[imgIndex - 1]
-      self.loadImage(newImg)
-    } else if (!isRightSwipe && !lastImgInList) {
-      newImg = imageSrcList[imgIndex + 1]
-      self.loadImage(newImg)
-    }
-    if (newImg) currentImg = newImg
-  }
-
-  saveImagesinList(event) {
-    const imageList = Array.from(event.target.parentElement.parentElement.querySelectorAll('img'))
-    imageSrcList = imageList.map((img) => {
-      return img.src
-    })
-  }
 
   mappingFunction(object) {
     let self = this
@@ -472,16 +398,6 @@ export default class extends Controller {
     }
   }
 
-  loadImage(imgSrc) {
-    while (imageContainer.firstChild) {
-      imageContainer.removeChild(imageContainer.firstChild)
-    }
-    const image = document.createElement('img')
-    image.classList.add('selectedImage')
-    image.src = imgSrc
-    imageContainer.appendChild(image)
-  }
-
   showPreviousImageInModal() {
     if (selectedImageIndex > 0) {
       selectedImageIndex--
@@ -546,7 +462,6 @@ export default class extends Controller {
     }
 
     imageElement.addEventListener('touchstart', (event) => {
-      console.log('touchstart')
       if (event.touches.length === 2) {
         event.preventDefault() // Prevent page scroll
         console.log('event.touches.length === 2')
@@ -558,7 +473,6 @@ export default class extends Controller {
     })
 
     imageElement.addEventListener('touchmove', (event) => {
-      console.log('touchmove')
       if (event.touches.length === 2) {
         console.log('event.touches.length === 2')
         event.preventDefault() // Prevent page scroll
@@ -587,7 +501,6 @@ export default class extends Controller {
     })
 
     imageElement.addEventListener('touchend', () => {
-      console.log('touchend')
       // Reset image to it's original format
       imageElement.style.transform = ''
       imageElement.style.WebkitTransform = ''
