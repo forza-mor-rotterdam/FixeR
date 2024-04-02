@@ -191,8 +191,6 @@ class TaakStatusFilter(StandaardFilter):
     _label = "Taakstatus"
     _predefined_options = (
         ("nieuw", "Nieuw"),
-        ("openstaand", "Openstaand"),
-        ("toegewezen", "Toegewezen"),
         ("voltooid", "Voltooid"),
     )
 
