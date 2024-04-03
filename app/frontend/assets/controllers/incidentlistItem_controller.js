@@ -17,6 +17,10 @@ export default class extends Controller {
       })
     })
     observer.observe(this.element)
+    this.element.addEventListener('click', () => {
+      const pageNumber = this.element.dataset.page
+      sessionStorage.setItem('page_number', pageNumber)
+    })
   }
 
   disconnect() {
