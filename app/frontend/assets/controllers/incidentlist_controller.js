@@ -22,6 +22,10 @@ export default class extends Controller {
   initialize() {
     let self = this
     self.page = 1
+    if (sessionStorage.getItem('page_number')) {
+      self.page = sessionStorage.getItem('page_number')
+      // self.reloadTakenLijst()
+    }
     self.distanceToLastRefreshPositionTreshold = 50 //meter
     self.lastRefreshPosition = null
     self.element[self.identifier] = self
