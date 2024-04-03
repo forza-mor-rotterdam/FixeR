@@ -77,12 +77,14 @@
                 {% include "snippets/pageheader.html" %}
             {% endwith %}
         {% endblock pageheader %}
-        <main data-controller="main" data-main-taken-outlet="#taken">
-            <div class="{% block container_class %}container container--unlimited{% endblock container_class %}">
-                {% block body %}
-                {% endblock body %}
-            </div>
-        </main>
+        {% block main %}
+            <main data-controller="main" data-main-taken-outlet="#taken">
+                <div class="{% block container_class %}container container--unlimited{% endblock container_class %}">
+                    {% block body %}
+                    {% endblock body %}
+                </div>
+            </main>
+        {% endblock main %}
         <div class="modal-backdrop"></div>
         <div class="spinner"></div>
         {% include "auth/session_timer.html" %}

@@ -356,11 +356,7 @@ def taak_delen(request, id):
         signed_data=TaakDeellink.get_signed_data(gebruiker_email),
     )
 
-    return JsonResponse(
-        {
-            "url": f"{whatsapp_url}send?text={taak_gedeeld.get_absolute_url(request)}",
-        }
-    )
+    return redirect(f"{whatsapp_url}send?text={taak_gedeeld.get_absolute_url(request)}")
 
 
 def taak_detail_preview(request, id, signed_data):
