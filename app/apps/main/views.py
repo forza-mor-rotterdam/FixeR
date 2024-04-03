@@ -130,7 +130,11 @@ def taken(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_filter(request):
-    taken = Taak.objects.get_taken_recent(request.user)
+    taken = Taak.objects.select_related(
+        "melding",
+        "taakstatus",
+        "taak_zoek_data",
+    ).get_taken_recent(request.user)
 
     filters = (
         get_filters(request.user.profiel.context)
@@ -171,9 +175,6 @@ def taken_filter(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_lijst(request):
-    MeldingenService().set_gebruiker(
-        gebruiker=request.user.serialized_instance(),
-    )
     try:
         pnt = Point(
             float(request.GET.get("lon", 0)),
@@ -188,7 +189,7 @@ def taken_lijst(request):
     sortering = sortering.split("-")[0]
     sorting_fields = {
         "Postcode": "taak_zoek_data__postcode",
-        "Adres": "adres",
+        "Adres": "zoekadres",
         "Datum": "taakstatus__aangemaakt_op",
         "Afstand": "afstand",
     }
@@ -196,7 +197,11 @@ def taken_lijst(request):
     # filteren
     taken_gefilterd = request.session.get("taken_gefilterd")
     if not taken_gefilterd:
-        taken = Taak.objects.get_taken_recent(request.user)
+        taken = Taak.objects.select_related(
+            "melding",
+            "taakstatus",
+            "taak_zoek_data",
+        ).get_taken_recent(request.user)
         filters = (
             get_filters(request.user.profiel.context)
             if request.user.profiel.context
@@ -215,17 +220,21 @@ def taken_lijst(request):
         )
 
     # sorteren
-    taken_gefilterd = (
-        taken_gefilterd.annotate(
-            adres=Concat(
+    if sortering == "Adres":
+        taken_gefilterd = taken_gefilterd.annotate(
+            zoekadres=Concat(
                 "taak_zoek_data__straatnaam",
                 Value(" "),
                 "taak_zoek_data__huisnummer",
                 output_field=models.CharField(),
             )
         )
-        .annotate(afstand=Distance("taak_zoek_data__geometrie", pnt))
-        .order_by(f"{'-' if sort_reverse else ''}{sorting_fields.get(sortering)}")
+    if sortering == "Afstand":
+        taken_gefilterd = taken_gefilterd.annotate(
+            afstand=Distance("taak_zoek_data__geometrie", pnt)
+        )
+    taken_gefilterd = taken_gefilterd.order_by(
+        f"{'-' if sort_reverse else ''}{sorting_fields.get(sortering)}"
     )
 
     # paginate
@@ -258,8 +267,9 @@ def taak_zoeken(request):
 def sorteer_filter(request):
     sortering = get_sortering(request.user)
     form = SorteerFilterForm({"sorteer_opties": sortering})
-
+    request_type = "get"
     if request.POST:
+        request_type = "post"
         form = SorteerFilterForm(request.POST)
         if form.is_valid():
             sortering = form.cleaned_data.get("sorteer_opties")
@@ -267,7 +277,10 @@ def sorteer_filter(request):
     return render(
         request,
         "snippets/sorteer_filter_form.html",
-        {"form": form},
+        {
+            "form": form,
+            "request_type": request_type,
+        },
     )
 
 
@@ -500,7 +513,10 @@ def incident_modal_handle(request, id):
     taak = get_object_or_404(Taak, pk=id)
 
     # Alle taken voor deze melding
-    openstaande_taken_voor_melding = Taak.objects.filter(
+    openstaande_taken_voor_melding = Taak.objects.select_related(
+        "melding",
+        "taakstatus",
+    ).filter(
         melding__response_json__id=taak.melding.response_json.get("id"),
         taakstatus__naam__in=Taakstatus.niet_voltooid_statussen(),
     )

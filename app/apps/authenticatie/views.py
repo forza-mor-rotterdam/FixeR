@@ -40,7 +40,9 @@ class GebruikerView(View):
 class GebruikerLijstView(GebruikerView, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        object_list = self.object_list
+        object_list = self.object_list.select_related(
+            "profiel__context"
+        ).prefetch_related("groups")
         context["geauthoriseerde_gebruikers"] = object_list.filter(groups__isnull=False)
         context["ongeauthoriseerde_gebruikers"] = object_list.filter(
             groups__isnull=True

@@ -9,8 +9,7 @@
 {% block title %}
     {% with melding=taak.melding.response_json %}
         {% if TEMPLATE_BASIS != "benc" %}
-            {{ taak.taak_zoek_data.straatnaam }}
-            {% if taak.taak_zoek_data.huisnummer %}{{ taak.taak_zoek_data.huisnummer }}{% endif %}
+            {{ taak.adres }}
         {% else %}
             {% if taak.taak_zoek_data.grafnummer %}Graf {{ taak.taak_zoek_data.grafnummer }}{% endif %}
             {% if taak.taak_zoek_data.vak %}, Vak {{ taak.taak_zoek_data.vak }}{% endif %}
@@ -45,7 +44,10 @@
                                 </svg>
                             </a>
                         </div>
+                        {% get_bijlagen melding as bijlagen %}
                         <div data-controller="detail"
+                             data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
+                             data-detail-url-prefix-value="{{ MOR_CORE_PROTECTED_URL_PREFIX }}"
                              data-detail-taak-object-value="{{ taak }}"
                              data-detail-incident-y-value="{{ geometrie.x|replace_comma_by_dot }}"
                              data-detail-incident-x-value="{{ geometrie.y|replace_comma_by_dot }}"
@@ -60,6 +62,7 @@
                                     {% include "taken/taak_detail_buttons.html" %}
                                 </div>
                             </div>
+                            {% include "snippets/modal_images.html" %}
                         </div>
                     </div>
                 {% endwith %}

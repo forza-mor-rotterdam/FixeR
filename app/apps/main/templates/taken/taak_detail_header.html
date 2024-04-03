@@ -8,8 +8,7 @@
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
 {% if TEMPLATE_BASIS != "benc" %}
     <h1 class="h3">
-        {{ taak_zoek_data.straatnaam|lower|capfirst }}
-        {% if taak_zoek_data.huisnummer %}{{ taak_zoek_data.huisnummer }}{% endif %}
+        {{ taak.adres }}
         <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
             {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
         </span>

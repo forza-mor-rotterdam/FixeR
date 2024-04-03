@@ -279,14 +279,14 @@ class Taak(BasisModel):
             ]
         )
 
-    # @TODO Could be updated to use taak_zoek_data instead
     def adres(self):
-        locaties = self.melding.response_json.get("locaties_voor_melding")
-        if not locaties or not locaties[0].get("straatnaam"):
+        if not self.taak_zoek_data:
             return ""
-        if locaties[0].get("huisnummer"):
-            return f"{locaties[0].get('straatnaam')} {locaties[0].get('huisnummer')}"
-        return locaties[0].get("straatnaam")
+        if not self.taak_zoek_data.straatnaam:
+            return ""
+        if self.taak_zoek_data.straatnaam and not self.taak_zoek_data.huisnummer:
+            return self.taak_zoek_data.straatnaam
+        return f"{self.taak_zoek_data.straatnaam} {self.taak_zoek_data.huisnummer}{self.taak_zoek_data.huisletter if self.taak_zoek_data.huisletter else ''} {self.taak_zoek_data.toevoeging if self.taak_zoek_data.toevoeging else ''}".strip()
 
     # @TODO Could be updated to use taak_zoek_data instead
     def postcode_digits(self):

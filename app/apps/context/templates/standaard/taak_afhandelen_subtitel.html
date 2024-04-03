@@ -1,7 +1,4 @@
 {% load l10n %}
-<strong>
-    {% if taak_zoek_data.straatnaam %}{{ taak_zoek_data.straatnaam|lower|capfirst }}{% endif %}
-    {% if taak_zoek_data.huisnummer %}{{ taak_zoek_data.huisnummer }}{% endif %}
-</strong>
+<strong>{{ taak.adres }}</strong>
 <br />
 {{ subtitel }}

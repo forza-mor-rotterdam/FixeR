@@ -9,15 +9,14 @@
 {% load context_template from context_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus get_field_from_gebruiker_middels_email from gebruikers_tags %}
 {% block title %}
-    Taak: {{ taak.titel }}, {{ taak.taak_zoek_data.straatnaam|lower|capfirst }}
-    {% if taak.taak_zoek_data.huisnummer %}{{ taak.taak_zoek_data.huisnummer }}{% endif %}
+    Taak: {{ taak.titel }}, {{ taak.adres }}
     | FixeR
 {% endblock title %}
 {% block extra_head %}
     {% if link_actief %}
         {% with melding=taak.melding.response_json %}
             <meta property="og:title"
-                  content="Taak: {{ taak.titel }}, {{ taak.taak_zoek_data.straatnaam|lower|capfirst }}{% if taak.taak_zoek_data.huisnummer %} {{ taak.taak_zoek_data.huisnummer }}{% endif %}" />
+                  content="Taak: {{ taak.titel }}, {{ taak.adres }}" />
             <meta property="og:type" content="website" />
             <meta property="og:url"
                   content="{{ ABSOLUTE_ROOT }}{% url 'taak_detail_preview' taak.id signed_data %}" />
@@ -46,8 +45,12 @@
     {% else %}
         {% with melding=taak.melding.response_json %}
             {% with geometrie=taak.taak_zoek_data.geometrie %}
-                <div>
+                <div data-controller="modal">
+                    {% get_bijlagen melding as bijlagen %}
                     <div data-controller="detail"
+                         data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
+                         data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
+                         data-detail-signed-data-value="{{ signed_data }}"
                          data-detail-taak-object-value="{{ taak }}"
                          data-detail-incident-y-value="{{ geometrie.0|replace_comma_by_dot }}"
                          data-detail-incident-x-value="{{ geometrie.1|replace_comma_by_dot }}"
@@ -58,8 +61,7 @@
                             <div class="container__header-taaknavigatie">
                                 <span>Deze link verloopt over {{ taak_gedeeld.actief.1|naturaltime }}</span>
                                 <h1 class="h3">
-                                    {{ taak.taak_zoek_data.straatnaam|lower|capfirst }}
-                                    {% if taak.taak_zoek_data.huisnummer %}{{ taak.taak_zoek_data.huisnummer }}{% endif %}
+                                    {{ taak.adres }}
                                     <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
                                         {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
                                     </span>
@@ -102,8 +104,7 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            {% get_bijlagen melding as bijlagen %}
-                            <section class="section--seperated"
+                            <section class="section--seperated section--imageslider"
                                      data-testid="detailPhotoviewer"
                                      {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
                                 <div class="full-width">
@@ -115,13 +116,12 @@
                                                 style="width: calc(100% * {{ bijlagen|length }})">
                                                 {% for foto in bijlagen %}
                                                     <li class="container__image"
-                                                        id="{{ foto.afbeelding_relative_url|mor_core_url:signed_data }}">
+                                                        id="{{ foto.afbeelding_relative_url|mor_core_url:signed_data }}"
+                                                        data-action="click->detail#showImageInModal"
+                                                        data-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
                                                         <img src="{{ foto.afbeelding_relative_url|mor_core_url:signed_data }}"
-                                                             alt=""
-                                                             data-detail-target="selectedImage"
-                                                             {% comment %}
-                                                             data-action="click->detail#openImageInPopup"
-                                                             {% endcomment %} />
+                                                             class="image"
+                                                             alt="" />
                                                     </li>
                                                 {% endfor %}
                                             </ul>
@@ -147,6 +147,7 @@
                                         </div>
                                     {% endif %}
                                 </div>
+                                {% include "icons/expand.svg" %}
                             </section>
                             <section class="padding-bottom-2x">
                                 <h2>
@@ -162,10 +163,7 @@
                                 {% if TEMPLATE_BASIS != "benc" %}
                                     <div class="container__details taak">
                                         <h3 class="h5">Ter hoogte van</h3>
-                                        <p>
-                                            {{ taak.taak_zoek_data.straatnaam|lower|capfirst }}
-                                            {% if taak.taak_zoek_data.huisnummer %}{{ taak.taak_zoek_data.huisnummer }}{% endif %}
-                                        </p>
+                                        <p>{{ taak.adres }}</p>
                                     </div>
                                     <div class="container__details taak">
                                         {% if taak.taak_zoek_data.wijknaam %}
@@ -245,6 +243,7 @@
                                 </p>
                             </section>
                         </div>
+                        {% include "snippets/modal_images.html" %}
                     </div>
                 </div>
             {% endwith %}

@@ -18,6 +18,7 @@ SECRET_KEY = os.environ.get(
 )
 
 GIT_SHA = os.getenv("GIT_SHA")
+DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 DEBUG = ENVIRONMENT == "development"
 
@@ -42,7 +43,7 @@ MELDINGEN_API_HEALTH_CHECK_URL = os.getenv(
 MELDINGEN_TOKEN_API = os.getenv(
     "MELDINGEN_TOKEN_API", f"{MELDINGEN_URL}/api-token-auth/"
 )
-MELDINGEN_TOKEN_TIMEOUT = 60 * 60 * 24
+MELDINGEN_TOKEN_TIMEOUT = 60 * 60
 MELDINGEN_USERNAME = os.getenv("MELDINGEN_USERNAME")
 MELDINGEN_PASSWORD = os.getenv("MELDINGEN_PASSWORD")
 
@@ -71,6 +72,7 @@ INSTALLED_APPS = (
     "corsheaders",
     "ckeditor",
     "ckeditor_uploader",
+    "debug_toolbar",
     "mozilla_django_oidc",
     "health_check",
     "health_check.cache",
@@ -101,6 +103,7 @@ MIDDLEWARE = (
     "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django_session_timeout.middleware.SessionTimeoutMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -363,6 +366,17 @@ THUMBNAIL_PREFIX = "afbeeldingen"
 THUMBNAIL_KLEIN = "128x128"
 THUMBNAIL_STANDAARD = "1480x1480"
 BESTANDEN_PREFIX = "bestanden"
+
+
+def show_debug_toolbar(request):
+    return DEBUG and os.getenv("SHOW_DEBUG_TOOLBAR") in TRUE_VALUES
+
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": show_debug_toolbar,
+    "INSERT_BEFORE": "</head>",
+}
+
 
 LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
 

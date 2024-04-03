@@ -7,17 +7,12 @@ let markerIcon,
   markerMe,
   markers,
   map,
-  currentImg,
-  imageContainer,
-  modal,
-  modalBackdrop,
-  currentPosition = null
-let dist,
-  elapsedTime,
-  startX,
-  startY,
-  startTime = 0
-let imageSrcList = []
+  currentPosition,
+  imagesList,
+  fullSizeImageContainer = null
+
+let selectedImageIndex,
+  sliderContainerWidth = 0
 
 let self = null
 export default class extends Controller {
@@ -30,13 +25,22 @@ export default class extends Controller {
     incidentObject: Object,
     mercurePublicUrl: String,
     mercureSubscriberToken: String,
+    afbeeldingen: String,
+    urlPrefix: String,
+    signedData: String,
   }
   static targets = [
-    'selectedImage',
+    'selectedImageModal',
     'thumbList',
     'imageSliderContainer',
     'taakAfstand',
     'navigeerLink',
+    'modalImages',
+    'navigateImagesLeft',
+    'navigateImagesRight',
+    'navigateImagesRight',
+    'imageCounter',
+    'imageSliderThumbContainer',
   ]
 
   Mapping = {
@@ -44,7 +48,7 @@ export default class extends Controller {
   }
 
   initialize() {
-    let self = this
+    self = this
     let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', {
       bubbles: true,
       cancelable: false,
@@ -56,9 +60,63 @@ export default class extends Controller {
     window.dispatchEvent(childControllerConnectedEvent)
     self.initMessages()
 
+    imagesList = JSON.parse(this.afbeeldingenValue).map(
+      (bestand) => bestand.afbeelding_relative_url
+    )
+
     if (self.hasThumbListTarget) {
       self.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
+      sliderContainerWidth = self.thumbListTarget.parentElement.clientWidth
+
+      screen.orientation.addEventListener('change', () => {
+        sliderContainerWidth = self.thumbListTarget.parentElement.clientWidth
+      })
     }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') {
+        this.showPreviousImageInModal()
+      }
+      if (event.key === 'ArrowRight') {
+        this.showNextImageInModal()
+      }
+    })
+
+    //START SWIPE
+
+    let gesture = {
+        x: [],
+      },
+      tolerance = 30
+
+    if (this.hasSelectedImageModalTarget) {
+      this.selectedImageModalTarget.addEventListener('touchstart', function (e) {
+        e.preventDefault()
+        for (let i = 0; i < e.touches.length; i++) {
+          gesture.x.push(e.touches[i].clientX)
+        }
+      })
+      this.selectedImageModalTarget.addEventListener('touchmove', function (e) {
+        e.preventDefault()
+        for (var i = 0; i < e.touches.length; i++) {
+          gesture.x.push(e.touches[i].clientX)
+        }
+      })
+      this.selectedImageModalTarget.addEventListener(
+        'touchend',
+        function () {
+          let xTravel = gesture.x[gesture.x.length - 1] - gesture.x[0]
+          if (xTravel < -tolerance) {
+            this.showNextImageInModal()
+          }
+          if (xTravel > tolerance) {
+            this.showPreviousImageInModal()
+          }
+        }.bind(this)
+      )
+    }
+
+    // END SWIPE
 
     const mapDiv = document.getElementById('incidentMap')
     this.mapLayers = {
@@ -142,56 +200,13 @@ export default class extends Controller {
         self.positionWatchSuccess(e.detail.position)
       })
     }
-  }
 
-  connect() {
     document.querySelectorAll('.container__image').forEach((element) => {
-      this.pinchZoom(element)
+      self.pinchZoom(element)
     })
-
-    const touchsurface = document.querySelector('#container-image'),
-      threshold = 150, //required min distance traveled to be considered swipe
-      allowedTime = 1000 // maximum time allowed to travel that distance
-    if (touchsurface) {
-      touchsurface.addEventListener(
-        'touchstart',
-        function (e) {
-          let touchobj = e.changedTouches[0]
-          dist = 0
-          startX = touchobj.pageX
-          startY = touchobj.pageY
-          startTime = new Date().getTime() // record time when finger first makes contact with surface
-          e.preventDefault()
-        },
-        false
-      )
-
-      touchsurface.addEventListener(
-        'touchmove',
-        function (e) {
-          e.preventDefault() // prevent scrolling when inside DIV
-        },
-        false
-      )
-
-      touchsurface.addEventListener(
-        'touchend',
-        function (e) {
-          let touchobj = e.changedTouches[0]
-          dist = touchobj.pageX - startX // get total dist traveled by finger while in contact with surface
-          elapsedTime = new Date().getTime() - startTime // get time elapsed
-          // check that elapsed time is within specified, horizontal dist traveled >= threshold, and vertical dist traveled <= 100
-          let swiperightBol =
-            elapsedTime <= allowedTime &&
-            dist >= threshold &&
-            Math.abs(touchobj.pageY - startY) <= 100
-          self.handleswipe(swiperightBol)
-          e.preventDefault()
-        },
-        false
-      )
-    }
   }
+
+  connect() {}
 
   disconnect() {}
 
@@ -293,34 +308,6 @@ export default class extends Controller {
     console.log('An error occurred while attempting to connect.')
     self.eventSource.close()
   }
-  // This used to be isrightswipe
-  handleswipe(isRightSwipe) {
-    const imgIndex = imageSrcList.indexOf(currentImg)
-    const lastImgInList = imgIndex === imageSrcList.length - 1
-    const firstImgInList = imgIndex === 0
-    let newImg = null
-    if (isRightSwipe && !firstImgInList) {
-      newImg = imageSrcList[imgIndex - 1]
-      self.loadImage(newImg)
-    } else if (!isRightSwipe && !lastImgInList) {
-      newImg = imageSrcList[imgIndex + 1]
-      self.loadImage(newImg)
-    }
-    if (newImg) currentImg = newImg
-  }
-
-  saveImagesinList(event) {
-    const imageList = Array.from(event.target.parentElement.parentElement.querySelectorAll('img'))
-    imageSrcList = imageList.map((img) => {
-      return img.src
-    })
-  }
-
-  openImageInPopup(event) {
-    currentImg = event.target.src
-    this.openModalForImage(event)
-    this.saveImagesinList(event)
-  }
 
   mappingFunction(object) {
     let self = this
@@ -354,6 +341,13 @@ export default class extends Controller {
     )
   }
 
+  imageScrollInView(index) {
+    this.imageSliderContainerTarget.scrollTo({
+      left: Number(index) * this.imageSliderContainerTarget.offsetWidth,
+      top: 0,
+    })
+  }
+
   selectImage(e) {
     let self = this
     self.imageSliderContainerTarget.scrollTo({
@@ -368,6 +362,19 @@ export default class extends Controller {
     let self = this
     self.deselectThumbs(self.thumbListTarget)
     self.thumbListTarget.getElementsByTagName('li')[index].classList.add('selected')
+    const thumb = this.thumbListTarget.getElementsByTagName('li')[index]
+    const thumbWidth = thumb.offsetWidth
+    const offsetNum = thumbWidth * index
+    const maxScroll = this.thumbListTarget.offsetWidth - sliderContainerWidth
+
+    const newLeft =
+      offsetNum - sliderContainerWidth / 2 > 0
+        ? offsetNum - sliderContainerWidth / 3 < maxScroll
+          ? offsetNum - sliderContainerWidth / 3
+          : maxScroll
+        : 0
+
+    this.thumbListTarget.style.left = `-${newLeft}px`
   }
 
   deselectThumbs(list) {
@@ -375,6 +382,7 @@ export default class extends Controller {
       item.classList.remove('selected')
     }
   }
+
   async shareTaak(e) {
     try {
       const response = await fetch(`${e.params.link}`)
@@ -389,38 +397,61 @@ export default class extends Controller {
       console.error('Error fetching address details:', error.message)
     }
   }
-  loadImage(imgSrc) {
-    while (imageContainer.firstChild) {
-      imageContainer.removeChild(imageContainer.firstChild)
-    }
-    const image = document.createElement('img')
-    image.classList.add('selectedImage')
-    image.src = imgSrc
-    imageContainer.appendChild(image)
 
-    document.querySelectorAll('.container__image').forEach((element) => {
-      this.pinchZoom(element)
-    })
+  showPreviousImageInModal() {
+    if (selectedImageIndex > 0) {
+      selectedImageIndex--
+      this.showImage()
+    }
   }
 
-  openModalForImage(event) {
-    let self = this
-    modal = document.querySelector('.modal--transparent')
-    modalBackdrop = document.querySelector('.modal-backdrop')
-    imageContainer = document.querySelector('#container-image')
+  showNextImageInModal() {
+    if (selectedImageIndex < imagesList.length - 1) {
+      selectedImageIndex++
+      this.showImage()
+    }
+  }
 
-    self.loadImage(event.target.currentSrc)
+  showImage() {
+    const sd = this.signedDataValue ? `?signed-data=${this.signedDataValue}` : ''
+    this.selectedImageModalTarget.src = `${this.urlPrefixValue}${imagesList[selectedImageIndex]}${sd}`
+    this.showHideImageNavigation()
+    this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
+    this.imageScrollInView(selectedImageIndex) //image in detailpage
+    fullSizeImageContainer = this.selectedImageModalTarget
+  }
 
+  showNormal() {
+    fullSizeImageContainer.classList.remove('fullSize')
+    fullSizeImageContainer.style.backgroundPosition = '50% 50%'
+    window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
+  }
+
+  showHideImageNavigation() {
+    this.navigateImagesLeftTarget.classList.remove('inactive')
+    this.navigateImagesRightTarget.classList.remove('inactive')
+    if (selectedImageIndex === 0) {
+      this.navigateImagesLeftTarget.classList.add('inactive')
+    }
+    if (selectedImageIndex === imagesList.length - 1) {
+      this.navigateImagesRightTarget.classList.add('inactive')
+    }
+  }
+
+  showImageInModal(e) {
+    selectedImageIndex = e.params.imageIndex
+    const modal = this.modalImagesTarget
+    const modalBackdrop = document.querySelector('.modal-backdrop')
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
-    document.body.classList.add('show-modal--transparent')
+    document.body.classList.add('show-modal')
+
+    this.showImage()
   }
 
-  pinchZoom = (imageElement) => {
+  pinchZoom(imageElement) {
     let imageElementScale = 1
-
     let start = {}
-
     // Calculate distance between two fingers
     const distance = (event) => {
       const dist = Math.hypot(
@@ -431,7 +462,6 @@ export default class extends Controller {
     }
 
     imageElement.addEventListener('touchstart', (event) => {
-      console.log('touchstart')
       if (event.touches.length === 2) {
         event.preventDefault() // Prevent page scroll
         console.log('event.touches.length === 2')
@@ -443,7 +473,6 @@ export default class extends Controller {
     })
 
     imageElement.addEventListener('touchmove', (event) => {
-      console.log('touchmove')
       if (event.touches.length === 2) {
         console.log('event.touches.length === 2')
         event.preventDefault() // Prevent page scroll
@@ -472,7 +501,6 @@ export default class extends Controller {
     })
 
     imageElement.addEventListener('touchend', () => {
-      console.log('touchend')
       // Reset image to it's original format
       imageElement.style.transform = ''
       imageElement.style.WebkitTransform = ''
