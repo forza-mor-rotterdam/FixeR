@@ -43,7 +43,12 @@ from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
-from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
+from django.http import (
+    HttpResponse,
+    HttpResponsePermanentRedirect,
+    JsonResponse,
+    StreamingHttpResponse,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import View
@@ -329,6 +334,10 @@ def taak_detail(request, id):
     )
 
 
+class WhatsappSchemeRedirect(HttpResponsePermanentRedirect):
+    allowed_schemes = ["whatsapp", "https"]
+
+
 @permission_required("authorisatie.taak_delen", raise_exception=True)
 def taak_delen(request, id):
     taak = get_object_or_404(Taak, pk=id)
@@ -356,9 +365,8 @@ def taak_delen(request, id):
         signed_data=TaakDeellink.get_signed_data(gebruiker_email),
     )
 
-    return redirect(
+    return WhatsappSchemeRedirect(
         f"{whatsapp_url}send?text={taak_gedeeld.get_absolute_url(request)}",
-        allowed_schemes=["whatsapp"],
     )
 
 
