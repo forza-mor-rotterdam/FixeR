@@ -301,72 +301,6 @@ p {
     }
 }
 
-// LISTS
-
-@mixin list-clean {
-    list-style-type: none;
-    padding: 0;
-}
-
-ul {
-    &.list-clean {
-        @include list-clean();
-    }
-
-    &.list--readable {
-        li {
-            margin-bottom: 0.25rem;
-        }
-    }
-
-    &.list--images {
-        @include list-clean();
-        li {
-            margin-bottom: 1em;
-
-            img {
-                max-width: 100%;
-            }
-        }
-    }
-}
-li {
-    &.list-item {
-        border-bottom: 1px solid $gray-tint04;
-    }
-
-    .border-top & {
-        &:first-child {
-            border-top: 1px solid $gray-tint04;
-        }
-    }
-}
-
-dl {
-    div {
-        display: flex;
-
-        dd,
-        dt {
-            margin: 0 0 0.5em;
-        }
-        dt {
-            margin-right: 0.5rem;
-        }
-    }
-}
-.list--blocks-horizontal {
-    @include list-clean();
-    display: flex;
-    margin-bottom: 100px;
-    li {
-        margin: 0 0 0 0.25rem;
-        padding: $input-padding-x;
-        border: 1px solid $gray-tint04;
-        position: relative;
-    }
-}
-
 // SECTIONS
 section {
     &.section--seperated {
@@ -507,4 +441,8 @@ h1 + .section--seperated {
 
 .width60 {
     width: 60%;
+}
+
+.color--primary {
+    color: $primary;
 }
