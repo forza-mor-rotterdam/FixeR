@@ -166,3 +166,12 @@ dl {
         }
     }
 }
+
+.list-tags {
+    @extend .list-clean;
+
+    li {
+        display: inline-block;
+        margin-right: $input-padding-y;
+    }
+}

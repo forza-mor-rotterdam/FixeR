@@ -204,6 +204,44 @@
                 </li>
             </ul>
         </section>
+        <form class="full-width">
+            <fieldset class="section">
+                <legend>Basisinformatie</legend>
+                <div class="container__form-rows cols2">
+                    <div class="form-row">Form-row 1</div>
+                    <div class="form-row">
+                        Form-row 2 Let op: het wijzigen van dit taaktype heeft gevolgen voor alle rollen die gebruik maken van dit taaktype.Let op: het wijzigen van dit taaktype heeft gevolgen voor alle rollen die gebruik maken van dit taaktype.
+                    </div>
+                    <div class="form-row">
+                        <ul class="list-tags">
+                            <li>
+                                <button class="btn btn-secondary btn-filter--active"
+                                        data-action="filter#removeFilter"
+                                        data-filter-code-param="taak_status_nieuw"
+                                        data-filter-description-param="taak_status">
+                                    <span>Bezem</span>
+                                </button>
+                            </li>
+                            <li class="js-filter-active">
+                                <button class="btn btn-secondary btn-filter--active"
+                                        data-action="filter#removeFilter"
+                                        data-filter-code-param="taak_status_voltooid"
+                                        data-filter-description-param="taak_status">
+                                    <span>Stoffer en blik</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="form-row">
+                        <label class="label--positive">Wanneer is deze taak relevant?</label>
+                    </div>
+                    <div class="form-row">
+                        <label class="label--negative">Wanneer hoeft deze taak NIET te worden gestart?</label>
+                    </div>
+                    <div class="form-row">Form-row 6</div>
+                </div>
+            </fieldset>
+        </form>
         {% comment %} eind nieuw beheer {% endcomment %}
         <div class="grid-container">
             <div class="grid-item">
