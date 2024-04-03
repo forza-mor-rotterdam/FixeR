@@ -238,6 +238,7 @@ def taken_lijst(request):
     )
 
     # paginate
+    # @Remco @TODO Set to 5 for easier testing
     paginator = Paginator(taken_gefilterd, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
