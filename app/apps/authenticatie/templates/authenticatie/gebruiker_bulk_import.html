@@ -36,7 +36,8 @@
                         </div>
                         {% if not form.errors and form.cleaned_data.csv_file.valid_rows %}
                             <p>
-                                {{ form.cleaned_data.csv_file.valid_rows|length }} van de {{ form.cleaned_data.csv_file.all_rows|length }} gebruiker
+                                {{ form.cleaned_data.csv_file.valid_rows|length }} van de {{ form.cleaned_data.csv_file.all_rows|length }}
+                                gebruiker
                                 {% if form.cleaned_data.csv_file.all_rows|length > 1 %}s{% endif %}
                                 ,
                                 {% if form.cleaned_data.csv_file.valid_rows|length > 1 %}
