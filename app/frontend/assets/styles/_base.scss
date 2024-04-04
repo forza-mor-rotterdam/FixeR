@@ -39,6 +39,16 @@ header {
     }
 }
 
+.container__block__full-width {
+    padding: $alert-padding-x 0;
+    background-color: $gray-tint01;
+
+    > .content-wrapper {
+        max-width: map-get($container-max-widths, xxl);
+        margin: 0 auto;
+    }
+}
+
 img {
     max-width: 100%;
     max-height: 100%;
@@ -65,7 +75,8 @@ img {
 }
 
 main,
-header {
+header,
+.container__block__full-width .content-wrapper {
     padding: 0 map-get($container-margin, sm) map-get($container-margin, sm);
 
     @media (min-width: map-get($grid-breakpoints, md)) {

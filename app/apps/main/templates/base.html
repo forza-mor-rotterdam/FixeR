@@ -88,6 +88,8 @@
                 </div>
             </main>
         {% endblock main %}
+        {% block extra %}
+        {% endblock extra %}
         <div class="modal-backdrop"></div>
         <div class="spinner"></div>
         {% include "auth/session_timer.html" %}
