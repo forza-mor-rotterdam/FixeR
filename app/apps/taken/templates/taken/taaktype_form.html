@@ -1,6 +1,7 @@
 {% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from main_tags %}
+{% load webpack_static from webpack_loader %}
 {% block title %}
     {% if object %}
         Taaktype '{{ object.omschrijving }}' aanpassen
@@ -245,6 +246,14 @@
                 </div>
             </fieldset>
         </form>
+        <h1 class="icon--left">
+            <img src="{% webpack_static 'icons/vuilniswagen.svg' %}" alt="" />
+            Ophalen met knijpwagen
+        </h1>
+        <h2 class="h5">Omschrijving taaktype</h2>
+        <p>Het ophalen van grote hoeveelheden losliggend afval.</p>
+        <h2 class="h5">Wie is verantwoordelijk voor de uitvoering van het proces?</h2>
+        <p>Teamleider Inzameling</p>
         <section class="padding-bottom">
             <div class="container__badges--overview">
                 <div class="margin-bottom">
@@ -292,7 +301,7 @@
                     <h3 class="h5 no-margin-bottom">Voorbeeldsituatie 1</h3>
                     <p class="no-margin-top margin-bottom-half">Het gaat om een grote berg losliggend afval.</p>
                     <div class="container__image">
-                        <img src="https://picsum.photos/257/415" />
+                        <img src="https://picsum.photos/567/415" />
                         <div class="icon--positive"></div>
                     </div>
                 </div>
@@ -302,7 +311,7 @@
                         Het zou teveel tijd kosten om met de hand op te ruimen. Het gaat om een grote berg losliggend afval.
                     </p>
                     <div class="container__image">
-                        <img src="https://picsum.photos/557/415" />
+                        <img src="https://picsum.photos/257/415" />
                         <div class="icon--positive"></div>
                     </div>
                 </div>

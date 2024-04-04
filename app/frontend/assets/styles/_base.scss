@@ -124,6 +124,12 @@ body {
 h1,
 .h1 {
     font-size: $h1-font-size;
+
+    &.icon--left {
+        img {
+            margin-right: 1rem;
+        }
+    }
 }
 
 h2,
@@ -150,6 +156,10 @@ h6,
 p {
     line-height: $line-height-base;
     max-width: map-get($container-max-widths, lg);
+}
+
+h2 + p {
+    margin-top: 0;
 }
 
 @mixin has-icon {
