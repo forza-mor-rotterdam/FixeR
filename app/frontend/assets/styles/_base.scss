@@ -123,11 +123,12 @@ body {
 // HEADINGS
 h1,
 .h1 {
-    font-size: $h1-font-size;
+    font-size: calc(1.1em + 1.5vw); //$h1-font-size;
 
     &.icon--left {
         img {
-            margin-right: 1rem;
+            margin-right: 1vw;
+            vertical-align: middle;
         }
     }
 }

@@ -80,6 +80,14 @@
     }
 }
 
+.list-tags {
+    li {
+    }
+    .badge {
+        margin: 0;
+    }
+}
+
 .container__badges--overview {
     @media (min-width: map-get($grid-breakpoints, md)) {
         display: flex;
@@ -100,7 +108,7 @@
         }
 
         ul {
-            margin-bottom: 0;
+            margin: 0.25em 0 0;
         }
     }
 }

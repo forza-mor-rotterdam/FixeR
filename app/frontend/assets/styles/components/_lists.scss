@@ -69,6 +69,7 @@ dl {
 
     > li {
         margin-bottom: 2em;
+        padding: 2px 0;
         position: relative;
         background-color: $gray-tint01;
 
@@ -109,7 +110,7 @@ dl {
                 max-width: 32px;
                 position: absolute;
                 left: 8px;
-                top: -5px;
+                top: -7px;
 
                 path {
                     fill: $gray-tint11;
@@ -124,7 +125,7 @@ dl {
 
         .icon--edit {
             position: absolute;
-            top: -6px;
+            top: 2px;
             right: 0;
 
             svg path {
@@ -178,6 +179,6 @@ dl {
 
     li {
         display: inline-block;
-        margin-right: $input-padding-y;
+        margin: 0 5px $input-padding-y 0;
     }
 }
