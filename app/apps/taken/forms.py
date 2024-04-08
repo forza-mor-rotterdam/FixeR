@@ -35,6 +35,7 @@ class BijlageForm(forms.ModelForm):
                 "accept": ".jpg, .jpeg, .png, .heic, .gif",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "multiple": "multipleee",
+                "data-bijlagen-target": "bijlagenExtra",
                 "hideLabel": True,
             }
         ),
@@ -162,6 +163,23 @@ class TaaktypeAanpassenForm(forms.ModelForm):
                 "id": "gerelateerde_onderwerpen_1",
             }
         ),
+        required=False,
+    )
+    afdelingen = forms.ModelMultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
+        queryset=Afdeling.objects.all(),
+        label="Afdelingen",
+        required=False,
+    )
+    taaktypemiddelen = forms.ModelMultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
+        queryset=TaaktypeMiddel.objects.all(),
+        label="Materieel",
+        required=False,
+    )
+    gerelateerde_onderwerpen = forms.MultipleChoiceField(
+        widget=forms.SelectMultiple(),
+        label="Gerelateerde onderwerpen",
         required=False,
     )
     actief = forms.BooleanField(

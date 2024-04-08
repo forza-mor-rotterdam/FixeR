@@ -50,6 +50,94 @@
                         </div>
                     </div>
                 {% endif %}
+                <form action="."
+                      method="post"
+                      class="form--beheer"
+                      enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <fieldset>
+                        {{ form.omschrijving|render_rotterdam_formulier }}
+                        {{ form.volgende_taaktypes|render_rotterdam_formulier }}
+                        {{ form.afdelingen|render_rotterdam_formulier }}
+                        {{ form.taaktypemiddelen|render_rotterdam_formulier }}
+                        {{ form.gerelateerde_onderwerpen }}
+                        <br>
+                        Geselecteerde onderwerpen
+                        <ul>
+                            {% for onderwerp_url in form.gerelateerde_onderwerpen.value %}
+                                <li>{% render_onderwerp onderwerp_url %}</li>
+                            {% endfor %}
+                        </ul>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <strong>WEL</strong>
+                                    </th>
+                                    <th>
+                                        <strong>NIET</strong>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        {{ reden_wel.management_form }}
+                                        {% for reden in reden_wel %}
+                                            {% comment %} {{ reden.id }}
+                                        {{ reden.type }}
+                                        {{ reden.toelichting }}
+                                            {{ reden.bijlagen }} {% endcomment %}
+                                            {{ reden.as_p }}
+                                            <fieldset>
+                                                {{ reden.bijlage_formset.management_form }}
+                                                {% for form in reden.bijlage_formset %}
+                                                    {{ form.instance.bestand }}
+                                                    {{ form.DELETE }}
+                                                {% endfor %}
+                                            </fieldset>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {{ reden_niet.management_form }}
+                                        {% for reden in reden_niet %}
+                                            {{ reden.id }}
+                                            {{ reden.type }}
+                                            {{ reden.toelichting|render_rotterdam_formulier }}
+                                            <div data-controller="bijlagen">{{ reden.bijlagen|render_rotterdam_formulier }}</div>
+                                            {{ reden.DELETE }}
+                                            <fieldset>
+                                                {{ reden.bijlage_formset.management_form }}
+                                                {% for form in reden.bijlage_formset %}
+                                                    {{ form.instance.bestand }}
+                                                    {{ form.DELETE }}
+                                                {% endfor %}
+                                            </fieldset>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="container__checkbox--single">
+                            <h3 class="label">Is dit taaktype actief?</h3>
+                            {{ form.actief|render_rotterdam_formulier }}
+                        </div>
+                    </fieldset>
+                    <div class="form-row container__button">
+                        <div class="form-row btn-row">
+                            <button type="reset"
+                                    class="btn btn-tertiary"
+                                    data-controller="utils"
+                                    data-action="utils#goToUrl"
+                                    data-utils-url-param="{% url 'taaktype_lijst' %}">
+                                <span>Annuleren</span>
+                            </button>
+                            <button type="submit" class="btn btn-action">
+                                <span>Aanpassen</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div>
                 {% if object.contexten_voor_taaktypes.all %}
