@@ -20,6 +20,7 @@ SECRET_KEY = os.environ.get(
 GIT_SHA = os.getenv("GIT_SHA")
 DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
+APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
 DEBUG = ENVIRONMENT == "development"
 
 ROOT_URLCONF = "config.urls"
@@ -46,6 +47,13 @@ MELDINGEN_TOKEN_API = os.getenv(
 MELDINGEN_TOKEN_TIMEOUT = 60 * 60
 MELDINGEN_USERNAME = os.getenv("MELDINGEN_USERNAME")
 MELDINGEN_PASSWORD = os.getenv("MELDINGEN_PASSWORD")
+
+ONDERWERPEN_URL = os.getenv(
+    "ONDERWERPEN_URL",
+    "https://onderwerpen-acc.forzamor.nl"
+    if APP_ENV != "productie"
+    else "https://onderwerpen.forzamor.nl",
+)
 
 DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
 
@@ -93,6 +101,7 @@ INSTALLED_APPS = (
     "apps.beheer",
     "apps.release_notes",
     "apps.services",
+    "apps.taaktype",
 )
 
 LOGIN_URL = "/login/"
@@ -531,8 +540,6 @@ CKEDITOR_CONFIGS = {
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
-
-APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
 
 SIGNED_DATA_MAX_AGE_SECONDS = int(
     os.getenv("SIGNED_DATA_MAX_AGE_SECONDS", 259200)

@@ -54,6 +54,17 @@ class Taaktype(BasisModel):
         related_name="vorige_taaktypes_voor_taaktype",
         blank=True,
     )
+    gerelateerde_onderwerpen = ArrayField(models.URLField(), default=[])
+    afdelingen = models.ManyToManyField(
+        to="taaktype.Afdeling",
+        related_name="taaktypes_voor_afdelingen",
+        blank=True,
+    )
+    taaktypemiddelen = models.ManyToManyField(
+        to="taaktype.TaaktypeMiddel",
+        related_name="taaktypes_voor_taaktypemiddelen",
+        blank=True,
+    )
     actief = models.BooleanField(default=True)
 
     class Meta:
