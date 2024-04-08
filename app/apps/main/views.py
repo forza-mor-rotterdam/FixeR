@@ -462,6 +462,10 @@ def taak_toewijzen(request, id):
                 gebruiker=request.user.email,
                 uitvoerder=form.cleaned_data.get("uitvoerder"),
             )
+            if taak_status_aanpassen_response.status_code != 200:
+                logger.error(
+                    f"taak_toewijzen taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
+                )
             if taak_status_aanpassen_response.status_code == 200:
                 return render(
                     request,
@@ -494,6 +498,10 @@ def taak_toewijzing_intrekken(request, id):
                 status="openstaand",
                 gebruiker=request.user.email,
             )
+            if taak_status_aanpassen_response.status_code != 200:
+                logger.error(
+                    f"taak_toewijzing_intrekken taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
+                )
             if taak_status_aanpassen_response.status_code == 200:
                 return render(
                     request,
@@ -582,7 +590,7 @@ def incident_modal_handle(request, id):
             )
             if taak_status_aanpassen_response.status_code != 200:
                 logger.error(
-                    f"taak_status_aanpassen: status code: {taak_status_aanpassen_response.status_code}, taak id: {id}"
+                    f"incident_modal_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
                 )
 
             # Aanmaken extra taken
@@ -613,7 +621,7 @@ def incident_modal_handle(request, id):
                         )
                         if taak_aanmaken_response.status_code != 200:
                             logger.error(
-                                f"taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
+                                f"incident_modal_handle taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
                             )
             return redirect("taken")
         else:
