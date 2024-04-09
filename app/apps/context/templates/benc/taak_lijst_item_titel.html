@@ -11,8 +11,8 @@
             {% endif %}
             {% if vak %}Vak {{ vak }},{% endif %}
             {% if grafnummer %}Graf {{ grafnummer }}{% endif %}
-            {% if taak.taakstatus__naam %}
-                <span class="badge {% if taak.taakstatus__naam == 'nieuw' or taak.taakstatus__naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus__naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus__naam|lower|capfirst }}</span>
+            {% if taak.taakstatus.naam %}
+                <span class="badge {% if taak.taakstatus.naam == 'nieuw' or taak.taakstatus.naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span>
             {% endif %}
         </h2>
         <div>
@@ -21,7 +21,7 @@
         <div class="incident__moment">
             <span data-taak-target="incidentDate">
                 {% localize on %}
-                {{ taak.taakstatus__naam }}: {{ taak.taakstatus__aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus__aangemaakt_op|time:"H:i" }}
+                {{ taak.taakstatus.aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}
                 <br>
             {% endlocalize %}
         </span>

@@ -48,8 +48,10 @@
             <div class="container__flex">
                 <a href="{% url 'taak_detail' taak.id %}"
                    data-turbo-frame="taak_basis"
-                   aria-label="Bekijk taak {{ taak.id }}">
-                    <div class="container__image" data-controller="incidentlistItem">
+                   data-page="{{ page_obj.number }}"
+                   aria-label="Bekijk taak {{ taak.id }}"
+                   data-controller="incidentlistItem">
+                    <div class="container__image">
                         {% if bijlagen %}
                             {% with bijlagen|first as first_foto %}
                                 <div class="background-image"

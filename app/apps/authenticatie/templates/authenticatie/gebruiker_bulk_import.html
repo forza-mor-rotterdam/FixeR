@@ -37,8 +37,11 @@
                         {% if not form.errors and form.cleaned_data.csv_file.valid_rows %}
                             <p>
                                 {{ form.cleaned_data.csv_file.valid_rows|length }} van de {{ form.cleaned_data.csv_file.all_rows|length }}
-                                gebruiker
-                                {% if form.cleaned_data.csv_file.all_rows|length > 1 %}s{% endif %}
+                                {% if form.cleaned_data.csv_file.all_rows|length > 1 %}
+                                    gebruikers
+                                {% else %}
+                                    gebruiker
+                                {% endif %}
                                 ,
                                 {% if form.cleaned_data.csv_file.valid_rows|length > 1 %}
                                     kunnen
@@ -86,12 +89,19 @@
                                     <button type="submit" name="aanmaken" value="ja" class="btn btn-action">
                                         <span class="nowrap">
                                             {% if form.cleaned_data.csv_file.valid_rows|length != form.cleaned_data.csv_file.all_rows|length %}
-                                                Alleen deze gebruiker
-                                                {% if form.cleaned_data.csv_file.valid_rows|length > 1 %}s{% endif %}
+                                                Alleen deze
+                                                {% if form.cleaned_data.csv_file.valid_rows|length > 1 %}
+                                                    gebruikers
+                                                {% else %}
+                                                    gebruiker
+                                                {% endif %}
                                                 aanmaken
                                             {% else %}
-                                                Gebruiker
-                                                {% if form.cleaned_data.csv_file.valid_rows|length > 1 %}s{% endif %}
+                                                {% if form.cleaned_data.csv_file.valid_rows|length > 1 %}
+                                                    Gebruikers
+                                                {% else %}
+                                                    Gebruiker
+                                                {% endif %}
                                                 aanmaken
                                             {% endif %}
                                         </span>
@@ -167,8 +177,12 @@
             <div>
                 <h2>Gelukt!</h2>
                 <p>
-                    Onderstaande gebruiker
-                    {% if aangemaakte_gebruikers|length > 1 %}s{% endif %}
+                    Onderstaande
+                    {% if aangemaakte_gebruikers|length > 1 %}
+                        gebruikers
+                    {% else %}
+                        gebruiker
+                    {% endif %}
                     {% if aangemaakte_gebruikers|length > 1 %}
                         zijn
                     {% else %}
