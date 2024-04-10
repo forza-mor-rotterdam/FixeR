@@ -175,6 +175,9 @@ CELERYBEAT_SCHEDULE = {
         "schedule": crontab(minute=5),
     },
 }
+worker_concurrency = 2
+worker_max_tasks_per_child = 20
+worker_max_memory_per_child = 200000
 
 SITE_ID = 1
 SITE_NAME = os.getenv("SITE_NAME", "FixeR")
