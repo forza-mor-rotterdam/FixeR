@@ -84,16 +84,17 @@
                                     <td>
                                         {{ reden_wel.management_form }}
                                         {% for reden in reden_wel %}
-                                            {% comment %} {{ reden.id }}
-                                        {{ reden.type }}
-                                        {{ reden.toelichting }}
-                                            {{ reden.bijlagen }} {% endcomment %}
-                                            {{ reden.as_p }}
+                                            {{ reden.id }}
+                                            {{ reden.type }}
+                                            {{ reden.toelichting|render_rotterdam_formulier }}
+                                            <div data-controller="bijlagen">{{ reden.bijlage|render_rotterdam_formulier }}</div>
+                                            {{ reden.DELETE }}
                                             <fieldset>
                                                 {{ reden.bijlage_formset.management_form }}
                                                 {% for form in reden.bijlage_formset %}
                                                     {{ form.instance.bestand }}
                                                     {{ form.DELETE }}
+                                                    {{ form.id }}
                                                 {% endfor %}
                                             </fieldset>
                                         {% endfor %}
@@ -104,13 +105,14 @@
                                             {{ reden.id }}
                                             {{ reden.type }}
                                             {{ reden.toelichting|render_rotterdam_formulier }}
-                                            <div data-controller="bijlagen">{{ reden.bijlagen|render_rotterdam_formulier }}</div>
+                                            <div data-controller="bijlagen">{{ reden.bijlage }}</div>
                                             {{ reden.DELETE }}
                                             <fieldset>
                                                 {{ reden.bijlage_formset.management_form }}
                                                 {% for form in reden.bijlage_formset %}
                                                     {{ form.instance.bestand }}
                                                     {{ form.DELETE }}
+                                                    {{ form.id }}
                                                 {% endfor %}
                                             </fieldset>
                                         {% endfor %}

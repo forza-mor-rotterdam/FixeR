@@ -26,6 +26,27 @@ class MultipleFileField(forms.FileField):
         return result
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        print("MultipleFileField")
+        print(single_file_clean)
+        print(data)
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+
 class BijlageForm(forms.ModelForm):
     bestand = forms.FileField(
         label="Afbeelding of GIF",
@@ -66,7 +87,7 @@ class TaaktypeVoorbeeldsituatieFormNiet(forms.ModelForm):
     bestand = forms.FileField(
         label="Afbeelding of GIF",
         required=False,
-        widget=forms.widgets.FileInput(
+        widget=MultipleFileInput(
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic, .gif",
                 "data-action": "change->bijlagen#updateImageDisplay",
