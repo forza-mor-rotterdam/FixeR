@@ -7,6 +7,27 @@ from django.contrib.contenttypes.forms import generic_inlineformset_factory
 from django.forms import formset_factory, inlineformset_factory
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        print("MultipleFileField")
+        print(single_file_clean)
+        print(data)
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+
 class BijlageForm(forms.ModelForm):
     bestand = forms.FileField(
         label="Afbeelding of GIF",
@@ -55,14 +76,14 @@ class TaaktypeRedenFormNiet(forms.ModelForm):
     type = forms.CharField(
         widget=forms.HiddenInput(),
     )
-    bijlagen = forms.FileField(
+    bijlage = MultipleFileField(
         label="Afbeelding of GIF",
         required=False,
-        widget=forms.widgets.FileInput(
+        widget=MultipleFileInput(
             attrs={
-                "accept": ".jpg, .jpeg, .png, .heic, .gif",
-                "data-action": "change->bijlagen#updateImageDisplay",
-                "data-bijlagen-target": "bijlagenExtra",
+                # "accept": ".jpg, .jpeg, .png, .heic, .gif",
+                # "data-action": "change->bijlagen#updateImageDisplay",
+                # "data-bijlagen-target": "bijlagenExtra",
                 "multiple": "multiple",
                 "hideLabel": True,
             }
@@ -84,9 +105,9 @@ class TaaktypeRedenFormNiet(forms.ModelForm):
 
         # self.bijlage_formset = self.get_bijlagen_inline()(instance=self.instance)
         if self.is_bound:
-            print("file")
-            print(self.files)
-            print(self.instance.id)
+            # print("file")
+            # print(self.files)
+            # print(self.instance.id)
             self.bijlage_formset = BijlageFormSet(
                 self.data,
                 self.files,
