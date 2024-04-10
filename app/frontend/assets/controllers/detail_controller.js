@@ -183,7 +183,6 @@ export default class extends Controller {
         parseFloat(self.incidentXValue.replace(/,/g, '.')),
         parseFloat(self.incidentYValue.replace(/,/g, '.')),
       ]
-      console.log('L.Browser.mobile', L.Browser.mobile)
       map = L.map('incidentMap', {
         dragging: !L.Browser.mobile,
         tap: !L.Browser.mobile,
