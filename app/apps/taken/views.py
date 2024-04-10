@@ -96,18 +96,25 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
             redenen = ff.save(commit=False)
             for obj in ff.deleted_objects:
                 obj.delete()
+
             for reden in redenen:
                 reden.taaktype = self.object
                 reden.save()
-
             for f in ff.forms:
-                bijlagen = f.bijlage_formset.save(commit=False)
+                print("BIJLAGEN")
+                # print(f.is_valid())
+                if f.is_valid():
+                    print(f.prefix)
+                    print(f.cleaned_data.get("bijlage"))
+                    # print(f.fields["bijlage"].html_name)
+                    # print(f.files)
+                f.bijlage_formset.save(commit=False)
 
                 for obj in f.bijlage_formset.deleted_objects:
                     obj.delete()
-                for variant in bijlagen:
-                    variant.content_object = f.instance
-                    variant.save()
+                # for variant in bijlagen:
+                #     variant.content_object = f.instance
+                #     variant.save()
 
         return redirect(reverse("taaktype_aanpassen", args=[self.object.id]))
         # return self.render_to_response(self.get_context_data(form=form))
