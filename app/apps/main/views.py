@@ -163,7 +163,7 @@ def taken_filter(request):
 
     taken_gefilterd = filter_manager.filter_taken()
 
-    request.session["taken_gefilterd"] = taken_gefilterd
+    # request.session["taken_gefilterd"] = taken_gefilterd
 
     taken_aantal = len(taken_gefilterd)
     return render(
@@ -200,21 +200,19 @@ def taken_lijst(request):
     }
 
     # filteren
-    taken_gefilterd = request.session.get("taken_gefilterd")
-    if not taken_gefilterd:
-        taken = Taak.objects.select_related(
-            "melding",
-            "taakstatus",
-            "taak_zoek_data",
-        ).get_taken_recent(request.user)
-        filters = (
-            get_filters(request.user.profiel.context)
-            if request.user.profiel.context
-            else []
-        )
-        actieve_filters = get_actieve_filters(request.user, filters)
-        filter_manager = FilterManager(taken, actieve_filters)
-        taken_gefilterd = filter_manager.filter_taken()
+    taken = Taak.objects.select_related(
+        "melding",
+        "taakstatus",
+        "taak_zoek_data",
+    ).get_taken_recent(request.user)
+    filters = (
+        get_filters(request.user.profiel.context)
+        if request.user.profiel.context
+        else []
+    )
+    actieve_filters = get_actieve_filters(request.user, filters)
+    filter_manager = FilterManager(taken, actieve_filters)
+    taken_gefilterd = filter_manager.filter_taken()
 
     # zoeken
     if request.session.get("q"):

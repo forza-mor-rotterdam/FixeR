@@ -308,9 +308,8 @@
 .container__header-taaknavigatie {
     h1 {
         position: relative;
-        @media (min-width: map-get($grid-breakpoints, sm)) {
-            padding-right: 185px;
-        }
+        padding-right: 185px;
+        min-height: 1em;
     }
     span,
     p {
