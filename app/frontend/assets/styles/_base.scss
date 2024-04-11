@@ -475,6 +475,11 @@ h1 + .section--seperated {
     margin-bottom: 0 !important;
 }
 
+.margin-vertical {
+    margin-top: 1em !important;
+    margin-bottom: 1em !important;
+}
+
 .invalid-text {
     color: $invalid-color !important;
     margin: 0;
@@ -498,10 +503,6 @@ h1 + .section--seperated {
 
 .nowrap {
     white-space: nowrap;
-}
-
-.somepadding {
-    padding: 8px 0 16px;
 }
 
 .width60 {
