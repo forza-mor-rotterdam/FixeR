@@ -1,4 +1,7 @@
-from django.db.models import QuerySet
+from datetime import timedelta
+
+from django.db.models import Q, QuerySet
+from django.utils import timezone
 
 
 class TaakQuerySet(QuerySet):
@@ -8,7 +11,8 @@ class TaakQuerySet(QuerySet):
     def get_taken_recent(self, user):
         taak_types = self._get_taak_types(user)
         return self.filter(
-            taaktype__in=taak_types,
+            Q(afgesloten_op__gt=timezone.now() - timedelta(days=7))
+            | Q(afgesloten_op__isnull=True) & Q(taaktype__in=taak_types),
         ).order_by("-aangemaakt_op")
 
     def get_taken_nieuw(self, user):
