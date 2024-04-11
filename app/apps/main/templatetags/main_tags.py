@@ -77,3 +77,8 @@ def mor_core_url(initial_url, signed_data=None):
 @register.filter
 def mor_core_protected_url(initial_url):
     return f"{settings.MOR_CORE_PROTECTED_URL_PREFIX}{initial_url}"
+
+
+@register.filter(name="python_any")
+def python_any(values):
+    return any(values)

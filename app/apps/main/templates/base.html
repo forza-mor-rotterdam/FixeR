@@ -35,7 +35,10 @@
               href="{{ base_url }}{% webpack_static 'images/favicon.ico' %}" />
         <link rel="icon"
               href="{{ base_url }}{% webpack_static 'images/favicon.ico' %}" />
+        {% comment %} disable page caching {% endcomment %}
         <meta name="turbo-cache-control" content="no-cache">
+        {% comment %} disable prefetching onhover {% endcomment %}
+        <meta name="turbo-prefetch" content="false">
         {% block extra_head %}
         {% endblock extra_head %}
         {% block stylesheets %}

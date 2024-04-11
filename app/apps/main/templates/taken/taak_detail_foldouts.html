@@ -2,7 +2,7 @@
 {% load multiply previous next from list_tags %}
 {% load taakopdracht render_onderwerp get_bijlagen from melding_tags %}
 {% load to_datetime replace_comma_by_dot vind_in_dict from main_tags %}
-{% load json_encode replace_n from main_tags %}
+{% load json_encode replace_n python_any from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
@@ -268,14 +268,16 @@
             {% endif %}
             {% with aanvullende_vragen=melding.signalen_voor_melding.0.aanvullende_vragen %}
                 {% if aanvullende_vragen and melding.signalen_voor_melding.0.aanvullende_vragen %}
-                    {% for vraag in aanvullende_vragen %}
-                        <h3 class="h5">{{ vraag.question }}</h3>
-                        <p>
-                            {% for answer in vraag.answers %}
-                                {{ answer }}
-                                {% if not forloop.last %},{% endif %}
-                            {% endfor %}
-                        </p>
+                    {% for qa in aanvullende_vragen %}
+                        {% if qa.answers|python_any %}
+                            <h3 class="h5">{{ qa.question }}</h3>
+                            <p>
+                                {% for answer in qa.answers %}
+                                    {{ answer }}
+                                    {% if not forloop.last %},{% endif %}
+                                {% endfor %}
+                            </p>
+                        {% endif %}
                     {% endfor %}
                 {% elif melding.signalen_voor_melding.0.aanvullende_informatie %}
                     <h3 class="h5">Aanvullende informatie</h3>

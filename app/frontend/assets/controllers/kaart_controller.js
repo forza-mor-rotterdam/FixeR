@@ -94,6 +94,7 @@ export default class extends Controller {
   disconnect() {}
 
   onTwoFingerDrag(event) {
+    console.log('kaart, onTwoFingerDrag, event: ', event)
     if (event.type === 'touchstart' && event.touches.length === 1) {
       event.currentTarget.classList.add('swiping')
     } else {

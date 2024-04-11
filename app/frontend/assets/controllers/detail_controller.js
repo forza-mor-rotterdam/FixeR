@@ -183,7 +183,11 @@ export default class extends Controller {
         parseFloat(self.incidentXValue.replace(/,/g, '.')),
         parseFloat(self.incidentYValue.replace(/,/g, '.')),
       ]
-      map = L.map('incidentMap').setView(incidentCoordinates, 18)
+      map = L.map('incidentMap', {
+        dragging: !L.Browser.mobile,
+        tap: !L.Browser.mobile,
+        twoFingerZoom: true,
+      }).setView(incidentCoordinates, 18)
       L.tileLayer(url, config).addTo(map)
       const marker = L.marker(incidentCoordinates, { icon: markerMagenta }).addTo(map)
 
@@ -324,7 +328,7 @@ export default class extends Controller {
   }
 
   onTwoFingerDrag(event) {
-    console.log('onTwoFingerDrag, event: ', event)
+    console.log('detail, onTwoFingerDrag, event: ', event)
     if (event.type === 'touchstart' && event.touches.length === 1) {
       event.currentTarget.classList.add('swiping')
     } else {
