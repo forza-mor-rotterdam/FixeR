@@ -165,7 +165,7 @@ def taken_filter(request):
 
     # request.session["taken_gefilterd"] = taken_gefilterd
 
-    taken_aantal = len(taken_gefilterd)
+    taken_aantal = taken_gefilterd.count()
     return render(
         request,
         "taken/taken_filter_form.html",
