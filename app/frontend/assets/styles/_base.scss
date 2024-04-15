@@ -152,6 +152,16 @@ p {
     }
 }
 
+// FIGURE
+figure.question {
+    q {
+        font-size: $h1-font-size;
+        display: block;
+        margin-bottom: 1em;
+        font-weight: 700;
+    }
+}
+
 // TABLES
 table {
     font-size: 16px;

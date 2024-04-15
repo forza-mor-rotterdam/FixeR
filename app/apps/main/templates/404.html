@@ -10,14 +10,18 @@
           integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
           crossorigin="" />
 {% endblock stylesheets %}
-{% block javascripts %}
-{% endblock javascripts %}
 {% block body %}
     <div>
         <section class="section--seperated">
-            <div class="container__details">
-                <h1>De pagina is niet gevonden</h1>
-                <strong>404</strong>
+            <div class="container__details" data-controller="errorpage">
+                <h1 class="visually-hidden">
+                    De pagina is niet gevonden
+                    <strong>404</strong>
+                </h1>
+                <figure class="question">
+                    <q data-errorpage-target="question"></q>
+                </figure>
+                <div class="container__answers" data-errorpage-target="containerAnswers"></div>
             </div>
         </section>
     </div>
