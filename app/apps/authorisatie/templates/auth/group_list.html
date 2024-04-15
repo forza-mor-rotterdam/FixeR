@@ -51,41 +51,43 @@
             </div>
         </div>
 </form> -->
-        <table>
-            <thead>
-                <tr>
-                    <th>Naam</th>
-                    <th>Aantal rechten</th>
-                    <th>Aantal gebruikers</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for object in object_list %}
-                    <tr data-row-search-target="row">
-                        <td data-row-search-target="searchable">{{ object.name }}</td>
-                        <td data-row-search-target="searchable">
-                            {% if object.permissions.all %}
-                                {{ object.permissions.all|length }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td data-row-search-target="searchable">{{ object.user_set.all|length }}</td>
-                        <td>
-                            <a href="{% url 'rechtengroep_aanpassen' object.pk %}"
-                               aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
-                        </td>
-                        <td>
-                            {% if not object.user_set.all %}
-                                <a href="{% url 'rechtengroep_aanpassen' object.pk %}"
-                                   onclick="return confirm('Weet je zeker dat je deze rechtengroep wil verwijderen?')">Verwijderen</a>
-                            {% endif %}
-                        </td>
+        <div class="container__table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Naam</th>
+                        <th>Aantal rechten</th>
+                        <th>Aantal gebruikers</th>
+                        <th></th>
+                        <th></th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                        <tr data-row-search-target="row">
+                            <td data-row-search-target="searchable">{{ object.name }}</td>
+                            <td data-row-search-target="searchable">
+                                {% if object.permissions.all %}
+                                    {{ object.permissions.all|length }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td data-row-search-target="searchable">{{ object.user_set.all|length }}</td>
+                            <td>
+                                <a href="{% url 'rechtengroep_aanpassen' object.pk %}"
+                                   aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                            </td>
+                            <td>
+                                {% if not object.user_set.all %}
+                                    <a href="{% url 'rechtengroep_aanpassen' object.pk %}"
+                                       onclick="return confirm('Weet je zeker dat je deze rechtengroep wil verwijderen?')">Verwijderen</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock body %}
