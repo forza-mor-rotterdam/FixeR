@@ -27,7 +27,7 @@ export default class MapController extends Controller {
   markers = null
   buurten = null
 
-  initialize() {
+  initialize = () => {
     this.map = L.map('incidentMap', this.mainOutlet.getKaartStatus())
 
     if (this.element) {
@@ -135,7 +135,7 @@ export default class MapController extends Controller {
   positionChangeEvent = (position) => {
     if (!this.markerMe) {
       this.markerMe = new L.Marker([position.coords.latitude, position.coords.longitude], {
-        icon: MapController.markerIcons.blue, // Use blue marker icon
+        icon: MapController.markerIcons.blue,
       })
       this.markers.addLayer(this.markerMe)
     } else {
@@ -161,8 +161,7 @@ export default class MapController extends Controller {
     checkbox.classList.toggle('active', isChecked)
   }
 
-  makeRoute = (event) => {
-    const { lat, long } = event.params
+  makeRoute = ({ params: { lat, long } }) => {
     const routeUrl = `https://www.waze.com/ul?ll=${lat},${long}&navigate=yes`
     window.open(routeUrl, '_blank')
   }
@@ -198,11 +197,9 @@ export default class MapController extends Controller {
         const anchorNavigeer = `<span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" target="_top" aria-label="Navigeer naar taak ${taakId}">Navigeren</span>`
         const divDetailNavigeer = `<div class="display-flex gap">${anchorDetail} | ${anchorNavigeer}</div>`
 
-        let popupContent = `<div></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
-
-        if (afbeelding) {
-          popupContent = `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
-        }
+        const popupContent = afbeelding
+          ? `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
+          : `<div></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
 
         marker.bindPopup(popupContent, { maxWidth: 460 })
 
