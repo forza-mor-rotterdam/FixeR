@@ -43,6 +43,10 @@
         @media (min-width: map-get($grid-breakpoints, md)) {
             display: flex;
             justify-content: space-between;
+
+            + .alert {
+                margin-top: -32px;
+            }
         }
         margin: 32px 0;
 
@@ -58,9 +62,6 @@
             height: 48px;
         }
 
-        + .alert {
-            margin-top: -32px;
-        }
         &.flex--end {
             justify-content: flex-end;
             gap: 1rem;
@@ -146,5 +147,10 @@
                 }
             }
         }
+    }
+
+    .container__table {
+        width: 100%;
+        overflow-x: auto;
     }
 }
