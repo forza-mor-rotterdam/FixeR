@@ -1,12 +1,16 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
-let showSortingContainer = false
-let showSearchContainer = false
-let sortDirectionReversed = false
-let currentPosition = null
-
 export default class extends Controller {
+  static showSortingContainer = false
+  static showSearchContainer = false
+  static sortDirectionReversed = false
+
+  currentPosition = null
+  distanceToLastRefreshPositionThreshold = 50 // meter
+  page = sessionStorage.getItem('page_number') || 1
+  lastRefreshPosition = null
+
   static outlets = ['kaart']
   static targets = [
     'sorting',
@@ -20,141 +24,121 @@ export default class extends Controller {
   ]
 
   initialize() {
-    let self = this
-    self.page = 1
-    if (sessionStorage.getItem('page_number')) {
-      self.page = sessionStorage.getItem('page_number')
-      // self.reloadTakenLijst()
+    this.addEventListeners()
+    this.handleInitialDisplay()
+
+    window.dispatchEvent(
+      new CustomEvent('childControllerConnectedEvent', {
+        bubbles: true,
+        cancelable: false,
+        detail: { controller: this },
+      })
+    )
+
+    window.addEventListener(
+      'childControllerConnectedEvent',
+      this.childControllerConnectedHandler.bind(this)
+    )
+  }
+
+  addEventListeners() {
+    this.element.addEventListener('orderChangeEvent', this.orderChangeHandler.bind(this))
+    this.element.addEventListener('searchChangeEvent', this.reloadTakenLijst.bind(this))
+    this.element.addEventListener('markerSelectedEvent', this.selecteerTaakItem.bind(this))
+    this.element.addEventListener('markerDeselectedEvent', this.deselecteerTaakItem.bind(this))
+    window.addEventListener('positionChangeEvent', this.positionWatchSuccess.bind(this))
+    this.element.addEventListener('kaartModusChangeEvent', this.kaartModusChangeHandler.bind(this))
+  }
+
+  handleInitialDisplay() {
+    if (this.constructor.showSortingContainer) {
+      this.showSortingContainer()
     }
-    self.distanceToLastRefreshPositionTreshold = 50 //meter
-    self.lastRefreshPosition = null
-    self.element[self.identifier] = self
-    self.element.addEventListener('orderChangeEvent', function (e) {
-      self.currentOrder = e.detail.order
-      self.reloadTakenLijst()
-    })
-    self.element.addEventListener('searchChangeEvent', function () {
-      self.reloadTakenLijst()
-    })
+  }
 
-    if (self.hasSortingTarget && showSortingContainer === true) {
-      self.sortingTarget.classList.remove('hidden-vertical')
-      self.sortingTarget.classList.add('show-vertical')
-    }
-
-    self.element.addEventListener('markerSelectedEvent', function (e) {
-      self.selecteerTaakItem(e.detail.taakId)
-    })
-    self.element.addEventListener('markerDeselectedEvent', function (e) {
-      self.deselecteerTaakItem(e.detail.taakId)
-    })
-    window.addEventListener('positionChangeEvent', function (e) {
-      self.positionWatchSuccess(e.detail.position)
-    })
-    self.element.addEventListener('kaartModusChangeEvent', function (e) {
-      self.kaartOutlet.kaartModusChangeHandler(e.detail.kaartModus, e.detail.requestType)
-    })
-    let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', {
-      bubbles: true,
-      cancelable: false,
-      detail: {
-        controller: self,
-      },
-    })
-
-    window.dispatchEvent(childControllerConnectedEvent)
-
-    window.addEventListener('childControllerConnectedEvent', function (e) {
-      if (e.detail.controller.identifier == 'filter') {
-        self.activeFilterCountTarget.textContent = e.detail.controller.activeFilterCountValue
-        self.reloadTakenLijst()
-      }
+  selecteerTaakItem(taakId) {
+    this.taakItemTargets.forEach((taakItemTarget) => {
+      taakItemTarget.classList.toggle('selected', taakItemTarget.dataset.id === taakId)
     })
   }
-  connect() {}
+
+  deselecteerTaakItem() {
+    this.taakItemTargets.forEach((taakItemTarget) => {
+      taakItemTarget.classList.remove('selected')
+    })
+  }
+
   taakAfstandTargetConnected(element) {
     const markerLocation = new L.LatLng(element.dataset.latitude, element.dataset.longitude)
-    element.textContent = Math.round(markerLocation.distanceTo(currentPosition))
+    element.textContent = Math.round(markerLocation.distanceTo(this.currentPosition))
   }
-  selecteerTaakItem(taakId) {
-    let self = this
 
-    for (const taakItemTarget of self.taakItemTargets) {
-      if (taakItemTarget.dataset.id == taakId) {
-        taakItemTarget.classList.add('selected')
-        taakItemTarget.scrollIntoView({
-          behavior: 'smooth',
-          block: 'end',
-          inline: 'nearest',
-        })
-      } else {
-        taakItemTarget.classList.remove('selected')
-      }
-    }
+  selectTaakMarker(e) {
+    this.kaartOutlet.selectTaakMarker(e.params.taakId)
   }
-  deselecteerTaakItem() {
-    let self = this
-    for (const taakItemTarget of self.taakItemTargets) {
-      taakItemTarget.classList.remove('selected')
-    }
-  }
+
   positionWatchSuccess(position) {
-    let self = this
-    currentPosition = [position.coords.latitude, position.coords.longitude]
-    if (self.lastRefreshPosition == null) {
-      self.lastRefreshPosition = currentPosition
+    this.currentPosition = [position.coords.latitude, position.coords.longitude]
+    if (!this.lastRefreshPosition) {
+      this.lastRefreshPosition = this.currentPosition
     }
-    if (self.hasKaartOutlet) {
-      self.kaartOutlet.positionChangeEvent(position)
+    if (this.hasKaartOutlet) {
+      this.kaartOutlet.positionChangeEvent(position)
     }
-    if (self.hasTaakAfstandTarget) {
-      for (const elem of self.taakAfstandTargets) {
-        const markerLocation = new L.LatLng(elem.dataset.latitude, elem.dataset.longitude)
-        const afstand = Math.round(markerLocation.distanceTo(currentPosition))
-        elem.textContent = afstand
-      }
+    if (this.hasTaakAfstandTarget) {
+      this.updateTaakAfstandTargets()
     }
+    this.checkRefreshPositionDistance()
+  }
+
+  updateTaakAfstandTargets() {
+    this.taakAfstandTargets.forEach((elem) => {
+      const markerLocation = new L.LatLng(elem.dataset.latitude, elem.dataset.longitude)
+      elem.textContent = Math.round(markerLocation.distanceTo(this.currentPosition))
+    })
+  }
+
+  checkRefreshPositionDistance() {
     const lastRefreshLocation = new L.LatLng(
-      self.lastRefreshPosition[0],
-      self.lastRefreshPosition[1]
+      this.lastRefreshPosition[0],
+      this.lastRefreshPosition[1]
     )
     const distanceToLastRefreshPosition = Math.round(
-      lastRefreshLocation.distanceTo(currentPosition)
+      lastRefreshLocation.distanceTo(this.currentPosition)
     )
-    console.log('distanceToLastRefreshPosition')
-    console.log(distanceToLastRefreshPosition)
+
     if (
-      distanceToLastRefreshPosition > self.distanceToLastRefreshPositionTreshold &&
-      self.currentOrder == 'Afstand'
+      distanceToLastRefreshPosition > this.distanceToLastRefreshPositionThreshold &&
+      this.currentOrder === 'Afstand'
     ) {
-      self.reloadTakenLijst()
+      this.reloadTakenLijst()
     }
   }
+
   reloadTakenLijst() {
-    let self = this
-    let takenLijstElement = self.element.querySelector('#taken_lijst')
-    const url = `/taken/lijst/?lat=${currentPosition[0]}&lon=${currentPosition[1]}&page=${self.page}`
-    takenLijstElement.setAttribute('src', url)
-    takenLijstElement.reload()
+    const takenLijstElement = document.getElementById('taken_lijst')
+    const url = `/taken/lijst/?lat=${this.currentPosition[0]}&lon=${this.currentPosition[1]}&page=${this.page}`
+    takenLijstElement.src = url
   }
-  selectTaakMarker(e) {
-    let self = this
-    self.kaartOutlet.selectTaakMarker(e.params.taakId)
-  }
+
   onPageClickEvent(e) {
-    let self = this
     e.preventDefault()
-    self.page = e.params.page
-    self.reloadTakenLijst()
+    this.page = e.params.page
+    this.reloadTakenLijst()
   }
+
   taakItemLijstTargetConnected() {
-    let self = this
-    self.lastRefreshPosition = [currentPosition[0], currentPosition[1]]
-    self.takenCountTarget.textContent = self.taakItemLijstTarget.dataset.takenCount
-    self.kaartOutlet.clearMarkers()
-    let kaartMarkers = []
-    for (const taakItem of self.taakItemTargets) {
-      if (taakItem.dataset.geometrie != '') {
+    this.lastRefreshPosition = [this.currentPosition[0], this.currentPosition[1]]
+    this.takenCountTarget.textContent = this.taakItemLijstTarget.dataset.takenCount
+    this.kaartOutlet.clearMarkers()
+    const kaartMarkers = this.getKaartMarkers()
+    this.kaartOutlet.plotMarkers(kaartMarkers)
+  }
+
+  getKaartMarkers() {
+    const kaartMarkers = []
+    this.taakItemTargets.forEach((taakItem) => {
+      if (taakItem.dataset.geometrie) {
         kaartMarkers.push({
           geometrie: JSON.parse(taakItem.dataset.geometrie),
           adres: taakItem.dataset.adres,
@@ -163,24 +147,40 @@ export default class extends Controller {
           titel: taakItem.dataset.titel,
         })
       }
-    }
-    self.kaartOutlet.plotMarkers(kaartMarkers)
+    })
+    return kaartMarkers
   }
+
   toggleMapView() {
     this.element.classList.toggle('showMap')
   }
+
   onToggleSortingContainer() {
-    let self = this
-    self.sortingTarget.classList.toggle('hidden-vertical')
-    self.sortingTarget.classList.toggle('show-vertical')
-    showSortingContainer = !showSortingContainer
-    sortDirectionReversed = sortDirectionReversed !== undefined
+    this.sortingTarget.classList.toggle('hidden-vertical')
+    this.sortingTarget.classList.toggle('show-vertical')
+    this.constructor.showSortingContainer = !this.constructor.showSortingContainer
+    this.constructor.sortDirectionReversed = this.constructor.sortDirectionReversed !== undefined
   }
 
   onToggleSearchContainer() {
-    let self = this
-    self.searchTarget.classList.toggle('hidden-vertical')
-    self.searchTarget.classList.toggle('show-vertical')
-    showSearchContainer = !showSearchContainer
+    this.searchTarget.classList.toggle('hidden-vertical')
+    this.searchTarget.classList.toggle('show-vertical')
+    this.constructor.showSearchContainer = !this.constructor.showSearchContainer
+  }
+
+  orderChangeHandler(e) {
+    this.currentOrder = e.detail.order
+    this.reloadTakenLijst()
+  }
+
+  kaartModusChangeHandler(e) {
+    this.kaartOutlet.kaartModusChangeHandler(e.detail.kaartModus, e.detail.requestType)
+  }
+
+  childControllerConnectedHandler(e) {
+    if (e.detail.controller.identifier === 'filter') {
+      this.activeFilterCountTarget.textContent = e.detail.controller.activeFilterCountValue
+      this.reloadTakenLijst()
+    }
   }
 }
