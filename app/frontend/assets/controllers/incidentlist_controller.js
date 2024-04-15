@@ -7,7 +7,7 @@ export default class extends Controller {
   static sortDirectionReversed = false
 
   currentPosition = null
-  distanceToLastRefreshPositionThreshold = 50 // meter
+  distanceThreshold = 50 // meter
   page = sessionStorage.getItem('page_number') || 1
   lastRefreshPosition = null
 
@@ -25,8 +25,6 @@ export default class extends Controller {
 
   initialize() {
     this.addEventListeners()
-    this.handleInitialDisplay()
-
     window.dispatchEvent(
       new CustomEvent('childControllerConnectedEvent', {
         bubbles: true,
@@ -34,26 +32,22 @@ export default class extends Controller {
         detail: { controller: this },
       })
     )
-
-    window.addEventListener(
-      'childControllerConnectedEvent',
-      this.childControllerConnectedHandler.bind(this)
-    )
   }
 
   addEventListeners() {
-    this.element.addEventListener('orderChangeEvent', this.orderChangeHandler.bind(this))
-    this.element.addEventListener('searchChangeEvent', this.reloadTakenLijst.bind(this))
-    this.element.addEventListener('markerSelectedEvent', this.selecteerTaakItem.bind(this))
-    this.element.addEventListener('markerDeselectedEvent', this.deselecteerTaakItem.bind(this))
-    window.addEventListener('positionChangeEvent', this.positionWatchSuccess.bind(this))
-    this.element.addEventListener('kaartModusChangeEvent', this.kaartModusChangeHandler.bind(this))
-  }
-
-  handleInitialDisplay() {
-    if (this.constructor.showSortingContainer) {
-      this.showSortingContainer()
-    }
+    this.element.addEventListener('orderChangeEvent', (e) => this.orderChangeHandler(e))
+    this.element.addEventListener('searchChangeEvent', () => this.reloadTakenLijst())
+    this.element.addEventListener('markerSelectedEvent', (e) =>
+      this.selectTaakItem(e.detail.taakId)
+    )
+    this.element.addEventListener('markerDeselectedEvent', () => this.deselectTaakItem())
+    window.addEventListener('positionChangeEvent', (e) =>
+      this.positionWatchSuccess(e.detail.position)
+    )
+    this.element.addEventListener('kaartModusChangeEvent', (e) => this.kaartModusChangeHandler(e))
+    window.addEventListener('childControllerConnectedEvent', (e) =>
+      this.childControllerConnectedHandler(e)
+    )
   }
 
   selecteerTaakItem(taakId) {
@@ -80,7 +74,7 @@ export default class extends Controller {
   positionWatchSuccess(position) {
     this.currentPosition = [position.coords.latitude, position.coords.longitude]
     if (!this.lastRefreshPosition) {
-      this.lastRefreshPosition = this.currentPosition
+      this.lastRefreshPosition = [...this.currentPosition]
     }
     if (this.hasKaartOutlet) {
       this.kaartOutlet.positionChangeEvent(position)
@@ -99,18 +93,12 @@ export default class extends Controller {
   }
 
   checkRefreshPositionDistance() {
-    const lastRefreshLocation = new L.LatLng(
-      this.lastRefreshPosition[0],
-      this.lastRefreshPosition[1]
-    )
+    const lastRefreshLocation = new L.LatLng(...this.lastRefreshPosition)
     const distanceToLastRefreshPosition = Math.round(
       lastRefreshLocation.distanceTo(this.currentPosition)
     )
 
-    if (
-      distanceToLastRefreshPosition > this.distanceToLastRefreshPositionThreshold &&
-      this.currentOrder === 'Afstand'
-    ) {
+    if (distanceToLastRefreshPosition > this.distanceThreshold && this.currentOrder === 'Afstand') {
       this.reloadTakenLijst()
     }
   }
@@ -128,7 +116,7 @@ export default class extends Controller {
   }
 
   taakItemLijstTargetConnected() {
-    this.lastRefreshPosition = [this.currentPosition[0], this.currentPosition[1]]
+    this.lastRefreshPosition = [...this.currentPosition]
     this.takenCountTarget.textContent = this.taakItemLijstTarget.dataset.takenCount
     this.kaartOutlet.clearMarkers()
     const kaartMarkers = this.getKaartMarkers()
