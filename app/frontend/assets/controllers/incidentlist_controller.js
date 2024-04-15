@@ -38,9 +38,9 @@ export default class extends Controller {
     this.element.addEventListener('orderChangeEvent', (e) => this.orderChangeHandler(e))
     this.element.addEventListener('searchChangeEvent', () => this.reloadTakenLijst())
     this.element.addEventListener('markerSelectedEvent', (e) =>
-      this.selectTaakItem(e.detail.taakId)
+      this.selecteerTaakItem(e.detail.taakId)
     )
-    this.element.addEventListener('markerDeselectedEvent', () => this.deselectTaakItem())
+    this.element.addEventListener('markerDeselectedEvent', () => this.deselecteerTaakItem())
     window.addEventListener('positionChangeEvent', (e) =>
       this.positionWatchSuccess(e.detail.position)
     )
