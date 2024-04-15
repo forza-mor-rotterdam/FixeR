@@ -1,71 +1,74 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
-let currentPosition = { coords: { latitude: 51.9247772, longitude: 4.4780972 } }
-let incidentlist = null
-let detail = null
-
-let kaartModus = null
-let kaartStatus = null
-
 export default class extends Controller {
   static outlets = ['taken']
 
+  currentPosition = { coords: { latitude: 51.9247772, longitude: 4.4780972 } }
+  incidentlist = null
+  detail = null
+  kaartModus = null
+  kaartStatus = null
+
   initialize() {
-    let self = this
-    self.element[self.identifier] = self
     const status = {
       zoom: 16,
-      center: [currentPosition.coords.latitude, currentPosition.coords.longitude],
+      center: [this.currentPosition.coords.latitude, this.currentPosition.coords.longitude],
     }
-    kaartModus = 'volgen'
-    kaartStatus = {
+    this.kaartModus = 'volgen'
+    this.kaartStatus = {
       volgen: status,
       toon_alles: status,
     }
     if (!sessionStorage.getItem('kaartStatus')) {
-      sessionStorage.setItem('kaartStatus', JSON.stringify(kaartStatus))
+      sessionStorage.setItem('kaartStatus', JSON.stringify(this.kaartStatus))
     }
 
     navigator.geolocation.getCurrentPosition(
-      self.getCurrentPositionSuccess.bind(self),
-      self.positionWatchError.bind(self)
+      this.getCurrentPositionSuccess,
+      this.positionWatchError
     )
-    window.addEventListener('childControllerConnectedEvent', function (e) {
-      if (e.detail.controller.identifier == 'incidentlist') {
-        incidentlist = e.detail.controller
-        incidentlist.positionWatchSuccess(currentPosition)
-      }
-      if (e.detail.controller.identifier == 'detail') {
-        detail = e.detail.controller
-        detail.positionWatchSuccess(currentPosition)
-      }
-    })
+
+    window.addEventListener(
+      'childControllerConnectedEvent',
+      this.childControllerConnectedEventHandler
+    )
   }
-  connect() {}
-  getCurrentPositionSuccess(position) {
-    let self = this
-    self.positionWatchSuccess(position)
+
+  childControllerConnectedEventHandler = (e) => {
+    if (e.detail.controller.identifier === 'incidentlist') {
+      this.incidentlist = e.detail.controller
+      this.incidentlist.positionWatchSuccess(this.currentPosition)
+    }
+    if (e.detail.controller.identifier === 'detail') {
+      this.detail = e.detail.controller
+      this.detail.positionWatchSuccess(this.currentPosition)
+    }
   }
-  positionWatchSuccess(position) {
+
+  getCurrentPositionSuccess = (position) => {
+    this.positionWatchSuccess(position)
+  }
+
+  positionWatchSuccess = (position) => {
     const myLocation = new L.LatLng(
-      currentPosition.coords.latitude,
-      currentPosition.coords.longitude
+      this.currentPosition.coords.latitude,
+      this.currentPosition.coords.longitude
     )
     const distance = myLocation.distanceTo([position.coords.latitude, position.coords.longitude])
     if (distance > 5) {
-      currentPosition = position
-      if (incidentlist) {
-        incidentlist.positionWatchSuccess(position)
+      this.currentPosition = position
+      if (this.incidentlist) {
+        this.incidentlist.positionWatchSuccess(position)
       }
-      if (detail) {
-        detail.positionWatchSuccess(position)
+      if (this.detail) {
+        this.detail.positionWatchSuccess(position)
       }
     }
   }
-  positionWatchError(error) {
-    let self = this
-    console.log('positionWatchError controller id:', self.identifier)
+
+  positionWatchError = (error) => {
+    console.log('positionWatchError controller id:', this.identifier)
     console.log('handleNoCurrentLocation, error: ', error)
     switch (error.code) {
       case error.PERMISSION_DENIED:
@@ -81,8 +84,9 @@ export default class extends Controller {
         console.log('An unknown error occurred.')
         break
     }
-    self.getCurrentPositionSuccess(currentPosition)
+    this.getCurrentPositionSuccess(this.currentPosition)
   }
+
   showFilters() {
     document.body.classList.add('show-filters')
   }
@@ -90,24 +94,28 @@ export default class extends Controller {
   hideFilters() {
     document.body.classList.remove('show-filters')
   }
+
   setKaartModus(_kaartModus) {
-    kaartModus = _kaartModus
+    this.kaartModus = _kaartModus
   }
+
   getCurrentPosition() {
-    return currentPosition
+    return this.currentPosition
   }
+
   getKaartModus() {
-    return kaartModus
+    return this.kaartModus
   }
+
   setKaartStatus(_kaartStatus) {
-    kaartStatus[kaartModus] = _kaartStatus
-    let sessionState = JSON.parse(sessionStorage.getItem('kaartStatus'))
-    sessionState[kaartModus] = _kaartStatus
-    const sessionStateString = JSON.stringify(sessionState)
-    sessionStorage.setItem('kaartStatus', sessionStateString)
+    this.kaartStatus[this.kaartModus] = _kaartStatus
+    const sessionState = JSON.parse(sessionStorage.getItem('kaartStatus')) || {}
+    sessionState[this.kaartModus] = _kaartStatus
+    sessionStorage.setItem('kaartStatus', JSON.stringify(sessionState))
   }
+
   getKaartStatus() {
-    const sessionState = JSON.parse(sessionStorage.getItem('kaartStatus'))
-    return sessionState[kaartModus]
+    const sessionState = JSON.parse(sessionStorage.getItem('kaartStatus')) || {}
+    return sessionState[this.kaartModus]
   }
 }
