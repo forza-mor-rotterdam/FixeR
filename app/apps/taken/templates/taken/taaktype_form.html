@@ -82,39 +82,15 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        {{ reden_wel.management_form }}
-                                        {% for reden in reden_wel %}
-                                            {{ reden.id }}
-                                            {{ reden.type }}
-                                            {{ reden.toelichting|render_rotterdam_formulier }}
-                                            <div data-controller="bijlagen">{{ reden.bijlage|render_rotterdam_formulier }}</div>
-                                            {{ reden.DELETE }}
-                                            <fieldset>
-                                                {{ reden.bijlage_formset.management_form }}
-                                                {% for form in reden.bijlage_formset %}
-                                                    {{ form.instance.bestand }}
-                                                    {{ form.DELETE }}
-                                                    {{ form.id }}
-                                                {% endfor %}
-                                            </fieldset>
+                                        {{ voorbeeldsituatie_wel.management_form }}
+                                        {% for voorbeeldsituatie in voorbeeldsituatie_wel %}
+                                            {% include "taken/taaktype_voorbeeldsituatie_form.html" %}
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {{ reden_niet.management_form }}
-                                        {% for reden in reden_niet %}
-                                            {{ reden.id }}
-                                            {{ reden.type }}
-                                            {{ reden.toelichting|render_rotterdam_formulier }}
-                                            <div data-controller="bijlagen">{{ reden.bijlage }}</div>
-                                            {{ reden.DELETE }}
-                                            <fieldset>
-                                                {{ reden.bijlage_formset.management_form }}
-                                                {% for form in reden.bijlage_formset %}
-                                                    {{ form.instance.bestand }}
-                                                    {{ form.DELETE }}
-                                                    {{ form.id }}
-                                                {% endfor %}
-                                            </fieldset>
+                                        {{ voorbeeldsituatie_niet.management_form }}
+                                        {% for voorbeeldsituatie in voorbeeldsituatie_niet %}
+                                            {% include "taken/taaktype_voorbeeldsituatie_form.html" %}
                                         {% endfor %}
                                     </td>
                                 </tr>

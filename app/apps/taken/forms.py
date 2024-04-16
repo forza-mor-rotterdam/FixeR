@@ -37,9 +37,6 @@ class MultipleFileField(forms.FileField):
 
     def clean(self, data, initial=None):
         single_file_clean = super().clean
-        print("MultipleFileField")
-        print(single_file_clean)
-        print(data)
         if isinstance(data, (list, tuple)):
             result = [single_file_clean(d, initial) for d in data]
         else:
@@ -87,7 +84,7 @@ class TaaktypeVoorbeeldsituatieFormNiet(forms.ModelForm):
     bestand = forms.FileField(
         label="Afbeelding of GIF",
         required=False,
-        widget=MultipleFileInput(
+        widget=forms.widgets.FileInput(
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic, .gif",
                 "data-action": "change->bijlagen#updateImageDisplay",
