@@ -5,6 +5,7 @@ from apps.taken.models import (
     Taaktype,
     TaakZoekData,
 )
+from apps.taken.tasks import compare_and_update_status
 from django.contrib import admin
 
 
@@ -23,6 +24,16 @@ class TaakAdmin(admin.ModelAdmin):
         "taak_zoek_data",
     )
     list_editable = ("melding",)
+    actions = ["compare_taakopdracht_status"]
+
+    def compare_taakopdracht_status(self, request, queryset):
+        for taak in queryset:
+            compare_and_update_status.delay(taak.id)
+        self.message_user(request, "Updating taakopdracht for taken!")
+
+    compare_taakopdracht_status.short_description = (
+        "Compare taak and taakopdracht status"
+    )
 
 
 class TaaktypeAdmin(admin.ModelAdmin):
