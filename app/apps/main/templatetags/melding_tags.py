@@ -32,7 +32,7 @@ def get_bijlagen(melding):
             **bijlage,
             "signaal": signaal,
             "aangemaakt_op": signaal.get("aangemaakt_op"),
-            "label": f"Foto van melder({signaal.get('bron_id')}): {signaal.get('bron_signaal_id')}",
+            "label": f"Foto van melder ({signaal.get('bron_id')}): {signaal.get('bron_signaal_id')}",
         }
         for signaal in melding.get("signalen_voor_melding", [])
         for bijlage in signaal.get("bijlagen", [])
