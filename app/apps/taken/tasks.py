@@ -51,11 +51,11 @@ def compare_and_update_status(self, taak_id):
                 )
                 if taak_status_aanpassen_response.status_code != 200:
                     logger.error(
-                        f"incident_modal_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, update_data={update_data}"
+                        f"incident_modal_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, taakopdracht_id={taakopdracht.get('id')}, update_data={update_data}"
                     )
                 else:
                     logger.info(
-                        f"Taakopdracht in Mor-Core updated successfully for taak_id: {taak_id}."
+                        f"Taakopdracht in Mor-Core updated successfully for  FixeR taak_id: {taak_id} and MOR-Core taakopdracht_id: {taakopdracht.get('id')}."
                     )
 
             else:
