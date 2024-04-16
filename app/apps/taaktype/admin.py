@@ -1,4 +1,4 @@
-from apps.taaktype.models import Afdeling, TaaktypeMiddel, TaaktypeReden
+from apps.taaktype.models import Afdeling, TaaktypeMiddel, TaaktypeVoorbeeldsituatie
 from django.contrib import admin
 
 
@@ -19,7 +19,7 @@ class TaaktypeMiddelAdmin(admin.ModelAdmin):
     list_editable = ("naam",)
 
 
-class TaaktypeRedenAdmin(admin.ModelAdmin):
+class TaaktypeVoorbeeldsituatieAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "type",
@@ -29,4 +29,4 @@ class TaaktypeRedenAdmin(admin.ModelAdmin):
 
 admin.site.register(Afdeling, AfdelingAdmin)
 admin.site.register(TaaktypeMiddel, TaaktypeMiddelAdmin)
-admin.site.register(TaaktypeReden, TaaktypeRedenAdmin)
+admin.site.register(TaaktypeVoorbeeldsituatie, TaaktypeVoorbeeldsituatieAdmin)

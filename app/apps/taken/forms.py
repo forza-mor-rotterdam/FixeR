@@ -1,10 +1,10 @@
 from apps.release_notes.models import Bijlage
 from apps.services.onderwerpen import OnderwerpenService
-from apps.taaktype.models import Afdeling, TaaktypeMiddel, TaaktypeReden
+from apps.taaktype.models import Afdeling, TaaktypeMiddel, TaaktypeVoorbeeldsituatie
 from apps.taken.models import Taaktype
 from django import forms
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
-from django.forms import formset_factory, inlineformset_factory
+from django.forms import inlineformset_factory
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -18,9 +18,6 @@ class MultipleFileField(forms.FileField):
 
     def clean(self, data, initial=None):
         single_file_clean = super().clean
-        print("MultipleFileField")
-        print(single_file_clean)
-        print(data)
         if isinstance(data, (list, tuple)):
             result = [single_file_clean(d, initial) for d in data]
         else:
@@ -36,7 +33,6 @@ class BijlageForm(forms.ModelForm):
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic, .gif",
                 "data-action": "change->bijlagen#updateImageDisplay",
-                "data-bijlagen-target": "bijlagenExtra",
                 "multiple": "multiple",
                 "hideLabel": True,
             }
@@ -57,33 +53,21 @@ BijlageFormSet = generic_inlineformset_factory(
     extra=0,
     can_delete=True,
     can_delete_extra=True,
-    # form=BijlageForm,
 )
 
 
-class TaaktypeRedenForm(forms.ModelForm):
-    class Meta:
-        model = TaaktypeReden
-        fields = (
-            "toelichting",
-            "type",
-            "taaktype",
-        )
-
-
-class TaaktypeRedenFormNiet(forms.ModelForm):
-    type_value = TaaktypeReden.TypeOpties.WAAROM_NIET
+class TaaktypeVoorbeeldsituatieFormNiet(forms.ModelForm):
+    type_value = TaaktypeVoorbeeldsituatie.TypeOpties.WAAROM_NIET
     type = forms.CharField(
         widget=forms.HiddenInput(),
     )
-    bijlage = MultipleFileField(
+    bestand = forms.FileField(
         label="Afbeelding of GIF",
         required=False,
-        widget=MultipleFileInput(
+        widget=forms.widgets.FileInput(
             attrs={
-                # "accept": ".jpg, .jpeg, .png, .heic, .gif",
-                # "data-action": "change->bijlagen#updateImageDisplay",
-                # "data-bijlagen-target": "bijlagenExtra",
+                "accept": ".jpg, .jpeg, .png, .heic, .gif",
+                "data-action": "change->bijlagen#updateImageDisplay",
                 "multiple": "multiple",
                 "hideLabel": True,
             }
@@ -91,23 +75,9 @@ class TaaktypeRedenFormNiet(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        # print(args)
-        # print("kwargs")
-        # print(kwargs)
-
         super().__init__(*args, **kwargs)
-        # print("self.data")
-        # print(self.data)
-        # print(self.is_bound)
-        # print("dir(self)")
-        # print(dir(self))
         self.fields["type"].initial = self.type_value
-
-        # self.bijlage_formset = self.get_bijlagen_inline()(instance=self.instance)
         if self.is_bound:
-            # print("file")
-            # print(self.files)
-            # print(self.instance.id)
             self.bijlage_formset = BijlageFormSet(
                 self.data,
                 self.files,
@@ -118,27 +88,23 @@ class TaaktypeRedenFormNiet(forms.ModelForm):
             self.bijlage_formset = BijlageFormSet(
                 instance=self.instance, prefix=f"{self.prefix}_bijlage"
             )
-        # print("self.bijlage_formset")
-        # print(self.bijlage_formset)
 
     class Meta:
-        model = TaaktypeReden
+        model = TaaktypeVoorbeeldsituatie
         fields = (
             "toelichting",
             "type",
-            # "taaktype",
         )
 
 
-class TaaktypeRedenFormWel(TaaktypeRedenFormNiet):
-    type_value = TaaktypeReden.TypeOpties.WAAROM_WEL
+class TaaktypeVoorbeeldsituatieFormWel(TaaktypeVoorbeeldsituatieFormNiet):
+    type_value = TaaktypeVoorbeeldsituatie.TypeOpties.WAAROM_WEL
 
     class Meta:
-        model = TaaktypeReden
+        model = TaaktypeVoorbeeldsituatie
         fields = (
             "toelichting",
             "type",
-            # "taaktype",
         )
 
 
@@ -225,6 +191,8 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
         fields = (
             "omschrijving",
             "volgende_taaktypes",
+            "afdelingen",
+            "taaktypemiddelen",
             "gerelateerde_onderwerpen",
             "actief",
         )
@@ -233,28 +201,24 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
         super().__init__(*args, **kwargs)
         self.fields[
             "omschrijving"
-        ].help_text = "Omschrijf het taaktype zo concreet mogelijk. Formuleer de gewenste actie, bijvoorbeeld ‘Grofvuil ophalen’."
+        ].help_text = "Omschrijf het taaktype zo concreet mogelijk. Formuleer de gewenste actie, bijvoorbeeld 'Grofvuil ophalen'."
         self.fields[
             "volgende_taaktypes"
         ].help_text = "Dit zijn taken die mogelijk uitgevoerd moeten worden nadat de taak is afgerond."
 
 
-# TaaktypeRedenNietFormSet = formset_factory(TaaktypeRedenFormNiet, extra=1)
-# TaaktypeRedenWelFormSet = formset_factory(TaaktypeRedenFormWel, extra=1)
-TaaktypeRedenFormSet = formset_factory(TaaktypeRedenForm, extra=1)
-
-TaaktypeRedenNietFormSet = inlineformset_factory(
+TaaktypeVoorbeeldsituatieNietFormSet = inlineformset_factory(
     Taaktype,
-    TaaktypeReden,
-    form=TaaktypeRedenFormNiet,
+    TaaktypeVoorbeeldsituatie,
+    form=TaaktypeVoorbeeldsituatieFormNiet,
     extra=1,
     can_delete=True,
     can_delete_extra=False,
 )
-TaaktypeRedenWelFormSet = inlineformset_factory(
+TaaktypeVoorbeeldsituatieWelFormSet = inlineformset_factory(
     Taaktype,
-    TaaktypeReden,
-    form=TaaktypeRedenFormWel,
+    TaaktypeVoorbeeldsituatie,
+    form=TaaktypeVoorbeeldsituatieFormWel,
     extra=1,
     can_delete=True,
     can_delete_extra=False,

@@ -35,9 +35,9 @@ class TaaktypeMiddel(BasisModel):
         return self.naam
 
 
-class TaaktypeReden(BasisModel):
+class TaaktypeVoorbeeldsituatie(BasisModel):
     """
-    TaaktypeReden model voor Taaktypes
+    TaaktypeVoorbeeldsituatie model voor Taaktypes
     """
 
     class TypeOpties(models.TextChoices):
@@ -57,7 +57,7 @@ class TaaktypeReden(BasisModel):
 
     taaktype = models.ForeignKey(
         to="taken.Taaktype",
-        related_name="taaktyperedenen_voor_taaktype",
+        related_name="voorbeeldsituatie_voor_taaktype",
         on_delete=models.CASCADE,
         blank=True,
         null=True,

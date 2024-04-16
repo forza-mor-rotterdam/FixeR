@@ -1,0 +1,24 @@
+{% load rotterdam_formulier_html %}
+<div>
+    <div class="hidden-fields">
+        {{ voorbeeldsituatie.id }}
+        {{ voorbeeldsituatie.type }}
+    </div>
+    {{ voorbeeldsituatie.toelichting|render_rotterdam_formulier }}
+    <div data-controller="bijlagen">{{ voorbeeldsituatie.bestand|render_rotterdam_formulier }}</div>
+    Verwijder: {{ voorbeeldsituatie.DELETE }}
+    <fieldset>
+        {{ voorbeeldsituatie.bijlage_formset.management_form }}
+        {% for form in voorbeeldsituatie.bijlage_formset %}
+            <div>
+                {% if form.instance.afbeelding %}
+                    <img width="100px" src="{{ form.instance.afbeelding.url }}" />
+                {% else %}
+                    form.instance.bestand
+                {% endif %}
+                Verwijder: {{ form.DELETE }}
+                {{ form.id }}
+            </div>
+        {% endfor %}
+    </fieldset>
+</div>
