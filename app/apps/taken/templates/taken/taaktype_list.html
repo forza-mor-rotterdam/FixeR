@@ -5,7 +5,7 @@
 {% block body %}
     <div class="page__beheer" data-controller="row-search">
         <div>
-            <a href="{% url 'beheer' %}" class="link--back">
+            <a href="{% url 'taaktype_beheer' %}" class="link--back">
                 <svg width="25"
                      height="16"
                      viewBox="0 0 25 16"
@@ -29,37 +29,58 @@
                 Nieuw taaktype
             </a>
         </div>
-        <div class="alert alert--info">
-            <span>
-                <svg width="24"
-                     height="24"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M21.9 12C21.9 6.5 17.5 2.1 12 2.1C6.5 2.1 2.1 6.5 2.1 12C2.1 17.5 6.5 21.9 12 21.9C17.5 21.9 21.9 17.5 21.9 12ZM0 12C0 5.4 5.4 0 12 0C18.6 0 24 5.4 24 12C24 18.6 18.6 24 12 24C5.4 24 0 18.6 0 12ZM13 7V5H11V7H13ZM13 19V9H11V19H13Z" fill="#00689E" />
-                </svg>
-            </span>
-            <div>
-                Deze pagina toont de verschillende taaktypes die geselecteerd kunnen worden in FixeR. Ook taaktypes die als vervolgtaak kunnen worden gekozen.
-            </div>
-        </div>
-        <!-- <form>
-        <div class="form-row">
-            <label class="" for="id_zoeken">Zoeken</label>
-            <div>
-                <input type="text" id="id_zoeken" name="zoeken" class="form-control " data-action="row-search#search">
-            </div>
-        </div>
-</form> -->
-        <div class="container__table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>omschrijving</th>
-                        <th>Volgende taaktypes</th>
-                        <th>Actief</th>
-                        <th>Aantal rollen</th>
-                        <th></th>
+        <ul>
+            {% for onderdeel in afdeling_onderdelen %}
+                <li>
+                    {{ onderdeel.0 }}
+                    <ul>
+                        {% for taaktype in onderdeel.1 %}
+                            <li>
+                                {{ taaktype.omschrijving }} (afdelingen:
+                                {% for afdeling in taaktype.afdelingen.all %}{{ afdeling.naam }}{% endfor %}
+                                ) (bijlagen aantal: {{ taaktype.bijlagen.count }})
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>omschrijving</th>
+                    <th>Volgende taaktypes</th>
+                    <th>Actief</th>
+                    <th>Aantal rollen</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                    <tr data-row-search-target="row">
+                        <td data-row-search-target="searchable">{{ object.omschrijving }}</td>
+                        <td data-row-search-target="searchable">
+                            {% if object.volgende_taaktypes.all %}
+                                {% for taaktype in object.volgende_taaktypes.all %}
+                                    {{ taaktype.omschrijving }}
+                                    {% if not forloop.last %},{% endif %}
+                                {% endfor %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td data-row-search-target="searchable">
+                            {% if object.actief %}
+                                {% include "icons/checkmark.svg" %}
+                            {% else %}
+                                {% include "icons/close.svg" %}
+                            {% endif %}
+                        </td>
+                        <td data-row-search-target="searchable">{{ object.contexten_voor_taaktypes.all|length }}</td>
+                        <td>
+                            <a href="{% url 'taaktype_aanpassen' object.pk %}"
+                               aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                        </td>
                     </tr>
                 </thead>
                 <tbody>

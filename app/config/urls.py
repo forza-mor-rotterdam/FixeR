@@ -55,6 +55,15 @@ from apps.release_notes.views import (
     ReleaseNoteListViewPublic,
     ReleaseNoteVerwijderenView,
 )
+from apps.taaktype.views import (
+    AfdelingAanmakenView,
+    AfdelingAanpassenView,
+    AfdelingLijstView,
+    TaaktypeMiddelAanmakenView,
+    TaaktypeMiddelAanpassenView,
+    TaaktypeMiddelLijstView,
+    taaktype_beheer,
+)
 from apps.taken.views import (
     TaaktypeAanmakenView,
     TaaktypeAanpassenView,
@@ -157,6 +166,7 @@ urlpatterns = [
     # END partials
     # START beheer
     path("beheer/", beheer, name="beheer"),
+    path("beheer-taaktype/", taaktype_beheer, name="taaktype_beheer"),
     path("beheer/gebruiker/", GebruikerLijstView.as_view(), name="gebruiker_lijst"),
     path(
         "beheer/gebruiker/bulk-import/",
@@ -188,6 +198,32 @@ urlpatterns = [
         "beheer/context/<int:pk>/verwijderen/",
         ContextVerwijderenView.as_view(),
         name="context_verwijderen",
+    ),
+    path("beheer/afdeling/", AfdelingLijstView.as_view(), name="afdeling_lijst"),
+    path(
+        "beheer/afdeling/aanmaken/",
+        AfdelingAanmakenView.as_view(),
+        name="afdeling_aanmaken",
+    ),
+    path(
+        "beheer/afdeling/<int:pk>/aanpassen/",
+        AfdelingAanpassenView.as_view(),
+        name="afdeling_aanpassen",
+    ),
+    path(
+        "beheer/taaktypemiddel/",
+        TaaktypeMiddelLijstView.as_view(),
+        name="taaktypemiddel_lijst",
+    ),
+    path(
+        "beheer/taaktypemiddel/aanmaken/",
+        TaaktypeMiddelAanmakenView.as_view(),
+        name="taaktypemiddel_aanmaken",
+    ),
+    path(
+        "beheer/taaktypemiddel/<int:pk>/aanpassen/",
+        TaaktypeMiddelAanpassenView.as_view(),
+        name="taaktypemiddel_aanpassen",
     ),
     path("beheer/taaktype/", TaaktypeLijstView.as_view(), name="taaktype_lijst"),
     path(

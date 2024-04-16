@@ -1,0 +1,18 @@
+{% extends "base_beheer.html" %}
+{% block title %}
+    Taaktype | Beheer | FixeR
+{% endblock title %}
+{% block body %}
+    <h1>Taaktype beheer</h1>
+    <ul class="list--blocks-horizontal">
+        <li>
+            <a href="{% url 'taaktype_lijst' %}">Taaktypes</a>
+        </li>
+        <li>
+            <a href="{% url 'afdeling_lijst' %}">Afdelingen</a>
+        </li>
+        <li>
+            <a href="{% url 'taaktypemiddel_lijst' %}">Taaktype materieel</a>
+        </li>
+    </ul>
+{% endblock body %}
