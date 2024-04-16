@@ -11,18 +11,21 @@
           crossorigin="" />
 {% endblock stylesheets %}
 {% block body %}
-    <div>
-        <section class="section--seperated">
-            <div class="container__details" data-controller="errorpage">
-                <h1 class="visually-hidden">
-                    De pagina is niet gevonden
-                    <strong>404</strong>
-                </h1>
-                <figure class="question">
-                    <q data-errorpage-target="question"></q>
-                </figure>
-                <div class="container__answers" data-errorpage-target="containerAnswers"></div>
+    <div class="taak-detail">
+        <div class="container__details" data-controller="errorpage">
+            <h1 class="h3">404 - De pagina is niet gevonden</h1>
+            <figure class="question">
+                <q data-errorpage-target="question"></q>
+                <figcaption>Betekenis</figcaption>
+            </figure>
+            <div class="container__answers" data-errorpage-target="containerAnswers"></div>
+            <div>
+                <a href="{% url 'taken' %}">Naar overzicht</a>
+                <a class="link--whatsapp"
+                   href="https://wa.me/?text=Hier het bericht"
+                   target="_blank">Whatsapp de melding door</a>
             </div>
-        </section>
+        </div>
     </div>
+    <canvas id="confetti"></canvas>
 {% endblock body %}
