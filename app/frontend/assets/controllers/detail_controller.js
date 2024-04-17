@@ -261,9 +261,10 @@ export default class extends Controller {
   }
 
   makeRoute(event) {
-    // let routeUrl = "https://www.google.com/maps/dir"
-    // let routeUrl = 'https://www.waze.com/ul?ll=40.75889500,-73.98513100&navigate=yes&zoom=17'
-    let routeUrl = 'https://www.waze.com/ul?ll='
+    let routeUrl = 'https://www.google.com/maps/dir/?api=1&destination='
+    if (event.params.map === 'waze') {
+      routeUrl = 'https://www.waze.com/ul?ll='
+    }
 
     function getRoute(event) {
       let lat = event.params.lat
@@ -328,7 +329,6 @@ export default class extends Controller {
   }
 
   onTwoFingerDrag(event) {
-    console.log('detail, onTwoFingerDrag, event: ', event)
     if (event.type === 'touchstart' && event.touches.length === 1) {
       event.currentTarget.classList.add('swiping')
     } else {

@@ -248,6 +248,15 @@ a,
     &.link--navigate {
         text-decoration: none;
         padding: 5px;
+        svg {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+
+            path {
+                fill: $green-tint01;
+            }
+        }
     }
 }
 

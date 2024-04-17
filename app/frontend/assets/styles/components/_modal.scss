@@ -23,7 +23,17 @@ body.show-modal {
         opacity: 0.5;
     }
 
-    .modal.show {
+    .modal:not(.modal-navigation).show {
+        @include modalVisible();
+    }
+}
+
+body.show-navigation {
+    .modal-backdrop {
+        display: block;
+        opacity: 0.5;
+    }
+    .modal-navigation.show {
         @include modalVisible();
     }
 }
@@ -209,7 +219,7 @@ body.show-modal--first-filter {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1000;
+    z-index: 2000;
     width: 100vw;
     height: 100vh;
     background-color: $black;
