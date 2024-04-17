@@ -58,7 +58,7 @@ def compare_and_update_status(self, taak_id):
                     }
 
                 else:
-                    logger.info(
+                    logger.warning(
                         f"Taakopdracht in Mor-Core updated successfully for FixeR taak_id: {taak_id} and MOR-Core taakopdracht_id: {taakopdracht.get('id')}."
                     )
                     return {
