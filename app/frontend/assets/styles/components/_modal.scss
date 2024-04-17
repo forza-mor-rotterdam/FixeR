@@ -26,6 +26,12 @@ body.show-modal {
     .modal:not(.modal-navigation).show {
         @include modalVisible();
     }
+
+    .list-item:not(.selected) {
+        .modal.show {
+            display: none;
+        }
+    }
 }
 
 body.show-navigation {
