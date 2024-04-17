@@ -20,16 +20,21 @@ class TaakAdmin(admin.ModelAdmin):
         "resolutie",
         "aangemaakt_op",
         "aangepast_op",
-        "geometrie",
-        "taak_zoek_data",
+        # "geometrie",
+        # "taak_zoek_data",
     )
-    list_editable = ("melding",)
+    # list_editable = ("melding",)
     actions = ["compare_taakopdracht_status"]
 
     def compare_taakopdracht_status(self, request, queryset):
-        for taak in queryset:
-            compare_and_update_status.delay(taak.id)
-        self.message_user(request, "Updating taakopdracht for taken!")
+        voltooid_taak_ids = queryset.filter(taakstatus__naam="voltooid").values_list(
+            "id", flat=True
+        )
+        for taak_id in voltooid_taak_ids:
+            compare_and_update_status.delay(taak_id)
+        self.message_user(
+            request, f"Updating taakopdracht for {len(voltooid_taak_ids)} taken(s)!"
+        )
 
     compare_taakopdracht_status.short_description = (
         "Compare taak and taakopdracht status"
