@@ -183,3 +183,7 @@ class MeldingenService:
         return self.do_request(
             f"{self._api_path}/gebruiker/", method="post", data=gebruiker
         )
+
+    def get_taakopdracht_data(self, taakopdracht_url):
+        response = self.do_request(taakopdracht_url)
+        return response
