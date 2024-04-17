@@ -32,6 +32,10 @@ export default class extends Controller {
         detail: { controller: this },
       })
     )
+
+    screen.orientation.addEventListener('change', () => {
+      window.location.reload()
+    })
   }
 
   addEventListeners() {
