@@ -281,7 +281,7 @@ CSP_SCRIPT_SRC = (
     "'unsafe-eval'",
     "unpkg.com",
     "cdn.jsdelivr.net",
-    "blob",
+    "blob:",
 )
 CSP_IMG_SRC = (
     "'self'",
