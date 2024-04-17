@@ -79,6 +79,20 @@ def informatie(request):
     )
 
 
+def navigeer(request, lat, long):
+    ua = request.META.get("HTTP_USER_AGENT")
+    device = DeviceDetector(ua).parse()
+    return render(
+        request,
+        "taken/navigeer.html",
+        {
+            "lat": lat,
+            "long": long,
+            "device_os": device.os_name().lower(),
+        },
+    )
+
+
 # def serve_protected_media(request):
 #     if request.user.is_authenticated or settings.ALLOW_UNAUTHORIZED_MEDIA_ACCESS:
 #         url = request.path.replace("media", "media-protected")

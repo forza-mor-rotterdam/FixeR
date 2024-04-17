@@ -78,28 +78,15 @@
                                     </div>
                                     {% if TEMPLATE_BASIS != "benc" %}
                                         <div class="textalign--right">
-                                            {% if device_os == "ios" %}
-                                                <small>
-                                                    <a class="link"
-                                                       href="https://maps.apple.com/?saddr=''&daddr={{ geometrie.1|replace_comma_by_dot }},{{ geometrie.0|replace_comma_by_dot }}&z=10&"
-                                                       target="_top"
-                                                       aria-label="Navigeer naar taak"
-                                                       data-detail-target="navigeerLink">
-                                                        {% include "icons/navigate.svg" %}
-                                                        Navigeren
-                                                    </a>
-                                                </small>
-                                            {% else %}
-                                                <a class="link"
-                                                   data-action="detail#makeRoute"
-                                                   data-detail-lat-param="{{ geometrie.1|replace_comma_by_dot }}"
-                                                   data-detail-long-param="{{ geometrie.0|replace_comma_by_dot }}"
-                                                   target="_top"
-                                                   aria-label="Navigeer naar taak">
-                                                    {% include "icons/navigate.svg" %}
-                                                    Navigeren
-                                                </a>
-                                            {% endif %}
+                                            <a class="link link--navigate"
+                                               href="#"
+                                               data-modal-title-param="Navigeren"
+                                               data-modal-url-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}"
+                                               data-modal-id-param="navigeer"
+                                               data-action="modal#openModal">
+                                                {% include "icons/navigate.svg" %}
+                                                Navigeren
+                                            </a>
                                         </div>
                                     {% endif %}
                                 </div>

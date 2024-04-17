@@ -132,6 +132,14 @@ export default class MapController extends Controller {
     }
   }
 
+  onTwoFingerDrag(event) {
+    if (event.type === 'touchstart' && event.touches.length === 1) {
+      event.currentTarget.classList.add('swiping')
+    } else {
+      event.currentTarget.classList.remove('swiping')
+    }
+  }
+
   positionChangeEvent = (position) => {
     if (!this.markerMe) {
       this.markerMe = new L.Marker([position.coords.latitude, position.coords.longitude], {
@@ -161,9 +169,14 @@ export default class MapController extends Controller {
     checkbox.classList.toggle('active', isChecked)
   }
 
-  makeRoute = ({ params: { lat, long } }) => {
-    const routeUrl = `https://www.waze.com/ul?ll=${lat},${long}&navigate=yes`
-    window.open(routeUrl, '_blank')
+  makeRoute = (e) => {
+    e.preventDefault()
+    const event = new CustomEvent('openModalFromMap', {
+      bubbles: true,
+      cancelable: false,
+      detail: { e },
+    })
+    this.element.dispatchEvent(event)
   }
 
   clearMarkers = () => {
@@ -194,7 +207,7 @@ export default class MapController extends Controller {
         const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
 
         const anchorDetail = `<a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">Details</a>`
-        const anchorNavigeer = `<span class="link" data-action="click->kaart#makeRoute" data-kaart-lat-param="${lat}" data-kaart-long-param="${long}" target="_top" aria-label="Navigeer naar taak ${taakId}">Navigeren</span>`
+        const anchorNavigeer = `<a href="#" data-kaart-title-param="Navigeren" data-kaart-url-param="/navigeer/${lat}/${long}" data-kaart-id-param="navigeer" data-action="kaart#makeRoute">Navigeren</a>`
         const divDetailNavigeer = `<div class="display-flex gap">${anchorDetail} | ${anchorNavigeer}</div>`
 
         const popupContent = afbeelding
