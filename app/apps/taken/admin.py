@@ -33,7 +33,7 @@ class TaakAdmin(admin.ModelAdmin):
         for taak_id in voltooid_taak_ids:
             compare_and_update_status.delay(taak_id)
         self.message_user(
-            request, f"Updating taakopdracht for {len(voltooid_taak_ids)} taken(s)!"
+            request, f"Updating taakopdracht for {len(voltooid_taak_ids)} taken!"
         )
 
     compare_taakopdracht_status.short_description = (

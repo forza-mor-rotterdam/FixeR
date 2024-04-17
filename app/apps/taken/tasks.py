@@ -21,9 +21,11 @@ class BaseTaskWithRetry(celery.Task):
 @shared_task(bind=True, base=BaseTaskWithRetry)
 def compare_and_update_status(self, taak_id):
     taak = Taak.objects.get(id=taak_id)
-    taakopdracht_response = MeldingenService().get_taakopdracht_data(taak.taakopdracht)
-    if taakopdracht_response.status_code == 200:
-        taakopdracht = taakopdracht_response.json()
+    get_taakopdracht_response = MeldingenService().get_taakopdracht_data(
+        taak.taakopdracht
+    )
+    if get_taakopdracht_response.status_code == 200:
+        taakopdracht = get_taakopdracht_response.json()
 
         if taak.taakstatus.naam != taakopdracht.get("status").get("naam"):
             taakgebeurtenis = (
@@ -47,14 +49,28 @@ def compare_and_update_status(self, taak_id):
                 )
                 if taak_status_aanpassen_response.status_code != 200:
                     logger.error(
-                        f"incident_modal_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, taakopdracht_id={taakopdracht.get('id')}, update_data={update_data}"
+                        f"Celery compare and update status error, taak_status_aanpassen_response: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, taakopdracht_id={taakopdracht.get('id')}, update_data={update_data}"
                     )
+                    return {
+                        "taak.id": taak_id,
+                        "taakopdracht.id": taakopdracht.get("id"),
+                        "taak_status_aanpassen_response.error_code": taak_status_aanpassen_response.status_code,
+                    }
+
                 else:
                     logger.info(
-                        f"Taakopdracht in Mor-Core updated successfully for  FixeR taak_id: {taak_id} and MOR-Core taakopdracht_id: {taakopdracht.get('id')}."
+                        f"Taakopdracht in Mor-Core updated successfully for FixeR taak_id: {taak_id} and MOR-Core taakopdracht_id: {taakopdracht.get('id')}."
                     )
+                    return {
+                        "taak.id": taak_id,
+                        "taakopdracht.id": taakopdracht.get("id"),
+                    }
 
     else:
         logger.error(
-            f"No taakopdracht response: status_code={taakopdracht_response.status_code}, taak_id={taak_id}"
+            f"Celery compare and update status error, get_taakopdracht_response: status_code={get_taakopdracht_response.status_code}, taak_id={taak_id}"
         )
+        return {
+            "taak.id": taak_id,
+            "get_taakopdracht_response.error_code": get_taakopdracht_response.status_code,
+        }
