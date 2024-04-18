@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_modal_context.html" %}
 {% load humanize %}
 {% load webpack_static from webpack_loader %}
 {% load multiply previous next from list_tags %}
@@ -34,7 +34,7 @@
 {% endblock extra_head %}
 {% block pageheader %}
 {% endblock pageheader %}
-{% block body %}
+{% block before_modal_content %}
     <turbo-frame id="taak_basis">
     {% if not link_actief %}
         <p>
@@ -232,9 +232,11 @@
                         </div>
                         {% include "snippets/modal_images.html" %}
                     </div>
-                </div>
+                {% endwith %}
             {% endwith %}
-        {% endwith %}
-    {% endif %}
+        {% endif %}
+    {% endblock before_modal_content %}
+    {% block after_modal_content %}
+    </div>
     </turbo-frame>
-{% endblock body %}
+{% endblock after_modal_content %}
