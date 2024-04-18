@@ -1,24 +1,39 @@
 {% extends "base.html" %}
 {% load webpack_static from webpack_loader %}
 {% block title %}
-    Fout 500 - Er ging iets mis | FixeR
+    Fout 500 - Oeps er ging wat mis | FixeR
 {% endblock title %}
-{% block stylesheets %}
-    {{ block.super }}
-    <link rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-          integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
-          crossorigin="" />
-{% endblock stylesheets %}
 {% block javascripts %}
 {% endblock javascripts %}
+{% block body_class %}
+    no-js errorpage
+{% endblock body_class %}
 {% block body %}
-    <div>
-        <section class="section--seperated">
-            <div class="container__details">
-                <h1>Er ging iets mis!</h1>
-                <strong>500</strong>
+    <div class="container__details">
+        <div>
+            <h1 class="h3 block--black">Fout 500 - Oeps er ging wat mis</h1>
+            <p>Haal even diep adem, neem een bak koffie en probeer het straks nog een keer.</p>
+            <div class="no-js">
+                <p>Tot die tijd, hier een leuk quizje om te spelen over typisch Rotterdamse uitspraken. Wat betekent:</p>
+                <figure class="question">
+                    <q id="errorpageQuestion"></q>
+                </figure>
+                <div class="container__answers" id="errorpageContainerAnswers"></div>
             </div>
-        </section>
+            <div>
+                {% comment %} <a href="/taken">Naar overzicht</a> {% endcomment %}
+                <a class="link--whatsapp"
+                   id="errorPageWaLink"
+                   data-errorValue="FixeR - 500 - gebruiker: {{ request.user }}"
+                   href=""
+                   target="_blank">Whatsapp de melding door</a>
+            </div>
+        </div>
+        <div class="full-width">
+            {% comment %} <img src="/static/images/skyline.svg" alt="" /> {% endcomment %}
+            <span class="h1 block--black"></span>
+        </div>
     </div>
+    <canvas id="confetti"></canvas>
+    {% comment %} <script src="/static/script/errorpages.js"></script> {% endcomment %}
 {% endblock body %}

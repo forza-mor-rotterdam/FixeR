@@ -1,7 +1,10 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['question', 'containerAnswers']
+  static targets = ['question', 'containerAnswers', 'waLink']
+  static values = {
+    error: String,
+  }
   connect() {
     const questions = [
       {
@@ -14,21 +17,109 @@ export default class extends Controller {
         correct: 0,
       },
       {
-        question: 'What is the capital of United Kingdom?',
-        choices: ['London', 'Paris', 'Nairobi'],
-        correct: 0,
-      },
-      {
-        question: 'How many days are there in a week?',
-        choices: ['Five', 'Three', 'Seven'],
+        question: 'Bakkie Pleur',
+        choices: ['Iemand die van zijn bakfiets is gevallen', 'Slecht weer', 'Een kop koffie'],
         correct: 2,
       },
       {
-        question: 'What is the closest planet to the sun?',
-        choices: ['Earth', 'Mercury', 'Saturn'],
+        question: 'Een dooie met een dag verlof',
+        choices: ['Iemand die heel saai is', 'Iemand op zijn sterfbed', 'Iemand die heel lui is'],
+        correct: 0,
+      },
+      {
+        question: 'Je ken een hoop stront paars verve, maar ’t blijf een hoop stront',
+        choices: [
+          'Al draagt een aap een gouden ring, hij is en blijft een lelijk ding',
+          'Een heel traag proces binnen de overheid',
+          'Opruimen, maar het blijft toch een rotzooi',
+        ],
+        correct: 0,
+      },
+      {
+        question: 'Boterklokkie',
+        choices: [
+          'Klokvormige beker waar vroeger boter in zat',
+          'Een duur horloge',
+          'Iemand die precies om 5 uur uitklokt',
+        ],
+        correct: 1,
+      },
+      {
+        question: 'Hebbie in je nest gezeken?',
+        choices: [
+          'Iemand die vreemd is gegaan met een bekende',
+          'Iemand wie zijn haar heel slecht zit',
+          'Iemand die vroeg is opgestaan',
+        ],
+        correct: 2,
+      },
+      {
+        question: 'De reuzel loop m’n reet uit',
+        choices: [
+          'Iemand verkoopt onzin',
+          'Last hebben van diarree',
+          'Wat is het verschrikkelijk warm',
+        ],
+        correct: 2,
+      },
+      {
+        question: 'Hij heb een snee in z’n neus',
+        choices: ['Hij is dronken', 'Hij is onhandig', 'Hij is een klikspaan'],
+        correct: 0,
+      },
+      {
+        question: 'As tie doodgeschoten wordt is tie nog te beroerd om te vallen',
+        choices: [
+          'Iemand die extreem lui is',
+          'Iemand die kerngezond is',
+          'Iemand die arrogant is',
+        ],
+        correct: 0,
+      },
+      {
+        question: 'Hij staat zelf tegen de pui te pisse om een hond uit te sparen',
+        choices: ['Hij is extreem lui', 'Hij is extreem gierig', 'Hij is extreem ijverig'],
+        correct: 1,
+      },
+      {
+        question: 'Wat een bek heb die vent. En daar mottie nog mee vreten ook',
+        choices: ['Hij vloekt heel veel', 'Wat is hij lelijk', 'Hij heeft scheve tanden'],
+        correct: 1,
+      },
+      {
+        question: 'Opoe Herfst',
+        choices: ['De dood', 'Het jaargetijde', 'Een bemoeial'],
+        correct: 2,
+      },
+      {
+        question: 'Hard voor weinig, maar nooit chagrijnig',
+        choices: [
+          'Iemand die altijd positief is',
+          'Ik werk hard en verdien heel weinig, maar heb het toch naar mijn zin',
+          'Een marktkoopman',
+        ],
+        correct: 1,
+      },
+      {
+        question: 'Zeike en scheite',
+        choices: [
+          'Iemand die zeurt',
+          'Iemand die de politiek in gaat',
+          'Twee dingen tegelijk doen',
+        ],
+        correct: 2,
+      },
+      {
+        question: 'Hij heb ’m een end uit z’n broek hangen',
+        choices: [
+          'Iemand die dronken is',
+          'Iemand ie veel geld uitgeeft',
+          'Iemand die zijn partner slaat',
+        ],
         correct: 1,
       },
     ]
+
     const index = Math.floor(questions.length * Math.random())
     console.log('questions', index)
     this.questionTarget.textContent = questions[index].question
@@ -190,5 +281,24 @@ export default class extends Controller {
     }
 
     // eind confetti
+
+    let whatsapp_url = 'https://web.whatsapp.com/'
+    if (this.isMobile()) {
+      whatsapp_url = 'whatsapp://'
+    }
+
+    // timestamp
+    const now = new Date()
+    const dateTime = now.toLocaleString()
+    console.log(dateTime)
+
+    whatsapp_url += `send?text=${this.errorValue} - tijdstip (gebruiker): ${dateTime}`
+
+    this.waLinkTarget.href = whatsapp_url
+  }
+
+  isMobile() {
+    const regex = /Mobi|Android|iPhone|BlackBerry|IEMobile|Opera Mini/i
+    return regex.test(navigator.userAgent)
   }
 }
