@@ -238,6 +238,7 @@ REST_FRAMEWORK = dict(
     DEFAULT_AUTHENTICATION_CLASSES=(
         "rest_framework.authentication.TokenAuthentication",
     ),
+    EXCEPTION_HANDLER="utils.exception_handlers.api_exception_handler",
 )
 
 
