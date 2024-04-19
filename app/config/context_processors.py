@@ -18,14 +18,9 @@ def general_settings(context):
     if session_expiry_timestamp:
         session_expiry_timestamp += settings.SESSION_EXPIRE_SECONDS
 
-    template_basis = None
-    if (
-        hasattr(context, "user")
-        and hasattr(context.user, "profiel")
-        and hasattr(context.user.profiel, "context")
-        and hasattr(context.user.profiel.context, "template")
-    ):
-        template_basis = context.user.profiel.context.template
+    user = getattr(context, "user", None)
+
+    template_basis = getattr(user, "profiel.context.template", None) if user else None
 
     mercure_service = None
     subscriber_token = None
@@ -39,8 +34,8 @@ def general_settings(context):
 
     # Add logic to calculate the count of unwatched release notes
     unwatched_count = 0
-    if hasattr(context, "user") and context.user.is_authenticated:
-        unwatched_count = ReleaseNote.count_unwatched(context.user)
+    if user and getattr(user, "is_authenticated", False):
+        unwatched_count = ReleaseNote.count_unwatched(user)
 
     deploy_date_formatted = None
     if settings.DEPLOY_DATE:
