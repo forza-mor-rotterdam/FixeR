@@ -73,7 +73,7 @@ class TaakLinksSerializer(serializers.Serializer):
 
 
 class TaakSerializer(serializers.ModelSerializer):
-    _links = TaakLinksSerializer(source="*")
+    _links = TaakLinksSerializer(source="*", read_only=True)
     melding = serializers.URLField()
     taaktype = serializers.HyperlinkedRelatedField(
         view_name="taaktype-detail",
