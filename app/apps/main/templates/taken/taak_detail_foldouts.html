@@ -230,7 +230,20 @@
                 </h2>
             </summary>
             <h3 class="h5">Nummer</h3>
-            <p>{{ melding.signalen_voor_melding.0.bron_signaal_id }}</p>
+            <p class="no-margin">{{ melding.signalen_voor_melding.0.bron_signaal_id }}</p>
+            <small>
+                {% if melding.signalen_voor_melding|length > 1 %}
+                    <strong>(Bestaand uit de samengevoegde meldingen:</strong>
+                    <br>
+                    {% for signaal in melding.signalen_voor_melding %}
+                        {% if signaal.bron_signaal_id %}
+                            {{ signaal.bron_signaal_id }}
+                            {% if not forloop.last %},{% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    )
+                {% endif %}
+            </small>
             {% comment %} <p>{{ melding.id }}</p> {% endcomment %}
             <h3 class="h5">Ingediend</h3>
             <p>{{ melding.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}</p>
