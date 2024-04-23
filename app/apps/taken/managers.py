@@ -21,10 +21,23 @@ class TaakManager(models.Manager):
         from apps.taken.models import Taakgebeurtenis, Taakstatus
 
         with transaction.atomic():
-            meldingalias, meldingalias_aangemaakt = MeldingAlias.objects.get_or_create(
+            meldingalias = MeldingAlias.objects.filter(
                 bron_url=serializer.validated_data.get("melding")
-            )
-            serializer.validated_data["melding"] = meldingalias
+            ).first()
+            if not meldingalias:
+                meldingalias = MeldingAlias.objects.create(
+                    bron_url=serializer.validated_data.get("melding")
+                )
+            try:
+                locked_meldingalias = (
+                    MeldingAlias.objects.using(db)
+                    .select_for_update(nowait=True)
+                    .get(bron_url=serializer.validated_data.get("melding"))
+                )
+            except OperationalError:
+                raise TaakManager.TaakInGebruik("De melding alias is in gebruik")
+
+            serializer.validated_data["melding"] = locked_meldingalias
             gebruiker = serializer.validated_data.pop("gebruiker", None)
             taak = serializer.save()
 
@@ -38,6 +51,7 @@ class TaakManager(models.Manager):
             )
             taak.taakstatus = taakstatus
             taak.save()
+            locked_meldingalias.save()
             transaction.on_commit(
                 lambda: aangemaakt.send_robust(
                     sender=self.__class__,
