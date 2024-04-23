@@ -126,6 +126,10 @@ module.exports = (env, argv) => {
           to: 'icons/[name][ext]',
         },
         {
+          from: './assets/script/*.js',
+          to: 'script/[name][ext]',
+        },
+        {
           from: './assets/manifest.json',
           to: '[name][ext]',
         },

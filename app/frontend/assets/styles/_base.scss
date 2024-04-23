@@ -377,6 +377,16 @@ dl {
     }
 }
 
+.dl--horizontal {
+    dt,
+    dd {
+        display: inline;
+    }
+    dt {
+        font-weight: 700;
+    }
+}
+
 // SECTIONS
 section {
     &.section--seperated {
@@ -408,6 +418,13 @@ h1 + .section--seperated {
 
     &--bottom {
         bottom: 0;
+    }
+}
+
+// ERRORPAGES
+body.no-js {
+    .no-js {
+        display: none;
     }
 }
 
@@ -483,6 +500,10 @@ h1 + .section--seperated {
 
 .no-margin-bottom {
     margin-bottom: 0 !important;
+}
+
+.margin-bottom {
+    margin-bottom: 1em !important;
 }
 
 .margin-vertical {
