@@ -80,17 +80,30 @@ class TaakSerializer(serializers.ModelSerializer):
         lookup_field="uuid",
         queryset=Taaktype.objects.all(),
     )
+    taakstatus = TaakstatusSerializer(read_only=True)
     gebruiker = serializers.CharField(required=False, allow_null=True)
 
     class Meta:
         model = Taak
         fields = (
             "_links",
+            "id",
+            "uuid",
+            "taaktype",
             "titel",
             "bericht",
             "additionele_informatie",
-            "taaktype",
+            "taakstatus",
+            "resolutie",
             "melding",
-            "taakopdracht",
             "gebruiker",
+            "taakopdracht",
+        )
+        read_only_fields = (
+            "_links",
+            "id",
+            "uuid",
+            "taakstatus",
+            "resolutie",
+            "melding",
         )
