@@ -21,7 +21,7 @@
                 <div class="container__answers" id="errorpageContainerAnswers"></div>
             </div>
             <div>
-                {% comment %} <a href="/taken">Naar overzicht</a> {% endcomment %}
+                <a href="/taken">Naar overzicht</a>
                 <a class="link--whatsapp"
                    id="errorPageWaLink"
                    data-errorValue="FixeR - 404 - gebruiker: {{ request.user }}"
@@ -30,10 +30,10 @@
             </div>
         </div>
         <div class="full-width">
-            {% comment %} <img src="/static/images/skyline.svg" alt="" /> {% endcomment %}
+            <img src="/static/images/skyline.svg" alt="" />
             <span class="h1 block--black"></span>
         </div>
     </div>
     <canvas id="confetti"></canvas>
-    {% comment %} <script src="/static/script/errorpages.js"></script> {% endcomment %}
+    <script src="/static/script/errorpages.js"></script>
 {% endblock body %}
