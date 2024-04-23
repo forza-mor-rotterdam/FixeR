@@ -236,7 +236,13 @@
                     <strong>Bestaand uit de samengevoegde meldingen:</strong>
                     <br>
                     {% for signaal in melding.signalen_voor_melding %}
-                        {# djlint:off #}{% if signaal.bron_signaal_id %}{{ signaal.bron_signaal_id }}{% if not forloop.last %},{% endif %}{% endif %}{# djlint:on #}
+                        {% if signaal.bron_signaal_id %}
+                            {% if not forloop.last %}
+                                {{ signaal.bron_signaal_id }},
+                            {% else %}
+                                {{ signaal.bron_signaal_id }}
+                            {% endif %}
+                        {% endif %}
                     {% endfor %}
                 {% endif %}
             </small>
