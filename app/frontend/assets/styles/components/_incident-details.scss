@@ -2,7 +2,7 @@
     max-width: map-get($container-max-widths, md);
     margin: 0 auto;
 
-    .link:not(.link--phone) {
+    .link:not(.link--phone):not(.link--email) {
         svg {
             width: 24px;
             height: 24px;
@@ -151,16 +151,6 @@
                     margin-right: 0.5rem;
                     vertical-align: text-top;
                 }
-            }
-        }
-
-        .link--phone {
-            line-height: 2rem;
-
-            svg {
-                position: absolute;
-                top: 6px;
-                left: -27px;
             }
         }
 
@@ -430,5 +420,41 @@
     .icon--whatsapp {
         width: 26px;
         height: 26px;
+    }
+}
+
+.details--melder {
+    > div {
+        padding-bottom: 1em;
+        border-bottom: 1px solid $gray-tint04;
+    }
+    p {
+        margin-bottom: 0;
+
+        &:first-of-type {
+            margin-top: 1em;
+        }
+
+        small {
+            color: $magenta-tint01;
+            font-weight: 700;
+        }
+    }
+    .link--phone {
+        line-height: 2rem;
+
+        svg {
+            position: absolute;
+            top: 6px;
+            left: -23px;
+        }
+    }
+    .link--email {
+        svg {
+            position: absolute;
+            top: 8px;
+            left: -25px;
+            margin-right: 6px;
+        }
     }
 }

@@ -130,10 +130,12 @@
         }
 
         .link--phone {
-            line-height: 1.5rem;
+            line-height: 2rem;
 
             svg {
-                top: 0;
+                position: absolute;
+                top: 6px;
+                left: -27px;
             }
         }
 
