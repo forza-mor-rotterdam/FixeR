@@ -54,6 +54,40 @@ class TaakAdmin(admin.ModelAdmin):
         # "geometrie",
         # "taak_zoek_data",
     )
+    readonly_fields = (
+        "uuid",
+        "aangemaakt_op",
+        "aangepast_op",
+        "afgesloten_op",
+    )
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "uuid",
+                    "titel",
+                    "melding",
+                    "taaktype",
+                    "taakstatus",
+                    "resolutie",
+                    "bericht",
+                    "additionele_informatie",
+                    "taakopdracht",
+                )
+            },
+        ),
+        (
+            "Tijden",
+            {
+                "fields": (
+                    "aangemaakt_op",
+                    "aangepast_op",
+                    "afgesloten_op",
+                )
+            },
+        ),
+    )
     list_filter = (TaakTaakstatusNaamFilter, TaakTitelFilter)
     # list_editable = ("melding",)
     actions = ["compare_taakopdracht_status"]
