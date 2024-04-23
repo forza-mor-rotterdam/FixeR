@@ -230,7 +230,8 @@
                 </h2>
             </summary>
             <h3 class="h5">Nummer</h3>
-            <p>{{ melding.id }}</p>
+            <p>{{ melding.signalen_voor_melding.0.bron_signaal_id }}</p>
+            {% comment %} <p>{{ melding.id }}</p> {% endcomment %}
             <h3 class="h5">Ingediend</h3>
             <p>{{ melding.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}</p>
             {% if melding.meta.aannemer %}
