@@ -1,7 +1,11 @@
+import logging
+
 # my_project.error_handling.py
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
+
+logger = logging.getLogger(__name__)
 
 
 def api_exception_handler(exc, context):
@@ -11,6 +15,7 @@ def api_exception_handler(exc, context):
     custom_handler = handlers.get(
         exception_class, ["Er ging iets mis", status.HTTP_500_INTERNAL_SERVER_ERROR]
     )
+    logger.error(exc)
 
     response = exception_handler(exc, context)
 
