@@ -57,6 +57,13 @@ from rest_framework.reverse import reverse as drf_reverse
 logger = logging.getLogger(__name__)
 
 
+def http_403(request):
+    return render(
+        request,
+        "403.html",
+    )
+
+
 def http_404(request):
     return render(
         request,

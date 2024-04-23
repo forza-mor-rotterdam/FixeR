@@ -1,4 +1,6 @@
-.errorpage {
+.errorpage,
+.errorpage .page__detail,
+.errorpage turbo-frame {
     height: 100%;
     main {
         padding-bottom: 0;
