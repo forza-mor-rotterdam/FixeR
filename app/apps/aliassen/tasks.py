@@ -104,7 +104,11 @@ def task_vind_meldingalias_duplicaten(self):
     deleted_melding_alias_ids = [
         str(id) for id in list(melding_alias_to_be_deleted.values_list("id", flat=True))
     ]
-    melding_alias_deleted = melding_alias_to_be_deleted.delete()
+    logger.info("deleted_melding_alias_ids")
+    logger.info(deleted_melding_alias_ids)
+    melding_alias_deleted = MeldingAlias.objects.filter(
+        id__in=deleted_melding_alias_ids
+    ).delete()
     logger.info("melding_alias_deleted")
     logger.info(melding_alias_deleted)
 
