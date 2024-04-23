@@ -314,7 +314,7 @@
                     Melder
                 </h2>
             </summary>
-            {% if melding.signalen_voor_melding|length > 1 %}
+            {% if melding.signalen_voor_melding|length > 0 %}
                 {% for signaal in melding.signalen_voor_melding %}
                     <div class="margin-bottom">
                         {% if signaal.melder.naam %}
@@ -354,6 +354,10 @@
                         {% endif %}
                     </div>
                 {% endfor %}
+            {% else %}
+                <p>
+                    <small>Geen gegevens bekend</small>
+                </p>
             {% endif %}
         </details>
         <details>
