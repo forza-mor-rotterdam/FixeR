@@ -94,3 +94,4 @@ class TaakSerializer(serializers.ModelSerializer):
             "taakopdracht",
             "gebruiker",
         )
+        read_only_fields = ("_links",)
