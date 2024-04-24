@@ -118,6 +118,8 @@ for (let i = 0; i < questions[index].choices.length; i++) {
     if (!rightAnswerGiven) {
       if (i === questions[index].correct) {
         rightAnswerGiven = true
+        this.classList.add('right-answer')
+        this.parentNode.classList.add('right-answer-given')
         confettiLoop()
       } else {
         this.classList.add('wrong-answer')
