@@ -168,6 +168,7 @@ CELERY_BROKER_URL = "redis://redis:6379/0"
 BROKER_URL = CELERY_BROKER_URL
 CELERY_TASK_TRACK_STARTED = True
 CELERY_RESULT_BACKEND = "django-db"
+CELERY_RESULT_EXTENDED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERYBEAT_SCHEDULE = {
     "queue_every_five_mins": {
@@ -413,7 +414,7 @@ LOGGING = {
         },
         "celery": {
             "handlers": ["console", "file"],
-            "level": "WARNING",
+            "level": "INFO",
         },
     },
 }
