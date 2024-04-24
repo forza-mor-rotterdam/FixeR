@@ -48,6 +48,7 @@ export default class extends Controller {
   }
 
   initialize() {
+    document.documentElement.scrollTop = 0
     self = this
     let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', {
       bubbles: true,
