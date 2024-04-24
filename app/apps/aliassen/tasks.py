@@ -66,7 +66,7 @@ def task_update_melding_alias_data(self, melding_alias_id):
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
-def task_vind_meldingalias_duplicaten(self):
+def task_vind_en_fix_meldingalias_duplicaten(self):
     from apps.aliassen.models import MeldingAlias
     from apps.taken.models import Taak
     from django.db.models import Count
@@ -110,4 +110,19 @@ def task_vind_meldingalias_duplicaten(self):
     logger.info("melding_alias_deleted")
     logger.info(melding_alias_deleted)
 
-    return f"Dubbele bron_urls={', '.join(urls)}, verwijderde MeldingAlias ids={', '.join(deleted_melding_alias_ids)}"
+    return f"Dubbele MeldingAlias: aantal={len(urls)}, bron_urls={', '.join(urls)}, verwijderde MeldingAlias ids={', '.join(deleted_melding_alias_ids)}"
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def task_vind_meldingalias_duplicaten(self):
+    from apps.aliassen.models import MeldingAlias
+    from django.db.models import Count
+
+    mas = (
+        MeldingAlias.objects.values("bron_url")
+        .annotate(Count("id"))
+        .order_by()
+        .filter(id__count__gt=1)
+    )
+    urls = [ms.get("bron_url") for ms in mas]
+    return f"Dubbele MeldingAlias: aantal={len(urls)}, bron_urls={', '.join(urls)}"
