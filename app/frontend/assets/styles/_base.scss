@@ -226,6 +226,11 @@ a,
                 fill: $gray-tint11;
             }
         }
+
+        &:focus,
+        &:hover {
+            outline: none !important;
+        }
     }
     &.no--link {
         text-decoration: none;
