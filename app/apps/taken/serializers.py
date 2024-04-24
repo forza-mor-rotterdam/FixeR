@@ -103,7 +103,5 @@ class TaakSerializer(serializers.ModelSerializer):
             "_links",
             "id",
             "uuid",
-            "taakstatus",
-            "resolutie",
             "melding",
         )
