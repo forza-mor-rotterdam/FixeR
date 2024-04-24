@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class MeldingAlias(BasisModel):
-    bron_url = models.CharField(max_length=500)
+    bron_url = models.CharField(max_length=500, unique=True)
     response_json = models.JSONField(
         default=dict,
         blank=True,
