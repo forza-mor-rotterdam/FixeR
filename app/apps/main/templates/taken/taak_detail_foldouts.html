@@ -232,7 +232,6 @@
                 </h2>
             </summary>
             <h3 class="h5">MeldR-nummer</h3>
-            <p class="visually-hidden">{{ melding.signalen_voor_melding.0.bron_signaal_id }}</p>
             <p class="no-margin">
                 {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
                     {{ melding.signalen_voor_melding.0.bron_signaal_id }}
@@ -255,7 +254,6 @@
                     {% endfor %}
                 {% endif %}
             </small>
-            {% comment %} <p>{{ melding.id }}</p> {% endcomment %}
             <h3 class="h5">Ingediend</h3>
             <p>{{ melding.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}</p>
             {% if melding.meta.aannemer %}
