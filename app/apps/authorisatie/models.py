@@ -168,11 +168,15 @@ class ReleaseNoteVerwijderenPermissie(BasisPermissie):
 
 
 # Homepage
-
-
 class HomePageBekijkenPermissie(BasisPermissie):
     naam = "Homepage bekijken"
     codenaam = "homepage_bekijken"
+
+
+# Melder info bekijken
+class MelderGegevensBekijkenPermissie(BasisPermissie):
+    naam = "Melder gegevens bekijken"
+    codenaam = "melder_gegevens_bekijken"
 
 
 gebruikersgroep_permissies = (
@@ -209,6 +213,7 @@ gebruikersgroep_permissies = (
     ReleaseNoteAanpassenPermissie,
     ReleaseNoteVerwijderenPermissie,
     HomePageBekijkenPermissie,
+    MelderGegevensBekijkenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [

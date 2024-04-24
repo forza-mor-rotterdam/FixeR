@@ -306,6 +306,61 @@
                 {% endif %}
             </p>
         </details>
+        {% if perms.authorisatie.melder_gegevens_bekijken %}
+            <details class="details--melder">
+                <summary>
+                    <h2>
+                        {% include "icons/person.svg" with width="23" height="26" %}
+                        Melder
+                    </h2>
+                </summary>
+                {% if melding.signalen_voor_melding|length > 0 %}
+                    {% for signaal in melding.signalen_voor_melding %}
+                        <div class="margin-bottom">
+                            {% if signaal.melder.naam %}
+                                <p>{{ signaal.melder.naam }}</p>
+                            {% else %}
+                                <p>
+                                    <small>Geen naam opgegeven</small>
+                                </p>
+                            {% endif %}
+                            {% if signaal.melder.telefoon %}
+                                <p>
+                                    <a href="tel:{{ signaal.melder.telefoon }}"
+                                       target="_blank"
+                                       class="link link--phone">
+                                        {% include "icons/phone.svg" %}
+                                        {{ signaal.melder.telefoon }}
+                                    </a>
+                                </p>
+                            {% else %}
+                                <p>
+                                    <small>Geen telefoonnummer opgegeven</small>
+                                </p>
+                            {% endif %}
+                            {% if signaal.melder.email %}
+                                <p>
+                                    <a href="mailto:{{ signaal.melder.email }}"
+                                       target="_blank"
+                                       class="link link--email">
+                                        {% include "icons/email.svg" with width="20" height="16" %}
+                                        {{ signaal.melder.email }}
+                                    </a>
+                                </p>
+                            {% else %}
+                                <p>
+                                    <small>Geen e-mailadres opgegeven</small>
+                                </p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>
+                        <small>Geen gegevens bekend</small>
+                    </p>
+                {% endif %}
+            </details>
+        {% endif %}
         <details>
             <summary>
                 <h2>
