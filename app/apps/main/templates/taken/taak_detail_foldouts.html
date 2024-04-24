@@ -232,7 +232,13 @@
                 </h2>
             </summary>
             <h3 class="h5">MeldR-nummer</h3>
-            <p class="no-margin">{{ melding.signalen_voor_melding.0.bron_signaal_id }}</p>
+            <p class="no-margin">
+                {% if melding.signalen_voor_melding.0.bron_signaal_id != "None" %}
+                    {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+                {% else %}
+                    Onbekend
+                {% endif %}
+            </p>
             <small>
                 {% if melding.signalen_voor_melding|length > 1 %}
                     <strong>Bestaand uit de samengevoegde meldingen:</strong>
