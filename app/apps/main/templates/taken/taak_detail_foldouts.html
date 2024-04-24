@@ -326,13 +326,13 @@
                                     <small>Geen naam opgegeven</small>
                                 </p>
                             {% endif %}
-                            {% if signaal.melder.telefoon %}
+                            {% if signaal.melder.telefoonnummer %}
                                 <p>
-                                    <a href="tel:{{ signaal.melder.telefoon }}"
+                                    <a href="tel:{{ signaal.melder.telefoonnummer }}"
                                        target="_blank"
                                        class="link link--phone">
                                         {% include "icons/phone.svg" %}
-                                        {{ signaal.melder.telefoon }}
+                                        {{ signaal.melder.telefoonnummer }}
                                     </a>
                                 </p>
                             {% else %}
