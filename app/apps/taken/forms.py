@@ -109,6 +109,16 @@ class TaaktypeVoorbeeldsituatieFormWel(TaaktypeVoorbeeldsituatieFormNiet):
 
 
 class TaaktypeAanpassenForm(forms.ModelForm):
+    toelichting = forms.CharField(
+        label="Omschrijving",
+        widget=forms.Textarea(
+            attrs={
+                "data-testid": "toelichting",
+                "rows": "4",
+            }
+        ),
+        required=True,
+    )
     volgende_taaktypes = forms.ModelMultipleChoiceField(
         widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
         queryset=Taaktype.objects.filter(actief=True),
@@ -124,7 +134,7 @@ class TaaktypeAanpassenForm(forms.ModelForm):
     taaktypemiddelen = forms.ModelMultipleChoiceField(
         widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
         queryset=TaaktypeMiddel.objects.all(),
-        label="Materieel",
+        label="Welk materieel is nodig om de taak af te handelen?",
         required=False,
     )
     gerelateerde_onderwerpen = forms.MultipleChoiceField(
@@ -177,6 +187,7 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         model = Taaktype
         fields = (
             "omschrijving",
+            "toelichting",
             "volgende_taaktypes",
             "afdelingen",
             "taaktypemiddelen",

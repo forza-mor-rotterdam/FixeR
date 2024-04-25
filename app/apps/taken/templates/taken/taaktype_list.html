@@ -82,37 +82,8 @@
                                aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
                         </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for object in object_list %}
-                        <tr data-row-search-target="row">
-                            <td data-row-search-target="searchable">{{ object.omschrijving }}</td>
-                            <td data-row-search-target="searchable">
-                                {% if object.volgende_taaktypes.all %}
-                                    {% for taaktype in object.volgende_taaktypes.all %}
-                                        {{ taaktype.omschrijving }}
-                                        {% if not forloop.last %},{% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td data-row-search-target="searchable">
-                                {% if object.actief %}
-                                    {% include "icons/checkmark.svg" %}
-                                {% else %}
-                                    {% include "icons/close.svg" %}
-                                {% endif %}
-                            </td>
-                            <td data-row-search-target="searchable">{{ object.contexten_voor_taaktypes.all|length }}</td>
-                            <td>
-                                <a href="{% url 'taaktype_aanpassen' object.pk %}"
-                                   aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 {% endblock body %}

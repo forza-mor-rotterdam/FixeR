@@ -305,6 +305,9 @@ CSP_IMG_SRC = (
     "cdn.jsdelivr.net",
     "ows.gis.rotterdam.nl",
     "www.gis.rotterdam.nl",
+    # TODO remove picsum.photos
+    "picsum.photos",
+    "fastly.picsum.photos",
 )
 CSP_STYLE_SRC = (
     "'self'",
