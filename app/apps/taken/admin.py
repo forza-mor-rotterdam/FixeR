@@ -1,3 +1,9 @@
+from apps.taken.admin_filters import (
+    AfgeslotenOpFilter,
+    ResolutieFilter,
+    TaakstatusFilter,
+    TitelFilter,
+)
 from apps.taken.models import (
     Taak,
     TaakDeellink,
@@ -7,37 +13,6 @@ from apps.taken.models import (
 )
 from apps.taken.tasks import compare_and_update_status
 from django.contrib import admin
-from django.utils.translation import gettext_lazy as _
-
-
-class TaakTaakstatusNaamFilter(admin.SimpleListFilter):
-    title = _("Taakstatus naam")
-    parameter_name = "taakstatus_naam"
-
-    def lookups(self, request, model_admin):
-        status_names = Taak.objects.values_list(
-            "taakstatus__naam", flat=True
-        ).distinct()
-        return ((status_name, status_name) for status_name in set(status_names))
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(taakstatus__naam=self.value())
-        return queryset
-
-
-class TaakTitelFilter(admin.SimpleListFilter):
-    title = _("Titel")
-    parameter_name = "titel"
-
-    def lookups(self, request, model_admin):
-        titles = Taak.objects.values_list("titel", flat=True).distinct()
-        return ((title, title) for title in set(titles))
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(titel=self.value())
-        return queryset
 
 
 class TaakAdmin(admin.ModelAdmin):
@@ -54,7 +29,46 @@ class TaakAdmin(admin.ModelAdmin):
         # "geometrie",
         # "taak_zoek_data",
     )
-    list_filter = (TaakTaakstatusNaamFilter, TaakTitelFilter)
+    readonly_fields = (
+        "uuid",
+        "aangemaakt_op",
+        "aangepast_op",
+        "afgesloten_op",
+    )
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "uuid",
+                    "titel",
+                    "melding",
+                    "taaktype",
+                    "taakstatus",
+                    "resolutie",
+                    "bericht",
+                    "additionele_informatie",
+                    "taakopdracht",
+                )
+            },
+        ),
+        (
+            "Tijden",
+            {
+                "fields": (
+                    "aangemaakt_op",
+                    "aangepast_op",
+                    "afgesloten_op",
+                )
+            },
+        ),
+    )
+    list_filter = (
+        TaakstatusFilter,
+        ResolutieFilter,
+        AfgeslotenOpFilter,
+        TitelFilter,
+    )
     # list_editable = ("melding",)
     actions = ["compare_taakopdracht_status"]
 

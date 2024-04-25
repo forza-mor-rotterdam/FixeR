@@ -5,6 +5,7 @@
 {% load json_encode from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
+{% load webpack_static from webpack_loader %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
 {% if TEMPLATE_BASIS != "benc" %}
     <h1 class="h3">
@@ -42,25 +43,18 @@
     </div>
     <div class="textalign--right">
         {% if TEMPLATE_BASIS != "benc" %}
-            {% if device_os == "ios" %}
+            {% if geometrie %}
                 <a class="link link--navigate"
-                   href="https://maps.apple.com/?saddr=''&daddr={{ geometrie.1|replace_comma_by_dot }},{{ geometrie.0|replace_comma_by_dot }}&z=10&"
-                   target="_top"
-                   aria-label="Navigeer naar taak"
-                   data-detail-target="navigeerLink">{% include "icons/navigate.svg" %}</a>
-            {% else %}
-                <a class="link link--navigate"
-                   data-action="detail#makeRoute"
-                   data-detail-lat-param="{{ geometrie.1|replace_comma_by_dot }}"
-                   data-detail-long-param="{{ geometrie.0|replace_comma_by_dot }}"
-                   target="_top"
-                   aria-label="Navigeer naar taak">{% include "icons/navigate.svg" %}</a>
+                   href="#"
+                   data-modal-title-param="Navigeren"
+                   data-modal-url-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}"
+                   data-modal-id-param="navigeer"
+                   data-action="modal#openModal">{% include "icons/navigate.svg" %}</a>
             {% endif %}
         {% endif %}
         {% if perms.authorisatie.taak_delen and not taak.afgesloten_op %}
             <a class="link--whatsapp"
                href="{% url 'taak_delen' taak.id %}"
-               data-action="share/whatsapp/share"
                target="_blank">
                 <svg class="icon--whatsapp"
                      width="36"

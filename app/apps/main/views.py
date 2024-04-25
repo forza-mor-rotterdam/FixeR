@@ -57,6 +57,13 @@ from rest_framework.reverse import reverse as drf_reverse
 logger = logging.getLogger(__name__)
 
 
+def http_403(request):
+    return render(
+        request,
+        "403.html",
+    )
+
+
 def http_404(request):
     return render(
         request,
@@ -76,6 +83,20 @@ def informatie(request):
         request,
         "auth/informatie.html",
         {},
+    )
+
+
+def navigeer(request, lat, long):
+    ua = request.META.get("HTTP_USER_AGENT")
+    device = DeviceDetector(ua).parse()
+    return render(
+        request,
+        "taken/navigeer.html",
+        {
+            "lat": lat,
+            "long": long,
+            "device_os": device.os_name().lower(),
+        },
     )
 
 

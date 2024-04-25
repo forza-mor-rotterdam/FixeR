@@ -239,6 +239,7 @@ REST_FRAMEWORK = dict(
     DEFAULT_AUTHENTICATION_CLASSES=(
         "rest_framework.authentication.TokenAuthentication",
     ),
+    EXCEPTION_HANDLER="utils.exception_handlers.api_exception_handler",
 )
 
 
@@ -282,6 +283,7 @@ CSP_SCRIPT_SRC = (
     "'unsafe-eval'",
     "unpkg.com",
     "cdn.jsdelivr.net",
+    "blob:",
 )
 CSP_IMG_SRC = (
     "'self'",

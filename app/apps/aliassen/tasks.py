@@ -45,6 +45,7 @@ def task_update_melding_alias_data_for_all_meldingen(self, cache_timeout=0):
         aangepast_op__lte=datetime_to_update
     )
     for melding_alias in melding_alias_items_for_update:
+        melding_alias.valideer_bron_url()
         melding_alias.save()
         melding_alias.update_zoek_data()
 
@@ -57,6 +58,7 @@ def task_update_melding_alias_data(self, melding_alias_id):
 
     melding_alias = MeldingAlias.objects.filter(pk=melding_alias_id).first()
     if melding_alias:
+        melding_alias.valideer_bron_url()
         melding_alias.save()
         melding_alias.update_zoek_data()
 

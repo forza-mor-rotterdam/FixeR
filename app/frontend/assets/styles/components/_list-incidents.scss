@@ -166,7 +166,7 @@
         user-select: none;
         border-bottom: 1px solid $gray-tint04;
 
-        &.selected a {
+        &.selected a:not(.link) {
             background-color: $gray-tint02;
         }
         .show-modal & {

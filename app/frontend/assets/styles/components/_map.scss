@@ -1,6 +1,7 @@
 .showMap {
     .container__flex {
-        display: none;
+        width: 0;
+        overflow: hidden;
     }
 }
 .container__map {

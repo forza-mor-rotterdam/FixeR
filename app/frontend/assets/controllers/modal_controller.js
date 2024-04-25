@@ -11,6 +11,8 @@ export default class extends Controller {
         this.closeModal()
       }
     })
+
+    addEventListener('openModalFromMap', (e) => this.openModal(e))
   }
   closeModalElementTargetConnected(element) {
     let self = this
@@ -23,32 +25,47 @@ export default class extends Controller {
   }
   closeModal() {
     let self = this
-    const modal = self.element.querySelector('.modal')
+    const modalList = self.element.querySelectorAll('.modal')
     const modalBackdrop = self.element.querySelector('.modal-backdrop')
     if (self.hasTurboFrameTarget) {
       self.turboFrameTarget.innerHTML = ''
     }
-    modal.classList.remove('show')
+
+    modalList.forEach((modal) => {
+      modal.classList.remove('show')
+    })
     modalBackdrop.classList.remove('show')
-    document.body.classList.remove('show-modal', 'show-modal--transparent')
+    document.body.classList.remove('show-modal', 'show-modal--transparent', 'show-navigation')
   }
   openModal(event) {
+    event.preventDefault()
+    const params = event.params || event.detail.e.params
     let self = this
     if (self.hasTitleTarget) {
-      self.titleTarget.innerHTML = event.params.title
+      self.titleTarget.innerHTML = params.title
     }
     if (self.hasSubTitleTarget) {
-      self.subTitleTarget.innerHTML = event.params.subTitle
+      if (params.subTitle) {
+        self.subTitleTarget.innerHTML = params.subTitle
+      } else {
+        self.subTitleTarget.style.display = 'none'
+      }
     }
     let modal = this.element.querySelector('.modal')
     if (self.hasTurboFrameTarget) {
-      self.turboFrameTarget.id = event.params.id
-      self.turboFrameTarget.src = event.params.url
+      self.turboFrameTarget.id = params.id
+      self.turboFrameTarget.src = params.url
       modal = self.turboFrameTarget.closest('.modal')
     }
     const modalBackdrop = modal.querySelector('.modal-backdrop')
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
-    document.body.classList.add('show-modal')
+    let classes = ''
+    if (event.params && event.params.type === 'navigation') {
+      classes = 'show-navigation'
+    } else {
+      classes = 'show-modal'
+    }
+    document.body.classList.add(classes)
   }
 }

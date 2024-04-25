@@ -20,6 +20,7 @@
                  data-message-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"></div>
             <button class="btn btn-togglemenu"
                     data-action="modal#openModal"
+                    data-modal-type-param="navigation"
                     aria-expanded="false"
                     aria-label="Open menu">
                 <svg fill="#404B4F"
@@ -48,8 +49,8 @@
         {% endif %}
     </div>
     {% if request.user.is_authenticated %}
-        <div class="modal">
-            <div class="modal-dialog modal-navigation">
+        <div class="modal modal-navigation">
+            <div class="modal-dialog">
                 <div class="modal-backdrop modal-exit"
                      data-action="click->modal#closeModal"></div>
                 <div class="modal-content">

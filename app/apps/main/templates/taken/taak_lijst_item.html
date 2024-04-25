@@ -67,12 +67,18 @@
                         {% endif %}
                     </div>
                     <div class="container__info">
-                        {% context_template "taak_lijst_item_titel.html" as title_template %}
-                        {% include title_template %}
+                        {% if taak.taak_zoek_data.straatnaam %}
+                            {% include "standaard/taak_lijst_item_titel.html" %}
+                        {% else %}
+                            {% include "benc/taak_lijst_item_titel.html" %}
+                        {% endif %}
                     </div>
                 </a>
-                {% context_template "taak_lijst_item_map.html" as map_template %}
-                {% include map_template %}
+                {% if taak.taak_zoek_data.straatnaam %}
+                    {% include "standaard/taak_lijst_item_map.html" %}
+                {% else %}
+                    {% include "benc/taak_lijst_item_map.html" %}
+                {% endif %}
             </div>
         </div>
     {% endblock before_modal_content %}
