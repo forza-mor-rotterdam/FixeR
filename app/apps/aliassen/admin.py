@@ -17,6 +17,7 @@ class MeldingAliasAdmin(admin.ModelAdmin):
         "geen_data",
     )
     actions = (action_update_melding_alias_data,)
+    search_fields = ("bron_url",)
 
     def geen_data(self, obj):
         return bool(not obj.response_json)

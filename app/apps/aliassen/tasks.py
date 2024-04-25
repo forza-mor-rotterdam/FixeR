@@ -61,3 +61,66 @@ def task_update_melding_alias_data(self, melding_alias_id):
         melding_alias.update_zoek_data()
 
     return f"MeldingAlias with id={melding_alias_id}, updated"
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def task_vind_en_fix_meldingalias_duplicaten(self):
+    from apps.aliassen.models import MeldingAlias
+    from apps.taken.models import Taak
+    from django.db.models import Count
+
+    mas = (
+        MeldingAlias.objects.values("bron_url")
+        .annotate(Count("id"))
+        .order_by()
+        .filter(id__count__gt=1)
+    )
+    urls = [ms.get("bron_url") for ms in mas]
+    logger.info("urls")
+    logger.info(urls)
+    for url in urls:
+        melding_alias = MeldingAlias.objects.filter(bron_url=url).first()
+        logger.info("melding_alias")
+        logger.info(melding_alias)
+        taken = [taak for taak in Taak.objects.filter(melding__bron_url=url)]
+        logger.info("taken")
+        logger.info(taken)
+        for taak in taken:
+            logger.info("taak")
+            logger.info(taak.melding.id)
+            taak.melding = melding_alias
+        Taak.objects.bulk_update(taken, fields=["melding"])
+
+    melding_alias_to_be_deleted = MeldingAlias.objects.annotate(
+        taken_count=Count("taken_voor_meldingalias")
+    ).filter(
+        taken_count=0,
+        bron_url__in=urls,
+    )
+    deleted_melding_alias_ids = [
+        str(id) for id in list(melding_alias_to_be_deleted.values_list("id", flat=True))
+    ]
+    logger.info("deleted_melding_alias_ids")
+    logger.info(deleted_melding_alias_ids)
+    melding_alias_deleted = MeldingAlias.objects.filter(
+        id__in=deleted_melding_alias_ids
+    ).delete()
+    logger.info("melding_alias_deleted")
+    logger.info(melding_alias_deleted)
+
+    return f"Dubbele MeldingAlias: aantal={len(urls)}, bron_urls={', '.join(urls)}, verwijderde MeldingAlias ids={', '.join(deleted_melding_alias_ids)}"
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def task_vind_meldingalias_duplicaten(self):
+    from apps.aliassen.models import MeldingAlias
+    from django.db.models import Count
+
+    mas = (
+        MeldingAlias.objects.values("bron_url")
+        .annotate(Count("id"))
+        .order_by()
+        .filter(id__count__gt=1)
+    )
+    urls = [ms.get("bron_url") for ms in mas]
+    return f"Dubbele MeldingAlias: aantal={len(urls)}, bron_urls={', '.join(urls)}"
