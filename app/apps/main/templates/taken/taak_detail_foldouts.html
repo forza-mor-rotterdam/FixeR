@@ -331,7 +331,7 @@
                                     <small>Geen naam opgegeven</small>
                                 </p>
                             {% endif %}
-                            {% if signaal.melder.telefoonnummer %}
+                            {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
                                 <p>
                                     <a href="tel:{{ signaal.melder.telefoonnummer }}"
                                        target="_blank"
