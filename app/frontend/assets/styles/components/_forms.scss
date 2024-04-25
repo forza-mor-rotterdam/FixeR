@@ -657,3 +657,29 @@ ul.list--form-radio-input {
         }
     }
 }
+
+fieldset.section {
+    margin-bottom: 2em;
+    legend {
+        display: block;
+        font-size: $h3-font-size;
+        font-weight: 700;
+        line-height: 2em;
+        width: 100%;
+        border-bottom: 1px solid $gray-tint04;
+        margin-bottom: 1em;
+    }
+}
+
+.container__form-rows {
+    &.cols2 {
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            columns: 2;
+
+            .form-row {
+                width: 100%;
+                break-inside: avoid-column;
+            }
+        }
+    }
+}
