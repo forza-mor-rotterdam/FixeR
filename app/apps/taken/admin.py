@@ -63,6 +63,9 @@ class TaakAdmin(admin.ModelAdmin):
             },
         ),
     )
+    search_fields = [
+        "id",
+    ]
     list_filter = (
         TaakstatusFilter,
         ResolutieFilter,
