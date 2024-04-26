@@ -45,7 +45,7 @@ class ZoekDataAantalFilter(admin.SimpleListFilter):
             value = "zoek_data_aantal__gte"
         return (
             queryset.annotate(zoek_data_aantal=Count("taken_voor_meldingalias"))
-            .order_by()
+            .order_by("zoek_data_aantal")
             .filter(**{value: 0})
         )
 
