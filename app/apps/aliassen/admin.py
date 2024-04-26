@@ -80,7 +80,7 @@ class MeldingAliasAdmin(admin.ModelAdmin):
     )
     actions = (action_update_melding_alias_data,)
     search_fields = ("bron_url",)
-    list_filter = (TakenAantalFilter, ResponseDataFilter)
+    list_filter = (ResponseDataFilter,)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
