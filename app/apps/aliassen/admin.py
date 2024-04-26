@@ -26,30 +26,30 @@ class TakenAantalFilter(admin.SimpleListFilter):
             value = "taken_aantal__gte"
         return (
             queryset.annotate(taken_aantal=Count("taken_voor_meldingalias"))
+            .order_by()
             .filter(**{value: 0})
-            .order_by("taken_aantal")
         )
 
 
-# class ZoekDataAantalFilter(admin.SimpleListFilter):
-#     title = "zoek data aantal"
-#     parameter_name = "taak_zoek_data"
+class ZoekDataAantalFilter(admin.SimpleListFilter):
+    title = "zoek data aantal"
+    parameter_name = "taak_zoek_data"
 
-#     def lookups(self, request, model_admin):
-#         return (
-#             ("zoek_data_aantal__lte", "Geen zoek data"),
-#             ("zoek_data_aantal__gt", "1 of meer zoek data"),
-#         )
+    def lookups(self, request, model_admin):
+        return (
+            ("zoek_data_aantal__lte", "Geen zoek data"),
+            ("zoek_data_aantal__gt", "1 of meer zoek data"),
+        )
 
-#     def queryset(self, request, queryset):
-#         value = self.value()
-#         if not value:
-#             value = "zoek_data_aantal__gte"
-#         return (
-#             queryset.annotate(zoek_data_aantal=Count("taken_voor_meldingalias"))
-#             .filter(**{value: 0})
-#             .order_by("zoek_data_aantal")
-#         )
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            value = "zoek_data_aantal__gte"
+        return (
+            queryset.annotate(zoek_data_aantal=Count("taken_voor_meldingalias"))
+            .order_by()
+            .filter(**{value: 0})
+        )
 
 
 class ResponseDataFilter(admin.SimpleListFilter):
@@ -80,7 +80,7 @@ class MeldingAliasAdmin(admin.ModelAdmin):
     )
     actions = (action_update_melding_alias_data,)
     search_fields = ("bron_url",)
-    list_filter = (ResponseDataFilter,)
+    list_filter = (ResponseDataFilter, TakenAantalFilter, ZoekDataAantalFilter)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
