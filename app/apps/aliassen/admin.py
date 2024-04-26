@@ -78,14 +78,14 @@ class MeldingAliasAdmin(admin.ModelAdmin):
     )
     actions = (action_update_melding_alias_data,)
     search_fields = ("bron_url",)
-    list_filter = (TakenAantalFilter, ResponseDataFilter)
+    # list_filter = (TakenAantalFilter, ResponseDataFilter)
 
-    # def get_queryset(self, request):
-    #     qs = super().get_queryset(request)
-    #     return qs.prefetch_related(
-    #         "taak_zoek_data",
-    #         "taken_voor_meldingalias",
-    #     )
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.prefetch_related(
+            "taak_zoek_data",
+            "taken_voor_meldingalias",
+        )
 
     def taken_aantal(self, obj):
         return str(obj.taken_voor_meldingalias.count())
