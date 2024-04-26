@@ -131,7 +131,11 @@ class TakenAantalFilter(admin.SimpleListFilter):
         value = self.value()
         if not value:
             value = "taken_aantal__gte"
-        return queryset.annotate(taken_aantal=Count("taak")).filter(**{value: 0})
+        return (
+            queryset.annotate(taken_aantal=Count("taak"))
+            .order_by()
+            .filter(**{value: 0})
+        )
 
 
 class TaakZoekDataAdmin(admin.ModelAdmin):
