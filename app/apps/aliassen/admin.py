@@ -29,25 +29,25 @@ class TakenAantalFilter(admin.SimpleListFilter):
         )
 
 
-class ZoekDataAantalFilter(admin.SimpleListFilter):
-    title = "zoek data aantal"
-    parameter_name = "taak_zoek_data"
+# class ZoekDataAantalFilter(admin.SimpleListFilter):
+#     title = "zoek data aantal"
+#     parameter_name = "taak_zoek_data"
 
-    def lookups(self, request, model_admin):
-        return (
-            ("zoek_data_aantal__lte", "Geen zoek data"),
-            ("zoek_data_aantal__gt", "1 of meer zoek data"),
-        )
+#     def lookups(self, request, model_admin):
+#         return (
+#             ("zoek_data_aantal__lte", "Geen zoek data"),
+#             ("zoek_data_aantal__gt", "1 of meer zoek data"),
+#         )
 
-    def queryset(self, request, queryset):
-        value = self.value()
-        if not value:
-            value = "zoek_data_aantal__gte"
-        return (
-            queryset.annotate(zoek_data_aantal=Count("taken_voor_meldingalias"))
-            .filter(**{value: 0})
-            .order_by("zoek_data_aantal")
-        )
+#     def queryset(self, request, queryset):
+#         value = self.value()
+#         if not value:
+#             value = "zoek_data_aantal__gte"
+#         return (
+#             queryset.annotate(zoek_data_aantal=Count("taken_voor_meldingalias"))
+#             .filter(**{value: 0})
+#             .order_by("zoek_data_aantal")
+#         )
 
 
 class ResponseDataFilter(admin.SimpleListFilter):
