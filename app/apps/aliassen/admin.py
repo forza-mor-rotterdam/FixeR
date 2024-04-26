@@ -43,9 +43,11 @@ class ZoekDataAantalFilter(admin.SimpleListFilter):
         value = self.value()
         if not value:
             value = "zoek_data_aantal__gte"
-        return queryset.annotate(
-            zoek_data_aantal=Count("taken_voor_meldingalias")
-        ).filter(**{value: 0})
+        return (
+            queryset.annotate(zoek_data_aantal=Count("taken_voor_meldingalias"))
+            .order_by()
+            .filter(**{value: 0})
+        )
 
 
 class ResponseDataFilter(admin.SimpleListFilter):
