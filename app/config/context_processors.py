@@ -20,8 +20,20 @@ def general_settings(context):
 
     user = getattr(context, "user", None)
 
-    template_basis = getattr(user, "profiel.context.template", None) if user else None
-
+    # template_basis = getattr(user, "profiel.context.template", None) if user else None
+    template_basis = None
+    if (
+        hasattr(context, "user")
+        and hasattr(context.user, "profiel")
+        and hasattr(context.user.profiel, "context")
+        and hasattr(context.user.profiel.context, "template")
+    ):
+        template_basis = context.user.profiel.context.template
+    print("--------user.profiel")
+    print(user.profiel)
+    print(user.profiel.context)
+    print(user.profiel.context.template)
+    print(template_basis)
     mercure_service = None
     subscriber_token = None
     try:

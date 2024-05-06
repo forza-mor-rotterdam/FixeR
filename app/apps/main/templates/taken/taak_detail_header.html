@@ -34,12 +34,14 @@
 <div class="container__flex">
     <div>
         <span>{{ taak.titel }}</span>
-        <br>
-        <span class="lighter">
-            <span data-detail-target="taakAfstand"
-                  data-latitude="{{ geometrie.1|replace_comma_by_dot }}"
-                  data-longitude="{{ geometrie.0|replace_comma_by_dot }}"></span> meter afstand
-        </span>
+        {% if TEMPLATE_BASIS != "benc" %}
+            <br>
+            <span class="lighter">
+                <span data-detail-target="taakAfstand"
+                      data-latitude="{{ geometrie.1|replace_comma_by_dot }}"
+                      data-longitude="{{ geometrie.0|replace_comma_by_dot }}"></span> meter afstand
+            </span>
+        {% endif %}
     </div>
     <div class="textalign--right">
         {% if TEMPLATE_BASIS != "benc" %}
