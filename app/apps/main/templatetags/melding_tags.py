@@ -18,6 +18,22 @@ def render_onderwerp(onderwerp_url):
 
 
 @register.simple_tag
+def get_taakgebeurtenissen(melding, taakopdracht_url):
+    return sorted(
+        [
+            meldinggebeurtenis.get("taakgebeurtenis")
+            for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
+            if meldinggebeurtenis.get("taakgebeurtenis")
+            and meldinggebeurtenis.get("taakgebeurtenis")
+            .get("_links")
+            .get("taakopdracht")
+            == taakopdracht_url
+        ],
+        key=lambda b: b.get("aangemaakt_op"),
+    )
+
+
+@register.simple_tag
 def get_bijlagen(melding):
     melding_bijlagen = [
         {
