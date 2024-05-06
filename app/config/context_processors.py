@@ -29,11 +29,6 @@ def general_settings(context):
         and hasattr(context.user.profiel.context, "template")
     ):
         template_basis = context.user.profiel.context.template
-    print("--------user.profiel")
-    print(user.profiel)
-    print(user.profiel.context)
-    print(user.profiel.context.template)
-    print(template_basis)
     mercure_service = None
     subscriber_token = None
     try:
