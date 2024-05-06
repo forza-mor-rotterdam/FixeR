@@ -5,7 +5,7 @@
 {% load replace_comma_by_dot vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
-{% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
+{% load get_gebruiker_object_middels_email from gebruikers_tags %}
 {% block title %}
     {% with melding=taak.melding.response_json %}
         {% if TEMPLATE_BASIS != "benc" %}
