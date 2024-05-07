@@ -176,6 +176,7 @@ export default class MapController extends Controller {
       cancelable: false,
       detail: { e },
     })
+    this.map.closePopup()
     this.element.dispatchEvent(event)
   }
 
