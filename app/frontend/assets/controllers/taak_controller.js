@@ -34,20 +34,6 @@ export default class extends Controller {
     }
   }
 
-  connect() {}
-
-  disconnect() {}
-
-  selectTaak(e) {
-    let self = this
-    self.element.dispatchEvent(
-      new CustomEvent('taakIsSelected', {
-        detail: { url: e.params.url, id: e.params.id },
-        bubbles: true,
-      })
-    )
-  }
-
   getNumberOfDays(date, days) {
     const date_incident = new Date(date)
     const dateTypes = ['Vandaag', 'Gisteren', 'Eergisteren', 'dagen']
@@ -120,21 +106,10 @@ export default class extends Controller {
     }
   }
 
-  showAlert(type) {
-    let self = this
-    const div = document.createElement('div')
-    div.classList.add('message')
-    if (type === 'handled') {
-      div.append('De melding is afgehandeld')
-    } else {
-      div.append('De melding is doorverwezen')
-    }
-    self.element.append(div)
-  }
-
   // Handle the start of gestures
   handleGestureStart(evt) {
     let self = this
+    this.element.classList.add('selected')
     evt.preventDefault()
     self.isMoving = false
     if (evt.touches && evt.touches.length > 1) {

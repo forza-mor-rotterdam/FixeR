@@ -76,7 +76,7 @@
                                                   data-longitude="{{ geometrie.0|replace_comma_by_dot }}"></span> meter afstand
                                         </span>
                                     </div>
-                                    {% if TEMPLATE_BASIS != "benc" %}
+                                    {% if taak.taak_zoek_data.locatie_type == "adres" %}
                                         {% if geometrie %}
                                             <div class="textalign--right">
                                                 <a class="link link--navigate"
@@ -149,7 +149,7 @@
                                     </svg>
                                     Locatie
                                 </h2>
-                                {% if TEMPLATE_BASIS != "benc" %}
+                                {% if taak.taak_zoek_data.locatie_type == "adres" %}
                                     <div class="container__details taak">
                                         <h3 class="h5">Ter hoogte van</h3>
                                         <p>{{ taak.adres }}</p>
