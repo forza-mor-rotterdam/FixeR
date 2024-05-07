@@ -22,6 +22,10 @@
                     {% if taak.spoed %}<span><span class="icon icon--warning">Spoed</span></span>{% endif %}
                 </h2>
             </summary>
+            {% if taak.id %}
+                <h3 class="h5">Taaknummer</h3>
+                <p>{{ taak.id }}</p>
+            {% endif %}
             {% if taak.titel %}
                 <h3 class="h5">Omschrijving</h3>
                 <p>{{ taak.titel }}</p>
