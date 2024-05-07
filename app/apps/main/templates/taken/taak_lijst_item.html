@@ -17,9 +17,9 @@
          data-geometrie="{% if taak.taak_zoek_data.geometrie %}{{ taak.taak_zoek_data.geometrie|json_encode }}{% else %}{% endif %}"
          {% if bijlagen %}data-afbeelding-url="{{ bijlagen.0.afbeelding_verkleind_relative_url|mor_core_protected_url }}"{% endif %}
          class="list-item"
-         {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}data-controller="taak modal"{% endif %}>
+         {% if taak.taak_zoek_data.locatie_type != "graf" and not taak.afgesloten_op %}data-controller="taak modal"{% endif %}>
         <div class="wrapper__swipe" data-taak-target="swipeContainer">
-            {% if TEMPLATE_BASIS != "benc" and not taak.afgesloten_op %}
+            {% if taak.taak_zoek_data.locatie_type != "graf" and not taak.afgesloten_op %}
                 <button class="container__actions handle--no-success"
                         data-id="{{ taak.id }}"
                         data-taak-target="buttonNietOpgelost"

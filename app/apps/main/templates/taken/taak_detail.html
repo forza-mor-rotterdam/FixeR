@@ -8,9 +8,7 @@
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
 {% block title %}
     {% with melding=taak.melding.response_json %}
-        {% if TEMPLATE_BASIS != "benc" %}
-            {{ taak.adres }}
-        {% else %}
+        {% if taak.taak_zoek_data.locatie_type == "graf" %}
             {% if taak.taak_zoek_data.grafnummer %}Graf {{ taak.taak_zoek_data.grafnummer }}{% endif %}
             {% if taak.taak_zoek_data.vak %}, Vak {{ taak.taak_zoek_data.vak }}{% endif %}
             {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices taak.taak_zoek_data.begraafplaats as signaal_begraafplaats_naam %}
@@ -19,6 +17,8 @@
             {% else %}
                 {{ signaal_begraafplaats_naam }}
             {% endif %}
+        {% else %}
+            {{ taak.adres }}
         {% endif %}
     {% endwith %}
     | FixeR

@@ -20,15 +20,6 @@ def general_settings(context):
 
     user = getattr(context, "user", None)
 
-    # template_basis = getattr(user, "profiel.context.template", None) if user else None
-    template_basis = None
-    if (
-        hasattr(context, "user")
-        and hasattr(context.user, "profiel")
-        and hasattr(context.user.profiel, "context")
-        and hasattr(context.user.profiel.context, "template")
-    ):
-        template_basis = context.user.profiel.context.template
     mercure_service = None
     subscriber_token = None
     try:
@@ -63,7 +54,6 @@ def general_settings(context):
         "SESSION_CHECK_INTERVAL_SECONDS": settings.SESSION_CHECK_INTERVAL_SECONDS,
         "LOGOUT_URL": reverse("oidc_logout"),
         "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}",
-        "TEMPLATE_BASIS": template_basis,
         "APP_MERCURE_PUBLIC_URL": settings.APP_MERCURE_PUBLIC_URL,
         "GIT_SHA": settings.GIT_SHA,
         "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
