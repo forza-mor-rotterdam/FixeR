@@ -612,7 +612,10 @@ body.no-js {
 .label--negative {
     font-size: $h5-font-size;
     line-height: 24px;
+    min-height: 32px;
     margin-top: 0;
+    display: block;
+    padding-bottom: 1em;
 }
 
 .label--positive {

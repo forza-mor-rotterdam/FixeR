@@ -115,7 +115,10 @@
                 <div class="container__flex">
                     <div>{{ form.volgende_taaktypes|render_rotterdam_formulier }}</div>
                     <div>
-                        {{ form.gerelateerde_onderwerpen }}
+                        <div class="form-row">
+                            <h3 class="label">Gerelateerde onderwerpen</h3>
+                            {{ form.gerelateerde_onderwerpen }}
+                        </div>
                         <br>
                         Geselecteerde onderwerpen
                         <ul>
@@ -126,7 +129,7 @@
                     </div>
                 </div>
             </fieldset>
-            <table>
+            {% comment %} <table>
                 <thead>
                     <tr>
                         <th>
@@ -153,11 +156,7 @@
                         </td>
                     </tr>
                 </tbody>
-            </table>
-            <div class="container__checkbox--single">
-                <h3 class="label">Is dit taaktype actief?</h3>
-                {{ form.actief|render_rotterdam_formulier }}
-            </div>
+            </table> {% endcomment %}
             {% comment %} </fieldset> {% endcomment %}
             <div class="form-row container__button">
                 <div class="form-row btn-row">
