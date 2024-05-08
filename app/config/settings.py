@@ -90,6 +90,7 @@ INSTALLED_APPS = (
     "django_celery_beat",
     "django_celery_results",
     "sorl.thumbnail",
+    "django_select2",
     # Apps
     "apps.main",
     "apps.authorisatie",
