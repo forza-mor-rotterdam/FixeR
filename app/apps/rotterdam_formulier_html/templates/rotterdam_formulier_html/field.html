@@ -91,6 +91,7 @@
                         {% if field.field.required %}required{% endif %}>
                     {% for choice in field %}{{ choice.tag }}{% endfor %}
                 </select>
+                <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
                 {% for error in field.errors %}
                     <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
                 {% endfor %}
