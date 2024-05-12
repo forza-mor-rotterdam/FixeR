@@ -64,8 +64,8 @@ class MeldingAlias(BasisModel):
                 "bron_signaal_ids": signaal_ids,
             },
         )
-        # Associate the retrieved TaakZoekData instance with all Taak instances associated with the melding_alias
-        for taak in self.taken_voor_meldingalias.all():
+        # Associate the retrieved TaakZoekData instance with all Taak instances associated with the melding_alias only if the instance is not already set on de taak
+        for taak in self.taken_voor_meldingalias.filter(taak_zoek_data__isnull=True):
             taak.taak_zoek_data = taak_zoek_data_instance
             taak.save()
 
