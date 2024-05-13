@@ -157,6 +157,31 @@
         width: 100%;
         overflow-x: auto;
     }
+
+    .container__hideables {
+        .task--hideable {
+            margin-bottom: 2rem;
+            &.hide {
+                display: none;
+            }
+
+            .btn {
+                max-width: none;
+            }
+
+            .form-row {
+                margin-bottom: 0;
+            }
+        }
+
+        .btn-textlink {
+            max-width: none;
+            text-align: left;
+            &.hide {
+                display: none;
+            }
+        }
+    }
 }
 
 .container__explained {

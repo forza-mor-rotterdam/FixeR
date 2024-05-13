@@ -1,12 +1,22 @@
 {% load rotterdam_formulier_html %}
-<div>
+<div class="task--hideable {% if not voorbeeldsituatie.instance.id and count != 1 %}hide{% endif %}">
     <div class="hidden-fields">
         {{ voorbeeldsituatie.id }}
         {{ voorbeeldsituatie.type }}
     </div>
+    <h2 class="h4">
+        De taak is
+        {% if do %}
+            wel
+        {% else %}
+            niet
+        {% endif %}
+        relevant: voorbeeldsituatie {{ count }}
+    </h2>
     {{ voorbeeldsituatie.toelichting|render_rotterdam_formulier }}
     <div data-controller="bijlagen">{{ voorbeeldsituatie.bestand|render_rotterdam_formulier }}</div>
-    Verwijder: {{ voorbeeldsituatie.DELETE }}
+    {% comment %} Verwijder: {{ voorbeeldsituatie.DELETE }} {% endcomment %}
+    {% if voorbeeldsituatie.DELETE %}{{ voorbeeldsituatie.DELETE }}Verwijder dit voorbeeld{% endif %}
     <fieldset>
         {{ voorbeeldsituatie.bijlage_formset.management_form }}
         {% for form in voorbeeldsituatie.bijlage_formset %}
@@ -16,7 +26,7 @@
                 {% else %}
                     form.instance.bestand
                 {% endif %}
-                Verwijder: {{ form.DELETE }}
+                {{ form.DELETE|render_rotterdam_formulier }} Verwijder bestand
                 {{ form.id }}
             </div>
         {% endfor %}
