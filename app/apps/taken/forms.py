@@ -120,17 +120,32 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         ),
         required=True,
     )
+    omschrijving = forms.CharField(
+        label="titel",
+        widget=forms.Textarea(
+            attrs={
+                "data-testid": "titel",
+                "rows": "4",
+            }
+        ),
+        required=True,
+    )
     # volgende_taaktypes = forms.ModelMultipleChoiceField(
     #     widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
     #     queryset=Taaktype.objects.filter(actief=True),
     #     label="Volgende taaktypes",
     #     required=False,
     # )
-    volgende_taaktypes = forms.MultipleChoiceField(
-        choices=[],  # We'll set this dynamically in the form's __init__ method
+    volgende_taaktypes = forms.ModelMultipleChoiceField(
+        # choices=[],  # We'll set this dynamically in the form's __init__ method
         widget=Select2MultipleWidget(
-            attrs={"class": "select2", "id": "volgende_taaktypes_1"}
+            attrs={
+                "class": "select2",
+                "placeholder": "Zoek op onderwerp",
+                "id": "volgende_taaktypes_1",
+            }
         ),
+        queryset=Taaktype.objects.filter(actief=True),
         required=False,
     )
     afdelingen = forms.ModelMultipleChoiceField(
@@ -153,7 +168,11 @@ class TaaktypeAanpassenForm(forms.ModelForm):
     gerelateerde_onderwerpen = forms.MultipleChoiceField(
         choices=[],  # We'll set this dynamically in the form's __init__ method
         widget=Select2MultipleWidget(
-            attrs={"class": "select2", "id": "gerelateerde_onderwerpen_1"}
+            attrs={
+                "class": "select2",
+                "placeholder": "Zoek op onderwerp",
+                "id": "gerelateerde_onderwerpen_1",
+            }
         ),
         required=False,
     )
@@ -165,11 +184,9 @@ class TaaktypeAanpassenForm(forms.ModelForm):
 
     def __init__(self, *args, current_taaktype=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if current_taaktype:
-            taaktypes_lijst = Taaktype.objects.filter(actief=True)
-            self.fields["volgende_taaktypes"].queryset = taaktypes_lijst.exclude(
-                id=current_taaktype.id
-            )
+        # if current_taaktype:
+        taaktypes_lijst = Taaktype.objects.filter(actief=True)
+        self.fields["volgende_taaktypes"].queryset = taaktypes_lijst
         print("_ _ _ _ _  _ taaktype_lijst")
         print(taaktypes_lijst)
         # START gerelateerde_onderwerpen
@@ -241,7 +258,7 @@ TaaktypeVoorbeeldsituatieNietFormSet = inlineformset_factory(
     Taaktype,
     TaaktypeVoorbeeldsituatie,
     form=TaaktypeVoorbeeldsituatieFormNiet,
-    extra=1,
+    extra=5,
     can_delete=True,
     can_delete_extra=False,
 )
@@ -249,7 +266,7 @@ TaaktypeVoorbeeldsituatieWelFormSet = inlineformset_factory(
     Taaktype,
     TaaktypeVoorbeeldsituatie,
     form=TaaktypeVoorbeeldsituatieFormWel,
-    extra=1,
+    extra=5,
     can_delete=True,
     can_delete_extra=False,
 )

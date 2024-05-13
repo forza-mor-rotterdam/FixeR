@@ -69,16 +69,18 @@
               data-controller="taaktypeformulier"
               data-taaktypeformulier-target="formTaaktype">
             {% csrf_token %}
+            {{ form.errors }}
             <fieldset class="section">
                 <legend>Basisinformatie</legend>
                 <div class="container__flex">
                     <div>
-                        {% if object %}
+                        {% comment %} {% if object %}
                             <strong>Naam taaktype</strong>
                             <p>{{ object.omschrijving }}</p>
                         {% else %}
                             {{ form.omschrijving|render_rotterdam_formulier }}
-                        {% endif %}
+                        {% endif %} {% endcomment %}
+                        {{ form.omschrijving }}
                         {{ form.toelichting|render_rotterdam_formulier }}
                         {{ form.taaktypemiddelen|render_rotterdam_formulier }}
                     </div>
@@ -95,20 +97,37 @@
             </fieldset>
             <fieldset class="section">
                 <legend>Wanneer selecteer je dit taaktype?</legend>
-                <div class="container__flex">
-                    <div class="form-row">
+                <div class="container__flex container__hideables">
+                    <div class="form-row" data-taaktypeformulier-target="voorbeeldWel">
                         <label class="label--positive">Wanneer is de taak relevant?</label>
                         {{ voorbeeldsituatie_wel.management_form }}
                         {% for voorbeeldsituatie in voorbeeldsituatie_wel %}
-                            {% include "taken/taaktype_voorbeeldsituatie_form.html" %}
+                            {% if forloop.counter0 < 5 %}
+                                {% comment %} check id om class te zetten voor wel of niet zichtbaar {% endcomment %}
+                                {% include "taken/taaktype_voorbeeldsituatie_form.html" with count=forloop.counter0|add:1 do=True %}
+                            {% endif %}
                         {% endfor %}
+                        <button type="button"
+                                class="btn btn-textlink"
+                                data-action="taaktypeformulier#addExample">
+                            + Voeg nog een voorbeeldsituatie toe
+                        </button>
+                        <small>U kunt maximaal 5 voorbeeldsituaties opgeven</small>
                     </div>
-                    <div class="form-row">
+                    <div class="form-row" data-taaktypeformulier-target="voorbeeldNiet">
                         <label class="label--negative">Wanneer hoeft de taak NIET te worden gestart?</label>
                         {{ voorbeeldsituatie_niet.management_form }}
                         {% for voorbeeldsituatie in voorbeeldsituatie_niet %}
-                            {% include "taken/taaktype_voorbeeldsituatie_form.html" %}
+                            {% if forloop.counter0 < 5 %}
+                                {% include "taken/taaktype_voorbeeldsituatie_form.html" with count=forloop.counter0|add:1 do=False %}
+                            {% endif %}
                         {% endfor %}
+                        <button type="button"
+                                class="btn btn-textlink"
+                                data-action="taaktypeformulier#addExample">
+                            + Voeg nog een voorbeeldsituatie toe
+                        </button>
+                        <small class="margin-bottom">U kunt maximaal 5 voorbeeldsituaties opgeven</small>
                     </div>
                 </div>
             </fieldset>

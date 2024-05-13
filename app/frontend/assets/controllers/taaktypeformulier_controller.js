@@ -8,39 +8,37 @@ let inputList = null
 // eslint-disable-next-line no-unused-vars
 let formData = null
 export default class extends Controller {
-  static targets = ['formTaaktype']
+  static targets = ['formTaaktype', 'voorbeeldWel', 'voorbeeldNiet']
 
   initializeSelect2() {
     const volgend_select = this.formTaaktypeTarget.querySelector('#volgende_taaktypes_1')
     const gerelateerd_select = this.formTaaktypeTarget.querySelector('#gerelateerde_onderwerpen_1')
-    $(volgend_select).select2({})
-    $(gerelateerd_select).select2({})
+    $(volgend_select).select2({ placeholder: 'Zoek op taaktype' })
+    $(gerelateerd_select).select2({ placeholder: 'Zoek op onderwerp' })
     $().select2({})
 
-    $(volgend_select).on('select2:select', function (e) {
-      const select = e.target
-      const error = select.closest('.form-row').getElementsByClassName('invalid-text')[0]
-
-      if (select.validity.valid) {
-        select.closest('.form-row').classList.remove('is-invalid')
-        error.textContent = ''
-      } else {
-        error.textContent = this.defaultErrorMessage
-        select.closest('.form-row').classList.add('is-invalid')
-      }
-    })
-    $(gerelateerd_select).on('select2:select', function (e) {
-      const select = e.target
-      const error = select.closest('.form-row').getElementsByClassName('invalid-text')[0]
-
-      if (select.validity.valid) {
-        select.closest('.form-row').classList.remove('is-invalid')
-        error.textContent = ''
-      } else {
-        error.textContent = this.defaultErrorMessage
-        select.closest('.form-row').classList.add('is-invalid')
-      }
-    })
+    // $(volgend_select).on('select2:select', function (e) {
+    // const select = e.target
+    // const error = select.closest('.form-row').getElementsByClassName('invalid-text')[0]
+    // if (select.validity.valid) {
+    //   select.closest('.form-row').classList.remove('is-invalid')
+    //   error.textContent = ''
+    // } else {
+    //   error.textContent = this.defaultErrorMessage
+    //   select.closest('.form-row').classList.add('is-invalid')
+    // }
+    // })
+    // $(gerelateerd_select).on('select2:select', function (e) {
+    // const select = e.target
+    // const error = select.closest('.form-row').getElementsByClassName('invalid-text')[0]
+    // if (select.validity.valid) {
+    //   select.closest('.form-row').classList.remove('is-invalid')
+    //   error.textContent = ''
+    // } else {
+    //   error.textContent = this.defaultErrorMessage
+    //   select.closest('.form-row').classList.add('is-invalid')
+    // }
+    // })
   }
 
   connect() {
@@ -74,6 +72,16 @@ export default class extends Controller {
     //     event.preventDefault()
     //   }
     // })
+  }
+
+  addExample(e) {
+    const examples = e.target.parentNode.querySelectorAll('.hide')
+    if (examples.length > 0) {
+      examples[0].classList.remove('hide')
+      if (e.target.parentNode.querySelectorAll('.hide').length === 0) {
+        e.target.classList.add('hide')
+      }
+    }
   }
 
   // checkValids() {
