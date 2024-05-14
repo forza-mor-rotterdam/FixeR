@@ -67,9 +67,10 @@
               class="form--beheer full-width"
               enctype="multipart/form-data"
               data-controller="taaktypeformulier"
-              data-taaktypeformulier-target="formTaaktype">
+              data-taaktypeformulier-target="formTaaktype"
+              data-turbo-frame="_top">
             {% csrf_token %}
-            {{ form.errors }}
+            Errors: {{ form.errors }}
             <fieldset class="section">
                 <legend>Basisinformatie</legend>
                 <div class="container__flex">
@@ -80,7 +81,7 @@
                         {% else %}
                             {{ form.omschrijving|render_rotterdam_formulier }}
                         {% endif %} {% endcomment %}
-                        {{ form.omschrijving }}
+                        {{ form.omschrijving|render_rotterdam_formulier }}
                         {{ form.toelichting|render_rotterdam_formulier }}
                         {{ form.taaktypemiddelen|render_rotterdam_formulier }}
                     </div>
@@ -135,16 +136,7 @@
                 <legend>Gerelateerd aan dit taaktype</legend>
                 <div class="container__flex">
                     {{ form.volgende_taaktypes|render_rotterdam_formulier }}
-                    <div>
-                        {{ form.gerelateerde_onderwerpen|render_rotterdam_formulier }}
-                        <br>
-                        Geselecteerde onderwerpen
-                        <ul>
-                            {% for onderwerp_url in form.gerelateerde_onderwerpen.value %}
-                                <li>{% render_onderwerp onderwerp_url %}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+                    <div>{{ form.gerelateerde_onderwerpen|render_rotterdam_formulier }}</div>
                 </div>
             </fieldset>
             {% comment %} <table>

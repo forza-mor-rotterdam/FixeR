@@ -161,6 +161,8 @@
     .container__hideables {
         .task--hideable {
             margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: $gray-tint01;
             &.hide {
                 display: none;
             }
@@ -172,6 +174,12 @@
             .form-row {
                 margin-bottom: 0;
             }
+
+            input[type="checkbox"] {
+                @include form-check-input;
+                margin-right: 5px;
+                vertical-align: bottom;
+            }
         }
 
         .btn-textlink {
@@ -180,6 +188,15 @@
             &.hide {
                 display: none;
             }
+        }
+    }
+    .container__example--task {
+        margin-bottom: 2rem;
+
+        .example--task {
+            display: block;
+            width: 270px;
+            margin-bottom: 0.5em;
         }
     }
 }
