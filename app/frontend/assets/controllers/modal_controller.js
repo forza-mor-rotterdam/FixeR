@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['title', 'subTitle', 'turboFrame', 'closeModalElement']
+  static targets = ['title', 'subTitle', 'turboFrame', 'closeModalElement', 'taakItem']
 
   initialize() {
     document.body.classList.remove('show-modal')
@@ -25,6 +25,9 @@ export default class extends Controller {
   }
   closeModal() {
     let self = this
+    if (self.hasTaakItemTarget) {
+      self.taakItemTarget.classList.remove('selected')
+    }
     const modalList = self.element.querySelectorAll('.modal')
     const modalBackdrop = self.element.querySelector('.modal-backdrop')
     if (self.hasTurboFrameTarget) {

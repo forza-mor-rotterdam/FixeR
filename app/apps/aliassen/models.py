@@ -27,11 +27,9 @@ class MeldingAlias(BasisModel):
     def valideer_bron_url(self):
         response = MeldingenService().get_by_uri(self.bron_url)
         if response.status_code != 200:
-            self.response_json = {}
-            logger.error(
-                f"Melding ophalen fout: status code: {response.status_code}, melding_alias id: {self.id}"
-            )
-            return
+            error = f"Melding ophalen fout: status code: {response.status_code}, melding_alias id: {self.id}"
+            logger.error(error)
+            raise Exception(error)
         self.response_json = response.json()
 
     def update_zoek_data(self):
@@ -64,8 +62,8 @@ class MeldingAlias(BasisModel):
                 "bron_signaal_ids": signaal_ids,
             },
         )
-        # Associate the retrieved TaakZoekData instance with all Taak instances associated with the melding_alias
-        for taak in self.taken_voor_meldingalias.all():
+        # Associate the retrieved TaakZoekData instance with all Taak instances associated with the melding_alias only if the instance is not already set on de taak
+        for taak in self.taken_voor_meldingalias.filter(taak_zoek_data__isnull=True):
             taak.taak_zoek_data = taak_zoek_data_instance
             taak.save()
 

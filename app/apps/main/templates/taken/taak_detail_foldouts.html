@@ -22,6 +22,10 @@
                     {% if taak.spoed %}<span><span class="icon icon--warning">Spoed</span></span>{% endif %}
                 </h2>
             </summary>
+            {% if taak.id %}
+                <h3 class="h5">Taaknummer</h3>
+                <p>{{ taak.id }}</p>
+            {% endif %}
             {% if taak.titel %}
                 <h3 class="h5">Omschrijving</h3>
                 <p>{{ taak.titel }}</p>
@@ -84,7 +88,32 @@
                     Locatie
                 </h2>
             </summary>
-            {% if TEMPLATE_BASIS != "benc" %}
+            {% if taak.taak_zoek_data.locatie_type == "graf" %}
+                <h3 class="h5">Begraafplaats</h3>
+                <p>
+                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats as signaal_begraafplaats_naam %}
+                    {% if signaal_begraafplaats_naam == taak_zoek_data.begraafplaats %}
+                        {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats %}
+                    {% else %}
+                        {{ signaal_begraafplaats_naam }}
+                    {% endif %}
+                </p>
+                {% if taak_zoek_data.grafnummer %}
+                    <h3 class="h5">Grafnummer</h3>
+                    <p>{{ taak_zoek_data.grafnummer }}</p>
+                {% endif %}
+                {% if taak_zoek_data.vak %}
+                    <h3 class="h5">Vak</h3>
+                    <p>{{ taak_zoek_data.vak }}</p>
+                {% endif %}
+                {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
+                    <h3 class="h5">Naam overledene</h3>
+                    <p>{{ melding.signalen_voor_melding.0.meta.naam_overledene }}</p>
+                {% elif melding.meta.naam_overledene %}
+                    <h3 class="h5">Naam overledene</h3>
+                    <p>{{ melding.meta.naam_overledene }}</p>
+                {% endif %}
+            {% else %}
                 <div>
                     <h3 class="h5">Ter hoogte van</h3>
                     <p>{{ taak.adres }}</p>
@@ -183,31 +212,6 @@
                         </div>
                     </div>
                 </div>
-            {% else %}
-                <h3 class="h5">Begraafplaats</h3>
-                <p>
-                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats as signaal_begraafplaats_naam %}
-                    {% if signaal_begraafplaats_naam == taak_zoek_data.begraafplaats %}
-                        {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats %}
-                    {% else %}
-                        {{ signaal_begraafplaats_naam }}
-                    {% endif %}
-                </p>
-                {% if taak_zoek_data.grafnummer %}
-                    <h3 class="h5">Grafnummer</h3>
-                    <p>{{ taak_zoek_data.grafnummer }}</p>
-                {% endif %}
-                {% if taak_zoek_data.vak %}
-                    <h3 class="h5">Vak</h3>
-                    <p>{{ taak_zoek_data.vak }}</p>
-                {% endif %}
-                {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
-                    <h3 class="h5">Naam overledene</h3>
-                    <p>{{ melding.signalen_voor_melding.0.meta.naam_overledene }}</p>
-                {% elif melding.meta.naam_overledene %}
-                    <h3 class="h5">Naam overledene</h3>
-                    <p>{{ melding.meta.naam_overledene }}</p>
-                {% endif %}
             {% endif %}
         </details>
         <details>
@@ -231,29 +235,39 @@
                     Melding
                 </h2>
             </summary>
-            <h3 class="h5">MeldR-nummer</h3>
+            <h3 class="h5">Meldingnummer</h3>
             <p class="no-margin">
-                {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
-                    {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+                {% if melding.id %}
+                    {{ melding.id }}
                 {% else %}
                     Onbekend
                 {% endif %}
             </p>
-            <small>
-                {% if melding.signalen_voor_melding|length > 1 %}
-                    <strong>Bestaand uit de samengevoegde meldingen:</strong>
-                    <br>
-                    {% for signaal in melding.signalen_voor_melding %}
-                        {% if signaal.bron_signaal_id %}
-                            {% if not forloop.last %}
-                                {{ signaal.bron_signaal_id }},
-                            {% else %}
-                                {{ signaal.bron_signaal_id }}
+            {% if taak.taak_zoek_data.locatie_type == "adres" %}
+                <h3 class="h5">MeldR-nummer</h3>
+                <p class="no-margin">
+                    {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
+                        {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+                    {% else %}
+                        Onbekend
+                    {% endif %}
+                </p>
+                <small>
+                    {% if melding.signalen_voor_melding|length > 1 %}
+                        <strong>Bestaand uit de samengevoegde meldingen:</strong>
+                        <br>
+                        {% for signaal in melding.signalen_voor_melding %}
+                            {% if signaal.bron_signaal_id %}
+                                {% if not forloop.last %}
+                                    {{ signaal.bron_signaal_id }},
+                                {% else %}
+                                    {{ signaal.bron_signaal_id }}
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </small>
+                        {% endfor %}
+                    {% endif %}
+                </small>
+            {% endif %}
             <h3 class="h5">Ingediend</h3>
             <p>{{ melding.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}</p>
             {% if melding.meta.aannemer %}
