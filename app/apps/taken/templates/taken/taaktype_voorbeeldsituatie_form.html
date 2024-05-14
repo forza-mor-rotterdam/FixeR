@@ -14,21 +14,24 @@
         relevant: voorbeeldsituatie {{ count }}
     </h2>
     {{ voorbeeldsituatie.toelichting|render_rotterdam_formulier }}
-    <div data-controller="bijlagen">{{ voorbeeldsituatie.bestand|render_rotterdam_formulier }}</div>
-    {% comment %} Verwijder: {{ voorbeeldsituatie.DELETE }} {% endcomment %}
-    {% if voorbeeldsituatie.DELETE %}{{ voorbeeldsituatie.DELETE }}Verwijder dit voorbeeld{% endif %}
+    <div data-controller="bijlagen">
+        {% if not voorbeeldsituatie.bijlage_formset.0 %}{{ voorbeeldsituatie.bestand|render_rotterdam_formulier }}{% endif %}
+    </div>
     <fieldset>
         {{ voorbeeldsituatie.bijlage_formset.management_form }}
         {% for form in voorbeeldsituatie.bijlage_formset %}
-            <div>
+            <div class="container__example--task">
                 {% if form.instance.afbeelding %}
-                    <img width="100px" src="{{ form.instance.afbeelding.url }}" />
+                    <img class="example--task" src="{{ form.instance.afbeelding.url }}" />
                 {% else %}
                     form.instance.bestand
                 {% endif %}
-                {{ form.DELETE|render_rotterdam_formulier }} Verwijder bestand
+                <label>{{ form.DELETE }} Verwijder bestand</label>
                 {{ form.id }}
             </div>
         {% endfor %}
+        <p>
+            {% if voorbeeldsituatie.DELETE %}<label>{{ voorbeeldsituatie.DELETE }}Verwijder dit voorbeeld</label>{% endif %}
+        </p>
     </fieldset>
 </div>

@@ -11,8 +11,13 @@ export default class extends Controller {
   static targets = ['formTaaktype', 'voorbeeldWel', 'voorbeeldNiet']
 
   initializeSelect2() {
+    const afdelingen = this.formTaaktypeTarget.querySelector('#afdelingen_1')
+    const middelen = this.formTaaktypeTarget.querySelector('#taaktypemiddelen_1')
     const volgend_select = this.formTaaktypeTarget.querySelector('#volgende_taaktypes_1')
     const gerelateerd_select = this.formTaaktypeTarget.querySelector('#gerelateerde_onderwerpen_1')
+
+    $(afdelingen).select2({ placeholder: 'Zoek op afdeling' })
+    $(middelen).select2({ placeholder: 'Zoek op materieel' })
     $(volgend_select).select2({ placeholder: 'Zoek op taaktype' })
     $(gerelateerd_select).select2({ placeholder: 'Zoek op onderwerp' })
     $().select2({})

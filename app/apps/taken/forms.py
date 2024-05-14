@@ -34,7 +34,7 @@ class BijlageForm(forms.ModelForm):
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic, .gif",
                 "data-action": "change->bijlagen#updateImageDisplay",
-                "multiple": "multiple",
+                "multiple": "multipleee",
                 "hideLabel": True,
             }
         ),
@@ -69,7 +69,6 @@ class TaaktypeVoorbeeldsituatieFormNiet(forms.ModelForm):
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic, .gif",
                 "data-action": "change->bijlagen#updateImageDisplay",
-                "multiple": "multiple",
                 "hideLabel": True,
             }
         ),
@@ -121,8 +120,8 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         required=True,
     )
     omschrijving = forms.CharField(
-        label="titel",
-        widget=forms.Textarea(
+        label="Titel",
+        widget=forms.TextInput(
             attrs={
                 "data-testid": "titel",
                 "rows": "4",
@@ -130,18 +129,10 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         ),
         required=True,
     )
-    # volgende_taaktypes = forms.ModelMultipleChoiceField(
-    #     widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
-    #     queryset=Taaktype.objects.filter(actief=True),
-    #     label="Volgende taaktypes",
-    #     required=False,
-    # )
     volgende_taaktypes = forms.ModelMultipleChoiceField(
-        # choices=[],  # We'll set this dynamically in the form's __init__ method
         widget=Select2MultipleWidget(
             attrs={
                 "class": "select2",
-                "placeholder": "Zoek op onderwerp",
                 "id": "volgende_taaktypes_1",
             }
         ),
@@ -149,22 +140,19 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         required=False,
     )
     afdelingen = forms.ModelMultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
+        widget=Select2MultipleWidget(attrs={"class": "select2", "id": "afdelingen_1"}),
         queryset=Afdeling.objects.all(),
         label="Afdelingen",
         required=False,
     )
     taaktypemiddelen = forms.ModelMultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
+        widget=Select2MultipleWidget(
+            attrs={"class": "select2", "id": "taaktypemiddelen_1"}
+        ),
         queryset=TaaktypeMiddel.objects.all(),
         label="Welk materieel is nodig om de taak af te handelen?",
         required=False,
     )
-    # gerelateerde_onderwerpen = forms.MultipleChoiceField(
-    #     widget=forms.SelectMultiple(),
-    #     label="Gerelateerde onderwerpen",
-    #     required=False,
-    # )
     gerelateerde_onderwerpen = forms.MultipleChoiceField(
         choices=[],  # We'll set this dynamically in the form's __init__ method
         widget=Select2MultipleWidget(
@@ -258,7 +246,7 @@ TaaktypeVoorbeeldsituatieNietFormSet = inlineformset_factory(
     Taaktype,
     TaaktypeVoorbeeldsituatie,
     form=TaaktypeVoorbeeldsituatieFormNiet,
-    extra=5,
+    extra=1,
     can_delete=True,
     can_delete_extra=False,
 )
@@ -266,7 +254,7 @@ TaaktypeVoorbeeldsituatieWelFormSet = inlineformset_factory(
     Taaktype,
     TaaktypeVoorbeeldsituatie,
     form=TaaktypeVoorbeeldsituatieFormWel,
-    extra=5,
+    extra=1,
     can_delete=True,
     can_delete_extra=False,
 )
