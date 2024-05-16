@@ -1,0 +1,110 @@
+{% extends "base_beheer.html" %}
+{% load webpack_static from webpack_loader %}
+{% load rotterdam_formulier_html %}
+{% load json_encode from main_tags %}
+{% load render_onderwerp from melding_tags %}
+{% block title %}
+    {% if object %}
+        Taaktype '{{ object.omschrijving }}'
+    {% else %}
+        Taaktype
+    {% endif %}
+    | FixeR
+{% endblock title %}
+{% block body %}
+    <div class="page__beheer">
+        <div>
+            <a href="{% url 'taaktype_lijst' %}"
+               data-turbo-action='advance'
+               class="link--back">
+                <svg width="25"
+                     height="16"
+                     viewBox="0 0 25 16"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
+                </svg>
+                Taaktypes
+            </a>
+        </div>
+        <h1>{{ taaktype.omschrijving }}</h1>
+        <h2 class="h4">Omschrijving taaktype</h2>
+        <p>{{ taaktype.toelichting }}</p>
+        <h2 class="h4">Wie is er verantwoordelijk voor de uitvoering van het proces?</h2>
+        <p>...{{ taaktype.verantwoordlijke }}</p>
+        <section class="padding-bottom">
+            <div class="container__badges--overview">
+                {% if taaktype.afdelingen.all|length > 0 %}
+                    <div class="margin-bottom">
+                        <h2 class="h5">Afdelingen</h2>
+                        <ul class="list-tags">
+                            {% for afdeling in taaktype.afdelingen.all %}
+                                <li>
+                                    <span class="badge badge--green">{{ afdeling.naam }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                {% if taaktype.taaktypemiddelen.all|length > 0 %}
+                    <div class="margin-bottom">
+                        <h2 class="h5">Benodigd materiaal</h2>
+                        <ul class="list-tags">
+                            {% for middel in taaktype.taaktypemiddelen.all %}
+                                <li>
+                                    <span class="badge badge--green">{{ middel.naam }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                {% if taaktype.gerelateerde_onderwerpen|length > 0 %}
+                    <div class="margin-bottom">
+                        <h2 class="h5">Gerelateerde onderwerpen</h2>
+                        <ul class="list-tags">
+                            {% for onderwerp in taaktype.gerelateerde_onderwerpen %}
+                                <li>
+                                    <span class="badge badge--green">{% render_onderwerp onderwerp %}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+        <section class="display-flex--2cols-md">
+            <div class="border--gray-shadowed margin-bottom">
+                <h2 class="label--positive">Wanneer is de taak relevant?</h2>
+                <ul class="list-clean margin-bottom">
+                    {% for voorbeeldsituatie in object.voorbeeldsituatie_voor_taaktype.all %}
+                        {% include "taken/voorbeeldsituatie_tile.html" with voorbeeldsituatie=voorbeeldsituatie type="waarom_wel" only %}
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="border--gray-shadowed margin-bottom">
+                <h2 class="label--negative">Wanneer hoeft de taak NIET te worden gestart?</h2>
+                <ul class="list-clean margin-bottom">
+                    {% for voorbeeldsituatie in object.voorbeeldsituatie_voor_taaktype.all %}
+                        {% include "taken/voorbeeldsituatie_tile.html" with voorbeeldsituatie=voorbeeldsituatie type="waarom_niet" only %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+        <section>
+            <h2 class="color--primary">Vervolgtaken</h2>
+            <ul class="list-blocks--title-images">
+                {% for taaktype in object.volgende_taaktypes.all %}
+                    {% include "taken/taaktype_tile.html" with taaktype=taaktype only %}
+                {% endfor %}
+            </ul>
+        </section>
+        <section>
+            <h2 class="color--primary">Gerelateerde taken</h2>
+            <ul class="list-blocks--title-images">
+                {% for taaktype in object.gerelateerde_taaktypes.all %}
+                    {% include "taken/taaktype_tile.html" with taaktype=taaktype only %}
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+{% endblock body %}
