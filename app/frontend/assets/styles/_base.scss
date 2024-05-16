@@ -636,3 +636,9 @@ body.no-js {
         margin-right: $input-padding-y;
     }
 }
+
+.has-button-fullwidth {
+    .btn {
+        max-width: none !important;
+    }
+}

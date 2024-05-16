@@ -147,7 +147,16 @@
                     <div>
                         {{ form.afdelingen|render_rotterdam_formulier }}
                         {{ form.verantwoordelijke|render_rotterdam_formulier }}
-                        {{ form.icoon|render_rotterdam_formulier }}
+                        <div data-controller="bijlagen" class="has-button-fullwidth">
+                            <h3 class="h5">Icoon</h3>
+                            {{ form.icoon|render_rotterdam_formulier }}
+                            <div class="container__example--task">
+                                {% if form.instance.icoon %}
+                                    Huidig icoon:
+                                    <img class="icon-preview" src="{{ form.instance.icoon.url }}" />
+                                {% endif %}
+                            </div>
+                        </div>
                         <div class="container__checkbox--single form-row">
                             <h3 class="label">
                                 Is dit taaktype actief? <small>(Niet verplicht)</small>

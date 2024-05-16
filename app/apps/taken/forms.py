@@ -148,6 +148,18 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         ),
         required=True,
     )
+    icoon = forms.FileField(
+        label="Icoon",
+        required=False,
+        widget=forms.widgets.FileInput(
+            attrs={
+                "accept": ".svg",
+                "data-action": "change->bijlagen#updateImageDisplay",
+                "hideLabel": True,
+                "button_text": "Icoon toevoegen of vervangen",
+            }
+        ),
+    )
     volgende_taaktypes = forms.ModelMultipleChoiceField(
         widget=Select2MultipleWidget(
             attrs={
@@ -227,7 +239,6 @@ class TaaktypeAanpassenForm(forms.ModelForm):
             ]
             for groep_uuid, groep_naam in groep_uuids.items()
         ]
-        # print(onderwerpen_gegroepeerd)
         self.fields["gerelateerde_onderwerpen"].choices = onderwerpen_gegroepeerd
         # END gerelateerde_onderwerpen
         self.fields[
@@ -242,6 +253,9 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         self.fields[
             "gerelateerde_taaktypes"
         ].help_text = "Welke andere taken zijn vergelijkbaar met dit taaktype?"
+        self.fields[
+            "icoon"
+        ].help_text = "Kies een icoon voor het taaktype. Gebruik het bestandstype svg."
 
     class Meta:
         model = Taaktype
