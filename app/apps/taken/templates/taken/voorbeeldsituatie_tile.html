@@ -1,0 +1,12 @@
+<li>
+    {% if type == voorbeeldsituatie.type %}
+        {{ voorbeeldsituatie.toelichting }}
+        <ul class="list-clean margin-bottom">
+            {% for bijlage in voorbeeldsituatie.bijlagen.all %}
+                <li>
+                    <img width="200" height="200" src="{{ bijlage.afbeelding.url }}" />
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</li>

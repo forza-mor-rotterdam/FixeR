@@ -67,6 +67,7 @@ from apps.taaktype.views import (
 from apps.taken.views import (
     TaaktypeAanmakenView,
     TaaktypeAanpassenView,
+    TaaktypeDetailView,
     TaaktypeLijstView,
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
@@ -231,6 +232,11 @@ urlpatterns = [
         "beheer/taaktype/aanmaken/",
         TaaktypeAanmakenView.as_view(),
         name="taaktype_aanmaken",
+    ),
+    path(
+        "beheer/taaktype/<int:pk>/",
+        TaaktypeDetailView.as_view(),
+        name="taaktype_detail",
     ),
     path(
         "beheer/taaktype/<int:pk>/aanpassen/",

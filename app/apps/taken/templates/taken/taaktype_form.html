@@ -82,6 +82,8 @@
                         {% endif %} {% endcomment %}
                         {{ form.omschrijving|render_rotterdam_formulier }}
                         {{ form.toelichting|render_rotterdam_formulier }}
+                        {{ form.verantwoordelijke|render_rotterdam_formulier }}
+                        {{ form.icoon|render_rotterdam_formulier }}
                         {{ form.taaktypemiddelen|render_rotterdam_formulier }}
                     </div>
                     <div>
@@ -135,6 +137,7 @@
                 <legend>Gerelateerd aan dit taaktype</legend>
                 <div class="container__flex">
                     {{ form.volgende_taaktypes|render_rotterdam_formulier }}
+                    {{ form.gerelateerde_taaktypes|render_rotterdam_formulier }}
                     <div>{{ form.gerelateerde_onderwerpen|render_rotterdam_formulier }}</div>
                 </div>
             </fieldset>
