@@ -46,6 +46,7 @@ from apps.main.views import (
     taken_filter,
     taken_lijst,
     ui_settings_handler,
+    wijken_en_buurten,
 )
 from apps.release_notes.views import (
     ReleaseNoteAanmakenView,
@@ -81,6 +82,7 @@ router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 urlpatterns = [
     path("", root, name="root"),
     # Tijdelijke url voor nieuwe homepage
+    path("wijken-en-buurten/", wijken_en_buurten, name="wijken_en_buurten"),
     path(
         "home/",
         HomepageView.as_view(),

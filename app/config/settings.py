@@ -92,6 +92,7 @@ INSTALLED_APPS = (
     "apps.context",
     "apps.beheer",
     "apps.release_notes",
+    "apps.services",
 )
 
 LOGIN_URL = "/login/"
@@ -350,6 +351,10 @@ CACHES = {
         },
     }
 }
+
+WIJKEN_EN_BUURTEN_CACHE_KEY = "wijken_en_buurten_cache_key"
+WIJKEN_EN_BUURTEN_GEMEENTECODE = "0599"
+WIJKEN_EN_BUURTEN_CACHE_TIMEOUT = 60 * 60 * 24
 
 
 # Sessions are managed by django-session-timeout-joinup

@@ -25,6 +25,7 @@ from apps.main.utils import (
 from apps.meldingen.service import MeldingenService
 from apps.release_notes.models import ReleaseNote
 from apps.services.onderwerpen import render_onderwerp
+from apps.services.pdok import PDOKService
 from apps.taken.models import Taak, TaakDeellink, Taakstatus, Taaktype
 from device_detector import DeviceDetector
 from django.conf import settings
@@ -55,6 +56,15 @@ from django.views.generic import View
 from rest_framework.reverse import reverse as drf_reverse
 
 logger = logging.getLogger(__name__)
+
+
+@login_required
+def wijken_en_buurten(request):
+    service = PDOKService()
+    response = service.get_buurten_middels_gemeentecode(
+        request.GET.get("gemeentecode", settings.WIJKEN_EN_BUURTEN_GEMEENTECODE)
+    )
+    return JsonResponse(response)
 
 
 def http_403(request):
