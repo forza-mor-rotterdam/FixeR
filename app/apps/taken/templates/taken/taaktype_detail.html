@@ -5,9 +5,9 @@
 {% load render_onderwerp from melding_tags %}
 {% block title %}
     {% if object %}
-        Taaktype '{{ object.omschrijving }}' aanpassen
+        Taaktype '{{ object.omschrijving }}'
     {% else %}
-        Taaktype aanmaken
+        Taaktype
     {% endif %}
     | FixeR
 {% endblock title %}
@@ -72,46 +72,39 @@
                 {% endif %}
             </div>
         </section>
-        <div class="grid-container">
-            <div class="grid-item">
-                <h2>Voorbeeldsituaties wel</h2>
+        <section class="display-flex--2cols-md">
+            <div class="border--gray-shadowed margin-bottom">
+                <h2 class="label--positive">Wanneer is de taak relevant?</h2>
                 <ul class="list-clean margin-bottom">
                     {% for voorbeeldsituatie in object.voorbeeldsituatie_voor_taaktype.all %}
                         {% include "taken/voorbeeldsituatie_tile.html" with voorbeeldsituatie=voorbeeldsituatie type="waarom_wel" only %}
                     {% endfor %}
                 </ul>
             </div>
-            <div class="grid-item">
-                <h2>Voorbeeldsituaties niet</h2>
+            <div class="border--gray-shadowed margin-bottom">
+                <h2 class="label--negative">Wanneer hoeft de taak NIET te worden gestart?</h2>
                 <ul class="list-clean margin-bottom">
                     {% for voorbeeldsituatie in object.voorbeeldsituatie_voor_taaktype.all %}
                         {% include "taken/voorbeeldsituatie_tile.html" with voorbeeldsituatie=voorbeeldsituatie type="waarom_niet" only %}
                     {% endfor %}
                 </ul>
             </div>
-            <div class="grid-item">
-                <h2>Volgende taaktypes</h2>
-                <ul class="list-clean margin-bottom">
-                    {% for taaktype in object.volgende_taaktypes.all %}
-                        {% include "taken/taaktype_tile.html" with taaktype=taaktype only %}
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="grid-item">
-                <h2>Gerelateerde taaktypes</h2>
-                <ul class="list-clean margin-bottom">
-                    {% for taaktype in object.gerelateerde_taaktypes.all %}
-                        {% include "taken/taaktype_tile.html" with taaktype=taaktype only %}
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="grid-item">
-                <h2>Gerelateerde onderwerpen</h2>
-                {% for onderwerp in object.gerelateerde_onderwerpen %}
-                    {% render_onderwerp onderwerp %}
-                    {% if not forloop.last %},{% endif %}
+        </section>
+        <section>
+            <h2 class="color--primary">Vervolgtaken</h2>
+            <ul class="list-blocks--title-images">
+                {% for taaktype in object.volgende_taaktypes.all %}
+                    {% include "taken/taaktype_tile.html" with taaktype=taaktype only %}
                 {% endfor %}
-            </div>
-        </div>
+            </ul>
+        </section>
+        <section>
+            <h2 class="color--primary">Gerelateerde taken</h2>
+            <ul class="list-blocks--title-images">
+                {% for taaktype in object.gerelateerde_taaktypes.all %}
+                    {% include "taken/taaktype_tile.html" with taaktype=taaktype only %}
+                {% endfor %}
+            </ul>
+        </section>
     </div>
 {% endblock body %}

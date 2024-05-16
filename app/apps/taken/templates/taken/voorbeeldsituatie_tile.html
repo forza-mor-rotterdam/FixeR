@@ -1,12 +1,27 @@
-<li>
-    {% if type == voorbeeldsituatie.type %}
-        {{ voorbeeldsituatie.toelichting }}
+{% load webpack_static from webpack_loader %}
+{% if type == voorbeeldsituatie.type %}
+    <li class="container__explained">
+        <h3 class="h5 no-margin-bottom">Voorbeeldsituatie</h3>
+        <p class="no-margin-top margin-bottom-half">{{ voorbeeldsituatie.toelichting }}</p>
         <ul class="list-clean margin-bottom">
-            {% for bijlage in voorbeeldsituatie.bijlagen.all %}
-                <li>
-                    <img width="200" height="200" src="{{ bijlage.afbeelding.url }}" />
+            {% if voorbeeldsituatie.bijlagen.all|length > 0 %}
+                {% for bijlage in voorbeeldsituatie.bijlagen.all %}
+                    <li class="container__image">
+                        <img alt="" src="{{ bijlage.afbeelding.url }}" />
+                        {% if type == "waarom_wel" %}
+                            <div class="icon--positive"></div>
+                        {% else %}
+                            <div class="icon--negative"></div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            {% else %}
+                <li class="container__image">
+                    <img alt=""
+                         class="no-image"
+                         src="{% webpack_static 'icons/noimage.svg' %}" />
                 </li>
-            {% endfor %}
+            {% endif %}
         </ul>
-    {% endif %}
-</li>
+    </li>
+{% endif %}
