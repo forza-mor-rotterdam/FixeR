@@ -165,9 +165,12 @@
                       class="form-control {% if field.errors %}is-invalid{% endif %}"
                       rows="4"
                       name="{{field.html_name}}"
-                      {% render_attrs field %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
+                      {% render_attrs field %}
+                      {% if field.field.required %}required{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
             <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
-            {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
+            {% if field.help_text %}
+                <p class="help-block">{{ field.help_text|safe }}</p>
+            {% endif %}
         </div>
     </div>
 {% elif field|is_file %}
