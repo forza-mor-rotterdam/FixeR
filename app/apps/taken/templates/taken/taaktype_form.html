@@ -149,7 +149,9 @@
                         {{ form.verantwoordelijke|render_rotterdam_formulier }}
                         {{ form.icoon|render_rotterdam_formulier }}
                         <div class="container__checkbox--single form-row">
-                            <h3 class="label">Is dit taaktype actief?</h3>
+                            <h3 class="label">
+                                Is dit taaktype actief? <small>(Niet verplicht)</small>
+                            </h3>
                             {{ form.actief|render_rotterdam_formulier }}
                         </div>
                     </div>

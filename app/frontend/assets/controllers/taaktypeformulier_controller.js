@@ -21,11 +21,11 @@ export default class extends Controller {
       '#gerelateerde_taaktypes_1'
     )
 
-    $(afdelingen).select2({ placeholder: 'Zoek op afdeling' })
-    $(middelen).select2({ placeholder: 'Zoek op materieel' })
-    $(volgend_select).select2({ placeholder: 'Zoek op taaktype' })
-    $(gerelateerde_onderwerpen_select).select2({ placeholder: 'Zoek op onderwerp' })
-    $(gerelateerde_taaktypes_select).select2({ placeholder: 'Zoek op taaktype' })
+    this.doSelect2(afdelingen, 'Zoek op afdeling')
+    this.doSelect2(middelen, 'Zoek op materieel')
+    this.doSelect2(volgend_select, 'Zoek op taaktype')
+    this.doSelect2(gerelateerde_onderwerpen_select, 'Zoek op onderwerp')
+    this.doSelect2(gerelateerde_taaktypes_select, 'Zoek op taaktype')
   }
 
   connect() {
@@ -48,6 +48,20 @@ export default class extends Controller {
           input.closest('.form-row').classList.add('is-invalid')
         }
       })
+    }
+  }
+
+  doSelect2(element, placeholder = 'Zoek op') {
+    $(element).select2({ placeholder: placeholder })
+    this.setNotRequiredSelect2(element)
+  }
+
+  setNotRequiredSelect2(s2Element) {
+    const small = document.createElement('small')
+    small.textContent = '(Niet verplicht)'
+    const required = s2Element.closest('.form-row').querySelector('select').hasAttribute('required')
+    if (!required) {
+      s2Element.closest('.form-row').querySelector('label').appendChild(small)
     }
   }
 
