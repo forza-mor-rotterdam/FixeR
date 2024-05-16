@@ -71,7 +71,6 @@ dl {
         margin-bottom: 2em;
         padding: 2px 0;
         position: relative;
-        background-color: $gray-tint01;
 
         > a {
             display: block;
@@ -87,30 +86,38 @@ dl {
 
         .container__image {
             width: 100%;
+            height: 275px;
+            background-color: $gray-tint01;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-            img {
+            img:not(.no-image) {
                 display: block;
                 width: 100%;
                 height: 100%;
                 object-fit: contain;
             }
+            .no-image {
+                width: 60px;
+                background-color: transparent;
+            }
         }
 
         .container__title {
             position: relative;
-            padding: 0 8px;
+            padding: 0 8px 0 0;
 
             h3 {
                 font-size: $h4-font-size;
-                padding-left: 40px;
                 margin: 0.5em 0;
+                display: inline-block;
             }
 
             svg {
                 max-width: 32px;
-                position: absolute;
-                left: 8px;
-                top: -7px;
+                vertical-align: middle;
+                margin-top: -5px;
 
                 path {
                     fill: $gray-tint11;
@@ -120,7 +127,6 @@ dl {
 
         .container__badges {
             margin-top: 0.5em;
-            padding: 0 8px;
         }
 
         .icon--edit {
