@@ -158,6 +158,13 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         queryset=Taaktype.objects.filter(actief=True),
         required=False,
     )
+    gerelateerde_taaktypes = forms.ModelMultipleChoiceField(
+        widget=Select2MultipleWidget(
+            attrs={"class": "select2", "id": "gerelateerde_taaktypes_1"}
+        ),
+        queryset=Taaktype.objects.filter(actief=True),
+        required=False,
+    )
     afdelingen = forms.ModelMultipleChoiceField(
         widget=Select2MultipleWidget(attrs={"class": "select2", "id": "afdelingen_1"}),
         queryset=Afdeling.objects.all(),
@@ -181,23 +188,6 @@ class TaaktypeAanpassenForm(forms.ModelForm):
                 "id": "gerelateerde_onderwerpen_1",
             }
         ),
-        required=False,
-    )
-    afdelingen = forms.ModelMultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
-        queryset=Afdeling.objects.all(),
-        label="Afdelingen",
-        required=False,
-    )
-    taaktypemiddelen = forms.ModelMultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
-        queryset=TaaktypeMiddel.objects.all(),
-        label="Materieel",
-        required=False,
-    )
-    gerelateerde_onderwerpen = forms.MultipleChoiceField(
-        widget=forms.SelectMultiple(),
-        label="Gerelateerde onderwerpen",
         required=False,
     )
     actief = forms.BooleanField(
@@ -275,7 +265,13 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
         ].help_text = "Omschrijf het taaktype zo concreet mogelijk. Formuleer de gewenste actie, bijvoorbeeld 'Grofvuil ophalen'."
         self.fields[
             "volgende_taaktypes"
-        ].help_text = "Dit zijn taken die mogelijk uitgevoerd moeten worden nadat de taak is afgerond."
+        ].help_text = "Dit zijn taken die mogelijk uitgevoerd moeten worden nadat de taak is afgerond. Zo kan ‘Koelkast ophalen’ bijvoorbeeld een vervolgtaak zijn van ‘Grofvuil ophalen’."
+        self.fields[
+            "gerelateerde_onderwerpen"
+        ].help_text = "In MeldR selecteert de gebruiker een onderwerp, bijvoorbeeld ‘Grofvuil’. Met welke onderwerpen heeft dit taaktype te maken?"
+        self.fields[
+            "gerelateerde_taaktypes"
+        ].help_text = "Welke andere taken zijn vergelijkbaar met dit taaktype?"
 
 
 TaaktypeVoorbeeldsituatieNietFormSet = inlineformset_factory(

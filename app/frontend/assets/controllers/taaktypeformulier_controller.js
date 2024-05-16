@@ -14,36 +14,18 @@ export default class extends Controller {
     const afdelingen = this.formTaaktypeTarget.querySelector('#afdelingen_1')
     const middelen = this.formTaaktypeTarget.querySelector('#taaktypemiddelen_1')
     const volgend_select = this.formTaaktypeTarget.querySelector('#volgende_taaktypes_1')
-    const gerelateerd_select = this.formTaaktypeTarget.querySelector('#gerelateerde_onderwerpen_1')
+    const gerelateerde_onderwerpen_select = this.formTaaktypeTarget.querySelector(
+      '#gerelateerde_onderwerpen_1'
+    )
+    const gerelateerde_taaktypes_select = this.formTaaktypeTarget.querySelector(
+      '#gerelateerde_taaktypes_1'
+    )
 
     $(afdelingen).select2({ placeholder: 'Zoek op afdeling' })
     $(middelen).select2({ placeholder: 'Zoek op materieel' })
     $(volgend_select).select2({ placeholder: 'Zoek op taaktype' })
-    $(gerelateerd_select).select2({ placeholder: 'Zoek op onderwerp' })
-    $().select2({})
-
-    // $(volgend_select).on('select2:select', function (e) {
-    // const select = e.target
-    // const error = select.closest('.form-row').getElementsByClassName('invalid-text')[0]
-    // if (select.validity.valid) {
-    //   select.closest('.form-row').classList.remove('is-invalid')
-    //   error.textContent = ''
-    // } else {
-    //   error.textContent = this.defaultErrorMessage
-    //   select.closest('.form-row').classList.add('is-invalid')
-    // }
-    // })
-    // $(gerelateerd_select).on('select2:select', function (e) {
-    // const select = e.target
-    // const error = select.closest('.form-row').getElementsByClassName('invalid-text')[0]
-    // if (select.validity.valid) {
-    //   select.closest('.form-row').classList.remove('is-invalid')
-    //   error.textContent = ''
-    // } else {
-    //   error.textContent = this.defaultErrorMessage
-    //   select.closest('.form-row').classList.add('is-invalid')
-    // }
-    // })
+    $(gerelateerde_onderwerpen_select).select2({ placeholder: 'Zoek op onderwerp' })
+    $(gerelateerde_taaktypes_select).select2({ placeholder: 'Zoek op taaktype' })
   }
 
   connect() {
@@ -67,16 +49,6 @@ export default class extends Controller {
         }
       })
     }
-
-    // form.addEventListener('submit', (event) => {
-    //   const allFieldsValid = this.checkValids()
-
-    //   if (!allFieldsValid) {
-    //     const errorList = document.querySelectorAll('div.is-invalid')
-    //     errorList[0].scrollIntoView({ behavior: 'smooth' })
-    //     event.preventDefault()
-    //   }
-    // })
   }
 
   addExample(e) {
@@ -88,19 +60,4 @@ export default class extends Controller {
       }
     }
   }
-
-  // checkValids() {
-  //   const inputList = document.querySelectorAll('input[type="text"], select')
-  //   let count = 0
-  //   for (const input of inputList) {
-  //     let error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
-  //     let invalid = input.value.length == 0 && input.hasAttribute('required')
-  //     error.textContent = invalid ? this.defaultErrorMessage : ''
-  //     input.closest('.form-row').classList[invalid ? 'add' : 'remove']('is-invalid')
-  //     if (invalid) {
-  //       count++
-  //     }
-  //   }
-  //   return count === 0
-  // }
 }
