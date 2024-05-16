@@ -1,3 +1,9 @@
+from apps.taken.admin_filters import (
+    AfgeslotenOpFilter,
+    ResolutieFilter,
+    TaakstatusFilter,
+    TitelFilter,
+)
 from apps.taken.models import (
     Taak,
     TaakDeellink,
@@ -7,37 +13,7 @@ from apps.taken.models import (
 )
 from apps.taken.tasks import compare_and_update_status
 from django.contrib import admin
-from django.utils.translation import gettext_lazy as _
-
-
-class TaakTaakstatusNaamFilter(admin.SimpleListFilter):
-    title = _("Taakstatus naam")
-    parameter_name = "taakstatus_naam"
-
-    def lookups(self, request, model_admin):
-        status_names = Taak.objects.values_list(
-            "taakstatus__naam", flat=True
-        ).distinct()
-        return ((status_name, status_name) for status_name in set(status_names))
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(taakstatus__naam=self.value())
-        return queryset
-
-
-class TaakTitelFilter(admin.SimpleListFilter):
-    title = _("Titel")
-    parameter_name = "titel"
-
-    def lookups(self, request, model_admin):
-        titles = Taak.objects.values_list("titel", flat=True).distinct()
-        return ((title, title) for title in set(titles))
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(titel=self.value())
-        return queryset
+from django.db.models import Count
 
 
 class TaakAdmin(admin.ModelAdmin):
@@ -51,12 +27,72 @@ class TaakAdmin(admin.ModelAdmin):
         "resolutie",
         "aangemaakt_op",
         "aangepast_op",
-        # "geometrie",
-        # "taak_zoek_data",
+        "taakopdracht",
+        "taak_zoek_data",
     )
-    list_filter = (TaakTaakstatusNaamFilter, TaakTitelFilter)
-    # list_editable = ("melding",)
+    readonly_fields = (
+        "uuid",
+        "aangemaakt_op",
+        "aangepast_op",
+        "afgesloten_op",
+    )
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "uuid",
+                    "titel",
+                    "melding",
+                    "taaktype",
+                    "taakstatus",
+                    "resolutie",
+                    "bericht",
+                    "additionele_informatie",
+                    "taakopdracht",
+                    "taak_zoek_data",
+                )
+            },
+        ),
+        (
+            "Tijden",
+            {
+                "fields": (
+                    "aangemaakt_op",
+                    "aangepast_op",
+                    "afgesloten_op",
+                )
+            },
+        ),
+    )
+    search_fields = [
+        "id",
+        "uuid",
+        "taakopdracht",
+        "melding__uuid",
+    ]
+    list_filter = (
+        TaakstatusFilter,
+        ResolutieFilter,
+        AfgeslotenOpFilter,
+        TitelFilter,
+    )
+    raw_id_fields = (
+        "melding",
+        "taaktype",
+        "taakstatus",
+        "taak_zoek_data",
+    )
     actions = ["compare_taakopdracht_status"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related(
+            "melding",
+            "taaktype",
+            "taakstatus",
+            "taak_zoek_data",
+        )
 
     def compare_taakopdracht_status(self, request, queryset):
         voltooid_taak_ids = queryset.filter(taakstatus__naam="voltooid").values_list(
@@ -81,15 +117,55 @@ class TaaktypeAdmin(admin.ModelAdmin):
     )
 
 
+class TakenAantalFilter(admin.SimpleListFilter):
+    title = "taken_aantal"
+    parameter_name = "taak"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("taken_aantal__lte", "Geen taken"),
+            ("taken_aantal__gt", "1 of meer taken"),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            value = "taken_aantal__gte"
+        return (
+            queryset.annotate(taken_aantal=Count("taak"))
+            .order_by()
+            .filter(**{value: 0})
+        )
+
+
 class TaakZoekDataAdmin(admin.ModelAdmin):
-    list_display = ("id", "aangemaakt_op", "display_geometrie")
+    list_display = (
+        "id",
+        "aangemaakt_op",
+        "display_geometrie",
+        "melding_alias",
+        "taken_aantal",
+    )
     readonly_fields = ("display_geometrie",)
+    raw_id_fields = ("melding_alias",)
+    # list_filter = (TakenAantalFilter,)
+
+    def taken_aantal(self, obj):
+        return str(obj.taak.count())
 
     def display_geometrie(self, obj):
         # Convert GEOSGeometry to JSON string representation
         return str(obj.geometrie.geojson) if obj.geometrie else None
 
     display_geometrie.short_description = "Geometrie (JSON)"  # Customize column header
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related(
+            "melding_alias",
+        ).prefetch_related(
+            "taak",
+        )
 
 
 class TaakgebeurtenisAdmin(admin.ModelAdmin):

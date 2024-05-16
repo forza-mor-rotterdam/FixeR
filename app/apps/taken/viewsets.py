@@ -16,6 +16,11 @@ class TaaktypeViewSet(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = TaaktypeSerializer
 
+    def get_permissions(self):
+        if self.action == "list":
+            return []
+        return super().get_permissions()
+
     @extend_schema(
         description="Taaktypes voor melding",
         responses={status.HTTP_200_OK: TaaktypeSerializer},

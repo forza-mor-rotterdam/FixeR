@@ -1,0 +1,17 @@
+<li>
+    {{ taaktype.omschrijving }}
+    <img width="200"
+         height="200"
+         src="{{ taaktype.voorbeeldsituatie_voor_taaktype.all.0.bijlagen.all.0.afbeelding.url }}" />
+    <ul class="list-tags">
+        {% for afdeling in taaktype.afdelingen.all %}
+            <li>
+                <span class="badge badge--green">{{ afdeling.naam }}</span>
+            </li>
+        {% endfor %}
+        <a href="{% url 'taaktype_detail' taaktype.id %}">detail</a>
+        {% if editable %}
+            /<a href="{% url 'taaktype_aanpassen' taaktype.id %}">edit</a>
+        {% endif %}
+    </ul>
+</li>

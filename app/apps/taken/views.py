@@ -13,6 +13,7 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
@@ -58,7 +59,7 @@ class TaaktypeLijstView(TaaktypeView, ListView):
     permission_required("authorisatie.taaktype_bekijken", raise_exception=True),
     name="dispatch",
 )
-class TaaktypeDetailView(TaaktypeView):
+class TaaktypeDetailView(TaaktypeView, DetailView):
     ...
 
 

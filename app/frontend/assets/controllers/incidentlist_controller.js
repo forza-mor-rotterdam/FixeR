@@ -122,9 +122,11 @@ export default class extends Controller {
   taakItemLijstTargetConnected() {
     this.lastRefreshPosition = [...this.currentPosition]
     this.takenCountTarget.textContent = this.taakItemLijstTarget.dataset.takenCount
-    this.kaartOutlet.clearMarkers()
-    const kaartMarkers = this.getKaartMarkers()
-    this.kaartOutlet.plotMarkers(kaartMarkers)
+    if (this.hasKaartOutlet) {
+      this.kaartOutlet.clearMarkers()
+      const kaartMarkers = this.getKaartMarkers()
+      this.kaartOutlet.plotMarkers(kaartMarkers)
+    }
   }
 
   getKaartMarkers() {

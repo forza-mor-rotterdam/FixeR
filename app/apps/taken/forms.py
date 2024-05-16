@@ -5,6 +5,7 @@ from apps.taken.models import Taaktype
 from django import forms
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
 from django.forms import inlineformset_factory
+from django_select2.forms import Select2MultipleWidget
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -68,7 +69,6 @@ class TaaktypeVoorbeeldsituatieFormNiet(forms.ModelForm):
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic, .gif",
                 "data-action": "change->bijlagen#updateImageDisplay",
-                "multiple": "multiple",
                 "hideLabel": True,
             }
         ),
@@ -109,10 +109,79 @@ class TaaktypeVoorbeeldsituatieFormWel(TaaktypeVoorbeeldsituatieFormNiet):
 
 
 class TaaktypeAanpassenForm(forms.ModelForm):
+    toelichting = forms.CharField(
+        label="Omschrijving",
+        widget=forms.Textarea(
+            attrs={
+                "data-testid": "toelichting",
+                "rows": "4",
+            }
+        ),
+        required=True,
+    )
+    omschrijving = forms.CharField(
+        label="Titel",
+        widget=forms.TextInput(
+            attrs={
+                "data-testid": "titel",
+                "rows": "4",
+            }
+        ),
+        required=True,
+    )
+    icoon = forms.FileField(
+        label="Icoon",
+        required=False,
+        widget=forms.widgets.FileInput(
+            attrs={
+                "accept": ".jpg",
+                "data-action": "change->bijlagen#updateImageDisplay",
+                "hideLabel": True,
+            }
+        ),
+    )
     volgende_taaktypes = forms.ModelMultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
+        widget=Select2MultipleWidget(
+            attrs={
+                "class": "select2",
+                "id": "volgende_taaktypes_1",
+            }
+        ),
         queryset=Taaktype.objects.filter(actief=True),
-        label="Volgende taaktypes",
+        required=False,
+    )
+    gerelateerde_taaktypes = forms.ModelMultipleChoiceField(
+        widget=Select2MultipleWidget(
+            attrs={
+                "class": "select2",
+            }
+        ),
+        queryset=Taaktype.objects.filter(actief=True),
+        required=False,
+    )
+    afdelingen = forms.ModelMultipleChoiceField(
+        widget=Select2MultipleWidget(attrs={"class": "select2", "id": "afdelingen_1"}),
+        queryset=Afdeling.objects.all(),
+        label="Afdelingen",
+        required=False,
+    )
+    taaktypemiddelen = forms.ModelMultipleChoiceField(
+        widget=Select2MultipleWidget(
+            attrs={"class": "select2", "id": "taaktypemiddelen_1"}
+        ),
+        queryset=TaaktypeMiddel.objects.all(),
+        label="Welk materieel is nodig om de taak af te handelen?",
+        required=False,
+    )
+    gerelateerde_onderwerpen = forms.MultipleChoiceField(
+        choices=[],  # We'll set this dynamically in the form's __init__ method
+        widget=Select2MultipleWidget(
+            attrs={
+                "class": "select2",
+                "placeholder": "Zoek op onderwerp",
+                "id": "gerelateerde_onderwerpen_1",
+            }
+        ),
         required=False,
     )
     afdelingen = forms.ModelMultipleChoiceField(
@@ -127,11 +196,11 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         label="Materieel",
         required=False,
     )
-    gerelateerde_onderwerpen = forms.MultipleChoiceField(
-        widget=forms.SelectMultiple(),
-        label="Gerelateerde onderwerpen",
-        required=False,
-    )
+    # gerelateerde_onderwerpen = forms.MultipleChoiceField(
+    #     widget=forms.SelectMultiple(),
+    #     label="Gerelateerde onderwerpen",
+    #     required=False,
+    # )
     actief = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
         label="Actief",
@@ -140,11 +209,12 @@ class TaaktypeAanpassenForm(forms.ModelForm):
 
     def __init__(self, *args, current_taaktype=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if current_taaktype:
-            self.fields["volgende_taaktypes"].queryset = Taaktype.objects.filter(
-                actief=True
-            ).exclude(id=current_taaktype.id)
-
+        # if current_taaktype:
+        taaktypes_lijst = Taaktype.objects.filter(actief=True)
+        self.fields["volgende_taaktypes"].queryset = taaktypes_lijst
+        self.fields["gerelateerde_taaktypes"].queryset = taaktypes_lijst
+        print("_ _ _ _ _  _ taaktype_lijst")
+        print(taaktypes_lijst)
         # START gerelateerde_onderwerpen
         onderwerpen = OnderwerpenService().get_onderwerpen()
         onderwerpen_all = [
@@ -170,6 +240,8 @@ class TaaktypeAanpassenForm(forms.ModelForm):
             ]
             for groep_uuid, groep_naam in groep_uuids.items()
         ]
+        print("_ __ _ _  _ _  _ onderwerpen_gegroepeerd")
+        # print(onderwerpen_gegroepeerd)
         self.fields["gerelateerde_onderwerpen"].choices = onderwerpen_gegroepeerd
         # END gerelateerde_onderwerpen
 
@@ -177,7 +249,11 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         model = Taaktype
         fields = (
             "omschrijving",
+            "toelichting",
+            "verantwoordelijke",
+            "icoon",
             "volgende_taaktypes",
+            "gerelateerde_taaktypes",
             "afdelingen",
             "taaktypemiddelen",
             "gerelateerde_onderwerpen",
@@ -190,7 +266,11 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
         model = Taaktype
         fields = (
             "omschrijving",
+            "toelichting",
+            "verantwoordelijke",
+            "icoon",
             "volgende_taaktypes",
+            "gerelateerde_taaktypes",
             "afdelingen",
             "taaktypemiddelen",
             "gerelateerde_onderwerpen",

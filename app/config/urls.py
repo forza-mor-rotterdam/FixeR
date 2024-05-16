@@ -19,10 +19,12 @@ from apps.context.views import (
     ContextLijstView,
     ContextVerwijderenView,
 )
+from apps.health.views import healthz
 from apps.main.views import (
     HomepageView,
     clear_melding_token_from_cache,
     config,
+    http_403,
     http_404,
     http_500,
     incident_modal_handle,
@@ -65,6 +67,7 @@ from apps.taaktype.views import (
 from apps.taken.views import (
     TaaktypeAanmakenView,
     TaaktypeAanpassenView,
+    TaaktypeDetailView,
     TaaktypeLijstView,
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
@@ -73,6 +76,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
+from django_select2 import urls as select2_urls
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -108,6 +112,7 @@ urlpatterns = [
     ),
     path("config/", config, name="config"),
     path("health/", include("health_check.urls")),
+    path("healthz/", healthz, name="healthz"),
     # START taken
     path(
         "taken/",
@@ -229,6 +234,11 @@ urlpatterns = [
         name="taaktype_aanmaken",
     ),
     path(
+        "beheer/taaktype/<int:pk>/",
+        TaaktypeDetailView.as_view(),
+        name="taaktype_detail",
+    ),
+    path(
         "beheer/taaktype/<int:pk>/aanpassen/",
         TaaktypeAanpassenView.as_view(),
         name="taaktype_aanpassen",
@@ -297,6 +307,7 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path("select2/", include(select2_urls)),
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
     re_path(
         r"core-protected/media/",
@@ -330,12 +341,15 @@ urlpatterns += [
     path("oidc/", include("mozilla_django_oidc.urls")),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.APP_ENV != "productie":
     urlpatterns += [
+        path("403/", http_403, name="403"),
         path("404/", http_404, name="404"),
         path("500/", http_500, name="500"),
     ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
         path("__debug__/", include("debug_toolbar.urls")),
     ]

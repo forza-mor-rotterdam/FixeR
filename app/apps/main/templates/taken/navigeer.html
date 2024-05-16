@@ -3,7 +3,7 @@
     {% if device_os == "ios" or device_os == "mac" %}
         <li class="padding-bottom">
             <a class="link link--navigate"
-               href="https://maps.apple.com/?saddr=''&daddr={{ lat }},{{ long }}&z=10&"
+               href="https://maps.apple.com/?daddr={{ lat }},{{ long }}&z=10&"
                target="_blank">
                 {% include "icons/navigate.svg" %}
                 Open met Apple Maps

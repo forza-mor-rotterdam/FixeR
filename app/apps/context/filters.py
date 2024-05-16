@@ -1,4 +1,4 @@
-from django.db.models import Count, Q
+from django.db.models import Q
 from django.template.defaultfilters import slugify
 
 
@@ -88,13 +88,17 @@ class StandaardFilter:
             .values_list(option_key, option_value, option_value_fallback, option_group)
             .distinct(option_key)
         }
-        ff_dict = {
-            fl[0]: (value_lookup(fl[1], fl[0], fl[2]), fl[3], fl[4])
-            for fl in self._filter_manager.taken_filtered.order_by(option_key)
-            .values_list(option_key, option_value, option_value_fallback, option_group)
-            .annotate(count=Count(option_key))
-        }
-        f_dict.update(ff_dict)
+
+        """
+        Onderstaande voegt aantallen gevonden taken toe aan de filter opties
+        """
+        # ff_dict = {
+        #     fl[0]: (value_lookup(fl[1], fl[0], fl[2]), fl[3], fl[4])
+        #     for fl in self._filter_manager.taken_filtered.order_by(option_key)
+        #     .values_list(option_key, option_value, option_value_fallback, option_group)
+        #     .annotate(count=Count(option_key))
+        # }
+        # f_dict.update(ff_dict)
         f_dict = {str(k): v for k, v in f_dict.items() if k}
         if hasattr(self, "_predefined_options"):
             f_dict = {

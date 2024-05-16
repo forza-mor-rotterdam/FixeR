@@ -36,8 +36,8 @@ def compare_and_update_status(self, taak_id):
             if taakgebeurtenis:
                 update_data = {
                     "taakopdracht_url": taak.taakopdracht,
-                    "status": taak.taakstatus.naam,
-                    "resolutie": "opgelost",
+                    "status": {"naam": taak.taakstatus.naam},
+                    "resolutie": taak.resolutie,
                     "omschrijving_intern": taakgebeurtenis.omschrijving_intern,
                     "gebruiker": taakgebeurtenis.gebruiker,
                     "bijlagen": [],

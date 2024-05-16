@@ -11,14 +11,9 @@ logger = logging.getLogger(__name__)
 
 class MeldingNotificatieAPIView(APIView):
     def get(self, request):
-        melding_alias = MeldingAlias.objects.filter(
+        melding_alias, aangemaakt = MeldingAlias.objects.get_or_create(
             bron_url=request.GET.get("melding_url")
-        ).first()
-        if melding_alias:
-            task_update_melding_alias_data.delay(melding_alias.id)
-        else:
-            logger.warning(
-                f"Unable to find MeldingAlias with melding_url: {request.GET.get('melding_url')}"
-            )
+        )
+        task_update_melding_alias_data.delay(melding_alias.id)
 
         return Response({}, status=status.HTTP_200_OK)

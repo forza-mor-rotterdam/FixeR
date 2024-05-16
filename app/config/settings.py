@@ -90,6 +90,7 @@ INSTALLED_APPS = (
     "django_celery_beat",
     "django_celery_results",
     "sorl.thumbnail",
+    "django_select2",
     # Apps
     "apps.main",
     "apps.authorisatie",
@@ -177,6 +178,7 @@ CELERY_BROKER_URL = "redis://redis:6379/0"
 BROKER_URL = CELERY_BROKER_URL
 CELERY_TASK_TRACK_STARTED = True
 CELERY_RESULT_BACKEND = "django-db"
+CELERY_RESULT_EXTENDED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERYBEAT_SCHEDULE = {
     "queue_every_five_mins": {
@@ -247,6 +249,7 @@ REST_FRAMEWORK = dict(
     DEFAULT_AUTHENTICATION_CLASSES=(
         "rest_framework.authentication.TokenAuthentication",
     ),
+    EXCEPTION_HANDLER="utils.exception_handlers.api_exception_handler",
 )
 
 
@@ -302,6 +305,9 @@ CSP_IMG_SRC = (
     "cdn.jsdelivr.net",
     "ows.gis.rotterdam.nl",
     "www.gis.rotterdam.nl",
+    # TODO remove picsum.photos
+    "picsum.photos",
+    "fastly.picsum.photos",
 )
 CSP_STYLE_SRC = (
     "'self'",
@@ -423,7 +429,7 @@ LOGGING = {
         },
         "celery": {
             "handlers": ["console", "file"],
-            "level": "WARNING",
+            "level": "INFO",
         },
     },
 }

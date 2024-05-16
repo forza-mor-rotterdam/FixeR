@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_modal_context.html" %}
 {% load humanize %}
 {% load webpack_static from webpack_loader %}
 {% load multiply previous next from list_tags %}
@@ -34,7 +34,7 @@
 {% endblock extra_head %}
 {% block pageheader %}
 {% endblock pageheader %}
-{% block body %}
+{% block before_modal_content %}
     <turbo-frame id="taak_basis">
     {% if not link_actief %}
         <p>
@@ -76,18 +76,20 @@
                                                   data-longitude="{{ geometrie.0|replace_comma_by_dot }}"></span> meter afstand
                                         </span>
                                     </div>
-                                    {% if TEMPLATE_BASIS != "benc" %}
-                                        <div class="textalign--right">
-                                            <a class="link link--navigate"
-                                               href="#"
-                                               data-modal-title-param="Navigeren"
-                                               data-modal-url-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}"
-                                               data-modal-id-param="navigeer"
-                                               data-action="modal#openModal">
-                                                {% include "icons/navigate.svg" %}
-                                                Navigeren
-                                            </a>
-                                        </div>
+                                    {% if taak.taak_zoek_data.locatie_type == "adres" %}
+                                        {% if geometrie %}
+                                            <div class="textalign--right">
+                                                <a class="link link--navigate"
+                                                   href="#"
+                                                   data-modal-title-param="Navigeren"
+                                                   data-modal-url-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}"
+                                                   data-modal-id-param="navigeer"
+                                                   data-action="modal#openModal">
+                                                    {% include "icons/navigate.svg" %}
+                                                    Navigeren
+                                                </a>
+                                            </div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -147,7 +149,7 @@
                                     </svg>
                                     Locatie
                                 </h2>
-                                {% if TEMPLATE_BASIS != "benc" %}
+                                {% if taak.taak_zoek_data.locatie_type == "adres" %}
                                     <div class="container__details taak">
                                         <h3 class="h5">Ter hoogte van</h3>
                                         <p>{{ taak.adres }}</p>
@@ -232,9 +234,11 @@
                         </div>
                         {% include "snippets/modal_images.html" %}
                     </div>
-                </div>
+                {% endwith %}
             {% endwith %}
-        {% endwith %}
-    {% endif %}
+        {% endif %}
+    {% endblock before_modal_content %}
+    {% block after_modal_content %}
+    </div>
     </turbo-frame>
-{% endblock body %}
+{% endblock after_modal_content %}

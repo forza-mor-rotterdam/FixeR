@@ -81,4 +81,6 @@ def mor_core_protected_url(initial_url):
 
 @register.filter(name="python_any")
 def python_any(values):
-    return any(values)
+    if values:
+        return any(values)
+    return values

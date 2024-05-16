@@ -1,9 +1,7 @@
 from datetime import timedelta
 
 from apps.aliassen.models import MeldingAlias
-from apps.main.templatetags.main_tags import mor_core_url
 from apps.release_notes.models import Bijlage
-from apps.services.onderwerpen import render_onderwerp
 from apps.taaktype.models import TaaktypeVoorbeeldsituatie
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
@@ -52,6 +50,14 @@ class Taaktype(BasisModel):
         blank=True,
         null=True,
     )
+    verantwoordelijke = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+    icoon = models.ImageField(
+        upload_to="taaktype/icons", null=True, blank=True, max_length=255
+    )
     additionele_informatie = models.JSONField(default=dict)
 
     volgende_taaktypes = models.ManyToManyField(
@@ -59,7 +65,12 @@ class Taaktype(BasisModel):
         related_name="vorige_taaktypes_voor_taaktype",
         blank=True,
     )
-    gerelateerde_onderwerpen = ArrayField(models.URLField(), default=[])
+    gerelateerde_taaktypes = models.ManyToManyField(
+        to="taken.Taaktype",
+        related_name="gerelateerde_taaktypes_voor_taaktype",
+        blank=True,
+    )
+    gerelateerde_onderwerpen = ArrayField(models.URLField(), default=list)
     afdelingen = models.ManyToManyField(
         to="taaktype.Afdeling",
         related_name="taaktypes_voor_afdelingen",
@@ -293,14 +304,6 @@ class Taak(BasisModel):
             ),
         )
 
-    def render_onderwerpen(self):
-        return ", ".join(
-            [
-                render_onderwerp(onderwerp_url)
-                for onderwerp_url in self.melding.response_json.get("onderwerpen", [])
-            ]
-        )
-
     def adres(self):
         if not self.taak_zoek_data:
             return ""
@@ -309,25 +312,6 @@ class Taak(BasisModel):
         if self.taak_zoek_data.straatnaam and not self.taak_zoek_data.huisnummer:
             return self.taak_zoek_data.straatnaam
         return f"{self.taak_zoek_data.straatnaam} {self.taak_zoek_data.huisnummer}{self.taak_zoek_data.huisletter if self.taak_zoek_data.huisletter else ''} {self.taak_zoek_data.toevoeging if self.taak_zoek_data.toevoeging else ''}".strip()
-
-    # @TODO Could be updated to use taak_zoek_data instead
-    def postcode_digits(self):
-        locaties = self.melding.response_json.get("locaties_voor_melding")
-        if not locaties or not locaties[0].get("postcode"):
-            return 0
-        try:
-            return int(locaties[0].get("postcode")[0:4])
-        except Exception:
-            return 0
-
-    def afbeelding_url(self):
-        if not self.melding.response_json.get("bijlagen", []):
-            return ""
-        return mor_core_url(
-            self.melding.response_json.get("bijlagen", [])[0].get(
-                "afbeelding_verkleind_relative_url"
-            )
-        )
 
     class Meta:
         ordering = ("-aangemaakt_op",)
