@@ -32,6 +32,10 @@
         }
     }
 
+    .form-control + .help-block:not(.invalid-text) {
+        margin-top: -1.5rem;
+    }
+
     .pagetitle,
     h2 {
         margin-bottom: 0.25em;

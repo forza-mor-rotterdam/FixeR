@@ -201,8 +201,7 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         # if current_taaktype:
         taaktypes_lijst = Taaktype.objects.filter(actief=True)
         self.fields["volgende_taaktypes"].queryset = taaktypes_lijst
-        print("_ _ _ _ _  _ taaktype_lijst")
-        print(taaktypes_lijst)
+        self.fields["gerelateerde_taaktypes"].queryset = taaktypes_lijst
         # START gerelateerde_onderwerpen
         onderwerpen = OnderwerpenService().get_onderwerpen()
         onderwerpen_all = [
@@ -228,10 +227,21 @@ class TaaktypeAanpassenForm(forms.ModelForm):
             ]
             for groep_uuid, groep_naam in groep_uuids.items()
         ]
-        print("_ __ _ _  _ _  _ onderwerpen_gegroepeerd")
         # print(onderwerpen_gegroepeerd)
         self.fields["gerelateerde_onderwerpen"].choices = onderwerpen_gegroepeerd
         # END gerelateerde_onderwerpen
+        self.fields[
+            "omschrijving"
+        ].help_text = "Omschrijf het taaktype zo concreet mogelijk. Formuleer de gewenste actie, bijvoorbeeld 'Grofvuil ophalen'."
+        self.fields[
+            "volgende_taaktypes"
+        ].help_text = "Dit zijn taken die mogelijk uitgevoerd moeten worden nadat de taak is afgerond. Zo kan ‘Koelkast ophalen’ bijvoorbeeld een vervolgtaak zijn van ‘Grofvuil ophalen’."
+        self.fields[
+            "gerelateerde_onderwerpen"
+        ].help_text = "In MeldR selecteert de gebruiker een onderwerp, bijvoorbeeld ‘Grofvuil’. Met welke onderwerpen heeft dit taaktype te maken?"
+        self.fields[
+            "gerelateerde_taaktypes"
+        ].help_text = "Welke andere taken zijn vergelijkbaar met dit taaktype?"
 
     class Meta:
         model = Taaktype
