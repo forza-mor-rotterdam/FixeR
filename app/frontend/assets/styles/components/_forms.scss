@@ -151,10 +151,6 @@ $form-search-indicator-position: left 10px center !default;
     color: $gray-tint09;
 }
 
-.form-control + .help-block:not(.invalid-text) {
-    margin-top: -1.5rem;
-}
-
 .form-control__with-helptext {
     .form-control {
         margin-bottom: 0.25em;

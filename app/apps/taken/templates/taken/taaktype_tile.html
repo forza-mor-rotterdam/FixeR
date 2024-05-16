@@ -2,16 +2,12 @@
 <li class="title-image editable">
     <a href="{% url 'taaktype_detail' taaktype.id %}">
         <div class="container__title">
-            {% comment %} TODO get icon {% endcomment %}
-            {% if not taaktype.icon %}
-                {% include "icons/eye.svg" %}
-            {% endif %}
+            {% if taaktype.icoon %}<img alt="" src="{{ taaktype.icoon.url }}" />{% endif %}
             <h3 class="title">{{ taaktype.omschrijving }}</h3>
         </div>
         <div class="container__image">
             {% if taaktype.voorbeeldsituatie_voor_taaktype.all.0.bijlagen.all.0.afbeelding.url %}
                 <img alt="{{ taaktype.omschrijving }}"
-                     class=""
                      src="{{ taaktype.voorbeeldsituatie_voor_taaktype.all.0.bijlagen.all.0.afbeelding.url }}" />
             {% else %}
                 <img alt="{{ taaktype.omschrijving }}"
