@@ -20,4 +20,4 @@ def render_onderwerp(onderwerp_url, standaar_naam=None):
 
 class OnderwerpenService(BasisService):
     def get_onderwerp(self, url) -> dict:
-        return self.do_request(url, cache_timeout=60 * 10, raw_response=False)
+        return self.do_request(url, cache_timeout=60 * 60 * 24, raw_response=False)
