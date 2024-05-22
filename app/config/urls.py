@@ -33,7 +33,6 @@ from apps.main.views import (
     meldingen_bestand,
     meldingen_bestand_protected,
     navigeer,
-    onderwerp,
     root,
     sorteer_filter,
     taak_delen,
@@ -149,7 +148,6 @@ urlpatterns = [
     # END taken
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
-    path("onderwerp/", onderwerp, name="onderwerp"),
     path("navigeer/<str:lat>/<str:long>/", navigeer, name="navigeer"),
     path(
         "part/taak-modal-handle/<int:id>/",

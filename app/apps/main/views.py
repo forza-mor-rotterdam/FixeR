@@ -24,7 +24,6 @@ from apps.main.utils import (
 )
 from apps.meldingen.service import MeldingenService
 from apps.release_notes.models import ReleaseNote
-from apps.services.onderwerpen import render_onderwerp
 from apps.services.pdok import PDOKService
 from apps.taken.models import Taak, TaakDeellink, Taakstatus, Taaktype
 from device_detector import DeviceDetector
@@ -448,23 +447,6 @@ def taak_detail_preview(request, id, signed_data):
             ),
             "link_actief": link_actief,
             "taak_gedeeld": taak_gedeeld,
-        },
-    )
-
-
-@login_required
-def onderwerp(request):
-    url = request.GET.get("url")
-    if not url:
-        return http_404()
-
-    onderwerp = render_onderwerp(request.GET.get("url"))
-    return render(
-        request,
-        "onderwerpen/onderwerp.html",
-        {
-            "url": url,
-            "onderwerp": onderwerp,
         },
     )
 
