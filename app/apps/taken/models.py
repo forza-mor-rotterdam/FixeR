@@ -1,9 +1,7 @@
 from datetime import timedelta
 
 from apps.aliassen.models import MeldingAlias
-from apps.main.templatetags.main_tags import mor_core_url
 from apps.release_notes.models import Bijlage
-from apps.services.onderwerpen import render_onderwerp
 from apps.taaktype.models import TaaktypeVoorbeeldsituatie
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
@@ -52,6 +50,14 @@ class Taaktype(BasisModel):
         blank=True,
         null=True,
     )
+    verantwoordelijke = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+    icoon = models.ImageField(
+        upload_to="taaktype/icons", null=True, blank=True, max_length=255
+    )
     additionele_informatie = models.JSONField(default=dict)
 
     volgende_taaktypes = models.ManyToManyField(
@@ -59,7 +65,12 @@ class Taaktype(BasisModel):
         related_name="vorige_taaktypes_voor_taaktype",
         blank=True,
     )
-    gerelateerde_onderwerpen = ArrayField(models.URLField(), default=[])
+    gerelateerde_taaktypes = models.ManyToManyField(
+        to="taken.Taaktype",
+        related_name="gerelateerde_taaktypes_voor_taaktype",
+        blank=True,
+    )
+    gerelateerde_onderwerpen = ArrayField(models.URLField(), default=list)
     afdelingen = models.ManyToManyField(
         to="taaktype.Afdeling",
         related_name="taaktypes_voor_afdelingen",
@@ -79,6 +90,14 @@ class Taaktype(BasisModel):
                 "id", flat=True
             ),
         )
+
+    def voorbeeldsituatie_wel_bijlage(self):
+        voorbeeldsituaties_wel = self.voorbeeldsituatie_voor_taaktype.filter(
+            type=TaaktypeVoorbeeldsituatie.TypeOpties.WAAROM_WEL,
+        ).last()
+        if voorbeeldsituaties_wel and voorbeeldsituaties_wel.bijlagen.first():
+            return voorbeeldsituaties_wel.bijlagen.first()
+        return
 
     class Meta:
         ordering = ("-aangemaakt_op",)

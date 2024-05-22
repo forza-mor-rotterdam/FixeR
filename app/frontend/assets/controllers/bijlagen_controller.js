@@ -8,8 +8,6 @@ export default class extends Controller {
     this.fileInput = this.element.querySelector("input[type='file']")
     this.multiple = this.fileInput.hasAttribute('multiple')
     this.accept = this.fileInput.getAttribute('accept')
-
-    console.log('ACCEPT', this.accept)
   }
 
   removeDuplicates(arr) {

@@ -50,72 +50,6 @@
                         </div>
                     </div>
                 {% endif %}
-                <form action="."
-                      method="post"
-                      class="form--beheer"
-                      enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <fieldset>
-                        {{ form.omschrijving|render_rotterdam_formulier }}
-                        {{ form.volgende_taaktypes|render_rotterdam_formulier }}
-                        {{ form.afdelingen|render_rotterdam_formulier }}
-                        {{ form.taaktypemiddelen|render_rotterdam_formulier }}
-                        {{ form.gerelateerde_onderwerpen }}
-                        <br>
-                        Geselecteerde onderwerpen
-                        <ul>
-                            {% for onderwerp_url in form.gerelateerde_onderwerpen.value %}
-                                <li>{% render_onderwerp onderwerp_url %}</li>
-                            {% endfor %}
-                        </ul>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <strong>WEL</strong>
-                                    </th>
-                                    <th>
-                                        <strong>NIET</strong>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        {{ voorbeeldsituatie_wel.management_form }}
-                                        {% for voorbeeldsituatie in voorbeeldsituatie_wel %}
-                                            {% include "taken/taaktype_voorbeeldsituatie_form.html" %}
-                                        {% endfor %}
-                                    </td>
-                                    <td>
-                                        {{ voorbeeldsituatie_niet.management_form }}
-                                        {% for voorbeeldsituatie in voorbeeldsituatie_niet %}
-                                            {% include "taken/taaktype_voorbeeldsituatie_form.html" %}
-                                        {% endfor %}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="container__checkbox--single">
-                            <h3 class="label">Is dit taaktype actief?</h3>
-                            {{ form.actief|render_rotterdam_formulier }}
-                        </div>
-                    </fieldset>
-                    <div class="form-row container__button">
-                        <div class="form-row btn-row">
-                            <button type="reset"
-                                    class="btn btn-tertiary"
-                                    data-controller="utils"
-                                    data-action="utils#goToUrl"
-                                    data-utils-url-param="{% url 'taaktype_lijst' %}">
-                                <span>Annuleren</span>
-                            </button>
-                            <button type="submit" class="btn btn-action">
-                                <span>Aanpassen</span>
-                            </button>
-                        </div>
-                    </div>
-                </form>
             </div>
             <div>
                 {% if object.contexten_voor_taaktypes.all %}
@@ -133,8 +67,7 @@
               class="form--beheer full-width"
               enctype="multipart/form-data"
               data-controller="taaktypeformulier"
-              data-taaktypeformulier-target="formTaaktype"
-              data-turbo-frame="_top">
+              data-taaktypeformulier-target="formTaaktype">
             {% csrf_token %}
             <fieldset class="section">
                 <legend>Basisinformatie</legend>
