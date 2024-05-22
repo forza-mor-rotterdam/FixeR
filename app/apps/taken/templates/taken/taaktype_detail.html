@@ -31,7 +31,13 @@
         <h2 class="h4">Omschrijving taaktype</h2>
         <p>{{ taaktype.toelichting }}</p>
         <h2 class="h4">Wie is er verantwoordelijk voor de uitvoering van het proces?</h2>
-        <p>...{{ taaktype.verantwoordlijke }}</p>
+        <p>
+            {% if taaktype.verantwoordelijke %}
+                {{ taaktype.verantwoordelijke }}
+            {% else %}
+                Nog niet ingevuld
+            {% endif %}
+        </p>
         <section class="padding-bottom">
             <div class="container__badges--overview">
                 {% if taaktype.afdelingen.all|length > 0 %}
