@@ -7,6 +7,7 @@ export default class extends Controller {
     this.temp_filesArr = []
     this.fileInput = this.element.querySelector("input[type='file']")
     this.multiple = this.fileInput.hasAttribute('multiple')
+    this.accept = this.fileInput.getAttribute('accept')
   }
 
   removeDuplicates(arr) {
@@ -144,7 +145,7 @@ export default class extends Controller {
           listItem.appendChild(content)
           listItem.appendChild(remove)
         } else {
-          content.textContent = `Het bestand "${file.name}" is geen geldig bestandstype. Selecteer alleen bestanden van het type "jpg, jpeg of png"`
+          content.textContent = `Het bestand "${file.name}" is geen geldig bestandstype."`
           listItem.appendChild(content)
         }
 

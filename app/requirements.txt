@@ -24,6 +24,7 @@ psycopg2>=2.9.5
 django-webpack-loader==1.7.0
 requests==2.29.0
 debugpy
+django-select2==8.1.2
 Pillow==9.4.0
 pillow-heif==0.13.0
 sorl-thumbnail==12.8.0

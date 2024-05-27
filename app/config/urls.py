@@ -55,9 +55,24 @@ from apps.release_notes.views import (
     ReleaseNoteListViewPublic,
     ReleaseNoteVerwijderenView,
 )
+from apps.taaktype.views import (
+    AfdelingAanmakenView,
+    AfdelingAanpassenView,
+    AfdelingLijstView,
+    TaaktypeMiddelAanmakenView,
+    TaaktypeMiddelAanpassenView,
+    TaaktypeMiddelLijstView,
+    taaktype_beheer,
+)
+from apps.taaktype.viewsets import (
+    AfdelingViewSet,
+    TaaktypeMiddelViewSet,
+    TaaktypeVoorbeeldsituatieViewSet,
+)
 from apps.taken.views import (
     TaaktypeAanmakenView,
     TaaktypeAanpassenView,
+    TaaktypeDetailView,
     TaaktypeLijstView,
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
@@ -66,6 +81,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
+from django_select2 import urls as select2_urls
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -77,6 +93,13 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r"taak", TaakViewSet, basename="taak")
 router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
+router.register(r"afdeling", AfdelingViewSet, basename="afdeling")
+router.register(r"taaktype-middel", TaaktypeMiddelViewSet, basename="taaktype_middel")
+router.register(
+    r"taaktype-voorbeeldsituatie",
+    TaaktypeVoorbeeldsituatieViewSet,
+    basename="taaktype_voorbeeldsituatie",
+)
 
 urlpatterns = [
     path("", root, name="root"),
@@ -157,6 +180,7 @@ urlpatterns = [
     # END partials
     # START beheer
     path("beheer/", beheer, name="beheer"),
+    path("beheer-taaktype/", taaktype_beheer, name="taaktype_beheer"),
     path("beheer/gebruiker/", GebruikerLijstView.as_view(), name="gebruiker_lijst"),
     path(
         "beheer/gebruiker/bulk-import/",
@@ -189,11 +213,42 @@ urlpatterns = [
         ContextVerwijderenView.as_view(),
         name="context_verwijderen",
     ),
+    path("beheer/afdeling/", AfdelingLijstView.as_view(), name="afdeling_lijst"),
+    path(
+        "beheer/afdeling/aanmaken/",
+        AfdelingAanmakenView.as_view(),
+        name="afdeling_aanmaken",
+    ),
+    path(
+        "beheer/afdeling/<int:pk>/aanpassen/",
+        AfdelingAanpassenView.as_view(),
+        name="afdeling_aanpassen",
+    ),
+    path(
+        "beheer/taaktypemiddel/",
+        TaaktypeMiddelLijstView.as_view(),
+        name="taaktypemiddel_lijst",
+    ),
+    path(
+        "beheer/taaktypemiddel/aanmaken/",
+        TaaktypeMiddelAanmakenView.as_view(),
+        name="taaktypemiddel_aanmaken",
+    ),
+    path(
+        "beheer/taaktypemiddel/<int:pk>/aanpassen/",
+        TaaktypeMiddelAanpassenView.as_view(),
+        name="taaktypemiddel_aanpassen",
+    ),
     path("beheer/taaktype/", TaaktypeLijstView.as_view(), name="taaktype_lijst"),
     path(
         "beheer/taaktype/aanmaken/",
         TaaktypeAanmakenView.as_view(),
         name="taaktype_aanmaken",
+    ),
+    path(
+        "beheer/taaktype/<int:pk>/",
+        TaaktypeDetailView.as_view(),
+        name="taaktype_detail",
     ),
     path(
         "beheer/taaktype/<int:pk>/aanpassen/",
@@ -264,6 +319,7 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path("select2/", include(select2_urls)),
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
     re_path(
         r"core-protected/media/",

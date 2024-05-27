@@ -1,9 +1,12 @@
 from datetime import timedelta
 
 from apps.aliassen.models import MeldingAlias
+from apps.release_notes.models import Bijlage
+from apps.taaktype.models import TaaktypeVoorbeeldsituatie
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core import signing
@@ -47,6 +50,14 @@ class Taaktype(BasisModel):
         blank=True,
         null=True,
     )
+    verantwoordelijke = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+    icoon = models.ImageField(
+        upload_to="taaktype/icons", null=True, blank=True, max_length=255
+    )
     additionele_informatie = models.JSONField(default=dict)
 
     volgende_taaktypes = models.ManyToManyField(
@@ -54,7 +65,39 @@ class Taaktype(BasisModel):
         related_name="vorige_taaktypes_voor_taaktype",
         blank=True,
     )
+    gerelateerde_taaktypes = models.ManyToManyField(
+        to="taken.Taaktype",
+        related_name="gerelateerde_taaktypes_voor_taaktype",
+        blank=True,
+    )
+    gerelateerde_onderwerpen = ArrayField(models.URLField(), default=list)
+    afdelingen = models.ManyToManyField(
+        to="taaktype.Afdeling",
+        related_name="taaktypes_voor_afdelingen",
+        blank=True,
+    )
+    taaktypemiddelen = models.ManyToManyField(
+        to="taaktype.TaaktypeMiddel",
+        related_name="taaktypes_voor_taaktypemiddelen",
+        blank=True,
+    )
     actief = models.BooleanField(default=True)
+
+    def bijlagen(self):
+        return Bijlage.objects.filter(
+            content_type=ContentType.objects.get_for_model(TaaktypeVoorbeeldsituatie),
+            object_id__in=self.voorbeeldsituatie_voor_taaktype.values_list(
+                "id", flat=True
+            ),
+        )
+
+    def voorbeeldsituatie_wel_bijlage(self):
+        voorbeeldsituaties_wel = self.voorbeeldsituatie_voor_taaktype.filter(
+            type=TaaktypeVoorbeeldsituatie.TypeOpties.WAAROM_WEL,
+        ).last()
+        if voorbeeldsituaties_wel and voorbeeldsituaties_wel.bijlagen.first():
+            return voorbeeldsituaties_wel.bijlagen.first()
+        return
 
     class Meta:
         ordering = ("-aangemaakt_op",)
