@@ -1,22 +1,28 @@
 import logging
 
 from apps.authenticatie.forms import (
+    AfdelingForm,
+    BevestigenForm,
     GebruikerAanmakenForm,
     GebruikerAanpassenForm,
     GebruikerBulkImportForm,
     GebruikerProfielForm,
+    ProfielfotoForm,
+    WerklocatieForm,
 )
+from apps.context.forms import TaaktypesForm
 from apps.meldingen.service import MeldingenService
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+from formtools.wizard.views import SessionWizardView
 
 Gebruiker = get_user_model()
 logger = logging.getLogger(__name__)
@@ -148,3 +154,57 @@ class GebruikerProfielView(UpdateView):
         )
         messages.success(self.request, "Gebruikersgegevens succesvol opgeslagen.")
         return super().form_valid(form)
+
+
+FORMS = [
+    # ("profielfoto", ProfielfotoForm),
+    ("afdeling", AfdelingForm),
+    ("taken", TaaktypesForm),
+    ("werklocatie", WerklocatieForm),
+    ("bevestigen", BevestigenForm),
+]
+
+TEMPLATES = {
+    # "profielfoto": "onboarding/profielfoto_form.html",
+    "afdeling": "onboarding/afdeling_form.html",
+    "taken": "onboarding/taken_form.html",
+    "werklocatie": "onboarding/werklocatie_form.html",
+    "bevestigen": "onboarding/bevestigen_form.html",
+}
+
+
+@method_decorator(login_required, name="dispatch")
+class OnboardingView(SessionWizardView):
+    form_list = FORMS
+    template_name = "onboarding/multipart_form.html"
+
+    def get_template_names(self):
+        return [TEMPLATES[self.steps.current]]
+
+    def done(self, form_list, **kwargs):
+        form_data = [form.cleaned_data for form in form_list]
+
+        # profielfoto_data = form_data[0]
+        afdeling_data = form_data[1]
+        taken_data = form_data[2]
+        werklocatie_data = form_data[3]
+        bevestigen_data = form_data[4]
+
+        gebruiker = self.request.user
+        profiel = gebruiker.profiel
+        # profiel.profielfoto = profielfoto_data.get("profielfoto", None)
+        profiel.afdelingen = afdeling_data.get("afdelingen", [])
+        profiel.context.taaktypes = taken_data.get("taaktypes", [])
+        profiel.werklocatie = werklocatie_data.get("werklocatie", None)
+        profiel.buurten = werklocatie_data.get("buurten", None)
+        profiel.bevestigt = bevestigen_data["confirm"]
+        profiel.save()
+
+        messages.success(self.request, "Je instellingen zijn succesvol opgeslagen.")
+        return redirect("success")
+
+    def get_form_kwargs(self, step=None):
+        kwargs = super().get_form_kwargs(step)
+        if self.request.user.is_authenticated:
+            kwargs["gebruiker"] = self.request.user
+        return kwargs
