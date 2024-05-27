@@ -4,6 +4,7 @@ from apps.authenticatie.views import (
     GebruikerAanpassenView,
     GebruikerLijstView,
     GebruikerProfielView,
+    OnboardingView,
     gebruiker_bulk_import,
 )
 from apps.authorisatie.views import (
@@ -197,6 +198,7 @@ urlpatterns = [
         GebruikerAanpassenView.as_view(),
         name="gebruiker_aanpassen",
     ),
+    path("onboarding/", OnboardingView.as_view(), name="onboarding"),
     path("beheer/context/", ContextLijstView.as_view(), name="context_lijst"),
     path(
         "beheer/context/aanmaken/",

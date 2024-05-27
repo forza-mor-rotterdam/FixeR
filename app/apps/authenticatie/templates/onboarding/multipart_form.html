@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>{{ wizard.form.form_title }}</h2>
+    <div class="progress">
+        <progress class="progress-bar"
+                  role="progressbar"
+                  style="width: {{ wizard.steps.step1|divisibleby:"5" }}%"
+                  aria-valuenow="{{ wizard.steps.step1|divisibleby:"5" }}"
+                  aria-valuemin="0"
+                  aria-valuemax="100">{{ wizard.steps.step1|divisibleby:"5" }}%</progress>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        {{ wizard.form.as_p }}
+        <button type="submit" class="btn btn-primary">
+            {% if wizard.steps.last %}
+                Submit
+            {% else %}
+                Next
+            {% endif %}
+        </button>
+    </form>
+{% endblock content %}

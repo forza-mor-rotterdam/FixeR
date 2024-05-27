@@ -2,7 +2,7 @@ import csv
 from io import StringIO
 
 import chardet
-from apps.authenticatie.models import Profiel
+from apps.authenticatie.models import Profiel, ProfielAfdeling
 from apps.context.models import Context
 from django import forms
 from django.contrib.auth import get_user_model
@@ -184,3 +184,50 @@ class GebruikerProfielForm(forms.ModelForm):
     class Meta:
         model = Gebruiker
         fields = ("telefoonnummer", "first_name", "last_name")
+
+
+class ProfielfotoForm(forms.ModelForm):
+    class Meta:
+        model = Profiel
+        fields = ["profielfoto"]
+
+
+class AfdelingForm(forms.ModelForm):
+    afdelingen = forms.ModelMultipleChoiceField(
+        queryset=ProfielAfdeling.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
+    class Meta:
+        model = Profiel
+        fields = ["afdelingen"]
+
+    def __init__(self, gebruiker, *args, **kwargs):
+        super(AfdelingForm, self).__init__(*args, **kwargs)
+        if gebruiker.is_authenticated:
+            self.fields["afdelingen"].queryset = gebruiker.profiel.afdelingen.all()
+
+
+class WerklocatieForm(forms.ModelForm):
+    werklocatie = forms.ModelChoiceField(
+        queryset=None, widget=forms.Select, required=False
+    )
+
+    class Meta:
+        model = Profiel
+        fields = ["werklocatie", "buurten"]
+
+    def __init__(self, gebruiker, *args, **kwargs):
+        super(WerklocatieForm, self).__init__(*args, **kwargs)
+        if gebruiker.is_authenticated:
+            werklocatie = gebruiker.profiel.werklocatie
+            if werklocatie:
+                self.fields[
+                    "werklocatie"
+                ].queryset = werklocatie.profielen_voor_werklocatie.all()
+                self.fields["buurten"].queryset = werklocatie.buurten.all()
+
+
+class BevestigenForm(forms.Form):
+    confirm = forms.BooleanField(required=True)
