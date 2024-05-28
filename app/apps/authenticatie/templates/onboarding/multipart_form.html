@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block content %}
+{% block body %}
     <h2>{{ wizard.form.form_title }}</h2>
     <div class="progress">
         <progress class="progress-bar"
@@ -10,6 +10,7 @@
                   aria-valuemax="100">{{ wizard.steps.step1|divisibleby:"5" }}%</progress>
     </div>
     <form method="post" enctype="multipart/form-data">
+        Dit is een multipart form
         {% csrf_token %}
         {{ wizard.management_form }}
         {{ wizard.form.as_p }}
@@ -21,4 +22,4 @@
             {% endif %}
         </button>
     </form>
-{% endblock content %}
+{% endblock body %}

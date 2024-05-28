@@ -203,9 +203,9 @@ class AfdelingForm(forms.ModelForm):
         model = Profiel
         fields = ["afdelingen"]
 
-    def __init__(self, gebruiker, *args, **kwargs):
-        super(AfdelingForm, self).__init__(*args, **kwargs)
-        if gebruiker.is_authenticated:
+    def __init__(self, *args, gebruiker=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if gebruiker and gebruiker.is_authenticated:
             self.fields["afdelingen"].queryset = gebruiker.profiel.afdelingen.all()
 
 
@@ -218,9 +218,9 @@ class WerklocatieForm(forms.ModelForm):
         model = Profiel
         fields = ["werklocatie", "buurten"]
 
-    def __init__(self, gebruiker, *args, **kwargs):
-        super(WerklocatieForm, self).__init__(*args, **kwargs)
-        if gebruiker.is_authenticated:
+    def __init__(self, *args, gebruiker=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if gebruiker and gebruiker.is_authenticated:
             werklocatie = gebruiker.profiel.werklocatie
             if werklocatie:
                 self.fields[
