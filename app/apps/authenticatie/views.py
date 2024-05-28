@@ -193,10 +193,10 @@ class OnboardingView(SessionWizardView):
         gebruiker = self.request.user
         profiel = gebruiker.profiel
         # profiel.profielfoto = profielfoto_data.get("profielfoto", None)
-        profiel.afdelingen = afdeling_data.get("afdelingen", [])
-        profiel.context.taaktypes = taken_data.get("taaktypes", [])
+        profiel.afdelingen.set(afdeling_data.get("afdelingen", []))
+        profiel.context.taaktypes.set(taken_data.get("taaktypes", []))
         profiel.werklocatie = werklocatie_data.get("werklocatie", None)
-        profiel.buurten = werklocatie_data.get("buurten", None)
+        profiel.buurten.set(werklocatie_data.get("buurten", []))
         profiel.bevestigt = bevestigen_data["confirm"]
         profiel.save()
 
@@ -206,5 +206,6 @@ class OnboardingView(SessionWizardView):
     def get_form_kwargs(self, step=None):
         kwargs = super().get_form_kwargs(step)
         if self.request.user.is_authenticated:
-            kwargs["gebruiker"] = self.request.user
+            if step in ["afdeling", "werklocatie"]:
+                kwargs["gebruiker"] = self.request.user
         return kwargs
