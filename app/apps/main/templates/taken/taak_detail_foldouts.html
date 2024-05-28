@@ -278,7 +278,7 @@
                 <h3 class="h5">Onderwerp</h3>
                 <p>
                     {% for onderwerp in melding.onderwerpen %}
-                        <turbo-frame id="onderwerp_{{ onderwerp|urlencode }}" data-spinner="hide" loading="lazy" src="{% url 'onderwerp' %}?url={{ onderwerp|urlencode }}"></turbo-frame>
+                        {% render_onderwerp onderwerp %}
                         {% if not forloop.last %},{% endif %}
                     {% endfor %}
                 </p>
