@@ -1,4 +1,10 @@
 {% extends "onboarding/multipart_form.html" %}
-{% block body %}
-    {{ block.super }}
-{% endblock body %}
+{% block title %}
+    Onboarding {{ wizard.steps.current }} | FixeR
+{% endblock title %}
+{% block step_content %}
+    <h1>In welk gebied werk je?</h1>
+    <p>Selecteer in welk gebied je werkt.</p>
+    <h5>Meer info</h5>
+    {{ wizard.form.as_p }}
+{% endblock step_content %}

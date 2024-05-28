@@ -1,12 +1,13 @@
 {% extends "base.html" %}
+{% block title %}
+    Onboarding | FixeR
+{% endblock title %}
 {% block body %}
     <h2>{{ wizard.form.form_title }}</h2>
     <div class="progress">
-        Total steps: {{ wizard.steps.count }}
+        Current step: {{ wizard.steps.index|add:1 }} van {{ wizard.steps.count }} | {{ wizard.steps.current }}
         <br />
-        Current step: {{ wizard.steps.index|add:1 }} | {{ wizard.steps.current }}
-        <br />
-        Progress % {{ progress }}
+        Progress {{ progress }}%
         <br />
         <progress class="progress-bar"
                   style="width: {{ progress }}%"
@@ -16,23 +17,32 @@
                   aria-valuemin="0"
                   aria-valuemax="100">{{ progress }}
         </progress>
-        <p>Step {{ wizard.steps.index|add:1 }} of {{ wizard.steps.count }}</p>
+    </div>
+    <div>
+        {% block step_content %}
+        {% endblock step_content %}
     </div>
     <form method="post" enctype="multipart/form-data">
-        Dit is een multipart form
         {% csrf_token %}
         {{ wizard.management_form }}
-        {{ wizard.form.as_p }}
-        <button type="submit" class="btn btn-primary">
-            {% if wizard.steps.last %}
-                Submit
-            {% else %}
-                Next
-            {% endif %}
-        </button>
-        {% comment %} {% if wizard.steps.prev %}
-            <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">{{ wizard.steps.step1 }}</button>
-            <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{{ wizard.steps.prev }}</button>
-        {% endif %} {% endcomment %}
+        {% if wizard.steps.prev %}
+            <button class="btn btn-primary"
+                    name="wizard_goto_step"
+                    type="submit"
+                    value="{{ wizard.steps.first }}">Eerste</button>
+            <button class="btn btn-primary"
+                    name="wizard_goto_step"
+                    type="submit"
+                    value="{{ wizard.steps.prev }}">Vorige</button>
+        {% endif %}
+        {% if wizard.steps.next %}
+            <button class="btn btn-primary"
+                    name="wizard_goto_step"
+                    type="submit"
+                    value="{{ wizard.steps.next }}">Volgende</button>
+        {% endif %}
+        {% if wizard.steps.last == wizard.steps.current %}
+            <button class="btn btn-primary" type="submit">Aan de slag</button>
+        {% endif %}
     </form>
 {% endblock body %}

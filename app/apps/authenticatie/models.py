@@ -112,7 +112,7 @@ class Profiel(BasisModel):
         null=True,
     )
     afdelingen = models.ManyToManyField(
-        to="authenticatie.ProfielAfdeling",
+        to="taaktype.Afdeling",
         related_name="profielen_voor_afdelingen",
         blank=True,
     )
@@ -121,8 +121,8 @@ class Profiel(BasisModel):
     )
 
     class WerklocatieOpties(models.TextChoices):
-        VOLLEDIG = "volledig", "volledig"
-        NOORD = "noord", "noord"
+        VOLLEDIG = "volledig", "Volledig"
+        NOORD = "noord", "Noord"
         ZUID = "zuid", "Zuid"
 
     werklocatie = models.CharField(
@@ -139,23 +139,3 @@ class Profiel(BasisModel):
         if self.gebruiker:
             return f"Profiel voor: {self.gebruiker}"
         return f"Profiel id: {self.pk}"
-
-
-class ProfielAfdeling(BasisModel):
-    """
-    ProfielAfdeling model voor profielen
-    """
-
-    class OnderdeelOpties(models.TextChoices):
-        SHOON = "schoon", "Schoon"
-        HEEL = "heel", "Heel"
-        VELIG = "veilig", "Veilig"
-
-    naam = models.CharField(max_length=100)
-    onderdeel = models.CharField(
-        max_length=50,
-        choices=OnderdeelOpties.choices,
-    )
-
-    def __str__(self):
-        return self.naam

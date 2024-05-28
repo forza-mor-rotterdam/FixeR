@@ -91,3 +91,29 @@ class TaaktypesForm(forms.ModelForm):
     class Meta:
         model = Context
         fields = ("taaktypes",)
+
+
+class TaaktypesFilteredForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        afdelingen_selected = kwargs.pop("afdelingen_selected", None)
+
+        super().__init__(*args, **kwargs)
+        for afdeling in afdelingen_selected:
+            taaktypes_queryset = Taaktype.objects.filter(afdelingen=afdeling).distinct()
+            if taaktypes_queryset.exists():
+                field_name = f"taaktypes_afdeling_{afdeling.id}"
+                self.fields[field_name] = forms.ModelMultipleChoiceField(
+                    widget=forms.CheckboxSelectMultiple(
+                        attrs={
+                            "class": "form-check-input",
+                            "data-action": "change->incidentHandleForm#toggleNewTask",
+                        }
+                    ),
+                    queryset=taaktypes_queryset,
+                    label=f"Taken van {afdeling} {taaktypes_queryset.count()}",
+                    required=False,
+                )
+
+    class Meta:
+        model = Context
+        fields = ()

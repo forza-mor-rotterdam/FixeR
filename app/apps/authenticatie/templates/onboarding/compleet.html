@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}
+    Onboarding compleet | FixeR
+{% endblock title %}
+{% block body %}
+    {% comment %} Hier komt een leuke animatie of icoon {% endcomment %}
+    <h2>
+        Goed gedaan.
+        <br />
+        We halen nu je taken op
+    </h2>
+    <a class="btn btn-primary" href="{% url 'taken' %}">Naar mijn taken</a>
+{% endblock body %}

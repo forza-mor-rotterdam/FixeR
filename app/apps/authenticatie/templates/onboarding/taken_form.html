@@ -1,4 +1,9 @@
 {% extends "onboarding/multipart_form.html" %}
-{% block body %}
-    {{ block.super }}
-{% endblock body %}
+{% block title %}
+    Onboarding {{ wizard.steps.current }} | FixeR
+{% endblock title %}
+{% block step_content %}
+    <h1>Wat zijn jouw taken?</h1>
+    <p>Selecteer jouw taken. Je kunt dit altijd weer aanpassen in je instellingen.</p>
+    {{ wizard.form.as_p }}
+{% endblock step_content %}
