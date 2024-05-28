@@ -3,6 +3,7 @@ import L from 'leaflet'
 
 export default class extends Controller {
   static outlets = ['taken']
+  static targets = ['gps']
 
   currentPosition = { coords: { latitude: 51.9247772, longitude: 4.4780972 } }
   incidentlist = null
@@ -51,6 +52,7 @@ export default class extends Controller {
   }
 
   positionWatchSuccess = (position) => {
+    this.gpsTarget.textContent = `lat=${position.coords.latitude} lon=${position.coords.longitude}`
     const myLocation = new L.LatLng(
       this.currentPosition.coords.latitude,
       this.currentPosition.coords.longitude
