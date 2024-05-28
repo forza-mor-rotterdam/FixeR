@@ -16,6 +16,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.files.storage import FileSystemStorage
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -177,6 +178,7 @@ TEMPLATES = {
 class OnboardingView(SessionWizardView):
     form_list = FORMS
     template_name = "onboarding/multipart_form.html"
+    file_storage = FileSystemStorage(location=settings.MEDIA_ROOT)
 
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
@@ -212,7 +214,11 @@ class OnboardingView(SessionWizardView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["progress"] = (self.steps.index / self.steps.count) * 100
+        try:
+            progress = (self.steps.index / (self.steps.count - 1)) * 100
+        except ZeroDivisionError:
+            progress = 100
+        context["progress"] = progress
         print(
             f"Total steps: {self.steps.count}, Current step: {self.steps.index+1}, Progress: {context['progress']}"
         )
