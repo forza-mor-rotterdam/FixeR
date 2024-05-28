@@ -46,3 +46,27 @@
         {% endif %}
     </form>
 {% endblock body %}
+{% comment %} <p>Step {{ wizard.steps.index|add:1 }} of {{ wizard.steps.count }}</p>
+        * {{ wizard.steps }} *
+        <ul class="list-progress">
+            <li class="progress__step active"></li>
+            <li class="progress__step active"></li>
+            <li class="progress__step"></li>
+        </ul>
+    </div>
+    <form method="post" enctype="multipart/form-data" data-turbo ="false">
+        Dit is een multipart form
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        {{ wizard.form.as_p }}
+        <button type="submit" class="btn btn-primary">
+            {% if wizard.steps.index == wizard.steps.count %}
+                Bevestigen
+            {% else %}
+                Volgende
+            {% endif %}
+        </button>
+        {% if wizard.steps.prev %}
+            <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">{{ wizard.steps.step1 }}</button>
+            <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{{ wizard.steps.prev }}</button>
+{% endif %} {% endcomment %}

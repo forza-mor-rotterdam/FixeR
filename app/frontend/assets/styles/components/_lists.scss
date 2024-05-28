@@ -188,3 +188,11 @@ dl {
         margin: 0 5px $input-padding-y 0;
     }
 }
+
+.list-progress {
+    @extend .list-clean;
+    display: flex;
+    li {
+        flex-grow: 1;
+    }
+}
