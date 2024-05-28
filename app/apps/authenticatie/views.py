@@ -209,3 +209,11 @@ class OnboardingView(SessionWizardView):
             if step in ["afdeling", "werklocatie"]:
                 kwargs["gebruiker"] = self.request.user
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["progress"] = (self.steps.index / self.steps.count) * 100
+        print(
+            f"Total steps: {self.steps.count}, Current step: {self.steps.index+1}, Progress: {context['progress']}"
+        )
+        return context
