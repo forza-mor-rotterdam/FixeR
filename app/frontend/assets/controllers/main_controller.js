@@ -55,6 +55,8 @@ export default class extends Controller {
       this.currentPosition.coords.latitude,
       this.currentPosition.coords.longitude
     )
+    document.querySelector('#debug_locatie').textContent =
+      `${position.coords.latitude}, ${position.coords.longitude}`
     const distance = myLocation.distanceTo([position.coords.latitude, position.coords.longitude])
     if (distance > 5) {
       this.currentPosition = position
