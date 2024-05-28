@@ -238,7 +238,7 @@ class OnboardingView(SessionWizardView):
                     ).all()
                     kwargs["afdelingen_selected"] = afdelingen_selected
             elif step == "bevestigen":
-                readonly_data = {}
+                previous_steps_data = {}
                 form_data = [
                     form.cleaned_data if isinstance(form, forms.Form) else {}
                     for form in self.get_form_list()
@@ -246,9 +246,24 @@ class OnboardingView(SessionWizardView):
                 for form_data_item in form_data[
                     :-1
                 ]:  # Exclude the last form (BevestigenForm)
-                    readonly_data.update(form_data_item)
-                kwargs["readonly_data"] = readonly_data
+                    previous_steps_data.update(form_data_item)
+                kwargs["previous_steps_data"] = previous_steps_data
         return kwargs
+
+    def get_form_initial(self, step):
+        initial = super().get_form_initial(step)
+        if step == "bevestigen":
+            previous_steps_data = {}
+            form_data = [
+                form.cleaned_data if isinstance(form, forms.Form) else {}
+                for form in self.get_form_list()
+            ]
+            for form_data_item in form_data[
+                :-1
+            ]:  # Exclude the last form (BevestigenForm)
+                previous_steps_data.update(form_data_item)
+            initial["previous_steps_data"] = previous_steps_data
+        return initial
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
