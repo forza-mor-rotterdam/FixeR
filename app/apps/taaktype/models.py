@@ -1,4 +1,3 @@
-from apps.release_notes.models import Bijlage
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.gis.db import models
 from utils.models import BasisModel
@@ -39,6 +38,8 @@ class TaaktypeVoorbeeldsituatie(BasisModel):
     """
     TaaktypeVoorbeeldsituatie model voor Taaktypes
     """
+
+    from apps.release_notes.models import Bijlage
 
     class TypeOpties(models.TextChoices):
         WAAROM_WEL = "waarom_wel", "Waarom wel"

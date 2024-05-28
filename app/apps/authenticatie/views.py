@@ -10,8 +10,10 @@ from apps.authenticatie.forms import (
     ProfielfotoForm,
     WerklocatieForm,
 )
-from apps.context.forms import TaaktypesForm
+from apps.context.forms import TaaktypesFilteredForm
 from apps.meldingen.service import MeldingenService
+from apps.taaktype.models import Afdeling
+from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -160,7 +162,7 @@ class GebruikerProfielView(UpdateView):
 FORMS = [
     # ("profielfoto", ProfielfotoForm),
     ("afdeling", AfdelingForm),
-    ("taken", TaaktypesForm),
+    ("taken", TaaktypesFilteredForm),
     ("werklocatie", WerklocatieForm),
     ("bevestigen", BevestigenForm),
 ]
@@ -184,32 +186,68 @@ class OnboardingView(SessionWizardView):
         return [TEMPLATES[self.steps.current]]
 
     def done(self, form_list, **kwargs):
-        form_data = [form.cleaned_data for form in form_list]
+        form_data = {form.prefix: form.cleaned_data for form in form_list}
 
-        # profielfoto_data = form_data[0]
-        afdeling_data = form_data[1]
-        taken_data = form_data[2]
-        werklocatie_data = form_data[3]
-        bevestigen_data = form_data[4]
+        profielfoto_data = form_data.get("profielfoto")
+        afdeling_data = form_data.get("afdeling")
+        taken_data = form_data.get("taken")
+        werklocatie_data = form_data.get("werklocatie")
+        bevestigen_data = form_data.get("bevestigen")
+
+        selected_taaktypes = set()
+        if taken_data:
+            for key, value in taken_data.items():
+                if key.startswith("taaktypes_"):
+                    selected_taaktypes.update(value)
 
         gebruiker = self.request.user
         profiel = gebruiker.profiel
-        # profiel.profielfoto = profielfoto_data.get("profielfoto", None)
-        profiel.afdelingen.set(afdeling_data.get("afdelingen", []))
-        profiel.context.taaktypes.set(taken_data.get("taaktypes", []))
-        profiel.werklocatie = werklocatie_data.get("werklocatie", None)
-        profiel.buurten.set(werklocatie_data.get("buurten", []))
-        profiel.bevestigt = bevestigen_data["confirm"]
+        # Set profile data based on collected form data
+        if profielfoto_data:
+            profiel.profielfoto = profielfoto_data.get("profielfoto")
+        if afdeling_data:
+            profiel.afdelingen.set(afdeling_data.get("afdelingen", []))
+        if selected_taaktypes:
+            profiel.context.taaktypes.set(selected_taaktypes)
+        if werklocatie_data:
+            profiel.werklocatie = werklocatie_data.get("werklocatie")
+            profiel.context.filters.set(werklocatie_data.get("wijken", []))
+        if bevestigen_data:
+            pass
         profiel.save()
 
         messages.success(self.request, "Je instellingen zijn succesvol opgeslagen.")
-        return redirect("success")
+        return redirect("onboarding-compleet")
 
     def get_form_kwargs(self, step=None):
         kwargs = super().get_form_kwargs(step)
         if self.request.user.is_authenticated:
-            if step in ["afdeling", "werklocatie"]:
-                kwargs["gebruiker"] = self.request.user
+            if step == "taken":
+                if self.get_cleaned_data_for_step("afdeling"):
+                    # Pass selected Afdelingen to TaaktypesFilteredForm
+                    afdelingen_selected = []
+                    for form_key, form_value in self.get_cleaned_data_for_step(
+                        "afdeling"
+                    ).items():
+                        if form_key.startswith("afdelingen_"):
+                            afdelingen_selected.extend(form_value)
+                    kwargs["afdelingen_selected"] = afdelingen_selected
+                else:  # For testing!
+                    afdelingen_selected = Afdeling.objects.filter(
+                        onderdeel="schoon"
+                    ).all()
+                    kwargs["afdelingen_selected"] = afdelingen_selected
+            elif step == "bevestigen":
+                readonly_data = {}
+                form_data = [
+                    form.cleaned_data if isinstance(form, forms.Form) else {}
+                    for form in self.get_form_list()
+                ]
+                for form_data_item in form_data[
+                    :-1
+                ]:  # Exclude the last form (BevestigenForm)
+                    readonly_data.update(form_data_item)
+                kwargs["readonly_data"] = readonly_data
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -223,3 +261,12 @@ class OnboardingView(SessionWizardView):
             f"Total steps: {self.steps.count}, Current step: {self.steps.index+1}, Progress: {context['progress']}"
         )
         return context
+
+
+@login_required
+def onboarding_compleet(request):
+    # This context can be expanded based on the information you want to display
+    context = {
+        "user": request.user,
+    }
+    return render(request, "onboarding/compleet.html", context)

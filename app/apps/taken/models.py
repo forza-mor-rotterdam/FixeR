@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from apps.aliassen.models import MeldingAlias
-from apps.release_notes.models import Bijlage
 from apps.taaktype.models import TaaktypeVoorbeeldsituatie
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
@@ -44,6 +43,8 @@ class Taakgebeurtenis(BasisModel):
 
 
 class Taaktype(BasisModel):
+    from apps.release_notes.models import Bijlage
+
     omschrijving = models.CharField(max_length=200)
     toelichting = models.CharField(
         max_length=500,
@@ -84,6 +85,8 @@ class Taaktype(BasisModel):
     actief = models.BooleanField(default=True)
 
     def bijlagen(self):
+        from apps.release_notes.models import Bijlage
+
         return Bijlage.objects.filter(
             content_type=ContentType.objects.get_for_model(TaaktypeVoorbeeldsituatie),
             object_id__in=self.voorbeeldsituatie_voor_taaktype.values_list(

@@ -1,4 +1,11 @@
 {% extends "onboarding/multipart_form.html" %}
-{% block body %}
-    {{ block.super }}
-{% endblock body %}
+{% block title %}
+    Onboarding {{ wizard.steps.current }} | FixeR
+{% endblock title %}
+{% block step_content %}
+    <h1>{{ request.user.first_name }}, je bent er bijna klaar voor!</h1>
+    <p>
+        Controlleer onderstaande gegegevens en wijzig daar waar nodig. Klopt het allemaal? Dan ben je klaar om aan de slag te gaan.
+    </p>
+    {{ wizard.form.as_p }}
+{% endblock step_content %}

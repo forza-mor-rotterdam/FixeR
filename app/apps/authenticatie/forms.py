@@ -2,8 +2,10 @@ import csv
 from io import StringIO
 
 import chardet
-from apps.authenticatie.models import Profiel, ProfielAfdeling
+from apps.authenticatie.models import Profiel
 from apps.context.models import Context
+from apps.services.pdok import PDOKService
+from apps.taaktype.models import Afdeling
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -194,40 +196,103 @@ class ProfielfotoForm(forms.ModelForm):
 
 class AfdelingForm(forms.ModelForm):
     afdelingen = forms.ModelMultipleChoiceField(
-        queryset=ProfielAfdeling.objects.all(),
+        queryset=Afdeling.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
+        # label="Afdeling(en)",
     )
 
     class Meta:
-        model = Profiel
+        model = Afdeling
         fields = ["afdelingen"]
 
-    def __init__(self, *args, gebruiker=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if gebruiker and gebruiker.is_authenticated:
-            self.fields["afdelingen"].queryset = gebruiker.profiel.afdelingen.all()
+
+
+# class WerklocatieForm(forms.ModelForm):
+#     werklocatie = forms.ChoiceField(
+#         label="Stadsdeel",
+#         choices=Profiel.WerklocatieOpties.choices,
+#         widget=forms.RadioSelect(),
+#         required=True,
+#     )
+
+#     class Meta:
+#         model = Profiel
+#         fields = ["werklocatie"]
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+
+# class WijkenForm(forms.Form):
+#     wijken = forms.ChoiceField(
+#         label="Buurten",
+#         choices=(),
+#         widget=forms.CheckboxSelectMultiple(),
+#         required=True,
+#     )
+
+#     class Meta:
+#         fields = ["wijken"]
+#     def __init__(self, *args, **kwargs):
+#         werklocatie = kwargs.pop("werklocatie", "")
+
+#         super().__init__(*args, **kwargs)
+#         service = PDOKService()
+#         response = service.get_buurten_middels_gemeentecode("0599")
+
+#         if response:
+#             # Extract wijken from the response
+#             wijken_choices = []
+#             for wijk in response.get('wijken', []):
+#                 wijk_naam = wijk.get('wijknaam', '')
+#                 buurten = wijk.get('buurten', [])
+#                 for buurt in buurten:
+#                     buurt_naam = buurt.get('buurtnaam', '')
+#                     wijk_buurt_naam = f"{wijk_naam} - {buurt_naam}"
+#                     wijk_buurt_code = buurt.get('buurtcode', '')
+#                     wijken_choices.append((wijk_buurt_code, wijk_buurt_naam))
+
+#             self.fields["wijken"].choices = wijken_choices
 
 
 class WerklocatieForm(forms.ModelForm):
-    werklocatie = forms.ModelChoiceField(
-        queryset=None, widget=forms.Select, required=False
+    wijken = forms.ChoiceField(
+        label="Wijken",
+        choices=(),
+        widget=forms.CheckboxSelectMultiple(),
+        required=True,
     )
 
     class Meta:
         model = Profiel
-        fields = ["werklocatie", "buurten"]
+        fields = ["werklocatie"]
 
-    def __init__(self, *args, gebruiker=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if gebruiker and gebruiker.is_authenticated:
-            werklocatie = gebruiker.profiel.werklocatie
-            if werklocatie:
-                self.fields[
-                    "werklocatie"
-                ].queryset = werklocatie.profielen_voor_werklocatie.all()
-                self.fields["buurten"].queryset = werklocatie.buurten.all()
+        self.fields["wijken"].choices = []
+        service = PDOKService()
+        response = service.get_buurten_middels_gemeentecode("0599")
+
+        if response:
+            wijken_choices = []
+            for wijk in response.get("wijken", []):
+                print(wijk["wijknaam"])
+                wijk_naam = wijk.get("wijknaam", "")
+                wijk_code = wijk.get("wijkcode", "")
+                wijken_choices.append((wijk_code, wijk_naam))
+            print(f"Wijken choices: {wijken_choices}")
+            self.fields["wijken"].choices = wijken_choices
 
 
 class BevestigenForm(forms.Form):
-    confirm = forms.BooleanField(required=True)
+    def __init__(self, *args, **kwargs):
+        readonly_data = kwargs.pop("readonly_data", {})
+        super().__init__(*args, **kwargs)
+        for key, value in readonly_data.items():
+            self.fields[key] = forms.CharField(
+                label=key, initial=value, disabled=True, required=False
+            )
+
+    class Meta:
+        fields = []
