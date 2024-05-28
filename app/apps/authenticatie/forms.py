@@ -210,52 +210,6 @@ class AfdelingForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
 
-# class WerklocatieForm(forms.ModelForm):
-#     werklocatie = forms.ChoiceField(
-#         label="Stadsdeel",
-#         choices=Profiel.WerklocatieOpties.choices,
-#         widget=forms.RadioSelect(),
-#         required=True,
-#     )
-
-#     class Meta:
-#         model = Profiel
-#         fields = ["werklocatie"]
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-
-# class WijkenForm(forms.Form):
-#     wijken = forms.ChoiceField(
-#         label="Buurten",
-#         choices=(),
-#         widget=forms.CheckboxSelectMultiple(),
-#         required=True,
-#     )
-
-#     class Meta:
-#         fields = ["wijken"]
-#     def __init__(self, *args, **kwargs):
-#         werklocatie = kwargs.pop("werklocatie", "")
-
-#         super().__init__(*args, **kwargs)
-#         service = PDOKService()
-#         response = service.get_buurten_middels_gemeentecode("0599")
-
-#         if response:
-#             # Extract wijken from the response
-#             wijken_choices = []
-#             for wijk in response.get('wijken', []):
-#                 wijk_naam = wijk.get('wijknaam', '')
-#                 buurten = wijk.get('buurten', [])
-#                 for buurt in buurten:
-#                     buurt_naam = buurt.get('buurtnaam', '')
-#                     wijk_buurt_naam = f"{wijk_naam} - {buurt_naam}"
-#                     wijk_buurt_code = buurt.get('buurtcode', '')
-#                     wijken_choices.append((wijk_buurt_code, wijk_buurt_naam))
-
-#             self.fields["wijken"].choices = wijken_choices
-
-
 class WerklocatieForm(forms.ModelForm):
     wijken = forms.ChoiceField(
         label="Wijken",
@@ -287,12 +241,27 @@ class WerklocatieForm(forms.ModelForm):
 
 class BevestigenForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        readonly_data = kwargs.pop("readonly_data", {})
-        super().__init__(*args, **kwargs)
-        for key, value in readonly_data.items():
-            self.fields[key] = forms.CharField(
-                label=key, initial=value, disabled=True, required=False
-            )
+        previous_steps_data = kwargs.pop("previous_steps_data", {})
+        super(BevestigenForm, self).__init__(*args, **kwargs)
+
+        # Dynamically add fields from previous steps as read-only fields
+        for step, data in previous_steps_data.items():
+            # This probably doesnt work
+            for field_name, field_value in data.items():
+                if field_name == "afdelingen":
+                    self.fields[
+                        f"{step}_{field_name}"
+                    ] = forms.ModelMultipleChoiceField(
+                        initial=field_value,
+                        widget=forms.CheckboxSelectMultiple,
+                        required=False,
+                        attrs={"readonly": "readonly"},
+                    )
+                else:
+                    self.fields[f"{step}_{field_name}"] = forms.CharField(
+                        initial=field_value,
+                        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+                    )
 
     class Meta:
         fields = []
