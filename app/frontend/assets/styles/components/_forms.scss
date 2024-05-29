@@ -511,7 +511,13 @@ ul.list--form-check-input--tile-image {
             font-weight: 700;
 
             svg {
-                margin: 0 auto;
+                margin: 0 auto 8px;
+                width: 44px;
+                height: 44px;
+
+                path {
+                    fill: $black;
+                }
             }
         }
         input {
@@ -561,7 +567,7 @@ ul.list--form-radio-input {
     }
 }
 
-.form-check-input {
+input.form-check-input {
     @include form-check-input();
 }
 

@@ -141,11 +141,11 @@
                             <label class="form-check-label" for="{{ choice.id_for_label }}">
                                 {% if field.field.widget.attrs.hasIcon %}
                                     {% with choice.choice_label|slugify as slugged_choice_label %}
-                                        {% with "icons/"|add:slugged_choice_label|add:".svg" as icon_path %}
+                                        {% with "icons/afdelingen/"|add:slugged_choice_label|add:".svg" as icon_path %}
                                             {% if icon_path|file_exists %}
                                                 {% include icon_path %}
                                             {% else %}
-                                                {% include "icons/trash.svg" %}
+                                                {% include "icons/noimage.svg" %}
                                             {% endif %}
                                         {% endwith %}
                                     {% endwith %}
