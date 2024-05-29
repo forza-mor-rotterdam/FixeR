@@ -6,51 +6,5 @@
 {% block step_content %}
     <h1>Waar ben je van?</h1>
     <p>Selecteer jouw afdeling(en). Je kunt dit later altijd weer aanpassen in je filter.</p>
-    {% comment %} <h5>Meer info</h5> {% endcomment %}
     <div class="list--form-check-input--tile-image">{{ wizard.form.afdelingen|render_rotterdam_formulier }}</div>
 {% endblock step_content %}
-{% comment %} {% block body %}
-    Afdeling form
-    <div>
-        <ul class="list--form-check-input--tile-image">
-            <li>
-                <div class="form-check">
-                    <input type="checkbox" name="filters" value="begraafplaats" data-action="change->incidentHandleForm#toggleNewTask" id="id_filters_0">
-                    <label class="form-check-label" for="id_filters_0">
-                        {% include "icons/trash.svg" %}
-                        Inzameling
-                    </label>
-                </div>
-            </li>
-            <li>
-                <div class="form-check">
-                    <input type="checkbox" name="filters" value="taken" data-action="change->incidentHandleForm#toggleNewTask" id="id_filters_1" checked="">
-                    <label class="form-check-label" for="id_filters_1">
-                        {% include "icons/trash.svg" %}
-                        Reiniging
-                    </label>
-                </div>
-            </li>
-            <li>
-                <div class="form-check">
-                    <input type="checkbox" name="filters" value="taak_status" data-action="change->incidentHandleForm#toggleNewTask" id="id_filters_2" checked="">
-                    <label class="form-check-label" for="id_filters_2">
-                        {% include "icons/trash.svg" %}
-                        Plaagdieren
-                    </label>
-                </div>
-            </li>
-            <li>
-                <div class="form-check">
-                    <input type="checkbox" name="filters" value="buurt" data-action="change->incidentHandleForm#toggleNewTask" id="id_filters_3" checked="">
-                    <label class="form-check-label" for="id_filters_3">
-                        {% include "icons/trash.svg" %}
-                        Handhaving
-                    </label>
-                </div>
-            </li>
-        </ul>
-    </div>
-
-    - {{ block.super }} -
-{% endblock body %} {% endcomment %}

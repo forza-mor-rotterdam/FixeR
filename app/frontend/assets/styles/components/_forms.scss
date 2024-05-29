@@ -423,6 +423,7 @@ textarea {
 }
 
 ul.list--form-check-input,
+ul.form-check-input,
 ul.list--form-radio-input {
     @include list-clean();
     // display: flex;
@@ -460,6 +461,20 @@ ul.list--form-radio-input {
     }
     .form--beheer.columns--two & {
         columns: 2;
+    }
+}
+
+ul.form-check-input {
+    li {
+        label {
+            width: 100%;
+            padding-left: 35px;
+            box-sizing: border-box;
+            input {
+                top: -3px;
+                left: 0;
+            }
+        }
     }
 }
 

@@ -110,7 +110,7 @@ class TaaktypesFilteredForm(forms.ModelForm):
                         }
                     ),
                     queryset=taaktypes_queryset,
-                    label=f"Taken van {afdeling} {taaktypes_queryset.count()}",
+                    label=f"Taken van {afdeling} ({taaktypes_queryset.count()})",
                     required=False,
                 )
 

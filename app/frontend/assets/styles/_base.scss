@@ -9,7 +9,7 @@ body {
     margin: 0;
     font-family: "Bolder", sans-serif;
     font-size: 1em;
-    color: $gray-tint11;
+    color: $black;
     background-color: $gray-tint00;
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
