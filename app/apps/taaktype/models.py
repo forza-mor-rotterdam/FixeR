@@ -59,6 +59,7 @@ class TaaktypeVoorbeeldsituatie(BasisModel):
         to="taken.Taaktype",
         related_name="voorbeeldsituatie_voor_taaktype",
         on_delete=models.CASCADE,
+        to_field="id",
         blank=True,
         null=True,
     )
