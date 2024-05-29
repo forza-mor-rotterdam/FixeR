@@ -31,15 +31,19 @@
             {% endblock step_content %}
         </div>
         {{ wizard.management_form }}
-        {% if wizard.steps.next %}
-            <button class="btn btn-action"
-                    name="wizard_goto_step"
-                    type="submit"
-                    value="{{ wizard.steps.next }}">Volgende</button>
-        {% endif %}
-        {% if wizard.steps.last == wizard.steps.current %}
-            <button class="btn btn-action" type="submit">Aan de slag</button>
-        {% endif %}
+        <div class="container__details--sticky-bottom">
+            <div class="sticky sticky--bottom">
+                {% if wizard.steps.next %}
+                    <button class="btn btn-action"
+                            name="wizard_goto_step"
+                            type="submit"
+                            value="{{ wizard.steps.next }}">Volgende</button>
+                {% endif %}
+                {% if wizard.steps.last == wizard.steps.current %}
+                    <button class="btn btn-action" type="submit">Aan de slag</button>
+                {% endif %}
+            </div>
+        </div>
     </form>
     </turbo-frame>
 {% endblock body %}

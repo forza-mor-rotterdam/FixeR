@@ -1,9 +1,19 @@
 {% extends "onboarding/multipart_form.html" %}
+{% load rotterdam_formulier_html %}
 {% block title %}
     Onboarding {{ wizard.steps.current }} | FixeR
 {% endblock title %}
 {% block step_content %}
     <h1>Wat zijn jouw taken?</h1>
     <p>Selecteer jouw taken. Je kunt dit altijd weer aanpassen in je instellingen.</p>
-    {{ wizard.form.as_p }}
+    <div data-onboarding-target="takenLijst" class="container__takenlijst">
+        <div class="container__buttons">
+            <button class="btn btn-textlink btn-inline"
+                    data-action="onboarding#selectAll"
+                    data-onboarding-filter-type-param="all">Selecteer alle taken</button>
+            |
+            <button class="btn btn-inline" data-action="onboarding#selectAll">Selecteer niets</button>
+        </div>
+        {{ wizard.form }}
+    </div>
 {% endblock step_content %}

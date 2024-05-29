@@ -203,3 +203,37 @@ dl {
         }
     }
 }
+
+.container__takenlijst {
+    display: flex;
+    flex-direction: column;
+
+    .container__buttons {
+        order: 2;
+    }
+    > p {
+        order: 1;
+    }
+    > ul {
+        order: 3;
+        background-color: $white;
+        > li {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 55px;
+            margin: 0 12px !important;
+            padding: 12px 0;
+            border-bottom: 1px solid $gray-tint04;
+            box-sizing: border-box;
+
+            &:last-child {
+                border-bottom: 0;
+            }
+
+            > label {
+                position: relative;
+            }
+        }
+    }
+}
