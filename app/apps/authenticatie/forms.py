@@ -197,9 +197,13 @@ class ProfielfotoForm(forms.ModelForm):
 class AfdelingForm(forms.ModelForm):
     afdelingen = forms.ModelMultipleChoiceField(
         queryset=Afdeling.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "hasIcon": True,
+                "listClass": "list--form-check-input--tile-image",
+            }
+        ),
         required=False,
-        # label="Afdeling(en)",
     )
 
     class Meta:

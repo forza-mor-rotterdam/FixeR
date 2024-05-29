@@ -192,7 +192,14 @@ dl {
 .list-progress {
     @extend .list-clean;
     display: flex;
+    gap: 6px;
     li {
         flex-grow: 1;
+        height: 4px;
+        background-color: $gray-tint04;
+
+        &.active {
+            background-color: $green-tint01;
+        }
     }
 }

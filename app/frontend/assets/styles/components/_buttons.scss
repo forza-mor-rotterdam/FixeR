@@ -77,7 +77,8 @@ $buttons: (
 ) !default;
 
 // Buttons with only an icon intended for fields with extra information
-button[class="icon"] {
+button[class="icon"],
+.btn-previous--icon {
     border: none;
     background-color: transparent;
     font-size: 1.3em; // Result in icon size of 24x24px

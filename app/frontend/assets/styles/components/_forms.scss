@@ -496,10 +496,10 @@ ul.list--form-check-input--tile-image {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    li {
+    > li {
         flex: 0 0 47%;
 
-        .form-check-label {
+        label {
             display: flex;
             background-color: $white;
             border-radius: 7px;
@@ -721,6 +721,26 @@ fieldset.section {
             .form-row {
                 width: 100%;
                 break-inside: avoid-column;
+            }
+        }
+    }
+}
+
+form.onboarding {
+    .progress {
+        position: relative;
+        height: 2.5rem;
+    }
+    .btn-previous--icon {
+        transform: rotate(180deg);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        svg {
+            width: 12px;
+            height: 24px;
+            path {
+                // fill: currentColor;
             }
         }
     }

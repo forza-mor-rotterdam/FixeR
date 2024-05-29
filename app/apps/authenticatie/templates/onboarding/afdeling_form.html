@@ -1,13 +1,13 @@
 {% extends "onboarding/multipart_form.html" %}
+{% load rotterdam_formulier_html %}
 {% block title %}
     Onboarding {{ wizard.steps.current }} | FixeR
 {% endblock title %}
 {% block step_content %}
     <h1>Waar ben je van?</h1>
     <p>Selecteer jouw afdeling(en). Je kunt dit later altijd weer aanpassen in je filter.</p>
-    <h2>Afdeling(en)</h2>
-    <h5>Meer info</h5>
-    {{ wizard.form.as_p }}
+    {% comment %} <h5>Meer info</h5> {% endcomment %}
+    <div class="list--form-check-input--tile-image">{{ wizard.form.afdelingen|render_rotterdam_formulier }}</div>
 {% endblock step_content %}
 {% comment %} {% block body %}
     Afdeling form
