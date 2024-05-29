@@ -65,22 +65,22 @@ class Taaktype(BasisModel):
         related_name="vorige_taaktypes_voor_taaktype",
         blank=True,
     )
-    # gerelateerde_taaktypes = models.ManyToManyField(
-    #     to="taken.Taaktype",
-    #     related_name="gerelateerde_taaktypes_voor_taaktype",
-    #     blank=True,
-    # )
+    gerelateerde_taaktypes = models.ManyToManyField(
+        to="taken.Taaktype",
+        related_name="gerelateerde_taaktypes_voor_taaktype",
+        blank=True,
+    )
     gerelateerde_onderwerpen = ArrayField(models.URLField(), default=list)
-    # afdelingen = models.ManyToManyField(
-    #     to="taaktype.Afdeling",
-    #     related_name="taaktypes_voor_afdelingen",
-    #     blank=True,
-    # )
-    # taaktypemiddelen = models.ManyToManyField(
-    #     to="taaktype.TaaktypeMiddel",
-    #     related_name="taaktypes_voor_taaktypemiddelen",
-    #     blank=True,
-    # )
+    afdelingen = models.ManyToManyField(
+        to="taaktype.Afdeling",
+        related_name="taaktypes_voor_afdelingen",
+        blank=True,
+    )
+    taaktypemiddelen = models.ManyToManyField(
+        to="taaktype.TaaktypeMiddel",
+        related_name="taaktypes_voor_taaktypemiddelen",
+        blank=True,
+    )
     actief = models.BooleanField(default=True)
 
     def bijlagen(self):
