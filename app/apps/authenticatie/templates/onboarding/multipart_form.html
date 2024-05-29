@@ -21,8 +21,7 @@
             <progress class="progress-bar" style="width: {{ progress }}%" value="{{ progress }}" max="100" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">{{ progress }}
             </progress> {% endcomment %}
             <ul class="list-progress">
-                {% comment %} TODO get length from wizard.steps {% endcomment %}
-                {% for i in '0123'|make_list %}
+                {% for i in wizard.steps.all %}
                     <li class="progress__step{% if forloop.counter <= wizard.steps.index|add:1 %} active{% endif %}"></li>
                 {% endfor %}
             </ul>

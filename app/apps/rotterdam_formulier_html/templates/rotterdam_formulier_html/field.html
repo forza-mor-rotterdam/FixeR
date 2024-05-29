@@ -1,5 +1,6 @@
 {% load rotterdam_formulier_html %}
 {% load l10n %}
+{% load file_exists from main_tags %}
 {{ form }}
 {% if field|is_checkbox %}
     <div class="col {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
@@ -139,7 +140,15 @@
         {% if field.field.required %}required{% endif %}> {% endcomment %}
                             <label class="form-check-label" for="{{ choice.id_for_label }}">
                                 {% if field.field.widget.attrs.hasIcon %}
-                                    {% include "icons/trash.svg" %}
+                                    {% with choice.choice_label|slugify as slugged_choice_label %}
+                                        {% with "icons/"|add:slugged_choice_label|add:".svg" as icon_path %}
+                                            {% if icon_path|file_exists %}
+                                                {% include icon_path %}
+                                            {% else %}
+                                                {% include "icons/trash.svg" %}
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endwith %}
                                 {% endif %}
                                 {{ choice.choice_label }}
                             </label>
