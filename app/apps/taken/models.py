@@ -65,11 +65,11 @@ class Taaktype(BasisModel):
         related_name="vorige_taaktypes_voor_taaktype",
         blank=True,
     )
-    # gerelateerde_taaktypes = models.ManyToManyField(
-    #     to="taken.Taaktype",
-    #     related_name="gerelateerde_taaktypes_voor_taaktype",
-    #     blank=True,
-    # )
+    gerelateerde_taaktypes = models.ManyToManyField(
+        to="taken.Taaktype",
+        related_name="gerelateerde_taaktypes_voor_taaktype",
+        blank=True,
+    )
     gerelateerde_onderwerpen = ArrayField(models.URLField(), default=list)
     # afdelingen = models.ManyToManyField(
     #     to="taaktype.Afdeling",
