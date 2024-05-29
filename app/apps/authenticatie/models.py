@@ -131,7 +131,8 @@ class Profiel(BasisModel):
         null=True,
         blank=True,
     )
-    buurten = ArrayField(
+
+    wijken = ArrayField(
         models.CharField(max_length=500, blank=True), blank=True, null=True
     )
 

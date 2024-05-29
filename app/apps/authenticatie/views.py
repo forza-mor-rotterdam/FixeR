@@ -12,8 +12,7 @@ from apps.authenticatie.forms import (
 )
 from apps.context.forms import TaaktypesFilteredForm
 from apps.meldingen.service import MeldingenService
-from apps.taaktype.models import Afdeling
-from django import forms
+from apps.services.pdok import PDOKService
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -179,26 +178,27 @@ TEMPLATES = {
 @method_decorator(login_required, name="dispatch")
 class OnboardingView(SessionWizardView):
     form_list = FORMS
-    template_name = "onboarding/multipart_form.html"
     file_storage = FileSystemStorage(location=settings.MEDIA_ROOT)
 
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
     def done(self, form_list, **kwargs):
+        pdok_service = PDOKService()
         form_data = {form.prefix: form.cleaned_data for form in form_list}
 
         profielfoto_data = form_data.get("profielfoto")
         afdeling_data = form_data.get("afdeling")
         taken_data = form_data.get("taken")
         werklocatie_data = form_data.get("werklocatie")
-        bevestigen_data = form_data.get("bevestigen")
+        # bevestig_data = form_data.get("bevestigen")
 
-        selected_taaktypes = set()
+        selected_taaktypes = []
+        buurtnamen = []
         if taken_data:
             for key, value in taken_data.items():
                 if key.startswith("taaktypes_"):
-                    selected_taaktypes.update(value)
+                    selected_taaktypes.extend([taaktype.id for taaktype in value])
 
         gebruiker = self.request.user
         profiel = gebruiker.profiel
@@ -207,13 +207,23 @@ class OnboardingView(SessionWizardView):
             profiel.profielfoto = profielfoto_data.get("profielfoto")
         if afdeling_data:
             profiel.afdelingen.set(afdeling_data.get("afdelingen", []))
-        if selected_taaktypes:
-            profiel.context.taaktypes.set(selected_taaktypes)
         if werklocatie_data:
             profiel.stadsdeel = werklocatie_data.get("stadsdeel")
-            profiel.context.filters.set(werklocatie_data.get("wijken", []))
-        if bevestigen_data:
-            pass
+            wijkcodes = werklocatie_data.get("wijken", [])
+            profiel.wijken = wijkcodes
+            buurtnamen = pdok_service.get_buurten_middels_wijkcodes(
+                settings.WIJKEN_EN_BUURTEN_GEMEENTECODE, wijkcodes
+            )
+
+        profiel.filters = {
+            "nieuw": {
+                "q": [""],
+                "buurt": buurtnamen,
+                "taken": selected_taaktypes,
+                "taak_status": ["nieuw"],
+                "begraafplaats": [],
+            },
+        }
         profiel.save()
 
         messages.success(self.request, "Je instellingen zijn succesvol opgeslagen.")
@@ -222,60 +232,20 @@ class OnboardingView(SessionWizardView):
     def get_form_kwargs(self, step=None):
         kwargs = super().get_form_kwargs(step)
         if self.request.user.is_authenticated:
-            if step == "taken":
-                if self.get_cleaned_data_for_step("afdeling"):
-                    # Pass selected Afdelingen to TaaktypesFilteredForm
-                    afdelingen_selected = []
-                    for form_key, form_value in self.get_cleaned_data_for_step(
-                        "afdeling"
-                    ).items():
-                        if form_key.startswith("afdelingen_"):
-                            afdelingen_selected.extend(form_value)
-                    kwargs["afdelingen_selected"] = afdelingen_selected
-                else:  # For testing!
-                    afdelingen_selected = Afdeling.objects.filter(
-                        onderdeel="schoon"
-                    ).all()
-                    kwargs["afdelingen_selected"] = afdelingen_selected
+            if step == "taken" and (
+                afdeling_cleaned_data := self.get_cleaned_data_for_step("afdeling")
+            ):
+                kwargs["afdelingen_selected"] = afdeling_cleaned_data.get(
+                    "afdelingen", []
+                )
             elif step == "bevestigen":
                 previous_steps_data = {}
-                form_data = [
-                    form.cleaned_data if isinstance(form, forms.Form) else {}
-                    for form in self.get_form_list()
-                ]
-                for form_data_item in form_data[
-                    :-1
-                ]:  # Exclude the last form (BevestigenForm)
-                    previous_steps_data.update(form_data_item)
+
+                for step in self.steps.all[:-1]:
+                    if step_cleaned_data := self.get_cleaned_data_for_step(step):
+                        previous_steps_data.update(step_cleaned_data)
                 kwargs["previous_steps_data"] = previous_steps_data
         return kwargs
-
-    def get_form_initial(self, step):
-        initial = super().get_form_initial(step)
-        if step == "bevestigen":
-            previous_steps_data = {}
-            form_data = [
-                form.cleaned_data if isinstance(form, forms.Form) else {}
-                for form in self.get_form_list()
-            ]
-            for form_data_item in form_data[
-                :-1
-            ]:  # Exclude the last form (BevestigenForm)
-                previous_steps_data.update(form_data_item)
-            initial["previous_steps_data"] = previous_steps_data
-        return initial
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        try:
-            progress = (self.steps.index / (self.steps.count - 1)) * 100
-        except ZeroDivisionError:
-            progress = 100
-        context["progress"] = progress
-        print(
-            f"Total steps: {self.steps.count}, Current step: {self.steps.index+1}, Progress: {context['progress']}"
-        )
-        return context
 
 
 @login_required

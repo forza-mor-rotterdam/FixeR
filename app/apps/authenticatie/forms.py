@@ -4,12 +4,14 @@ from io import StringIO
 import chardet
 from apps.authenticatie.models import Profiel
 from apps.context.models import Context
+from apps.main.utils import get_wijknaam_by_wijkcode
 from apps.taaktype.models import Afdeling
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.db.models.query import QuerySet
 from utils.constanten import PDOK_WIJKEN
 
 Gebruiker = get_user_model()
@@ -195,6 +197,10 @@ class ProfielfotoForm(forms.ModelForm):
 
 
 class AfdelingForm(forms.ModelForm):
+    class Meta:
+        model = Profiel
+        fields = ["afdelingen"]
+
     afdelingen = forms.ModelMultipleChoiceField(
         queryset=Afdeling.objects.all(),
         widget=forms.CheckboxSelectMultiple(
@@ -203,12 +209,8 @@ class AfdelingForm(forms.ModelForm):
                 "listClass": "list--form-check-input--tile-image",
             }
         ),
-        required=False,
+        required=True,
     )
-
-    class Meta:
-        model = Afdeling
-        fields = ["afdelingen"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -282,22 +284,40 @@ class BevestigenForm(forms.Form):
         super(BevestigenForm, self).__init__(*args, **kwargs)
 
         # Dynamically add fields from previous steps as read-only fields
-        for step, data in previous_steps_data.items():
-            # This probably doesnt work
-            for field_name, field_value in data.items():
-                if field_name == "afdelingen":
-                    self.fields[
-                        f"{step}_{field_name}"
-                    ] = forms.ModelMultipleChoiceField(
-                        initial=field_value,
-                        widget=forms.CheckboxSelectMultiple,
+        for field_name, field_value in previous_steps_data.items():
+            if field_value:
+                if isinstance(field_value, QuerySet):
+                    self.fields[field_name] = forms.ModelMultipleChoiceField(
+                        queryset=field_value,
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={"readonly": "readonly", "disabled": "disabled"}
+                        ),
                         required=False,
-                        attrs={"readonly": "readonly"},
                     )
-                else:
-                    self.fields[f"{step}_{field_name}"] = forms.CharField(
+                elif isinstance(field_value, str):
+                    self.fields[field_name] = forms.CharField(
+                        initial=field_value.title(),
+                        widget=forms.TextInput(
+                            attrs={"readonly": "readonly", "disabled": "disabled"}
+                        ),
+                        required=False,
+                    )
+                elif isinstance(field_value, list):
+                    self.fields[field_name] = forms.MultipleChoiceField(
+                        choices=[
+                            (
+                                val,
+                                get_wijknaam_by_wijkcode(val)
+                                if field_name == "wijken"
+                                else val,
+                            )
+                            for val in field_value
+                        ],
                         initial=field_value,
-                        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+                        widget=forms.SelectMultiple(
+                            attrs={"readonly": "readonly", "disabled": "disabled"}
+                        ),
+                        required=False,
                     )
 
     class Meta:

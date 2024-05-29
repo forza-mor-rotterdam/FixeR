@@ -101,7 +101,7 @@ class TaaktypesFilteredForm(forms.ModelForm):
         for afdeling in afdelingen_selected:
             taaktypes_queryset = Taaktype.objects.filter(afdelingen=afdeling).distinct()
             if taaktypes_queryset.exists():
-                field_name = f"taaktypes_afdeling_{afdeling.id}"
+                field_name = f"taaktypes_{afdeling.naam}"
                 self.fields[field_name] = forms.ModelMultipleChoiceField(
                     widget=forms.CheckboxSelectMultiple(
                         attrs={

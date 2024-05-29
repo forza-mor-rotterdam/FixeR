@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block head %}
+    {{ wizard.form.media }}
+{% endblock head %}
 {% block title %}
     Onboarding | FixeR
 {% endblock title %}
@@ -15,7 +18,7 @@
         {% csrf_token %}
         <div class="progress">
             <ul class="list-progress">
-                {% for i in wizard.steps.all %}
+                {% for step in wizard.steps.all %}
                     <li class="progress__step{% if forloop.counter <= wizard.steps.index|add:1 %} active{% endif %}"></li>
                 {% endfor %}
             </ul>
@@ -23,6 +26,7 @@
                 <button class="btn-previous--icon"
                         name="wizard_goto_step"
                         type="submit"
+                        formnovalidate
                         value="{{ wizard.steps.prev }}">{% include "icons/arrow-right.svg" %}</button>
             {% endif %}
         </div>
@@ -33,14 +37,9 @@
         {{ wizard.management_form }}
         <div class="container__details--sticky-bottom">
             <div class="sticky sticky--bottom">
-                {% if wizard.steps.next %}
-                    <button class="btn btn-action"
-                            name="wizard_goto_step"
-                            type="submit"
-                            value="{{ wizard.steps.next }}">Volgende</button>
-                {% endif %}
+                {% if wizard.steps.next %}<button class="btn btn-action" type="submit" formnovalidate>Volgende</button>{% endif %}
                 {% if wizard.steps.last == wizard.steps.current %}
-                    <button class="btn btn-action" type="submit">Aan de slag</button>
+                    <button class="btn btn-action" type="submit" formnovalidate>Aan de slag</button>
                 {% endif %}
             </div>
         </div>

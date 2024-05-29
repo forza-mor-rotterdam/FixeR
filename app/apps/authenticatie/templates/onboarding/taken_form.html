@@ -14,6 +14,17 @@
             |
             <button class="btn btn-inline" data-action="onboarding#selectAll">Selecteer niets</button>
         </div>
-        {{ wizard.form }}
+        {% if wizard.form.forms %}
+            {{ wizard.form.management_form }}
+            {% for form in wizard.form.forms %}
+                <div class="list--form-check-input--tile-image">{{ form|render_rotterdam_formulier }}</div>
+            {% endfor %}
+        {% elif wizard.form %}
+            {% for form in wizard.form %}
+                <div class="list--form-check-input--tile-image">{{ form|render_rotterdam_formulier }}</div>
+            {% endfor %}
+        {% else %}
+            <div class="list--form-check-input--tile-image">{{ wizard.form|render_rotterdam_formulier }}</div>
+        {% endif %}
     </div>
 {% endblock step_content %}

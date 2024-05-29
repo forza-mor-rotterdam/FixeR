@@ -4,10 +4,12 @@
 {% endblock title %}
 {% block body %}
     {% comment %} Hier komt een leuke animatie of icoon {% endcomment %}
+    <turbo-frame id="onboarding">
     <h2>
         Goed gedaan.
         <br />
         We halen nu je taken op
     </h2>
     <a class="btn btn-primary" href="{% url 'taken' %}">Naar mijn taken</a>
+    </turbo-frame>
 {% endblock body %}

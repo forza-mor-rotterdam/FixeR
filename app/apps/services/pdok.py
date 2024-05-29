@@ -78,3 +78,13 @@ class PDOKService(BasisService):
             settings.MELDINGEN_TOKEN_TIMEOUT,
         )
         return results_grouped
+
+    def get_buurten_middels_wijkcodes(self, gemeentecode, wijkcodes) -> list:
+        all_data = self.get_buurten_middels_gemeentecode(gemeentecode)
+        buurtnamen = []
+        for wijk in all_data.get("wijken", []):
+            if wijk["wijkcode"] in wijkcodes:
+                buurtnamen.extend(
+                    [buurt["buurtnaam"] for buurt in wijk.get("buurten", [])]
+                )
+        return buurtnamen
