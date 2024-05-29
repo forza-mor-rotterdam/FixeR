@@ -232,29 +232,48 @@ class WerklocatieForm(forms.ModelForm):
         self.fields["stadsdeel"].widget.attrs.update(
             {"onchange": "updateWijken(this.value);"}
         )
+        self.fields[
+            "stadsdeel"
+        ].initial = (
+            "volledig"  # @TODO Set back to None after testing or js implementation
+        )
 
-        self.update_wijken_choices()
+        self.update_wijken_choices(stadsdeel=self.fields["stadsdeel"].initial)
 
-    def update_wijken_choices(
-        self, stadsdeel="noord"
-    ):  # @TODO Set back to None after testing or js implementation
+    def update_wijken_choices(self, stadsdeel=None):
         wijken_choices = []
+
+        sorted_pdok_wijken = sorted(PDOK_WIJKEN, key=lambda wijk: wijk["wijknaam"])
 
         if stadsdeel:
             if stadsdeel == "volledig":
-                wijken_choices = [
-                    (wijk["wijkcode"], wijk["wijknaam"]) for wijk in PDOK_WIJKEN
+                wijken_choices = []
+                noord_wijken = [
+                    (wijk["wijkcode"], wijk["wijknaam"])
+                    for wijk in sorted_pdok_wijken
+                    if wijk["stadsdeel"].lower() == "noord"
                 ]
+                zuid_wijken = [
+                    (wijk["wijkcode"], wijk["wijknaam"])
+                    for wijk in sorted_pdok_wijken
+                    if wijk["stadsdeel"].lower() == "zuid"
+                ]
+
+                if noord_wijken:
+                    wijken_choices.append(("Noord", noord_wijken))
+                if zuid_wijken:
+                    wijken_choices.append(("Zuid", zuid_wijken))
+
                 self.fields["wijken"].label = "Wijken voor heel Rotterdam"
             else:
                 wijken_choices = [
                     (wijk["wijkcode"], wijk["wijknaam"])
-                    for wijk in PDOK_WIJKEN
+                    for wijk in sorted_pdok_wijken
                     if wijk["stadsdeel"].lower() == stadsdeel.lower()
                 ]
                 self.fields["wijken"].label = f"Wijken in {stadsdeel}"
 
-        self.fields["wijken"].choices = wijken_choices
+            self.fields["wijken"].choices = wijken_choices
 
 
 class BevestigenForm(forms.Form):
