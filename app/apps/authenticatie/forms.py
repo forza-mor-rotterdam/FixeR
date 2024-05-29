@@ -235,11 +235,13 @@ class WerklocatieForm(forms.ModelForm):
 
         self.update_wijken_choices()
 
-    def update_wijken_choices(self, stadsdeel="noord"):
+    def update_wijken_choices(
+        self, stadsdeel="noord"
+    ):  # @TODO Set back to None after testing or js implementation
         wijken_choices = []
 
         if stadsdeel:
-            if stadsdeel == "Volledig":
+            if stadsdeel == "volledig":
                 wijken_choices = [
                     (wijk["wijkcode"], wijk["wijknaam"]) for wijk in PDOK_WIJKEN
                 ]
@@ -248,7 +250,7 @@ class WerklocatieForm(forms.ModelForm):
                 wijken_choices = [
                     (wijk["wijkcode"], wijk["wijknaam"])
                     for wijk in PDOK_WIJKEN
-                    if wijk["stadsdeel"] == stadsdeel
+                    if wijk["stadsdeel"].lower() == stadsdeel.lower()
                 ]
                 self.fields["wijken"].label = f"Wijken in {stadsdeel}"
 
