@@ -69,12 +69,6 @@ from apps.taaktype.viewsets import (
     TaaktypeMiddelViewSet,
     TaaktypeVoorbeeldsituatieViewSet,
 )
-from apps.taken.views import (
-    TaaktypeAanmakenView,
-    TaaktypeAanpassenView,
-    TaaktypeDetailView,
-    TaaktypeLijstView,
-)
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
 from django.conf import settings
 from django.conf.urls.static import static
@@ -238,22 +232,6 @@ urlpatterns = [
         "beheer/taaktypemiddel/<int:pk>/aanpassen/",
         TaaktypeMiddelAanpassenView.as_view(),
         name="taaktypemiddel_aanpassen",
-    ),
-    path("beheer/taaktype/", TaaktypeLijstView.as_view(), name="taaktype_lijst"),
-    path(
-        "beheer/taaktype/aanmaken/",
-        TaaktypeAanmakenView.as_view(),
-        name="taaktype_aanmaken",
-    ),
-    path(
-        "beheer/taaktype/<int:pk>/",
-        TaaktypeDetailView.as_view(),
-        name="taaktype_detail",
-    ),
-    path(
-        "beheer/taaktype/<int:pk>/aanpassen/",
-        TaaktypeAanpassenView.as_view(),
-        name="taaktype_aanpassen",
     ),
     path(
         "beheer/rechtengroep/",
