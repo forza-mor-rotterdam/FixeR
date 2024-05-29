@@ -2,47 +2,68 @@
 {% block title %}
     Onboarding | FixeR
 {% endblock title %}
+{% block container_class %}
+    container container--limited
+{% endblock container_class %}
 {% block body %}
     <h2>{{ wizard.form.form_title }}</h2>
-    <div class="progress">
-        Current step: {{ wizard.steps.index|add:1 }} van {{ wizard.steps.count }} | {{ wizard.steps.current }}
-        <br />
-        Progress {{ progress }}%
-        <br />
-        <progress class="progress-bar"
-                  style="width: {{ progress }}%"
-                  value="{{ progress }}"
-                  max="100"
-                  aria-valuenow="{{ progress }}"
-                  aria-valuemin="0"
-                  aria-valuemax="100">{{ progress }}
-        </progress>
-    </div>
-    <div>
-        {% block step_content %}
-        {% endblock step_content %}
-    </div>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post"
+          enctype="multipart/form-data"
+          data-turbo="false"
+          class="onboarding">
         {% csrf_token %}
+        <div class="progress">
+            {% comment %} Current step: {{ wizard.steps.index|add:1 }} van {{ wizard.steps.count }} | {{ wizard.steps.current }}
+            <br />
+            Progress {{ progress }}%
+            <br />
+            {{ wizard.steps|length }}
+            <progress class="progress-bar" style="width: {{ progress }}%" value="{{ progress }}" max="100" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">{{ progress }}
+            </progress> {% endcomment %}
+            <ul class="list-progress">
+                {% comment %} TODO get length from wizard.steps {% endcomment %}
+                {% for i in '0123'|make_list %}
+                    <li class="progress__step{% if forloop.counter <= wizard.steps.index|add:1 %} active{% endif %}"></li>
+                {% endfor %}
+            </ul>
+            {% if wizard.steps.prev %}
+                <button class="btn-previous--icon"
+                        name="wizard_goto_step"
+                        type="submit"
+                        value="{{ wizard.steps.prev }}">{% include "icons/arrow-right.svg" %}</button>
+            {% endif %}
+        </div>
+        <div>
+            {% block step_content %}
+            {% endblock step_content %}
+        </div>
         {{ wizard.management_form }}
-        {% if wizard.steps.prev %}
-            <button class="btn btn-primary"
-                    name="wizard_goto_step"
-                    type="submit"
-                    value="{{ wizard.steps.first }}">Eerste</button>
-            <button class="btn btn-primary"
-                    name="wizard_goto_step"
-                    type="submit"
-                    value="{{ wizard.steps.prev }}">Vorige</button>
-        {% endif %}
         {% if wizard.steps.next %}
-            <button class="btn btn-primary"
+            <button class="btn btn-action"
                     name="wizard_goto_step"
                     type="submit"
                     value="{{ wizard.steps.next }}">Volgende</button>
         {% endif %}
         {% if wizard.steps.last == wizard.steps.current %}
-            <button class="btn btn-primary" type="submit">Aan de slag</button>
+            <button class="btn btn-action" type="submit">Aan de slag</button>
         {% endif %}
     </form>
 {% endblock body %}
+{% comment %}
+    </div>
+    <form method="post" enctype="multipart/form-data" data-turbo ="false">
+        Dit is een multipart form
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        {{ wizard.form.as_p }}
+        <button type="submit" class="btn btn-primary">
+            {% if wizard.steps.index == wizard.steps.count %}
+                Bevestigen
+            {% else %}
+                Volgende
+            {% endif %}
+        </button>
+        {% if wizard.steps.prev %}
+            <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">{{ wizard.steps.step1 }}</button>
+            <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{{ wizard.steps.prev }}</button>
+{% endif %} {% endcomment %}

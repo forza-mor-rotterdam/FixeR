@@ -210,7 +210,7 @@ class OnboardingView(SessionWizardView):
         if selected_taaktypes:
             profiel.context.taaktypes.set(selected_taaktypes)
         if werklocatie_data:
-            profiel.werklocatie = werklocatie_data.get("werklocatie")
+            profiel.stadsdeel = werklocatie_data.get("stadsdeel")
             profiel.context.filters.set(werklocatie_data.get("wijken", []))
         if bevestigen_data:
             pass

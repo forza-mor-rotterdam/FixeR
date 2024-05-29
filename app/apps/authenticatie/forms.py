@@ -4,13 +4,13 @@ from io import StringIO
 import chardet
 from apps.authenticatie.models import Profiel
 from apps.context.models import Context
-from apps.services.pdok import PDOKService
 from apps.taaktype.models import Afdeling
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from utils.constanten import PDOK_WIJKEN
 
 Gebruiker = get_user_model()
 
@@ -197,9 +197,13 @@ class ProfielfotoForm(forms.ModelForm):
 class AfdelingForm(forms.ModelForm):
     afdelingen = forms.ModelMultipleChoiceField(
         queryset=Afdeling.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "hasIcon": True,
+                "listClass": "list--form-check-input--tile-image",
+            }
+        ),
         required=False,
-        # label="Afdeling(en)",
     )
 
     class Meta:
@@ -211,32 +215,44 @@ class AfdelingForm(forms.ModelForm):
 
 
 class WerklocatieForm(forms.ModelForm):
-    wijken = forms.ChoiceField(
+    wijken = forms.MultipleChoiceField(
         label="Wijken",
-        choices=(),
+        choices=[],
         widget=forms.CheckboxSelectMultiple(),
-        required=True,
+        required=False,
     )
 
     class Meta:
         model = Profiel
-        fields = ["werklocatie"]
+        fields = ["stadsdeel"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["wijken"].choices = []
-        service = PDOKService()
-        response = service.get_buurten_middels_gemeentecode("0599")
 
-        if response:
-            wijken_choices = []
-            for wijk in response.get("wijken", []):
-                print(wijk["wijknaam"])
-                wijk_naam = wijk.get("wijknaam", "")
-                wijk_code = wijk.get("wijkcode", "")
-                wijken_choices.append((wijk_code, wijk_naam))
-            print(f"Wijken choices: {wijken_choices}")
-            self.fields["wijken"].choices = wijken_choices
+        self.fields["stadsdeel"].widget.attrs.update(
+            {"onchange": "updateWijken(this.value);"}
+        )
+
+        self.update_wijken_choices()
+
+    def update_wijken_choices(self, stadsdeel="noord"):
+        wijken_choices = []
+
+        if stadsdeel:
+            if stadsdeel == "Volledig":
+                wijken_choices = [
+                    (wijk["wijkcode"], wijk["wijknaam"]) for wijk in PDOK_WIJKEN
+                ]
+                self.fields["wijken"].label = "Wijken voor heel Rotterdam"
+            else:
+                wijken_choices = [
+                    (wijk["wijkcode"], wijk["wijknaam"])
+                    for wijk in PDOK_WIJKEN
+                    if wijk["stadsdeel"] == stadsdeel
+                ]
+                self.fields["wijken"].label = f"Wijken in {stadsdeel}"
+
+        self.fields["wijken"].choices = wijken_choices
 
 
 class BevestigenForm(forms.Form):

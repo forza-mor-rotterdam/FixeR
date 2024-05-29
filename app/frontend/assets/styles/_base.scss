@@ -10,6 +10,7 @@ body {
     font-family: "Bolder", sans-serif;
     font-size: 1em;
     color: $gray-tint11;
+    background-color: $gray-tint00;
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         font-size: 1.125em;
@@ -35,6 +36,10 @@ header {
         }
         &.container--unlimited {
             max-width: none;
+        }
+        &.container--limited {
+            max-width: map-get($container-max-widths, md);
+            margin: 0 auto;
         }
     }
 }

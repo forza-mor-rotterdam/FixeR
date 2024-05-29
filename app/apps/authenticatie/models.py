@@ -120,14 +120,14 @@ class Profiel(BasisModel):
         upload_to=get_upload_path, null=True, blank=True, max_length=255
     )
 
-    class WerklocatieOpties(models.TextChoices):
+    class StadsdeelOpties(models.TextChoices):
         VOLLEDIG = "volledig", "Volledig"
         NOORD = "noord", "Noord"
         ZUID = "zuid", "Zuid"
 
-    werklocatie = models.CharField(
+    stadsdeel = models.CharField(
         max_length=50,
-        choices=WerklocatieOpties.choices,
+        choices=StadsdeelOpties.choices,
         null=True,
         blank=True,
     )

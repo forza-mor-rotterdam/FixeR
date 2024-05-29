@@ -56,13 +56,13 @@ class TaaktypeVoorbeeldsituatie(BasisModel):
     )
     bijlagen = GenericRelation(Bijlage)
 
-    taaktype = models.ForeignKey(
-        to="taken.Taaktype",
-        related_name="voorbeeldsituatie_voor_taaktype",
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-    )
+    # taaktype = models.ForeignKey(
+    #     to="taken.Taaktype",
+    #     related_name="voorbeeldsituatie_voor_taaktype",
+    #     on_delete=models.CASCADE,
+    #     blank=True,
+    #     null=True,
+    # )
 
     def __str__(self):
         return f"{self.id}_{self.toelichting if self.toelichting else ''}"
