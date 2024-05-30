@@ -46,7 +46,10 @@ class OnderwerpenService(BasisService):
         )
 
     def get_onderwerp(self, url) -> dict:
-        return self.do_request(url, cache_timeout=60 * 10, raw_response=False)
+        try:
+            return self.do_request(url, cache_timeout=60 * 10, raw_response=False)
+        except OnderwerpenService.BasisUrlFout:
+            return {"name": "Onderwerp onbekend"}
 
     def get_groep(self, group_uuid) -> dict:
         return self.do_request(
