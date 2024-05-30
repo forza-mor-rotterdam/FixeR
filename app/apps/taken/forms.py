@@ -34,7 +34,7 @@ class BijlageForm(forms.ModelForm):
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic, .gif",
                 "data-action": "change->bijlagen#updateImageDisplay",
-                "multiple": "multiple",
+                # "multiple": "multiple",
                 "hideLabel": True,
             }
         ),
