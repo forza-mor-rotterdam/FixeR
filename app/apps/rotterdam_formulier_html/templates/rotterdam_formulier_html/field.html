@@ -125,6 +125,15 @@
         {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
             <h3 class="label">{{ field.label }}{{ field.field.widget.attrs.hideLabel }}</h3>
         {% endif %}
+        {% if field.field.widget.attrs.showSelectAll %}
+            <div class="container__buttons">
+                <button class="btn btn-textlink btn-inline"
+                        data-action="selectAll#selectAll"
+                        data-selectAll-filter-type-param="all">Selecteer alle taken</button>
+                |
+                <button class="btn btn-inline" data-action="selectAll#selectAll">Selecteer niets</button>
+            </div>
+        {% endif %}
         <div id="{{ field.auto_id }}">
             <ul class="{% if field.field.widget.attrs.listClass %}{{ field.field.widget.attrs.listClass }}{% else %}list--form-check-input{% endif %}">
                 {% for choice in field %}
@@ -182,9 +191,7 @@
                       {% render_attrs field %}
                       {% if field.field.required %}required{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
             <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
-            {% if field.help_text %}
-                <p class="help-block">{{ field.help_text|safe }}</p>
-            {% endif %}
+            {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
         </div>
     </div>
 {% elif field|is_file %}

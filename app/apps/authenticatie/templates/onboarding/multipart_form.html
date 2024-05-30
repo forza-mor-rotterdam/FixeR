@@ -11,10 +11,7 @@
 {% block body %}
     <turbo-frame id="onboarding">
     <h2>{{ wizard.form.form_title }}</h2>
-    <form method="post"
-          enctype="multipart/form-data"
-          data-controller="onboarding"
-          class="onboarding">
+    <form method="post" enctype="multipart/form-data" class="onboarding">
         {% csrf_token %}
         <div class="progress">
             <ul class="list-progress">

@@ -107,6 +107,7 @@ class TaaktypesFilteredForm(forms.ModelForm):
                         attrs={
                             "class": "form-check-input",
                             "data-action": "change->incidentHandleForm#toggleNewTask",
+                            "showSelectAll": True,
                         }
                     ),
                     queryset=taaktypes_queryset,
