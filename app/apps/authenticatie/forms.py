@@ -229,16 +229,19 @@ class WerklocatieForm(forms.ModelForm):
         fields = ["stadsdeel"]
 
     def __init__(self, *args, **kwargs):
+        import json
+
         super().__init__(*args, **kwargs)
 
         self.fields["stadsdeel"].widget.attrs.update(
-            {"onchange": "updateWijken(this.value);"}
+            {
+                "data-action": "change->werklocatie#updateWijken",
+                "data-werklocatie-wijken-param": json.dumps(PDOK_WIJKEN),
+            }
         )
         self.fields[
             "stadsdeel"
-        ].initial = (
-            "volledig"  # @TODO Set back to None after testing or js implementation
-        )
+        ].initial = None  # @TODO Set back to None after testing or js implementation
 
         self.update_wijken_choices(stadsdeel=self.fields["stadsdeel"].initial)
 
@@ -247,35 +250,35 @@ class WerklocatieForm(forms.ModelForm):
 
         sorted_pdok_wijken = sorted(PDOK_WIJKEN, key=lambda wijk: wijk["wijknaam"])
 
-        if stadsdeel:
-            if stadsdeel == "volledig":
-                wijken_choices = []
-                noord_wijken = [
-                    (wijk["wijkcode"], wijk["wijknaam"])
-                    for wijk in sorted_pdok_wijken
-                    if wijk["stadsdeel"].lower() == "noord"
-                ]
-                zuid_wijken = [
-                    (wijk["wijkcode"], wijk["wijknaam"])
-                    for wijk in sorted_pdok_wijken
-                    if wijk["stadsdeel"].lower() == "zuid"
-                ]
+        # if stadsdeel:
+        #     if stadsdeel == "volledig":
+        wijken_choices = []
+        noord_wijken = [
+            (wijk["wijkcode"], wijk["wijknaam"])
+            for wijk in sorted_pdok_wijken
+            if wijk["stadsdeel"].lower() == "noord"
+        ]
+        zuid_wijken = [
+            (wijk["wijkcode"], wijk["wijknaam"])
+            for wijk in sorted_pdok_wijken
+            if wijk["stadsdeel"].lower() == "zuid"
+        ]
 
-                if noord_wijken:
-                    wijken_choices.append(("Noord", noord_wijken))
-                if zuid_wijken:
-                    wijken_choices.append(("Zuid", zuid_wijken))
+        if noord_wijken:
+            wijken_choices.append(("Noord", noord_wijken))
+        if zuid_wijken:
+            wijken_choices.append(("Zuid", zuid_wijken))
 
-                self.fields["wijken"].label = "Wijken voor heel Rotterdam"
-            else:
-                wijken_choices = [
-                    (wijk["wijkcode"], wijk["wijknaam"])
-                    for wijk in sorted_pdok_wijken
-                    if wijk["stadsdeel"].lower() == stadsdeel.lower()
-                ]
-                self.fields["wijken"].label = f"Wijken in {stadsdeel}"
+        self.fields["wijken"].label = "Wijken voor heel Rotterdam"
+        # else:
+        #     wijken_choices = [
+        #         (wijk["wijkcode"], wijk["wijknaam"])
+        #         for wijk in sorted_pdok_wijken
+        #         if wijk["stadsdeel"].lower() == stadsdeel.lower()
+        #     ]
+        #     self.fields["wijken"].label = f"Wijken in {stadsdeel}"
 
-            self.fields["wijken"].choices = wijken_choices
+        self.fields["wijken"].choices = wijken_choices
 
 
 class BevestigenForm(forms.Form):

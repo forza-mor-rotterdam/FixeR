@@ -4,7 +4,7 @@
 {% endblock title %}
 {% block step_content %}
     <h1>In welk gebied werk je?</h1>
-    <p>Selecteer in welk gebied je werkt.</p>
-    <h5>Meer info</h5>
-    {{ wizard.form.as_p }}
+    <p>Selecteer het stadsdeel en de wijken waarin je werkt. In de filters van FixeR kun je ook buurten selecteren.</p>
+    {% comment %} <h5>Meer info</h5> {% endcomment %}
+    <div data-controller="werklocatie">{{ wizard.form.as_p }}</div>
 {% endblock step_content %}
