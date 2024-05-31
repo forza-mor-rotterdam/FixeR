@@ -263,11 +263,19 @@ class BevestigenForm(forms.Form):
         # Dynamically add fields from previous steps as read-only fields
         for field_name, field_value in previous_steps_data.items():
             if field_value:
+                # TODO @Jorrit lijkt nu 1 field voor zowel Afdelingen als Taken, maar alleen Afdelingen moet een icoon tonen
+                # Kunnen het aparte fileds worden?
                 if isinstance(field_value, QuerySet):
                     self.fields[field_name] = forms.ModelMultipleChoiceField(
                         queryset=field_value,
                         widget=forms.CheckboxSelectMultiple(
-                            attrs={"readonly": "readonly", "disabled": "disabled"}
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                                "hasIcon": True,
+                                "listClass": "list--form-check-input--tile-image",
+                            }
                         ),
                         required=False,
                     )
@@ -275,7 +283,11 @@ class BevestigenForm(forms.Form):
                     self.fields[field_name] = forms.CharField(
                         initial=field_value.title(),
                         widget=forms.TextInput(
-                            attrs={"readonly": "readonly", "disabled": "disabled"}
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                            }
                         ),
                         required=False,
                     )
@@ -291,8 +303,12 @@ class BevestigenForm(forms.Form):
                             for val in field_value
                         ],
                         initial=field_value,
-                        widget=forms.SelectMultiple(
-                            attrs={"readonly": "readonly", "disabled": "disabled"}
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                            }
                         ),
                         required=False,
                     )

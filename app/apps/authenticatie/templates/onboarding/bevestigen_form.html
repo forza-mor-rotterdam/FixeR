@@ -1,4 +1,5 @@
 {% extends "onboarding/multipart_form.html" %}
+{% load rotterdam_formulier_html %}
 {% block title %}
     Onboarding {{ wizard.steps.current }} | FixeR
 {% endblock title %}
@@ -7,5 +8,44 @@
     <p>
         Controlleer onderstaande gegegevens en wijzig daar waar nodig. Klopt het allemaal? Dan ben je klaar om aan de slag te gaan.
     </p>
-    {{ wizard.form.as_p }}
+    {% comment %} {{ wizard.form.as_p }} {% endcomment %}
+    <div class="container__flex">
+        <h2 class="h3">Jouw afdeling(en)</h2>
+        <button class="btn btn-textlink btn-inline"
+                name="wizard_goto_step"
+                type="submit"
+                formnovalidate
+                value="afdeling">Wijzig</button>
+    </div>
+    <div class="form-as-p">
+        <div class="list--form-check-input--tile-image">{{ wizard.form.afdelingen|render_rotterdam_formulier }}</div>
+    </div>
+    <div class="container__flex">
+        <h2 class="h3">Jouw taaktype(s)</h2>
+        <button class="btn btn-textlink btn-inline"
+                name="wizard_goto_step"
+                type="submit"
+                formnovalidate
+                value="taken">Wijzig</button>
+    </div>
+    <div class="form-as-p">
+        {% comment %} TODO @Jorrit Dit mag een lijst zijn met alleen de taaktypes, eventueel een lijst per Afdeling. Nu lijkt het hele formulier herhaald te worden, inclusief stadsdeel en wijken {% endcomment %}
+        {% if wizard.form.forms %}
+            {{ wizard.form.management_form }}
+            {% for form in wizard.form.forms %}{{ form|render_rotterdam_formulier }}{% endfor %}
+        {% elif wizard.form %}
+            {% for form in wizard.form %}{{ form|render_rotterdam_formulier }}{% endfor %}
+        {% else %}
+            {{ wizard.form|render_rotterdam_formulier }}
+        {% endif %}
+    </div>
+    <div class="container__flex">
+        <h2 class="h3">Jouw wijk(en)</h2>
+        <button class="btn btn-textlink btn-inline"
+                name="wizard_goto_step"
+                type="submit"
+                formnovalidate
+                value="werklocatie">Wijzig</button>
+    </div>
+    <div class="form-as-p">{{ wizard.form.wijken|render_rotterdam_formulier }}</div>
 {% endblock step_content %}
