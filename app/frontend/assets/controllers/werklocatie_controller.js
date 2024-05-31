@@ -1,6 +1,8 @@
 import { Controller } from '@hotwired/stimulus'
 
 // const PDOK_WIJKEN = []
+let noordWijken
+let zuidWijken
 export default class extends Controller {
   static values = {
     dateObject: String,
@@ -11,63 +13,56 @@ export default class extends Controller {
   }
   updateWijken(e) {
     const wijken = e.params.wijken
-    const stadsdeel = e.target.value
+    const stadsdeel = e.target.value.toLowerCase()
     // let unSelectedWijken = []
     let wijkenChoices = []
     let sortedPdokWijken = wijken.slice().sort((a, b) => a.wijknaam.localeCompare(b.wijknaam))
+    noordWijken = sortedPdokWijken
+      .filter((wijk) => wijk.stadsdeel.toLowerCase() === 'noord')
+      .map((wijk) => wijk.wijkcode)
+    zuidWijken = sortedPdokWijken
+      .filter((wijk) => wijk.stadsdeel.toLowerCase() === 'zuid')
+      .map((wijk) => wijk.wijkcode)
+
+    if (noordWijken.length > 0) {
+      wijkenChoices.push(['Noord', noordWijken])
+    }
+    if (zuidWijken.length > 0) {
+      wijkenChoices.push(['Zuid', zuidWijken])
+    }
+    console.log('wijken noord', noordWijken)
+    console.log('wijken zuid', zuidWijken)
 
     if (stadsdeel) {
-      console.log('stadsdeel: ', stadsdeel)
       if (stadsdeel.toLowerCase() === 'volledig') {
-        // unSelectedWijken = []
-        let noordWijken = sortedPdokWijken
-          .filter((wijk) => wijk.stadsdeel.toLowerCase() === 'noord')
-          .map((wijk) => [wijk.wijkcode, wijk.wijknaam])
-        let zuidWijken = sortedPdokWijken
-          .filter((wijk) => wijk.stadsdeel.toLowerCase() === 'zuid')
-          .map((wijk) => [wijk.wijkcode, wijk.wijknaam])
-
-        if (noordWijken.length > 0) {
-          wijkenChoices.push(['Noord', noordWijken])
-        }
-        if (zuidWijken.length > 0) {
-          wijkenChoices.push(['Zuid', zuidWijken])
-        }
-
-        this.element.querySelectorAll('label')[1].textContent = 'Wijken voor heel Rotterdam'
+        this.element.querySelector('h3.label').textContent = 'Wijken voor heel Rotterdam'
       } else {
-        // unSelectedWijken = sortedPdokWijken
-        // .filter((wijk) => wijk.stadsdeel.toLowerCase() !== stadsdeel.toLowerCase())
-        // .map((wijk) => [wijk.wijkcode, wijk.wijknaam])
-        this.element.querySelectorAll('label')[1].textContent = `Wijken in ${stadsdeel}`
+        const capt = stadsdeel.charAt(0).toUpperCase() + stadsdeel.slice(1)
+        this.element.querySelector('h3.label').textContent = `Wijken in ${capt}`
       }
-      // console.log('NIET geselecteerde wijken', unSelectedWijken)
 
-      // unSelectedWijken.forEach((element) => {
-      //   console.log('niet geselecteerd: ', element)
-      // })
-      // wijkenChoices.forEach((element) => {
-      //   console.log('wel geselecteerd: ', element)
-      // })
+      const cbList = this.element.querySelectorAll('input[type=checkbox]')
 
-      const fieldsList = this.element.querySelectorAll(':scope > ul > li')
-      fieldsList.forEach((element) => {
-        if (stadsdeel === 'volledig') {
-          element.classList.remove('hidden')
-        } else {
-          if (element.firstChild.nodeValue.toLowerCase() !== stadsdeel) {
-            const list = element.querySelectorAll('input[type=checkbox]')
-            list.forEach((cb) => {
-              cb.checked = false
-            })
-            element.classList.add('hidden')
+      cbList.forEach((cb) => {
+        if (stadsdeel === 'noord') {
+          if (zuidWijken.includes(cb.value)) {
+            cb.checked = false
+            cb.closest('li').style.display = 'none'
           } else {
-            element.classList.remove('hidden')
+            cb.closest('li').style.display = 'block'
           }
+        } else if (stadsdeel === 'zuid') {
+          if (noordWijken.includes(cb.value)) {
+            cb.checked = false
+            cb.closest('li').style.display = 'none'
+          } else {
+            cb.closest('li').style.display = 'block'
+          }
+        } else {
+          cb.closest('li').style.display = 'block'
         }
       })
-
-      // this.fields['wijken'].choices = wijkenChoices
+      this.element.querySelector('.container__wijkenlijst').classList.remove('visually-hidden')
     }
   }
 }

@@ -1,4 +1,5 @@
 {% extends "onboarding/multipart_form.html" %}
+{% load rotterdam_formulier_html %}
 {% block title %}
     Onboarding {{ wizard.steps.current }} | FixeR
 {% endblock title %}
@@ -6,5 +7,8 @@
     <h1>In welk gebied werk je?</h1>
     <p>Selecteer het stadsdeel en de wijken waarin je werkt. In de filters van FixeR kun je ook buurten selecteren.</p>
     {% comment %} <h5>Meer info</h5> {% endcomment %}
-    <div data-controller="werklocatie">{{ wizard.form.as_p }}</div>
+    <div data-controller="werklocatie selectAll">
+        {{ wizard.form.stadsdeel|render_rotterdam_formulier }}
+        <div class="container__wijkenlijst visually-hidden">{{ wizard.form.wijken|render_rotterdam_formulier }}</div>
+    </div>
 {% endblock step_content %}

@@ -204,7 +204,8 @@ dl {
     }
 }
 
-.container__takenlijst {
+.container__takenlijst,
+.container__wijkenlijst {
     ul {
         background-color: $white;
         > li {

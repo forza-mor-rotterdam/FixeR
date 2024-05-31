@@ -8,7 +8,7 @@ export default class extends Controller {
   selectAll(e) {
     e.preventDefault()
     const checkList = Array.from(
-      e.target.closest('.form-row').querySelectorAll('input.form-check-input')
+      e.target.closest('.form-row').querySelectorAll('input[type="checkbox"]')
     )
     const doCheck = e.params.filterType === 'all'
     checkList.forEach((element) => {

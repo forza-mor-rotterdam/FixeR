@@ -220,7 +220,11 @@ class WerklocatieForm(forms.ModelForm):
     wijken = forms.MultipleChoiceField(
         label="Wijken",
         choices=[],
-        widget=forms.CheckboxSelectMultiple(),
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "showSelectAll": True,
+            }
+        ),
         required=False,
     )
 
@@ -239,45 +243,15 @@ class WerklocatieForm(forms.ModelForm):
                 "data-werklocatie-wijken-param": json.dumps(PDOK_WIJKEN),
             }
         )
-        self.fields[
-            "stadsdeel"
-        ].initial = None  # @TODO Set back to None after testing or js implementation
+        self.fields["stadsdeel"].initial = None
 
         self.update_wijken_choices(stadsdeel=self.fields["stadsdeel"].initial)
 
     def update_wijken_choices(self, stadsdeel=None):
-        wijken_choices = []
-
         sorted_pdok_wijken = sorted(PDOK_WIJKEN, key=lambda wijk: wijk["wijknaam"])
-
-        # if stadsdeel:
-        #     if stadsdeel == "volledig":
-        wijken_choices = []
-        noord_wijken = [
-            (wijk["wijkcode"], wijk["wijknaam"])
-            for wijk in sorted_pdok_wijken
-            if wijk["stadsdeel"].lower() == "noord"
+        wijken_choices = [
+            (wijk["wijkcode"], wijk["wijknaam"]) for wijk in sorted_pdok_wijken
         ]
-        zuid_wijken = [
-            (wijk["wijkcode"], wijk["wijknaam"])
-            for wijk in sorted_pdok_wijken
-            if wijk["stadsdeel"].lower() == "zuid"
-        ]
-
-        if noord_wijken:
-            wijken_choices.append(("Noord", noord_wijken))
-        if zuid_wijken:
-            wijken_choices.append(("Zuid", zuid_wijken))
-
-        self.fields["wijken"].label = "Wijken voor heel Rotterdam"
-        # else:
-        #     wijken_choices = [
-        #         (wijk["wijkcode"], wijk["wijknaam"])
-        #         for wijk in sorted_pdok_wijken
-        #         if wijk["stadsdeel"].lower() == stadsdeel.lower()
-        #     ]
-        #     self.fields["wijken"].label = f"Wijken in {stadsdeel}"
-
         self.fields["wijken"].choices = wijken_choices
 
 
