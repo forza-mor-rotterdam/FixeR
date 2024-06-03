@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 
-// const PDOK_WIJKEN = []
+let stadsdeel
+let wijken
 let noordWijken
 let zuidWijken
 export default class extends Controller {
@@ -9,12 +10,16 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log('Connecting Werklocatie')
+    if (this.element.querySelector('select').value) {
+      this.stadsdeel = this.element.querySelector('select').value
+      this.updateWijken()
+    }
   }
   updateWijken(e) {
-    const wijken = e.params.wijken
-    const stadsdeel = e.target.value.toLowerCase()
-    // let unSelectedWijken = []
+    if (e) {
+      wijken = e.params.wijken
+      stadsdeel = e.target.value.toLowerCase()
+    }
     let wijkenChoices = []
     let sortedPdokWijken = wijken.slice().sort((a, b) => a.wijknaam.localeCompare(b.wijknaam))
     noordWijken = sortedPdokWijken

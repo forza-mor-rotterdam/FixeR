@@ -92,3 +92,10 @@ def file_exists(file_path):
     return os.path.isfile(
         os.path.join(settings.BASE_DIR, "apps/main/templates/", file_path)
     )
+
+
+@register.filter("startswith")
+def startswith(text, starts):
+    if isinstance(text, str):
+        return text.startswith(starts)
+    return False
