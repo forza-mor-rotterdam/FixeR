@@ -68,6 +68,7 @@ UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
 
 INSTALLED_APPS = (
     # templates override
+    "apps.main",
     "apps.health",
     "django.contrib.humanize",
     "django.contrib.contenttypes",
@@ -79,6 +80,7 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.gis",
     "django.contrib.postgres",
+    "django.forms",
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
@@ -99,7 +101,6 @@ INSTALLED_APPS = (
     "sorl.thumbnail",
     "django_select2",
     # Apps
-    "apps.main",
     "apps.authorisatie",
     "apps.authenticatie",
     "apps.taken",
@@ -339,6 +340,7 @@ CSP_CONNECT_SRC = (
 )
 CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
 
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
