@@ -264,6 +264,8 @@ class BevestigenForm(forms.Form):
         for field_name, field_value in previous_steps_data.items():
             if field_value:
                 # TODO @Jorrit lijkt nu 1 field voor zowel Afdelingen als Taken, maar alleen Afdelingen moet een icoon tonen
+                # @Remco je kan op basis van de fieldname onderstaande nog verder filteren bv:
+                # `if field_name == "afdelingen":`  of if `field+name == "afdelingen" and isinstance(field_value, QuerySet):`
                 # Kunnen het aparte fileds worden?
                 if isinstance(field_value, QuerySet):
                     self.fields[field_name] = forms.ModelMultipleChoiceField(

@@ -11,6 +11,7 @@
         {{ wizard.form.stadsdeel|render_rotterdam_formulier }}
         {% comment %} TODO @Jorrit, Als je hier terugkomt vanaf het bevestigingsscherm moet de lijst met wijken wel getoond worden (de class 'visually-hidden' moet weg).
         Hoe kan ik dat voor elkaar krijgen? {% endcomment %}
+        {% comment %} Hier moet je in de WerklocatieForm hem met de juiste class initializen als er al een waarde geselecteerd is. {% endcomment %}
         <div class="container__wijkenlijst visually-hidden">{{ wizard.form.wijken|render_rotterdam_formulier }}</div>
     </div>
 {% endblock step_content %}

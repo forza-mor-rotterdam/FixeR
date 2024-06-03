@@ -30,6 +30,7 @@
     </div>
     <div class="form-as-p">
         {% comment %} TODO @Jorrit Dit mag een lijst zijn met alleen de taaktypes, eventueel een lijst per Afdeling. Nu lijkt het hele formulier herhaald te worden, inclusief stadsdeel en wijken {% endcomment %}
+        {% comment %} Je kan hier net zoals de andere formulieren gewoon {{ wizard.form.afdelingen|render_rotterdam_formulier }} doen, of zonder render_rotterdam_formulier. Onderstaande is de standaard implementatie van django formtools. {% endcomment %}
         {% if wizard.form.forms %}
             {{ wizard.form.management_form }}
             {% for form in wizard.form.forms %}{{ form|render_rotterdam_formulier }}{% endfor %}
