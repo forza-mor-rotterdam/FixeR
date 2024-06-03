@@ -17,10 +17,15 @@ SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY", os.environ.get("SECRET_KEY", os.environ.get("APP_SECRET"))
 )
 
+# APP_ENV's
+PRODUCTIE = "productie"
+ACCEPTATIE = "acceptatie"
+TEST = "test"
+
 GIT_SHA = os.getenv("GIT_SHA")
 DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
-APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
+APP_ENV = os.getenv("APP_ENV", PRODUCTIE)  # acceptatie/test/productie
 DEBUG = ENVIRONMENT == "development"
 
 ROOT_URLCONF = "config.urls"
@@ -48,11 +53,13 @@ MELDINGEN_TOKEN_TIMEOUT = 60 * 60
 MELDINGEN_USERNAME = os.getenv("MELDINGEN_USERNAME")
 MELDINGEN_PASSWORD = os.getenv("MELDINGEN_PASSWORD")
 
+onderwerpen_urls = {
+    PRODUCTIE: "https://onderwerpen.forzamor.nl",
+    ACCEPTATIE: "https://onderwerpen-acc.forzamor.nl",
+    TEST: "https://onderwerpen-test.forzamor.nl",
+}
 ONDERWERPEN_URL = os.getenv(
-    "ONDERWERPEN_URL",
-    "https://onderwerpen-acc.forzamor.nl"
-    if APP_ENV != "productie"
-    else "https://onderwerpen.forzamor.nl",
+    "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
 )
 
 DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
@@ -61,6 +68,7 @@ UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
 
 INSTALLED_APPS = (
     # templates override
+    "apps.main",
     "apps.health",
     "django.contrib.humanize",
     "django.contrib.contenttypes",
@@ -72,6 +80,7 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.gis",
     "django.contrib.postgres",
+    "django.forms",
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
@@ -92,7 +101,6 @@ INSTALLED_APPS = (
     "sorl.thumbnail",
     "django_select2",
     # Apps
-    "apps.main",
     "apps.authorisatie",
     "apps.authenticatie",
     "apps.taken",
@@ -332,6 +340,7 @@ CSP_CONNECT_SRC = (
 )
 CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
 
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
