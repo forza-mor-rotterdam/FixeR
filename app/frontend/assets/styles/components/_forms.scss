@@ -550,6 +550,9 @@ ul.list--form-check-input--tile-image {
                     }
                 }
             }
+            &:focus + label {
+                outline: 2px solid black;
+            }
         }
     }
 }

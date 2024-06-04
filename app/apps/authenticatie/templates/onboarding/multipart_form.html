@@ -9,9 +9,12 @@
     container container--limited
 {% endblock container_class %}
 {% block body %}
-    <turbo-frame id="onboarding">
+    <turbo-frame id="onboarding" data-controller="onboarding">
     <h2>{{ wizard.form.form_title }}</h2>
-    <form method="post" enctype="multipart/form-data" class="onboarding">
+    <form method="post"
+          enctype="multipart/form-data"
+          class="onboarding"
+          data-onboarding-target="form">
         {% csrf_token %}
         <div class="progress">
             <ul class="list-progress">
@@ -36,10 +39,25 @@
             <div class="sticky sticky--bottom">
                 {% if wizard.steps.next %}<button class="btn btn-action" type="submit" formnovalidate>Volgende</button>{% endif %}
                 {% if wizard.steps.last == wizard.steps.current %}
-                    <button class="btn btn-action" type="submit" formnovalidate>Aan de slag</button>
+                    <button class="btn btn-action"
+                            type="submit"
+                            formnovalidate
+                            data-action="onboarding#onComplete">Aan de slag</button>
                 {% endif %}
             </div>
         </div>
     </form>
+    <div class="onboarding-complete border--gray-shadowed">
+        <div class="circle">
+            <div class="line1"></div>
+            <div class="line2"></div>
+        </div>
+        <h2>
+            Goed gedaan.
+            <br />
+            We halen nu je taken op
+        </h2>
+        <a class="btn btn-primary" href="{% url 'taken' %}" target="_top">Naar mijn taken</a>
+    </div>
     </turbo-frame>
 {% endblock body %}

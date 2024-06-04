@@ -5,11 +5,13 @@
 {% block body %}
     {% comment %} Hier komt een leuke animatie of icoon {% endcomment %}
     <turbo-frame id="onboarding">
-    <h2>
-        Goed gedaan.
-        <br />
-        We halen nu je taken op
-    </h2>
-    <a class="btn btn-primary" href="{% url 'taken' %}" target="_top">Naar mijn taken</a>
+    <div class="onboarding-complete">
+        <p class="h2">
+            Goed gedaan.
+            <br />
+            Je taken zijn opgehaald.
+        </p>
+        <a class="btn btn-primary" href="{% url 'taken' %}" target="_top">Naar mijn taken</a>
+    </div>
     </turbo-frame>
 {% endblock body %}
