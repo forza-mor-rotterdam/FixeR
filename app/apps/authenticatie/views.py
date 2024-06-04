@@ -227,7 +227,7 @@ class OnboardingView(SessionWizardView):
         profiel.save()
 
         messages.success(self.request, "Je instellingen zijn succesvol opgeslagen.")
-        return redirect("onboarding-compleet")
+        return redirect("taken")
 
     def get_form_kwargs(self, step=None):
         kwargs = super().get_form_kwargs(step)
@@ -246,12 +246,3 @@ class OnboardingView(SessionWizardView):
                         previous_steps_data.update(step_cleaned_data)
                 kwargs["previous_steps_data"] = previous_steps_data
         return kwargs
-
-
-@login_required
-def onboarding_compleet(request):
-    # This context can be expanded based on the information you want to display
-    context = {
-        "user": request.user,
-    }
-    return render(request, "onboarding/compleet.html", context)

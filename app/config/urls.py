@@ -6,7 +6,6 @@ from apps.authenticatie.views import (
     GebruikerProfielView,
     OnboardingView,
     gebruiker_bulk_import,
-    onboarding_compleet,
 )
 from apps.authorisatie.views import (
     RechtengroepAanmakenView,
@@ -128,7 +127,6 @@ urlpatterns = [
         taken,
         name="taken",
     ),
-    path("onboarding/compleet/", onboarding_compleet, name="onboarding-compleet"),
     path(
         "taken/filter/",
         taken_filter,

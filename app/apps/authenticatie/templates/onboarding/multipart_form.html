@@ -9,55 +9,66 @@
     container container--limited
 {% endblock container_class %}
 {% block body %}
-    <turbo-frame id="onboarding" data-controller="onboarding">
-    <h2>{{ wizard.form.form_title }}</h2>
-    <form method="post"
-          enctype="multipart/form-data"
-          class="onboarding"
-          data-onboarding-target="form">
-        {% csrf_token %}
-        <div class="progress">
-            <ul class="list-progress">
-                {% for step in wizard.steps.all %}
-                    <li class="progress__step{% if forloop.counter <= wizard.steps.index|add:1 %} active{% endif %}"></li>
-                {% endfor %}
-            </ul>
-            {% if wizard.steps.prev %}
-                <button class="btn-previous--icon"
-                        name="wizard_goto_step"
-                        type="submit"
-                        formnovalidate
-                        value="{{ wizard.steps.prev }}">{% include "icons/arrow-right.svg" %}</button>
-            {% endif %}
-        </div>
-        <div>
-            {% block step_content %}
-            {% endblock step_content %}
-        </div>
-        {{ wizard.management_form }}
-        <div class="container__details--sticky-bottom">
-            <div class="sticky sticky--bottom">
-                {% if wizard.steps.next %}<button class="btn btn-action" type="submit" formnovalidate>Volgende</button>{% endif %}
-                {% if wizard.steps.last == wizard.steps.current %}
-                    <button class="btn btn-action"
-                            type="submit"
-                            formnovalidate
-                            data-action="onboarding#onComplete">Aan de slag</button>
-                {% endif %}
+    <turbo-frame id="taak_basis" data-turbo-action="advance">
+    <div data-controller="onboarding">
+        <form method="post"
+              enctype="multipart/form-data"
+              class="onboarding"
+              data-onboarding-target="form">
+            <div class="flex-container--sticky">
+                <div>
+                    {% csrf_token %}
+                    <div class="progress">
+                        <ul class="list-progress">
+                            {% for step in wizard.steps.all %}
+                                <li class="progress__step{% if forloop.counter <= wizard.steps.index|add:1 %} active{% endif %}"></li>
+                            {% endfor %}
+                        </ul>
+                        {% if wizard.steps.prev %}
+                            <button class="btn-previous--icon"
+                                    name="wizard_goto_step"
+                                    type="submit"
+                                    formnovalidate
+                                    value="{{ wizard.steps.prev }}">{% include "icons/arrow-right.svg" %}</button>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% block step_content %}
+                        {% endblock step_content %}
+                    </div>
+                    {{ wizard.management_form }}
+                </div>
+                <div class="container__buttons">
+                    {% if wizard.steps.next %}
+                        <button class="btn btn-action"
+                                type="submit"
+                                formnovalidate
+                                data-action="onboarding#onNext">Volgende</button>
+                    {% endif %}
+                    {% if wizard.steps.last == wizard.steps.current %}
+                        <button class="btn btn-action"
+                                type="submit"
+                                formnovalidate
+                                data-action="onboarding#onComplete">Aan de slag</button>
+                    {% endif %}
+                </div>
             </div>
+        </form>
+        <div class="onboarding-complete border--gray-shadowed">
+            <div class="circle">
+                <div class="line1"></div>
+                <div class="line2"></div>
+            </div>
+            <h2>
+                Goed gedaan.
+                <br />
+                We halen nu je taken op
+            </h2>
+            <p>
+                Je wordt automatisch doorgestuurd naar de lijst met taken. Als dat niet gebeurt, klik dan
+                <a href="{% url 'taken' %}">hier</a>.
+            </p>
         </div>
-    </form>
-    <div class="onboarding-complete border--gray-shadowed">
-        <div class="circle">
-            <div class="line1"></div>
-            <div class="line2"></div>
-        </div>
-        <h2>
-            Goed gedaan.
-            <br />
-            We halen nu je taken op
-        </h2>
-        <a class="btn btn-primary" href="{% url 'taken' %}" target="_top">Naar mijn taken</a>
     </div>
     </turbo-frame>
 {% endblock body %}

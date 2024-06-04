@@ -11,6 +11,7 @@ body {
     font-size: 1em;
     color: $black;
     background-color: $gray-tint00;
+    scroll-behavior: smooth;
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         font-size: 1.125em;
@@ -660,5 +661,15 @@ body.no-js {
 .has-button-fullwidth {
     .btn {
         max-width: none !important;
+    }
+}
+
+.flex-container--sticky {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    > div {
+        flex: 1;
     }
 }

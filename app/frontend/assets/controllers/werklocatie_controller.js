@@ -4,6 +4,7 @@ let stadsdeel
 let wijken
 let noordWijken
 let zuidWijken
+// let numberChecked = 0
 export default class extends Controller {
   static values = {
     dateObject: String,
@@ -35,8 +36,6 @@ export default class extends Controller {
     if (zuidWijken.length > 0) {
       wijkenChoices.push(['Zuid', zuidWijken])
     }
-    console.log('wijken noord', noordWijken)
-    console.log('wijken zuid', zuidWijken)
 
     if (stadsdeel) {
       if (stadsdeel.toLowerCase() === 'volledig') {
@@ -67,7 +66,7 @@ export default class extends Controller {
           cb.closest('li').style.display = 'block'
         }
       })
-      this.element.querySelector('.container__wijkenlijst').classList.remove('visually-hidden')
+      this.element.querySelector('.container__wijkenlijst').classList.remove('hidden')
     }
   }
 }

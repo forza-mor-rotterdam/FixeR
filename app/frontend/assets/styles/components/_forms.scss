@@ -508,6 +508,7 @@ ul.list--form-check-input {
 
 ul.list--form-check-input--tile-image {
     @include list-clean();
+    margin: 0;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -542,7 +543,6 @@ ul.list--form-check-input--tile-image {
             cursor: pointer;
             &:checked + label {
                 background-color: $green-tint04;
-                color: $green-tint01;
 
                 svg {
                     path {
