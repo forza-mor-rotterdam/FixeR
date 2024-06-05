@@ -125,12 +125,14 @@ class TaaktypesFilteredForm(forms.ModelForm):
                         widget=forms.CheckboxSelectMultiple(
                             attrs={
                                 "class": "form-check-input",
-                                "data-action": "change->incidentHandleForm#toggleNewTask",
+                                "data-action": "change->onboarding#selectTask",
                                 "showSelectAll": True,
+                                "hasMoreInfo": True,
                             }
                         ),
                         queryset=taaktypes_queryset,
-                        label=f"Taken van {afdeling_response['naam']} ({taaktypes_queryset.count()})",
+                        label=f"Taken van {afdeling_response['naam']}",
+                        help_text="Welke van deze taken pak je weleens op? Selecteer alle werkzaamheden die jij normaal gesproken uitvoert. Je kunt taken later altijd uitzetten en aan je collega’s overlaten",
                         required=False,
                     )
 

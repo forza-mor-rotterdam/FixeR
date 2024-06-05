@@ -7,7 +7,7 @@
     <h1>In welk gebied werk je?</h1>
     <p>Selecteer het stadsdeel en de wijken waarin je werkt. In de filters van FixeR kun je ook buurten selecteren.</p>
     {% comment %} <h5>Meer info</h5> {% endcomment %}
-    <div data-controller="werklocatie selectAll">
+    <div data-controller="selectAll">
         {{ wizard.form.stadsdeel|render_rotterdam_formulier }}
         <div class="container__wijkenlijst hidden">{{ wizard.form.wijken|render_rotterdam_formulier }}</div>
     </div>
