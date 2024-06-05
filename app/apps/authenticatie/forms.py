@@ -206,9 +206,11 @@ class AfdelingForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(
             attrs={
                 "hasIcon": True,
+                "hasMoreInfo": True,
                 "listClass": "list--form-check-input--tile-image",
             }
         ),
+        help_text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
         required=True,
     )
 

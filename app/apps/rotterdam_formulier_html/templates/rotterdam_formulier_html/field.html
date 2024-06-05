@@ -125,6 +125,12 @@
         {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
             <h3 class="label">{{ field.label }}{{ field.field.widget.attrs.hideLabel }}</h3>
         {% endif %}
+        {% if field.field.widget.attrs.hasMoreInfo and field.help_text %}
+            <div class="foldout--info" data-controller="utils">
+                <h4 class="summary" data-action="click->utils#foldOut">Meer info</h4>
+                <p>{{ field.help_text|safe }}</p>
+            </div>
+        {% endif %}
         {% if field.field.widget.attrs.showSelectAll %}
             <div class="container__buttons">
                 <button class="btn btn-textlink btn-inline"
@@ -168,7 +174,9 @@
             {% for error in field.errors %}
                 <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
             {% endfor %}
-            {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
+            {% if field.help_text and not field.field.widget.attrs.hasMoreInfo %}
+                <p class="help-block">{{ field.help_text|safe }}</p>
+            {% endif %}
         </div>
     </div>
 {% elif field|is_textarea %}

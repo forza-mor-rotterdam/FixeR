@@ -106,12 +106,14 @@ class TaaktypesFilteredForm(forms.ModelForm):
                     widget=forms.CheckboxSelectMultiple(
                         attrs={
                             "class": "form-check-input",
-                            "data-action": "change->incidentHandleForm#toggleNewTask",
+                            "data-action": "change->onboarding#selectTask",
                             "showSelectAll": True,
+                            "hasMoreInfo": True,
                         }
                     ),
                     queryset=taaktypes_queryset,
-                    label=f"Taken van {afdeling} ({taaktypes_queryset.count()})",
+                    label=f"Taken van {afdeling}",
+                    help_text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
                     required=False,
                 )
 

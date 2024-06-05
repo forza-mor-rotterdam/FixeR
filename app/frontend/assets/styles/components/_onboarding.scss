@@ -109,11 +109,49 @@ turbo-frame {
 
     .form-row {
         margin-bottom: 0;
+        h3.label {
+            font-size: 1.125em;
+        }
     }
 
     .flex-container--sticky {
         > .container__buttons {
             margin-top: 50px;
+        }
+    }
+
+    .foldout--info {
+        text-align: right;
+        position: relative;
+        max-height: 1rem;
+        overflow: hidden;
+        transition: max-height 0.5s ease-in-out;
+        margin-top: -1.35rem;
+
+        &.show {
+            max-height: 500px;
+            transition: max-height 0.5s ease-in-out;
+        }
+
+        .summary {
+            position: relative;
+            display: inline;
+            font-size: 0.875rem;
+            border: 0;
+            text-align: right;
+            cursor: pointer;
+            &::-webkit-details-marker {
+                display: none;
+            }
+            &::before {
+                content: url(../icons/info-filled.svg);
+                position: absolute;
+                top: calc(50% - 8px);
+                left: -18px;
+            }
+        }
+        p {
+            text-align: left;
         }
     }
 }
