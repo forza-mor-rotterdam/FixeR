@@ -50,14 +50,6 @@ class Taaktype(BasisModel):
         blank=True,
         null=True,
     )
-    verantwoordelijke = models.CharField(
-        max_length=200,
-        blank=True,
-        null=True,
-    )
-    icoon = models.ImageField(
-        upload_to="taaktype/icons", null=True, blank=True, max_length=255
-    )
     additionele_informatie = models.JSONField(default=dict)
 
     volgende_taaktypes = models.ManyToManyField(
@@ -65,22 +57,6 @@ class Taaktype(BasisModel):
         related_name="vorige_taaktypes_voor_taaktype",
         blank=True,
     )
-    # gerelateerde_taaktypes = models.ManyToManyField(
-    #     to="taken.Taaktype",
-    #     related_name="gerelateerde_taaktypes_voor_taaktype",
-    #     blank=True,
-    # )
-    gerelateerde_onderwerpen = ArrayField(models.URLField(), default=list)
-    # afdelingen = models.ManyToManyField(
-    #     to="taaktype.Afdeling",
-    #     related_name="taaktypes_voor_afdelingen",
-    #     blank=True,
-    # )
-    # taaktypemiddelen = models.ManyToManyField(
-    #     to="taaktype.TaaktypeMiddel",
-    #     related_name="taaktypes_voor_taaktypemiddelen",
-    #     blank=True,
-    # )
     actief = models.BooleanField(default=True)
 
     def bijlagen(self):
