@@ -3,22 +3,13 @@ from django import forms
 
 
 class TaaktypeAanpassenForm(forms.ModelForm):
-    def __init__(self, *args, current_taaktype=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if current_taaktype:
-            self.fields["volgende_taaktypes"].queryset = Taaktype.objects.filter(
-                actief=True
-            ).exclude(id=current_taaktype.id)
-
-    volgende_taaktypes = forms.ModelMultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
-        queryset=Taaktype.objects.filter(actief=True),
-        label="Volgende taaktypes",
-        required=False,
-    )
     actief = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
         label="Actief",
+        required=False,
+    )
+    redirect_field = forms.CharField(
+        widget=forms.HiddenInput(),
         required=False,
     )
 
@@ -26,7 +17,6 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         model = Taaktype
         fields = (
             "omschrijving",
-            "volgende_taaktypes",
             "actief",
         )
 
@@ -36,7 +26,6 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
         model = Taaktype
         fields = (
             "omschrijving",
-            "volgende_taaktypes",
             "actief",
         )
 
@@ -45,6 +34,3 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
         self.fields[
             "omschrijving"
         ].help_text = "Omschrijf het taaktype zo concreet mogelijk. Formuleer de gewenste actie, bijvoorbeeld ‘Grofvuil ophalen’."
-        self.fields[
-            "volgende_taaktypes"
-        ].help_text = "Dit zijn taken die mogelijk uitgevoerd moeten worden nadat de taak is afgerond."
