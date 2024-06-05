@@ -65,6 +65,14 @@ ONDERWERPEN_URL = (
         "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
     )
 )
+taakr_urls = {
+    PRODUCTIE: "https://taakr.forzamor.nl",
+    ACCEPTATIE: "https://taakr-acc.forzamor.nl",
+    TEST: "https://taakr-test.forzamor.nl",
+}
+TAAKR_URL = os.getenv(
+    "TAAKR_URL", taakr_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
+)
 
 DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
 
@@ -332,6 +340,7 @@ CSP_CONNECT_SRC = (
         "mercure.fixer-acc.forzamor.nl",
         "mercure.fixer.forzamor.nl",
         "cke4.ckeditor.com",
+        "forzamor.nl",
     )
     if not DEBUG
     else (
@@ -339,6 +348,7 @@ CSP_CONNECT_SRC = (
         "ws:",
         "localhost:7001",
         "cke4.ckeditor.com",
+        "taakr.mor.local:8009",
     )
 )
 CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
