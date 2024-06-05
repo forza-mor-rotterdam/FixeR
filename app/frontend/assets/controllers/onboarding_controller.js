@@ -8,6 +8,11 @@ export default class extends Controller {
       window.scrollTo(0, 0)
     }, 100)
   }
+  selectTask(e) {
+    const checkedItems = e.target.closest('.form-row').querySelectorAll('input:checked')
+    console.log('checkedItems', checkedItems.length)
+    console.log(e.target.closest('.form-row').querySelector('.label'))
+  }
 
   onComplete(e) {
     e.preventDefault()

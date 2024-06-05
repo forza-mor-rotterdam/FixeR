@@ -4,6 +4,7 @@ let stadsdeel
 let wijken
 let noordWijken
 let zuidWijken
+let cbList
 // let numberChecked = 0
 export default class extends Controller {
   static values = {
@@ -14,7 +15,9 @@ export default class extends Controller {
     if (this.element.querySelector('select').value) {
       this.stadsdeel = this.element.querySelector('select').value
       this.updateWijken()
+      this.getCheckedItems()
     }
+    console.log('cbList', cbList)
   }
   updateWijken(e) {
     if (e) {
@@ -45,7 +48,7 @@ export default class extends Controller {
         this.element.querySelector('h3.label').textContent = `Wijken in ${capt}`
       }
 
-      const cbList = this.element.querySelectorAll('input[type=checkbox]')
+      cbList = this.element.querySelectorAll('input[type=checkbox]')
 
       cbList.forEach((cb) => {
         if (stadsdeel === 'noord') {
@@ -68,5 +71,10 @@ export default class extends Controller {
       })
       this.element.querySelector('.container__wijkenlijst').classList.remove('hidden')
     }
+  }
+
+  getCheckedItems() {
+    const checkedList = cbList.querySelectorAll('input[type=checkbox]:checked')
+    console.log(checkedList.length, checkedList)
   }
 }

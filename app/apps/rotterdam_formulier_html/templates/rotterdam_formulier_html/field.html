@@ -129,7 +129,9 @@
         {% endif %}
         {% if field.field.widget.attrs.hasMoreInfo and field.help_text %}
             <div class="foldout--info" data-controller="utils">
-                <h4 class="summary" data-action="click->utils#foldOut">Meer info</h4>
+                <h4 class="summary"
+                    data-action="click->utils#foldOut"
+                    aria-label="Meer info">{% include "icons/info-filled.svg" %}</h4>
                 <p>{{ field.help_text|safe }}</p>
             </div>
         {% endif %}

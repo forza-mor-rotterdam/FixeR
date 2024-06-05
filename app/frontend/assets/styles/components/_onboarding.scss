@@ -113,7 +113,7 @@ turbo-frame {
             font-size: 1.125em;
 
             &.has-more-info {
-                padding-right: 85px;
+                padding-right: 25px;
             }
         }
     }
@@ -146,12 +146,6 @@ turbo-frame {
             cursor: pointer;
             &::-webkit-details-marker {
                 display: none;
-            }
-            &::before {
-                content: url(../icons/info-filled.svg);
-                position: absolute;
-                top: calc(50% - 8px);
-                left: -18px;
             }
         }
         p {

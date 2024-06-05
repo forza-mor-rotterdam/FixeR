@@ -210,7 +210,7 @@ class AfdelingForm(forms.ModelForm):
                 "listClass": "list--form-check-input--tile-image",
             }
         ),
-        help_text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        help_text="Selecteer de afdeling waarvoor je momenteel werkt. Je kunt er meer dan één kiezen.",
         required=True,
     )
 
@@ -225,8 +225,11 @@ class WerklocatieForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(
             attrs={
                 "showSelectAll": True,
+                "data-action": "change->onboarding#selectTask",
+                "hasMoreInfo": True,
             }
         ),
+        help_text="Weet je niet zeker wat je moet kiezen? Selecteer dan alle wijken in dit gebied. Specifieke buurten kun je later aan- of uitzetten.",
         required=True,
     )
 
