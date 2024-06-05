@@ -65,13 +65,16 @@ ONDERWERPEN_URL = (
         "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
     )
 )
+
 taakr_urls = {
     PRODUCTIE: "https://taakr.forzamor.nl",
     ACCEPTATIE: "https://taakr-acc.forzamor.nl",
     TEST: "https://taakr-test.forzamor.nl",
 }
-TAAKR_URL = os.getenv(
-    "TAAKR_URL", taakr_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
+TAAKR_URL = (
+    "http://taakr.mor.local:8009"
+    if DEBUG
+    else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV, taakr_urls[ACCEPTATIE]))
 )
 
 DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
@@ -409,17 +412,6 @@ THUMBNAIL_PREFIX = "afbeeldingen"
 THUMBNAIL_KLEIN = "128x128"
 THUMBNAIL_STANDAARD = "1480x1480"
 BESTANDEN_PREFIX = "bestanden"
-
-taakr_urls = {
-    PRODUCTIE: "https://taakr.forzamor.nl",
-    ACCEPTATIE: "https://taakr-acc.forzamor.nl",
-    TEST: "https://taakr-test.forzamor.nl",
-}
-TAAKR_URL = (
-    "http://taakr.mor.local:8009"
-    if DEBUG
-    else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV))
-)
 
 
 def show_debug_toolbar(request):
