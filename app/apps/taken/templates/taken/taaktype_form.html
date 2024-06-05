@@ -48,11 +48,14 @@
                         </div>
                     </div>
                 {% endif %}
-                <form action="." method="post" class="form--beheer">
+                <form action="{% url 'taaktype_aanmaken' %}"
+                      method="post"
+                      class="form--beheer"
+                      {% if form.redirect_field.value %}data-turbo="false"{% endif %}>
                     {% csrf_token %}
                     <fieldset>
+                        {{ form.redirect_field|render_rotterdam_formulier }}
                         {{ form.omschrijving|render_rotterdam_formulier }}
-                        {{ form.volgende_taaktypes|render_rotterdam_formulier }}
                         <div class="container__checkbox--single">
                             <h3 class="label">Is dit taaktype actief?</h3>
                             {{ form.actief|render_rotterdam_formulier }}
