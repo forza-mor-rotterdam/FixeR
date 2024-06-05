@@ -123,7 +123,9 @@
 {% elif field|is_multiple_checkbox %}
     <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
         {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
-            <h3 class="label">{{ field.label }}{{ field.field.widget.attrs.hideLabel }}</h3>
+            <h3 class="label {% if field.field.widget.attrs.hasMoreInfo and field.help_text %}has-more-info{% endif %}">
+                {{ field.label }}{{ field.field.widget.attrs.hideLabel }}
+            </h3>
         {% endif %}
         {% if field.field.widget.attrs.hasMoreInfo and field.help_text %}
             <div class="foldout--info" data-controller="utils">
