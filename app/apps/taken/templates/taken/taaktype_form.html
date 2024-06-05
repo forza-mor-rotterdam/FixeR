@@ -1,8 +1,6 @@
 {% extends "base_beheer.html" %}
-{% load webpack_static from webpack_loader %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from main_tags %}
-{% load render_onderwerp from melding_tags %}
 {% block title %}
     {% if object %}
         Taaktype '{{ object.omschrijving }}' aanpassen
@@ -50,6 +48,31 @@
                         </div>
                     </div>
                 {% endif %}
+                <form action="." method="post" class="form--beheer">
+                    {% csrf_token %}
+                    <fieldset>
+                        {{ form.omschrijving|render_rotterdam_formulier }}
+                        {{ form.volgende_taaktypes|render_rotterdam_formulier }}
+                        <div class="container__checkbox--single">
+                            <h3 class="label">Is dit taaktype actief?</h3>
+                            {{ form.actief|render_rotterdam_formulier }}
+                        </div>
+                    </fieldset>
+                    <div class="form-row container__button">
+                        <div class="form-row btn-row">
+                            <button type="reset"
+                                    class="btn btn-tertiary"
+                                    data-controller="utils"
+                                    data-action="utils#goToUrl"
+                                    data-utils-url-param="{% url 'taaktype_lijst' %}">
+                                <span>Annuleren</span>
+                            </button>
+                            <button type="submit" class="btn btn-action">
+                                <span>Aanpassen</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div>
                 {% if object.contexten_voor_taaktypes.all %}
@@ -62,104 +85,5 @@
                 {% endif %}
             </div>
         </div>
-        <form action="."
-              method="post"
-              class="form--beheer full-width"
-              enctype="multipart/form-data"
-              data-controller="taaktypeformulier"
-              data-taaktypeformulier-target="formTaaktype">
-            {% csrf_token %}
-            <fieldset class="section">
-                <legend>Basisinformatie</legend>
-                <div class="container__flex">
-                    <div>
-                        {{ form.omschrijving|render_rotterdam_formulier }}
-                        {{ form.toelichting|render_rotterdam_formulier }}
-                        {{ form.taaktypemiddelen|render_rotterdam_formulier }}
-                    </div>
-                    <div>
-                        {{ form.afdelingen|render_rotterdam_formulier }}
-                        {{ form.verantwoordelijke|render_rotterdam_formulier }}
-                        <div data-controller="bijlagen" class="has-button-fullwidth">
-                            <h3 class="h5">Icoon</h3>
-                            {{ form.icoon|render_rotterdam_formulier }}
-                            <div class="container__example--task">
-                                {% if form.instance.icoon %}
-                                    Huidig icoon:
-                                    <img class="icon-preview" src="{{ form.instance.icoon.url }}" />
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="container__checkbox--single form-row">
-                            <h3 class="label">
-                                Is dit taaktype actief? <small>(Niet verplicht)</small>
-                            </h3>
-                            {{ form.actief|render_rotterdam_formulier }}
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
-            <fieldset class="section">
-                <legend>Wanneer selecteer je dit taaktype?</legend>
-                <div class="container__flex container__hideables">
-                    <div class="form-row" data-taaktypeformulier-target="voorbeeldWel">
-                        <label class="label--positive">Wanneer is de taak relevant?</label>
-                        {{ voorbeeldsituatie_wel.management_form }}
-                        {% for voorbeeldsituatie in voorbeeldsituatie_wel %}
-                            {% if forloop.counter0 < 5 %}
-                                {% comment %} check id om class te zetten voor wel of niet zichtbaar {% endcomment %}
-                                {% include "taken/taaktype_voorbeeldsituatie_form.html" with count=forloop.counter0|add:1 do=True %}
-                            {% endif %}
-                        {% endfor %}
-                        <button type="button"
-                                class="btn btn-textlink"
-                                data-action="taaktypeformulier#addExample">
-                            + Voeg nog een voorbeeldsituatie toe
-                        </button>
-                        <small>U kunt maximaal 5 voorbeeldsituaties opgeven</small>
-                    </div>
-                    <div class="form-row" data-taaktypeformulier-target="voorbeeldNiet">
-                        <label class="label--negative">Wanneer hoeft de taak NIET te worden gestart?</label>
-                        {{ voorbeeldsituatie_niet.management_form }}
-                        {% for voorbeeldsituatie in voorbeeldsituatie_niet %}
-                            {% if forloop.counter0 < 5 %}
-                                {% include "taken/taaktype_voorbeeldsituatie_form.html" with count=forloop.counter0|add:1 do=False %}
-                            {% endif %}
-                        {% endfor %}
-                        <button type="button"
-                                class="btn btn-textlink"
-                                data-action="taaktypeformulier#addExample">
-                            + Voeg nog een voorbeeldsituatie toe
-                        </button>
-                        <small class="margin-bottom">U kunt maximaal 5 voorbeeldsituaties opgeven</small>
-                    </div>
-                </div>
-            </fieldset>
-            <fieldset class="section">
-                <legend>Gerelateerd aan dit taaktype</legend>
-                <div class="container__flex">
-                    {{ form.volgende_taaktypes|render_rotterdam_formulier }}
-                    {{ form.gerelateerde_onderwerpen|render_rotterdam_formulier }}
-                </div>
-                <div class="container__flex">
-                    {{ form.gerelateerde_taaktypes|render_rotterdam_formulier }}
-                    <div>&nbsp;</div>
-                </div>
-            </fieldset>
-            <div class="form-row container__button">
-                <div class="form-row btn-row">
-                    <button type="reset"
-                            class="btn btn-tertiary"
-                            data-controller="utils"
-                            data-action="utils#goToUrl"
-                            data-utils-url-param="{% url 'taaktype_lijst' %}">
-                        <span>Annuleren</span>
-                    </button>
-                    <button type="submit" class="btn btn-action">
-                        <span>Aanpassen</span>
-                    </button>
-                </div>
-            </div>
-        </form>
     </div>
 {% endblock body %}

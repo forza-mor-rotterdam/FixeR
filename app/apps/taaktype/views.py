@@ -15,7 +15,6 @@ from apps.taaktype.forms import (
 from apps.taaktype.models import Afdeling, TaaktypeMiddel
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -24,16 +23,6 @@ from django.views.generic.list import ListView
 
 Gebruiker = get_user_model()
 logger = logging.getLogger(__name__)
-
-
-@login_required
-@permission_required("authorisatie.taaktype_beheer_bekijken", raise_exception=True)
-def taaktype_beheer(request):
-    return render(
-        request,
-        "taaktype_beheer.html",
-        {},
-    )
 
 
 @method_decorator(login_required, name="dispatch")

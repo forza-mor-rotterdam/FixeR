@@ -8,6 +8,7 @@ from apps.taken.models import (
     Taak,
     TaakDeellink,
     Taakgebeurtenis,
+    Taakstatus,
     Taaktype,
     TaakZoekData,
 )
@@ -185,8 +186,20 @@ class TaakDeellinkAdmin(admin.ModelAdmin):
     )
 
 
+class TaakstatusAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "uuid",
+        "naam",
+        "taak",
+        "aangemaakt_op",
+        "aangepast_op",
+    )
+
+
 admin.site.register(TaakZoekData, TaakZoekDataAdmin)
 admin.site.register(Taak, TaakAdmin)
 admin.site.register(Taaktype, TaaktypeAdmin)
 admin.site.register(Taakgebeurtenis, TaakgebeurtenisAdmin)
 admin.site.register(TaakDeellink, TaakDeellinkAdmin)
+admin.site.register(Taakstatus, TaakstatusAdmin)
