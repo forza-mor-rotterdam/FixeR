@@ -259,8 +259,9 @@ class WerklocatieForm(forms.ModelForm):
 
         self.fields["stadsdeel"].widget.attrs.update(
             {
-                "data-action": "change->werklocatie#updateWijken",
-                "data-werklocatie-wijken-param": json.dumps(PDOK_WIJKEN),
+                "data-action": "change->onboarding#updateWijken",
+                "data-onboarding-wijken-param": json.dumps(PDOK_WIJKEN),
+                "data-onboarding-target": "stadsdeel",
             }
         )
         self.fields["stadsdeel"].initial = None

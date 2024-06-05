@@ -115,6 +115,11 @@ turbo-frame {
             &.has-more-info {
                 padding-right: 25px;
             }
+
+            .count {
+                transform: translateY(-2px);
+                margin-left: 4px;
+            }
         }
     }
 
