@@ -48,23 +48,12 @@ class TaaktypeLinksSerializer(serializers.Serializer):
 class TaaktypeSerializer(serializers.ModelSerializer):
     _links = TaaktypeLinksSerializer(source="*")
 
-    volgende_taaktypes = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name="v1:taaktype-detail",
-        lookup_field="uuid",
-    )
-
     class Meta:
         model = Taaktype
         fields = (
             "_links",
-            "uuid",
             "omschrijving",
-            "toelichting",
-            "additionele_informatie",
             "actief",
-            "volgende_taaktypes",
         )
         read_only_fields = ("_links",)
 
