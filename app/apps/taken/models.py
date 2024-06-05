@@ -1,11 +1,9 @@
 from datetime import timedelta
 
 from apps.aliassen.models import MeldingAlias
-from apps.taaktype.models import TaaktypeVoorbeeldsituatie
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core import signing
@@ -59,24 +57,6 @@ class Taaktype(BasisModel):
         blank=True,
     )
     actief = models.BooleanField(default=True)
-
-    def bijlagen(self):
-        from apps.release_notes.models import Bijlage
-
-        return Bijlage.objects.filter(
-            content_type=ContentType.objects.get_for_model(TaaktypeVoorbeeldsituatie),
-            object_id__in=self.voorbeeldsituatie_voor_taaktype.values_list(
-                "id", flat=True
-            ),
-        )
-
-    def voorbeeldsituatie_wel_bijlage(self):
-        voorbeeldsituaties_wel = self.voorbeeldsituatie_voor_taaktype.filter(
-            type=TaaktypeVoorbeeldsituatie.TypeOpties.WAAROM_WEL,
-        ).last()
-        if voorbeeldsituaties_wel and voorbeeldsituaties_wel.bijlagen.first():
-            return voorbeeldsituaties_wel.bijlagen.first()
-        return
 
     class Meta:
         ordering = ("-aangemaakt_op",)

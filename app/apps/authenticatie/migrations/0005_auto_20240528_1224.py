@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("taaktype", "0001_initial"),
         ("authenticatie", "0004_auto_20240527_1619"),
     ]
 

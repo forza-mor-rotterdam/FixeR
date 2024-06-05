@@ -5,7 +5,7 @@ import chardet
 from apps.authenticatie.models import Profiel
 from apps.context.models import Context
 from apps.main.utils import get_wijknaam_by_wijkcode
-from apps.taaktype.models import Afdeling
+from apps.services.taakr import TaakRService
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -216,8 +216,8 @@ class AfdelingForm(forms.ModelForm):
         model = Profiel
         fields = ["afdelingen"]
 
-    afdelingen = forms.ModelMultipleChoiceField(
-        queryset=Afdeling.objects.all(),
+    afdelingen = forms.MultipleChoiceField(
+        choices=[],
         widget=forms.CheckboxSelectMultiple(
             attrs={
                 "hasIcon": True,
@@ -229,6 +229,13 @@ class AfdelingForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        afdelingen_response = TaakRService().get_afdelingen()
+        afdelingen = [
+            (afdeling["_links"]["self"], afdeling["naam"])
+            for afdeling in afdelingen_response
+        ]
+        print(f"Afdelingen: {afdelingen}")
+        self.fields["afdelingen"].choices = afdelingen
 
 
 class WerklocatieForm(forms.ModelForm):
@@ -278,9 +285,17 @@ class BevestigenForm(forms.Form):
         # Dynamically add fields from previous steps as read-only fields
         for field_name, field_value in previous_steps_data.items():
             if field_value:
-                if field_name == "afdelingen" and isinstance(field_value, QuerySet):
-                    self.fields[field_name] = forms.ModelMultipleChoiceField(
-                        queryset=field_value,
+                if field_name == "afdelingen" and isinstance(field_value, list):
+                    self.fields[field_name] = forms.MultipleChoiceField(
+                        choices=[
+                            (
+                                val,
+                                TaakRService()
+                                .get_afdeling_by_url(val)
+                                .get("naam", "test"),
+                            )
+                            for val in field_value
+                        ],
                         widget=forms.CheckboxSelectMultiple(
                             attrs={
                                 "readonly": "readonly",
@@ -295,6 +310,18 @@ class BevestigenForm(forms.Form):
                 elif field_name.startswith("taaktypes_") and isinstance(
                     field_value, QuerySet
                 ):
+                    self.fields[field_name] = forms.ModelMultipleChoiceField(
+                        queryset=field_value,
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                            }
+                        ),
+                        required=False,
+                    )
+                elif isinstance(field_value, QuerySet):
                     self.fields[field_name] = forms.ModelMultipleChoiceField(
                         queryset=field_value,
                         widget=forms.CheckboxSelectMultiple(

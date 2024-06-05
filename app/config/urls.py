@@ -56,11 +56,6 @@ from apps.release_notes.views import (
     ReleaseNoteListViewPublic,
     ReleaseNoteVerwijderenView,
 )
-from apps.taaktype.viewsets import (
-    AfdelingViewSet,
-    TaaktypeMiddelViewSet,
-    TaaktypeVoorbeeldsituatieViewSet,
-)
 from apps.taken.views import (
     TaaktypeAanmakenView,
     TaaktypeAanpassenView,
@@ -84,13 +79,6 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r"taak", TaakViewSet, basename="taak")
 router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
-router.register(r"afdeling", AfdelingViewSet, basename="afdeling")
-router.register(r"taaktype-middel", TaaktypeMiddelViewSet, basename="taaktype_middel")
-router.register(
-    r"taaktype-voorbeeldsituatie",
-    TaaktypeVoorbeeldsituatieViewSet,
-    basename="taaktype_voorbeeldsituatie",
-)
 
 urlpatterns = [
     path("", root, name="root"),

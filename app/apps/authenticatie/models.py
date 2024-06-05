@@ -111,11 +111,6 @@ class Profiel(BasisModel):
         blank=True,
         null=True,
     )
-    afdelingen = models.ManyToManyField(
-        to="taaktype.Afdeling",
-        related_name="profielen_voor_afdelingen",
-        blank=True,
-    )
     profielfoto = models.ImageField(
         upload_to=get_upload_path, null=True, blank=True, max_length=255
     )

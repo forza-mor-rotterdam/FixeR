@@ -1,5 +1,6 @@
 from apps.context.filters import FilterManager
 from apps.context.models import Context
+from apps.services.taakr import TaakRService
 from apps.taken.models import Taaktype
 from django import forms
 from utils.forms import RadioSelect
@@ -96,24 +97,42 @@ class TaaktypesForm(forms.ModelForm):
 class TaaktypesFilteredForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         afdelingen_selected = kwargs.pop("afdelingen_selected", None)
-
         super().__init__(*args, **kwargs)
-        for afdeling in afdelingen_selected:
-            taaktypes_queryset = Taaktype.objects.filter(afdelingen=afdeling).distinct()
-            if taaktypes_queryset.exists():
-                field_name = f"taaktypes_{afdeling.naam}"
-                self.fields[field_name] = forms.ModelMultipleChoiceField(
-                    widget=forms.CheckboxSelectMultiple(
-                        attrs={
-                            "class": "form-check-input",
-                            "data-action": "change->incidentHandleForm#toggleNewTask",
-                            "showSelectAll": True,
-                        }
-                    ),
-                    queryset=taaktypes_queryset,
-                    label=f"Taken van {afdeling} ({taaktypes_queryset.count()})",
-                    required=False,
-                )
+
+        if afdelingen_selected:
+            for afdeling_url in afdelingen_selected:
+                print(f"Afdeling: {afdeling_url}")
+                afdeling_response = TaakRService().get_afdeling_by_url(afdeling_url)
+                print(f"Afdeling response: {afdeling_response}")
+
+                # Extract the UUIDs of the taaktypes for the current afdeling
+                taaktype_omschrijvingen = [
+                    taaktype["omschrijving"]
+                    for taaktype in afdeling_response.get(
+                        "taaktypes_voor_afdelingen", []
+                    )
+                ]
+                print(f"taaktype omschrijvingen: {taaktype_omschrijvingen}")
+
+                # Fetch the queryset for the corresponding taaktypes
+                taaktypes_queryset = Taaktype.objects.filter(
+                    omschrijving__in=taaktype_omschrijvingen
+                ).distinct()
+
+                if taaktypes_queryset.exists():
+                    field_name = f"taaktypes_{afdeling_response['naam']}"
+                    self.fields[field_name] = forms.ModelMultipleChoiceField(
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "class": "form-check-input",
+                                "data-action": "change->incidentHandleForm#toggleNewTask",
+                                "showSelectAll": True,
+                            }
+                        ),
+                        queryset=taaktypes_queryset,
+                        label=f"Taken van {afdeling_response['naam']} ({taaktypes_queryset.count()})",
+                        required=False,
+                    )
 
     class Meta:
         model = Context
