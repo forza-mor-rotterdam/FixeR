@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db.models.query import QuerySet
 from utils.constanten import PDOK_WIJKEN
+from utils.forms import CheckboxSelectMultiple
 
 Gebruiker = get_user_model()
 
@@ -218,15 +219,15 @@ class AfdelingForm(forms.ModelForm):
 
     afdelingen = forms.MultipleChoiceField(
         choices=[],
-        widget=forms.CheckboxSelectMultiple(
+        widget=CheckboxSelectMultiple(
             attrs={
                 "hasIcon": True,
                 "hasMoreInfo": True,
                 "listClass": "list--form-check-input--tile-image",
+                "help_text": "Selecteer de afdeling waarvoor je momenteel werkt. Je kunt er meer dan één kiezen.",
+                "required": True,
             }
         ),
-        help_text="Selecteer de afdeling waarvoor je momenteel werkt. Je kunt er meer dan één kiezen.",
-        required=True,
     )
 
     def __init__(self, *args, **kwargs):
@@ -244,7 +245,7 @@ class WerklocatieForm(forms.ModelForm):
     wijken = forms.MultipleChoiceField(
         label="Wijken",
         choices=[],
-        widget=forms.CheckboxSelectMultiple(
+        widget=CheckboxSelectMultiple(
             attrs={
                 "showSelectAll": True,
                 "data-action": "change->onboarding#selectTask",
@@ -291,6 +292,9 @@ class BevestigenForm(forms.Form):
         # Dynamically add fields from previous steps as read-only fields
         for field_name, field_value in previous_steps_data.items():
             if field_value:
+                print(
+                    f"field_name {field_name}, field_value {field_value}, type {type(field_value)}"
+                )
                 if field_name == "afdelingen" and isinstance(field_value, list):
                     self.fields[field_name] = forms.MultipleChoiceField(
                         choices=[
