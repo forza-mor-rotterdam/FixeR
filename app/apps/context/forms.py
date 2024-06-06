@@ -2,7 +2,7 @@ from apps.context.filters import FilterManager
 from apps.context.models import Context
 from apps.taken.models import Taaktype
 from django import forms
-from utils.forms import RadioSelect
+from utils.forms import CheckboxSelectMultiple, RadioSelect
 
 
 class ContextAanpassenForm(forms.ModelForm):
@@ -121,7 +121,7 @@ class TaaktypesFilteredForm(forms.ModelForm):
                 if taaktypes_queryset.exists():
                     field_name = f"taaktypes_{afdeling_detail['naam']}"
                     self.fields[field_name] = forms.ModelMultipleChoiceField(
-                        widget=forms.CheckboxSelectMultiple(
+                        widget=CheckboxSelectMultiple(
                             attrs={
                                 "class": "form-check-input",
                                 "data-action": "change->onboarding#selectTask",

@@ -96,6 +96,7 @@ INSTALLED_APPS = (
     "django.contrib.gis",
     "django.contrib.postgres",
     "django.forms",
+    "formtools",
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
