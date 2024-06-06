@@ -27,7 +27,6 @@ class TaakRService(BasisService):
             alle_afdelingen.extend(current_afdelingen)
             next_page = response.get("next")
 
-        print(f"Alle afdelingen: {alle_afdelingen}")
         return alle_afdelingen
 
     def get_afdeling(self, afdeling_uuid):
@@ -37,7 +36,6 @@ class TaakRService(BasisService):
             cache_timeout=0,  # Back to 60*60
             raw_response=False,
         )
-        print(f"afdeling response: {afdeling}")
 
         return afdeling
 
@@ -47,7 +45,6 @@ class TaakRService(BasisService):
             cache_timeout=0,  # Back to 60*60
             raw_response=False,
         )
-        print(f"afdeling response: {afdeling}")
 
         return afdeling
 
@@ -73,7 +70,6 @@ class TaakRService(BasisService):
             cache_timeout=0,  # Back to 60*60
             raw_response=False,
         )
-        print(f"Taaktype response: {taaktype}")
 
         return taaktype
 
@@ -83,12 +79,9 @@ class TaakRService(BasisService):
             cache_timeout=0,  # Back to 60*60
             raw_response=False,
         )
-        print(f"Taaktype response: {taaktype}")
 
         return taaktype
 
     def get_taakapplicatie_taaktype_url(self, taaktype_url):
-        print("----------------------------------------------------------------")
         if taaktype := self.get_taaktype_by_url(taaktype_url):
-            print(f"Taaktype: {taaktype}")
             return taaktype.get("_links").get("taakapplicatie_taaktype_url")

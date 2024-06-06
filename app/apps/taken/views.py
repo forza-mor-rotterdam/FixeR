@@ -62,9 +62,6 @@ class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        print("form_valid")
-        print(self.request)
-        print(form.cleaned_data)
         if form.cleaned_data.get("redirect_field", "").startswith(settings.TAAKR_URL):
             taaktype_url = drf_reverse(
                 "v1:taaktype-detail",
