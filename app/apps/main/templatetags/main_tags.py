@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 
 from django import template
 from django.conf import settings
@@ -84,3 +85,17 @@ def python_any(values):
     if values:
         return any(values)
     return values
+
+
+@register.filter
+def file_exists(file_path):
+    return os.path.isfile(
+        os.path.join(settings.BASE_DIR, "apps/main/templates/", file_path)
+    )
+
+
+@register.filter("startswith")
+def startswith(text, starts):
+    if isinstance(text, str):
+        return text.startswith(starts)
+    return False

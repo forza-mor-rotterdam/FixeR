@@ -1,22 +1,31 @@
 import logging
 
 from apps.authenticatie.forms import (
+    AfdelingForm,
+    BevestigenForm,
     GebruikerAanmakenForm,
     GebruikerAanpassenForm,
     GebruikerBulkImportForm,
     GebruikerProfielForm,
+    ProfielfotoForm,
+    WerklocatieForm,
 )
+from apps.context.forms import TaaktypesFilteredForm
 from apps.meldingen.service import MeldingenService
+from apps.services.pdok import PDOKService
+from apps.services.taakr import TaakRService
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import render
+from django.core.files.storage import FileSystemStorage
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+from formtools.wizard.views import SessionWizardView
 
 Gebruiker = get_user_model()
 logger = logging.getLogger(__name__)
@@ -148,3 +157,100 @@ class GebruikerProfielView(UpdateView):
         )
         messages.success(self.request, "Gebruikersgegevens succesvol opgeslagen.")
         return super().form_valid(form)
+
+
+FORMS = [
+    # ("profielfoto", ProfielfotoForm),
+    ("afdeling", AfdelingForm),
+    ("taken", TaaktypesFilteredForm),
+    ("werklocatie", WerklocatieForm),
+    ("bevestigen", BevestigenForm),
+]
+
+TEMPLATES = {
+    # "profielfoto": "onboarding/profielfoto_form.html",
+    "afdeling": "onboarding/afdeling_form.html",
+    "taken": "onboarding/taken_form.html",
+    "werklocatie": "onboarding/werklocatie_form.html",
+    "bevestigen": "onboarding/bevestigen_form.html",
+}
+
+
+@method_decorator(login_required, name="dispatch")
+class OnboardingView(SessionWizardView):
+    form_list = FORMS
+    file_storage = FileSystemStorage(location=settings.MEDIA_ROOT)
+    afdelingen_data = None
+
+    def get_template_names(self):
+        return [TEMPLATES[self.steps.current]]
+
+    def dispatch(self, *args, **kwargs):
+        if not self.afdelingen_data:
+            self.afdelingen_data = TaakRService().get_afdelingen()
+        return super().dispatch(*args, **kwargs)
+
+    def done(self, form_list, **kwargs):
+        pdok_service = PDOKService()
+        form_data = {form.prefix: form.cleaned_data for form in form_list}
+
+        profielfoto_data = form_data.get("profielfoto")
+        # afdeling_data = form_data.get("afdeling")
+        taken_data = form_data.get("taken")
+        werklocatie_data = form_data.get("werklocatie")
+        # bevestig_data = form_data.get("bevestigen")
+
+        selected_taaktypes = []
+        buurtnamen = []
+        if taken_data:
+            for key, value in taken_data.items():
+                if key.startswith("taaktypes_"):
+                    selected_taaktypes.extend([str(taaktype.id) for taaktype in value])
+
+        gebruiker = self.request.user
+        profiel = gebruiker.profiel
+        # Set profile data based on collected form data
+        if profielfoto_data:
+            profiel.profielfoto = profielfoto_data.get("profielfoto")
+        if werklocatie_data:
+            profiel.stadsdeel = werklocatie_data.get("stadsdeel")
+            wijkcodes = werklocatie_data.get("wijken", [])
+            profiel.wijken = wijkcodes
+            buurtnamen = pdok_service.get_buurten_middels_wijkcodes(
+                settings.WIJKEN_EN_BUURTEN_GEMEENTECODE, wijkcodes
+            )
+        profiel.filters = {
+            "nieuw": {
+                "q": [""],
+                "buurt": buurtnamen,
+                "taken": list(set(selected_taaktypes)),
+                "taak_status": ["nieuw"],
+                "begraafplaats": [],
+            },
+        }
+        profiel.save()
+
+        return redirect("taken")
+
+    def get_form_kwargs(self, step=None):
+        kwargs = super().get_form_kwargs(step)
+        if self.request.user.is_authenticated:
+            if step in "afdeling":
+                kwargs["afdelingen_data"] = self.afdelingen_data
+            if step == "taken" and (
+                afdeling_cleaned_data := self.get_cleaned_data_for_step("afdeling")
+            ):
+                kwargs["afdelingen_data"] = self.afdelingen_data
+
+                kwargs["afdelingen_selected"] = afdeling_cleaned_data.get(
+                    "afdelingen", []
+                )
+            elif step == "bevestigen":
+                kwargs["afdelingen_data"] = self.afdelingen_data
+                previous_steps_data = {}
+
+                for step in self.steps.all[:-1]:
+                    if step_cleaned_data := self.get_cleaned_data_for_step(step):
+                        previous_steps_data.update(step_cleaned_data)
+                kwargs["previous_steps_data"] = previous_steps_data
+        return kwargs

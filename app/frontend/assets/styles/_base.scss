@@ -9,7 +9,9 @@ body {
     margin: 0;
     font-family: "Bolder", sans-serif;
     font-size: 1em;
-    color: $gray-tint11;
+    color: $black;
+    background-color: $gray-tint00;
+    scroll-behavior: smooth;
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         font-size: 1.125em;
@@ -35,6 +37,10 @@ header {
         }
         &.container--unlimited {
             max-width: none;
+        }
+        &.container--limited {
+            max-width: map-get($container-max-widths, md);
+            margin: 0 auto;
         }
     }
 }
@@ -121,6 +127,21 @@ body {
     .page-incidents {
         display: flex;
         flex-direction: column;
+    }
+}
+
+turbo-frame {
+    &[complete] {
+        > * {
+            transition: opacity 0.5s;
+            opacity: 1;
+        }
+    }
+    &[busy] {
+        > * {
+            transition: opacity 0.5s;
+            opacity: 0;
+        }
     }
 }
 
@@ -606,7 +627,7 @@ body.no-js {
 }
 .border--gray-shadowed {
     @extend .border--gray;
-    box-shadow: 0px 4px 4px 0px #00000040;
+    box-shadow: 0px 2px 10px 0px #00000040;
 }
 .label--positive,
 .label--negative {
@@ -640,5 +661,16 @@ body.no-js {
 .has-button-fullwidth {
     .btn {
         max-width: none !important;
+    }
+}
+
+.flex-container--sticky {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: calc(100vh - 100px);
+
+    div:first-child {
+        flex: 1;
     }
 }

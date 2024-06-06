@@ -188,3 +188,63 @@ dl {
         margin: 0 5px $input-padding-y 0;
     }
 }
+
+.list-progress {
+    @extend .list-clean;
+    display: flex;
+    gap: 6px;
+    li {
+        flex-grow: 1;
+        height: 4px;
+        background-color: $gray-tint04;
+
+        &.active {
+            background-color: $green-tint01;
+        }
+    }
+}
+
+.container__takenlijst,
+.container__wijkenlijst {
+    ul {
+        background-color: $white;
+        > li {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 55px;
+            margin: 0 12px !important;
+            padding: 14px 0;
+            border-bottom: 1px solid $gray-tint04;
+            box-sizing: border-box;
+
+            &:last-child {
+                border-bottom: 0;
+            }
+
+            .form-check {
+                position: relative;
+
+                label {
+                    line-height: 1.5rem;
+                }
+
+                input:checked + label {
+                    font-weight: 700;
+                }
+            }
+        }
+    }
+
+    h3.label {
+        margin-bottom: 0.1rem;
+    }
+
+    .container__buttons {
+        margin: 0 0 1.25rem;
+        .btn {
+            min-height: 0;
+            line-height: 1rem;
+        }
+    }
+}

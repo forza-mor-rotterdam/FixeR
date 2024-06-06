@@ -58,16 +58,23 @@ onderwerpen_urls = {
     ACCEPTATIE: "https://onderwerpen-acc.forzamor.nl",
     TEST: "https://onderwerpen-test.forzamor.nl",
 }
-ONDERWERPEN_URL = os.getenv(
-    "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
+ONDERWERPEN_URL = (
+    "https://onderwerpen-acc.forzamor.nl"
+    if DEBUG
+    else os.getenv(
+        "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
+    )
 )
+
 taakr_urls = {
     PRODUCTIE: "https://taakr.forzamor.nl",
     ACCEPTATIE: "https://taakr-acc.forzamor.nl",
     TEST: "https://taakr-test.forzamor.nl",
 }
-TAAKR_URL = os.getenv(
-    "TAAKR_URL", taakr_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
+TAAKR_URL = (
+    "http://taakr.mor.local:8009"
+    if DEBUG
+    else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV, taakr_urls[ACCEPTATIE]))
 )
 
 DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
@@ -89,6 +96,7 @@ INSTALLED_APPS = (
     "django.contrib.gis",
     "django.contrib.postgres",
     "django.forms",
+    "formtools",
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
@@ -118,7 +126,6 @@ INSTALLED_APPS = (
     "apps.beheer",
     "apps.release_notes",
     "apps.services",
-    "apps.taaktype",
 )
 
 LOGIN_URL = "/login/"

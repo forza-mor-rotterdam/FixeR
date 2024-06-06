@@ -4,6 +4,7 @@ from apps.authenticatie.views import (
     GebruikerAanpassenView,
     GebruikerLijstView,
     GebruikerProfielView,
+    OnboardingView,
     gebruiker_bulk_import,
 )
 from apps.authorisatie.views import (
@@ -55,11 +56,6 @@ from apps.release_notes.views import (
     ReleaseNoteListViewPublic,
     ReleaseNoteVerwijderenView,
 )
-from apps.taaktype.viewsets import (
-    AfdelingViewSet,
-    TaaktypeMiddelViewSet,
-    TaaktypeVoorbeeldsituatieViewSet,
-)
 from apps.taken.views import (
     TaaktypeAanmakenView,
     TaaktypeAanpassenView,
@@ -83,13 +79,6 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r"taak", TaakViewSet, basename="taak")
 router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
-router.register(r"afdeling", AfdelingViewSet, basename="afdeling")
-router.register(r"taaktype-middel", TaaktypeMiddelViewSet, basename="taaktype_middel")
-router.register(
-    r"taaktype-voorbeeldsituatie",
-    TaaktypeVoorbeeldsituatieViewSet,
-    basename="taaktype_voorbeeldsituatie",
-)
 
 urlpatterns = [
     path("", root, name="root"),
@@ -186,6 +175,7 @@ urlpatterns = [
         GebruikerAanpassenView.as_view(),
         name="gebruiker_aanpassen",
     ),
+    path("onboarding/", OnboardingView.as_view(), name="onboarding"),
     path("beheer/context/", ContextLijstView.as_view(), name="context_lijst"),
     path(
         "beheer/context/aanmaken/",

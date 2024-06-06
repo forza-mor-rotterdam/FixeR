@@ -423,6 +423,7 @@ textarea {
 }
 
 ul.list--form-check-input,
+ul.form-check-input,
 ul.list--form-radio-input {
     @include list-clean();
     // display: flex;
@@ -463,6 +464,20 @@ ul.list--form-radio-input {
     }
 }
 
+ul.form-check-input {
+    li {
+        label {
+            width: 100%;
+            padding-left: 35px;
+            box-sizing: border-box;
+            input {
+                top: -3px;
+                left: 0;
+            }
+        }
+    }
+}
+
 .list-horizontal {
     @media (min-width: map-get($grid-breakpoints, md)) {
         ul.list--form-check-input {
@@ -487,6 +502,57 @@ ul.list--form-check-input {
             margin-right: 0;
             top: 0;
             left: $input-padding-y;
+        }
+    }
+}
+
+ul.list--form-check-input--tile-image {
+    @include list-clean();
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    > li {
+        flex: 0 0 47%;
+
+        label {
+            display: flex;
+            background-color: $white;
+            border-radius: 7px;
+            text-align: center;
+            width: 100%;
+            height: 110px;
+            justify-content: center;
+            flex-direction: column;
+            font-weight: 700;
+
+            svg {
+                margin: 0 auto 8px;
+                width: 44px;
+                height: 44px;
+
+                path {
+                    fill: $black;
+                }
+            }
+        }
+        input {
+            -webkit-appearance: none;
+            position: relative;
+            width: 100%;
+            cursor: pointer;
+            &:checked + label {
+                background-color: $green-tint04;
+
+                svg {
+                    path {
+                        fill: $green-tint01;
+                    }
+                }
+            }
+            &:focus + label {
+                outline: 2px solid black;
+            }
         }
     }
 }
@@ -519,7 +585,7 @@ ul.list--form-radio-input {
     }
 }
 
-.form-check-input {
+input.form-check-input {
     @include form-check-input();
 }
 
@@ -680,6 +746,49 @@ fieldset.section {
                 width: 100%;
                 break-inside: avoid-column;
             }
+        }
+    }
+}
+
+form.onboarding {
+    .progress {
+        position: relative;
+        height: 2.5rem;
+    }
+    .btn-previous--icon {
+        transform: rotate(180deg);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        svg {
+            width: 12px;
+            height: 24px;
+            path {
+                // fill: currentColor;
+            }
+        }
+    }
+    h3 {
+        margin-bottom: 0;
+    }
+    .sticky {
+        .btn {
+            margin: 0 auto;
+        }
+    }
+
+    .container__flex {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .form-as-p {
+        input[type="checkbox"] {
+            @extend .visually-hidden;
+        }
+        input[type="checkbox"] + label {
+            padding-left: 0;
+            color: $black;
         }
     }
 }

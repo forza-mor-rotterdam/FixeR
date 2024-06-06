@@ -4,11 +4,14 @@ from io import StringIO
 import chardet
 from apps.authenticatie.models import Profiel
 from apps.context.models import Context
+from apps.main.utils import get_wijknaam_by_wijkcode
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.db.models.query import QuerySet
+from utils.constanten import PDOK_WIJKEN
 
 Gebruiker = get_user_model()
 
@@ -199,3 +202,180 @@ class GebruikerProfielForm(forms.ModelForm):
     class Meta:
         model = Gebruiker
         fields = ("telefoonnummer", "first_name", "last_name")
+
+
+class ProfielfotoForm(forms.ModelForm):
+    class Meta:
+        model = Profiel
+        fields = ["profielfoto"]
+
+
+class AfdelingForm(forms.Form):
+    afdelingen = forms.MultipleChoiceField(
+        choices=[],
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "hasIcon": True,
+                "hasMoreInfo": True,
+                "classList": "list--form-check-input--tile-image",
+            }
+        ),
+        help_text="Selecteer de afdeling waarvoor je momenteel werkt. Je kunt er meer dan één kiezen.",
+        required=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        afdelingen_data = kwargs.pop("afdelingen_data", [])
+        super().__init__(*args, **kwargs)
+        afdelingen = [
+            (afdeling["uuid"], afdeling["naam"]) for afdeling in afdelingen_data
+        ]
+        self.fields["afdelingen"].choices = afdelingen
+
+
+class WerklocatieForm(forms.ModelForm):
+    wijken = forms.MultipleChoiceField(
+        label="Wijken",
+        choices=[],
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "showSelectAll": True,
+                "data-action": "change->onboarding#selectTask",
+                "hasMoreInfo": True,
+            }
+        ),
+        help_text="Weet je niet zeker wat je moet kiezen? Selecteer dan alle wijken in dit gebied. Specifieke buurten kun je later aan- of uitzetten.",
+        required=True,
+    )
+
+    class Meta:
+        model = Profiel
+        fields = ["stadsdeel"]
+
+    def __init__(self, *args, **kwargs):
+        import json
+
+        super().__init__(*args, **kwargs)
+
+        self.fields["stadsdeel"].widget.attrs.update(
+            {
+                "data-action": "change->onboarding#updateWijken",
+                "data-onboarding-wijken-param": json.dumps(PDOK_WIJKEN),
+                "data-onboarding-target": "stadsdeel",
+            }
+        )
+        self.fields["stadsdeel"].initial = None
+
+        self.update_wijken_choices(stadsdeel=self.fields["stadsdeel"].initial)
+
+    def update_wijken_choices(self, stadsdeel=None):
+        sorted_pdok_wijken = sorted(PDOK_WIJKEN, key=lambda wijk: wijk["wijknaam"])
+        wijken_choices = [
+            (wijk["wijkcode"], wijk["wijknaam"]) for wijk in sorted_pdok_wijken
+        ]
+        self.fields["wijken"].choices = wijken_choices
+
+
+class BevestigenForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        afdelingen_data = kwargs.pop("afdelingen_data", {})
+        previous_steps_data = kwargs.pop("previous_steps_data", {})
+        super(BevestigenForm, self).__init__(*args, **kwargs)
+
+        # Dynamically add fields from previous steps as read-only fields
+        for field_name, field_value in previous_steps_data.items():
+            if field_value:
+                print(
+                    f"Field name: {field_name}, value: {field_value}, type: {type(field_value)}"
+                )
+                if field_name == "afdelingen" and isinstance(field_value, list):
+                    self.fields[field_name] = forms.MultipleChoiceField(
+                        choices=[
+                            (
+                                val,
+                                next(
+                                    (
+                                        afdeling["naam"]
+                                        for afdeling in afdelingen_data
+                                        if afdeling["uuid"] == val
+                                    ),
+                                    val,
+                                ),
+                            )
+                            for val in field_value
+                        ],
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                                "hasIcon": True,
+                                "classList": "list--form-check-input--tile-image",
+                            }
+                        ),
+                        required=False,
+                    )
+                elif field_name.startswith("taaktypes_") and isinstance(
+                    field_value, QuerySet
+                ):
+                    self.fields[field_name] = forms.ModelMultipleChoiceField(
+                        queryset=field_value,
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                            }
+                        ),
+                        required=False,
+                    )
+                elif isinstance(field_value, QuerySet):
+                    self.fields[field_name] = forms.ModelMultipleChoiceField(
+                        queryset=field_value,
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                            }
+                        ),
+                        required=False,
+                    )
+                elif isinstance(field_value, str):
+                    self.fields[field_name] = forms.CharField(
+                        initial=field_value.title(),
+                        widget=forms.TextInput(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                            }
+                        ),
+                        required=False,
+                    )
+                elif isinstance(field_value, list):
+                    self.fields[field_name] = forms.MultipleChoiceField(
+                        choices=[
+                            (
+                                val,
+                                (
+                                    get_wijknaam_by_wijkcode(val)
+                                    if field_name == "wijken"
+                                    else val
+                                ),
+                            )
+                            for val in field_value
+                        ],
+                        initial=field_value,
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                            }
+                        ),
+                        required=False,
+                    )
+
+    class Meta:
+        fields = []
