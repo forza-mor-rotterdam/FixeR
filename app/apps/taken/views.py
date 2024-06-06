@@ -3,12 +3,13 @@ from apps.taken.models import Taaktype
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from rest_framework.reverse import reverse as drf_reverse
+from utils.diversen import absolute
 
 
 @method_decorator(login_required, name="dispatch")
@@ -79,6 +80,22 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
 )
 class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
     form_class = TaaktypeAanmakenForm
+
+    def get(self, request, *args, **kwargs):
+        taaktype_url = request.GET.get("taaktype_url", "")
+        print("TaaktypeAanmakenView get")
+        print(taaktype_url)
+        print(absolute(request).get("ABSOLUTE_ROOT"))
+        if taaktype_url.startswith(absolute(request).get("ABSOLUTE_ROOT")):
+            print("taaktype_uuid")
+            taaktype_uuid = taaktype_url.split("/")[-2]
+            print(taaktype_uuid)
+            taaktype = Taaktype.objects.filter(uuid=taaktype_uuid).first()
+            print("taaktype")
+            print(taaktype)
+            if taaktype:
+                return redirect(reverse("taaktype_aanpassen", args=[taaktype.id]))
+        return super().get(request, *args, **kwargs)
 
     def get_initial(self):
         initial = self.initial.copy()
