@@ -5,7 +5,6 @@ import chardet
 from apps.authenticatie.models import Profiel
 from apps.context.models import Context
 from apps.main.utils import get_wijknaam_by_wijkcode
-from apps.services.taakr import TaakRService
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -211,11 +210,7 @@ class ProfielfotoForm(forms.ModelForm):
         fields = ["profielfoto"]
 
 
-class AfdelingForm(forms.ModelForm):
-    class Meta:
-        model = Profiel
-        fields = ["afdelingen"]
-
+class AfdelingForm(forms.Form):
     afdelingen = forms.MultipleChoiceField(
         choices=[],
         widget=forms.CheckboxSelectMultiple(
@@ -230,13 +225,11 @@ class AfdelingForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
+        afdelingen_data = kwargs.pop("afdelingen_data", [])
         super().__init__(*args, **kwargs)
-        afdelingen_response = TaakRService().get_afdelingen()
         afdelingen = [
-            (afdeling["_links"]["self"], afdeling["naam"])
-            for afdeling in afdelingen_response
+            (afdeling["uuid"], afdeling["naam"]) for afdeling in afdelingen_data
         ]
-        print(f"Afdelingen: {afdelingen}")
         self.fields["afdelingen"].choices = afdelingen
 
 
@@ -285,6 +278,7 @@ class WerklocatieForm(forms.ModelForm):
 
 class BevestigenForm(forms.Form):
     def __init__(self, *args, **kwargs):
+        afdelingen_data = kwargs.pop("afdelingen_data", {})
         previous_steps_data = kwargs.pop("previous_steps_data", {})
         super(BevestigenForm, self).__init__(*args, **kwargs)
 
@@ -296,9 +290,14 @@ class BevestigenForm(forms.Form):
                         choices=[
                             (
                                 val,
-                                TaakRService()
-                                .get_afdeling_by_url(val)
-                                .get("naam", "test"),
+                                next(
+                                    (
+                                        afdeling["naam"]
+                                        for afdeling in afdelingen_data
+                                        if afdeling["uuid"] == val
+                                    ),
+                                    "test",
+                                ),
                             )
                             for val in field_value
                         ],
@@ -356,9 +355,11 @@ class BevestigenForm(forms.Form):
                         choices=[
                             (
                                 val,
-                                get_wijknaam_by_wijkcode(val)
-                                if field_name == "wijken"
-                                else val,
+                                (
+                                    get_wijknaam_by_wijkcode(val)
+                                    if field_name == "wijken"
+                                    else val
+                                ),
                             )
                             for val in field_value
                         ],

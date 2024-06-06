@@ -1,6 +1,5 @@
 from apps.context.filters import FilterManager
 from apps.context.models import Context
-from apps.services.taakr import TaakRService
 from apps.taken.models import Taaktype
 from django import forms
 from utils.forms import RadioSelect
@@ -96,31 +95,31 @@ class TaaktypesForm(forms.ModelForm):
 
 class TaaktypesFilteredForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        afdelingen_data = kwargs.pop("afdelingen_data", [])
         afdelingen_selected = kwargs.pop("afdelingen_selected", None)
         super().__init__(*args, **kwargs)
 
-        if afdelingen_selected:
-            for afdeling_url in afdelingen_selected:
-                print(f"Afdeling: {afdeling_url}")
-                afdeling_response = TaakRService().get_afdeling_by_url(afdeling_url)
-                print(f"Afdeling response: {afdeling_response}")
-
-                # Extract the UUIDs of the taaktypes for the current afdeling
+        for afdeling_uuid in afdelingen_selected:
+            afdeling_detail = next(
+                (
+                    afdeling
+                    for afdeling in afdelingen_data
+                    if afdeling["uuid"] == afdeling_uuid
+                ),
+                None,
+            )
+            if afdeling_detail:
                 taaktype_omschrijvingen = [
                     taaktype["omschrijving"]
-                    for taaktype in afdeling_response.get(
-                        "taaktypes_voor_afdelingen", []
-                    )
+                    for taaktype in afdeling_detail.get("taaktypes_voor_afdelingen", [])
                 ]
-                print(f"taaktype omschrijvingen: {taaktype_omschrijvingen}")
 
-                # Fetch the queryset for the corresponding taaktypes
                 taaktypes_queryset = Taaktype.objects.filter(
                     omschrijving__in=taaktype_omschrijvingen
                 ).distinct()
 
                 if taaktypes_queryset.exists():
-                    field_name = f"taaktypes_{afdeling_response['naam']}"
+                    field_name = f"taaktypes_{afdeling_detail['naam']}"
                     self.fields[field_name] = forms.ModelMultipleChoiceField(
                         widget=forms.CheckboxSelectMultiple(
                             attrs={
@@ -131,7 +130,7 @@ class TaaktypesFilteredForm(forms.ModelForm):
                             }
                         ),
                         queryset=taaktypes_queryset,
-                        label=f"Taken van {afdeling_response['naam']}",
+                        label=f"Taken van {afdeling_detail['naam']}",
                         help_text="Welke van deze taken pak je weleens op? Selecteer alle werkzaamheden die jij normaal gesproken uitvoert. Je kunt taken later altijd uitzetten en aan je collega’s overlaten",
                         required=False,
                     )

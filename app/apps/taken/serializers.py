@@ -52,6 +52,7 @@ class TaaktypeSerializer(serializers.ModelSerializer):
         model = Taaktype
         fields = (
             "_links",
+            "uuid",
             "omschrijving",
             "actief",
         )

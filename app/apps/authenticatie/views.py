@@ -13,6 +13,7 @@ from apps.authenticatie.forms import (
 from apps.context.forms import TaaktypesFilteredForm
 from apps.meldingen.service import MeldingenService
 from apps.services.pdok import PDOKService
+from apps.services.taakr import TaakRService
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -179,9 +180,15 @@ TEMPLATES = {
 class OnboardingView(SessionWizardView):
     form_list = FORMS
     file_storage = FileSystemStorage(location=settings.MEDIA_ROOT)
+    afdelingen_data = None
 
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
+
+    def dispatch(self, *args, **kwargs):
+        if not self.afdelingen_data:
+            self.afdelingen_data = TaakRService().get_afdelingen()
+        return super().dispatch(*args, **kwargs)
 
     def done(self, form_list, **kwargs):
         pdok_service = PDOKService()
@@ -228,13 +235,18 @@ class OnboardingView(SessionWizardView):
     def get_form_kwargs(self, step=None):
         kwargs = super().get_form_kwargs(step)
         if self.request.user.is_authenticated:
+            if step in "afdeling":
+                kwargs["afdelingen_data"] = self.afdelingen_data
             if step == "taken" and (
                 afdeling_cleaned_data := self.get_cleaned_data_for_step("afdeling")
             ):
+                kwargs["afdelingen_data"] = self.afdelingen_data
+
                 kwargs["afdelingen_selected"] = afdeling_cleaned_data.get(
                     "afdelingen", []
                 )
             elif step == "bevestigen":
+                kwargs["afdelingen_data"] = self.afdelingen_data
                 previous_steps_data = {}
 
                 for step in self.steps.all[:-1]:
