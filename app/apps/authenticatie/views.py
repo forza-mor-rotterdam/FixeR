@@ -188,7 +188,7 @@ class OnboardingView(SessionWizardView):
         form_data = {form.prefix: form.cleaned_data for form in form_list}
 
         profielfoto_data = form_data.get("profielfoto")
-        afdeling_data = form_data.get("afdeling")
+        # afdeling_data = form_data.get("afdeling")
         taken_data = form_data.get("taken")
         werklocatie_data = form_data.get("werklocatie")
         # bevestig_data = form_data.get("bevestigen")
@@ -198,15 +198,13 @@ class OnboardingView(SessionWizardView):
         if taken_data:
             for key, value in taken_data.items():
                 if key.startswith("taaktypes_"):
-                    selected_taaktypes.extend([taaktype.id for taaktype in value])
+                    selected_taaktypes.extend([str(taaktype.id) for taaktype in value])
 
         gebruiker = self.request.user
         profiel = gebruiker.profiel
         # Set profile data based on collected form data
         if profielfoto_data:
             profiel.profielfoto = profielfoto_data.get("profielfoto")
-        if afdeling_data:
-            profiel.afdelingen.set(afdeling_data.get("afdelingen", []))
         if werklocatie_data:
             profiel.stadsdeel = werklocatie_data.get("stadsdeel")
             wijkcodes = werklocatie_data.get("wijken", [])
@@ -214,19 +212,17 @@ class OnboardingView(SessionWizardView):
             buurtnamen = pdok_service.get_buurten_middels_wijkcodes(
                 settings.WIJKEN_EN_BUURTEN_GEMEENTECODE, wijkcodes
             )
-
         profiel.filters = {
             "nieuw": {
                 "q": [""],
                 "buurt": buurtnamen,
-                "taken": selected_taaktypes,
+                "taken": list(set(selected_taaktypes)),
                 "taak_status": ["nieuw"],
                 "begraafplaats": [],
             },
         }
         profiel.save()
 
-        messages.success(self.request, "Je instellingen zijn succesvol opgeslagen.")
         return redirect("taken")
 
     def get_form_kwargs(self, step=None):
