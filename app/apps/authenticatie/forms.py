@@ -12,7 +12,6 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db.models.query import QuerySet
 from utils.constanten import PDOK_WIJKEN
-from utils.forms import CheckboxSelectMultiple
 
 Gebruiker = get_user_model()
 
@@ -214,15 +213,15 @@ class ProfielfotoForm(forms.ModelForm):
 class AfdelingForm(forms.Form):
     afdelingen = forms.MultipleChoiceField(
         choices=[],
-        widget=CheckboxSelectMultiple(
+        widget=forms.CheckboxSelectMultiple(
             attrs={
                 "hasIcon": True,
                 "hasMoreInfo": True,
-                "help_text": "Selecteer de afdeling waarvoor je momenteel werkt. Je kunt er meer dan één kiezen.",
-                "required": True,
                 "classList": "list--form-check-input--tile-image",
             }
         ),
+        help_text="Selecteer de afdeling waarvoor je momenteel werkt. Je kunt er meer dan één kiezen.",
+        required=True,
     )
 
     def __init__(self, *args, **kwargs):
@@ -238,7 +237,7 @@ class WerklocatieForm(forms.ModelForm):
     wijken = forms.MultipleChoiceField(
         label="Wijken",
         choices=[],
-        widget=CheckboxSelectMultiple(
+        widget=forms.CheckboxSelectMultiple(
             attrs={
                 "showSelectAll": True,
                 "data-action": "change->onboarding#selectTask",
