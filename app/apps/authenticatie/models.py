@@ -35,11 +35,6 @@ class Gebruiker(AbstractUser):
             f"rechten: <strong>{self.groups.all().first().name if self.groups.all() else '- geen rechten - '}</strong>"
         )
 
-    def afdelingen_verbose(self):
-        return mark_safe(
-            f"afdelingen: <strong>{self.profiel.afdeling.naam if self.profiel.afdeling else '- geen rol - '}</strong>"
-        )
-
     @property
     def rechtengroep(self):
         return mark_safe(
@@ -49,12 +44,6 @@ class Gebruiker(AbstractUser):
     @property
     def rol(self):
         return mark_safe(f"{self.profiel.context.naam if self.profiel.context else ''}")
-
-    @property
-    def afdelingen(self):
-        return mark_safe(
-            f"{self.profiel.afdeling.naam if self.afdeling.context else ''}"
-        )
 
     def serialized_instance(self):
         if not self.is_authenticated:
@@ -74,13 +63,6 @@ class Gebruiker(AbstractUser):
                 ),
                 "rechten": (
                     self.groups.all().first().name if self.groups.all() else None
-                ),
-                "afdeling": (
-                    self.profiel.afdeling.naam
-                    if hasattr(self, "profiel")
-                    and hasattr(self.profiel, "afdeling")
-                    and hasattr(self.profiel.afdeling, "naam")
-                    else None
                 ),
             }
         )
