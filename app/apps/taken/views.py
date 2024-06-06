@@ -42,6 +42,35 @@ class TaaktypeAanmakenAanpassenView(TaaktypeView):
 class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
     form_class = TaaktypeAanpassenForm
 
+    def get_initial(self):
+        initial = self.initial.copy()
+        initial["redirect_field"] = (
+            self.request.GET.get("redirect_url", "")
+            if self.request.GET.get("redirect_url", "").startswith(settings.TAAKR_URL)
+            else None
+        )
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["taaktype_url"] = drf_reverse(
+            "v1:taaktype-detail",
+            kwargs={"uuid": self.object.uuid},
+            request=self.request,
+        )
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if form.cleaned_data.get("redirect_field", "").startswith(settings.TAAKR_URL):
+            taaktype_url = drf_reverse(
+                "v1:taaktype-detail",
+                kwargs={"uuid": self.object.uuid},
+                request=self.request,
+            )
+            return redirect(f"{form.cleaned_data.get('redirect_field')}{taaktype_url}")
+        return response
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
@@ -62,9 +91,6 @@ class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        print("form_valid")
-        print(self.request)
-        print(form.cleaned_data)
         if form.cleaned_data.get("redirect_field", "").startswith(settings.TAAKR_URL):
             taaktype_url = drf_reverse(
                 "v1:taaktype-detail",
