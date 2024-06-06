@@ -218,9 +218,9 @@ class AfdelingForm(forms.Form):
             attrs={
                 "hasIcon": True,
                 "hasMoreInfo": True,
-                "listClass": "list--form-check-input--tile-image",
                 "help_text": "Selecteer de afdeling waarvoor je momenteel werkt. Je kunt er meer dan één kiezen.",
                 "required": True,
+                "classList": "list--form-check-input--tile-image",
             }
         ),
     )
@@ -287,7 +287,7 @@ class BevestigenForm(forms.Form):
         for field_name, field_value in previous_steps_data.items():
             if field_value:
                 print(
-                    f"field_name {field_name}, field_value {field_value}, type {type(field_value)}"
+                    f"Field name: {field_name}, value: {field_value}, type: {type(field_value)}"
                 )
                 if field_name == "afdelingen" and isinstance(field_value, list):
                     self.fields[field_name] = forms.MultipleChoiceField(
@@ -300,7 +300,7 @@ class BevestigenForm(forms.Form):
                                         for afdeling in afdelingen_data
                                         if afdeling["uuid"] == val
                                     ),
-                                    "test",
+                                    val,
                                 ),
                             )
                             for val in field_value
@@ -311,7 +311,7 @@ class BevestigenForm(forms.Form):
                                 "disabled": "disabled",
                                 "hideLabel": True,
                                 "hasIcon": True,
-                                "listClass": "list--form-check-input--tile-image",
+                                "classList": "list--form-check-input--tile-image",
                             }
                         ),
                         required=False,
