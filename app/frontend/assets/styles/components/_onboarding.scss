@@ -98,6 +98,8 @@ turbo-frame {
 }
 
 .onboarding {
+    max-width: map-get($container-max-widths, md);
+    margin: 0 auto;
     .container__wijkenlijst {
         max-height: 1500px;
         overflow: hidden;

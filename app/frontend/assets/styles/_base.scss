@@ -38,10 +38,6 @@ header {
         &.container--unlimited {
             max-width: none;
         }
-        &.container--limited {
-            max-width: map-get($container-max-widths, md);
-            margin: 0 auto;
-        }
     }
 }
 
