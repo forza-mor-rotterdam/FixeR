@@ -1,4 +1,5 @@
 {% extends "base_beheer.html" %}
+{% load taaktype_url from taaktype_tags %}
 {% block title %}
     Taaktypes | FixeR
 {% endblock title %}
@@ -59,6 +60,7 @@
                         <th>Actief</th>
                         <th>Aantal rollen</th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -76,6 +78,12 @@
                             <td>
                                 <a href="{% url 'taaktype_aanpassen' object.pk %}"
                                    aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                            </td>
+                            <td>
+                                <a href="{{ TAAKR_URL }}/beheer/taaktype/aanmaken/?taaktype_url={% taaktype_url object %}"
+                                   aria-label="Aanpassen">TaakR
+                                    {% include "icons/edit.svg" %}
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}

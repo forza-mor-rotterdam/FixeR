@@ -3,6 +3,26 @@ from django import forms
 
 
 class TaaktypeAanpassenForm(forms.ModelForm):
+    omschrijving = forms.CharField(
+        label="Titel",
+        widget=forms.TextInput(
+            attrs={
+                "data-testid": "titel",
+                "rows": "4",
+            }
+        ),
+        required=True,
+    )
+    toelichting = forms.CharField(
+        label="Omschrijving",
+        widget=forms.Textarea(
+            attrs={
+                "data-testid": "omschrijving",
+                "rows": "4",
+            }
+        ),
+        required=False,
+    )
     actief = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
         label="Actief",
@@ -17,6 +37,7 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         model = Taaktype
         fields = (
             "omschrijving",
+            "toelichting",
             "actief",
         )
 
@@ -26,6 +47,7 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
         model = Taaktype
         fields = (
             "omschrijving",
+            "toelichting",
             "actief",
         )
 
