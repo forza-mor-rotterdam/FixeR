@@ -242,6 +242,7 @@ class WerklocatieForm(forms.ModelForm):
                 "showSelectAll": True,
                 "data-action": "change->onboarding#selectTask",
                 "hasMoreInfo": True,
+                "showCount": True,
             }
         ),
         help_text="Weet je niet zeker wat je moet kiezen? Selecteer dan alle wijken in dit gebied. Specifieke buurten kun je later aan- of uitzetten.",

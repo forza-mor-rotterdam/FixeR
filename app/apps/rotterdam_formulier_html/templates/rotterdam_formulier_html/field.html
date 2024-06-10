@@ -22,7 +22,8 @@
     <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
         {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
             <h3 class="label {% if field.field.widget.attrs.hasMoreInfo and field.help_text %}has-more-info{% endif %}">
-                {{ field.label }}{{ field.field.widget.attrs.hideLabel }}
+                <span>{{ field.label }}
+                    {% if field.field.widget.attrs.showCount %}</span><i class="count">0</i>{% endif %}
             </h3>
         {% endif %}
         {% if field.field.widget.attrs.hasMoreInfo and field.help_text %}

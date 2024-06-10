@@ -127,6 +127,7 @@ class TaaktypesFilteredForm(forms.ModelForm):
                                 "data-action": "change->onboarding#selectTask",
                                 "showSelectAll": True,
                                 "hasMoreInfo": True,
+                                "showCount": True,
                             }
                         ),
                         queryset=taaktypes_queryset,

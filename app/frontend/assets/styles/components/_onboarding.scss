@@ -116,11 +116,14 @@ turbo-frame {
             min-height: 26px;
 
             &.has-more-info {
-                padding-right: 25px;
+                margin-right: 30px;
+                background-color: $gray-tint00;
+                position: relative;
+                z-index: 10;
             }
 
             .count {
-                transform: translateY(-2px);
+                transform: translateY(-3px);
                 margin-left: 4px;
             }
         }
@@ -139,10 +142,13 @@ turbo-frame {
         overflow: hidden;
         transition: max-height 0.5s ease-in-out;
         margin-top: -1.35rem;
+        padding: 0 8px;
+        font-size: 0.875rem;
 
         &.show {
             max-height: 500px;
             transition: max-height 0.5s ease-in-out;
+            background-color: $white;
         }
 
         .summary {
@@ -158,6 +164,7 @@ turbo-frame {
         }
         p {
             text-align: left;
+            margin: 0.5rem 0;
         }
     }
 }

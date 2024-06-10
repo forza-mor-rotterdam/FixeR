@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 
-let currentLabel, checkedItems, stadsdeel, wijken, noordWijken, zuidWijken, cbList
+let currentLabel, stadsdeel, wijken, noordWijken, zuidWijken, cbList
+let checkedItems = 0
 export default class extends Controller {
   static targets = ['form', 'stadsdeel']
 
@@ -33,16 +34,7 @@ export default class extends Controller {
   }
 
   addNumber() {
-    if (currentLabel && checkedItems) {
-      let span = currentLabel.querySelector('span')
-      console.log('span', span)
-      if (!span) {
-        span = document.createElement('span')
-        span.classList.add('count')
-        currentLabel.appendChild(span)
-      }
-      span.textContent = checkedItems.length
-    }
+    currentLabel.querySelector('i').textContent = checkedItems.length
   }
 
   updateWijken(e) {
@@ -68,10 +60,10 @@ export default class extends Controller {
 
     if (stadsdeel) {
       if (stadsdeel.toLowerCase() === 'volledig') {
-        this.element.querySelector('h3.label').textContent = 'Wijken voor heel Rotterdam'
+        this.element.querySelector('h3.label span').innerHTML = 'Wijken voor heel Rotterdam'
       } else {
         const capt = stadsdeel.charAt(0).toUpperCase() + stadsdeel.slice(1)
-        this.element.querySelector('h3.label').textContent = `Wijken in ${capt}`
+        this.element.querySelector('h3.label span').innerHTML = `Wijken in ${capt}`
       }
 
       cbList = this.element.querySelectorAll('input[type=checkbox]')
@@ -96,6 +88,8 @@ export default class extends Controller {
         }
       })
       checkedItems = this.element.querySelectorAll('input:checked')
+      console.log(e.target)
+      currentLabel = this.element.querySelector('.container__wijkenlijst .label')
       this.element.querySelector('.container__wijkenlijst').classList.remove('hidden')
       this.addNumber()
     }

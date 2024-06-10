@@ -18,16 +18,6 @@ export default class extends Controller {
       element.querySelector('input[type="checkbox"]').checked = doCheck
     })
     const checkedItems = e.target.closest('.form-row').querySelectorAll('input:checked')
-    this.addNumber(e.target.closest('.form-row').querySelector('.label'), checkedItems.length)
-  }
-
-  addNumber(target, n) {
-    let span = target.querySelector('span')
-    if (!span) {
-      span = document.createElement('span')
-      span.classList.add('count')
-      target.appendChild(span)
-    }
-    span.textContent = n
+    e.target.closest('.form-row').querySelector('.label i').textContent = checkedItems.length
   }
 }
