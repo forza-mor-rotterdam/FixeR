@@ -54,6 +54,7 @@ class TaaktypeSerializer(serializers.ModelSerializer):
             "_links",
             "uuid",
             "omschrijving",
+            "toelichting",
             "actief",
         )
         read_only_fields = ("_links",)
