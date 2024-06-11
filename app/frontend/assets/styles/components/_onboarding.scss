@@ -113,17 +113,17 @@ turbo-frame {
         margin-bottom: 0;
         h3.label {
             font-size: 1.125em;
-            min-height: 26px;
+            line-height: 1.5em;
+            margin-bottom: 0.5em;
 
             &.has-more-info {
-                margin-right: 30px;
-                background-color: $gray-tint00;
+                margin-right: 4em;
                 position: relative;
                 z-index: 10;
             }
 
             .count {
-                transform: translateY(-3px);
+                transform: translateY(-2px);
                 margin-left: 4px;
                 font-style: normal;
             }
@@ -139,28 +139,36 @@ turbo-frame {
     .foldout--info {
         text-align: right;
         position: relative;
-        max-height: 1em;
+        max-height: 1.7em;
         overflow: hidden;
         transition: all 0.5s ease-in-out;
-        margin-top: -1em;
-        padding: 0 8px;
+        margin-top: -2.1em;
         font-size: 0.875em;
 
         &.show {
             max-height: 500px;
             transition: all 0.5s ease-in-out;
-            background-color: $white;
         }
 
         .summary {
             position: relative;
             display: inline;
-            font-size: 0.875em;
+            font-size: 1em;
+            font-weight: 400;
             border: 0;
             text-align: right;
             cursor: pointer;
             &::-webkit-details-marker {
                 display: none;
+            }
+
+            svg {
+                width: 1em;
+                height: 1em;
+                vertical-align: text-top;
+                path {
+                    fill: $black;
+                }
             }
         }
         p {

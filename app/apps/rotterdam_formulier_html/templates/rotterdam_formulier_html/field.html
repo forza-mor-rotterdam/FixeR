@@ -28,9 +28,10 @@
         {% endif %}
         {% if field.field.widget.attrs.hasMoreInfo and field.help_text %}
             <div class="foldout--info" data-controller="utils">
-                <h4 class="summary"
-                    data-action="click->utils#foldOut"
-                    aria-label="Meer info">{% include "icons/info-filled.svg" %}</h4>
+                <h4 class="summary" data-action="click->utils#foldOut">
+                    {% include "icons/info.svg" %}
+                    Meer info
+                </h4>
                 <p>{{ field.help_text|safe }}</p>
             </div>
         {% endif %}
@@ -49,13 +50,6 @@
                     <li class="{% if field.field.required and form.required_css_class %}{{ form.required_css_class }}{% endif %}">
                         <div class="form-check">
                             {{ choice.tag }}
-                            {% comment %} <input type="checkbox"
-        class="form-check-input"
-        id="{{ choice.id_for_label}}"
-        name="{{ field.html_name }}"
-        value="{{ choice.widget.value }}"
-        {% render_attrs field %}
-        {% if field.field.required %}required{% endif %}> {% endcomment %}
                             <label class="form-check-label" for="{{ choice.id_for_label }}">
                                 {% if field.field.widget.attrs.hasIcon %}
                                     {% with choice.choice_label.icon as icon_url %}

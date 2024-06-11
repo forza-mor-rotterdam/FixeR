@@ -531,10 +531,6 @@ ul.list--form-check-input--tile-image {
                 margin: 0 auto 8px;
                 width: 44px;
                 height: 44px;
-
-                path {
-                    fill: $black;
-                }
             }
         }
         input {
@@ -544,9 +540,10 @@ ul.list--form-check-input--tile-image {
             cursor: pointer;
             &:checked + label {
                 background-color: $green-tint04;
+                outline: 2px solid $green-tint01;
 
                 svg {
-                    path {
+                    .highlight {
                         fill: $green-tint01;
                     }
                 }
