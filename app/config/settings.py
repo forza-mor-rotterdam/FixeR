@@ -329,6 +329,7 @@ CSP_IMG_SRC = (
     "cdn.jsdelivr.net",
     "ows.gis.rotterdam.nl",
     "www.gis.rotterdam.nl",
+    TAAKR_URL,
 )
 CSP_STYLE_SRC = (
     "'self'",

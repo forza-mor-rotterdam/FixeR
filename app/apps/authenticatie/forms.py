@@ -228,7 +228,11 @@ class AfdelingForm(forms.Form):
         afdelingen_data = kwargs.pop("afdelingen_data", [])
         super().__init__(*args, **kwargs)
         afdelingen = [
-            (afdeling["uuid"], afdeling["naam"]) for afdeling in afdelingen_data
+            (
+                afdeling["uuid"],
+                {"naam": afdeling["naam"], "icon": afdeling.get("icoon", None)},
+            )
+            for afdeling in afdelingen_data
         ]
         self.fields["afdelingen"].choices = afdelingen
 
@@ -286,9 +290,9 @@ class BevestigenForm(forms.Form):
         # Dynamically add fields from previous steps as read-only fields
         for field_name, field_value in previous_steps_data.items():
             if field_value:
-                print(
-                    f"Field name: {field_name}, value: {field_value}, type: {type(field_value)}"
-                )
+                # print(
+                #     f"Field name: {field_name}, value: {field_value}, type: {type(field_value)}"
+                # )
                 if field_name == "afdelingen" and isinstance(field_value, list):
                     self.fields[field_name] = forms.MultipleChoiceField(
                         choices=[
@@ -296,7 +300,10 @@ class BevestigenForm(forms.Form):
                                 val,
                                 next(
                                     (
-                                        afdeling["naam"]
+                                        {
+                                            "naam": afdeling["naam"],
+                                            "icon": afdeling.get("icoon", None),
+                                        }
                                         for afdeling in afdelingen_data
                                         if afdeling["uuid"] == val
                                     ),

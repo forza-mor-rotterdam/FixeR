@@ -57,18 +57,18 @@
         {% render_attrs field %}
         {% if field.field.required %}required{% endif %}> {% endcomment %}
                             <label class="form-check-label" for="{{ choice.id_for_label }}">
-                                {% if field.field.widget.attrs.hasIcon %}
-                                    {% with choice.choice_label|slugify as slugged_choice_label %}
-                                        {% with "icons/afdelingen/"|add:slugged_choice_label|add:".svg" as icon_path %}
-                                            {% if icon_path|file_exists %}
-                                                {% include icon_path %}
-                                            {% else %}
-                                                {% include "icons/noimage.svg" %}
-                                            {% endif %}
-                                        {% endwith %}
+                                {% if field.field.widget.attrs.hasIcon and choice.choice_label.icon %}
+                                    {% with choice.choice_label.icon as icon_url %}
+                                        {% if icon_url %}
+                                            <img src="{{ icon_url }}" alt="{{ choice.choice_label.naam }}" />
+                                        {% else %}
+                                            {% include "icons/noimage.svg" %}
+                                        {% endif %}
                                     {% endwith %}
+                                    {{ choice.choice_label.naam }}
+                                {% else %}
+                                    {{ choice.choice_label }}
                                 {% endif %}
-                                {{ choice.choice_label }}
                             </label>
                         </div>
                     </li>
