@@ -2,6 +2,7 @@ import json
 import logging
 import os
 
+import requests
 from django import template
 from django.conf import settings
 from django.contrib.gis.geos import Point
@@ -99,3 +100,16 @@ def startswith(text, starts):
     if isinstance(text, str):
         return text.startswith(starts)
     return False
+
+
+@register.filter("get_svg_path")
+def get_svg_pathl(url):
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.text
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+        return None
