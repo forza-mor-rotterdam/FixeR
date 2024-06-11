@@ -57,7 +57,7 @@
         {% render_attrs field %}
         {% if field.field.required %}required{% endif %}> {% endcomment %}
                             <label class="form-check-label" for="{{ choice.id_for_label }}">
-                                {% if field.field.widget.attrs.hasIcon and choice.choice_label.icon %}
+                                {% if field.field.widget.attrs.hasIcon %}
                                     {% with choice.choice_label.icon as icon_url %}
                                         {% if icon_url %}
                                             <img src="{{ icon_url }}" alt="{{ choice.choice_label.naam }}" />
