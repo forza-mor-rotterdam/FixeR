@@ -138,23 +138,23 @@ turbo-frame {
     .foldout--info {
         text-align: right;
         position: relative;
-        max-height: 1.2rem;
+        max-height: 1em;
         overflow: hidden;
-        transition: max-height 0.5s ease-in-out;
-        margin-top: -1.35rem;
+        transition: all 0.5s ease-in-out;
+        margin-top: -1em;
         padding: 0 8px;
-        font-size: 0.875rem;
+        font-size: 0.875em;
 
         &.show {
             max-height: 500px;
-            transition: max-height 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out;
             background-color: $white;
         }
 
         .summary {
             position: relative;
             display: inline;
-            font-size: 0.875rem;
+            font-size: 0.875em;
             border: 0;
             text-align: right;
             cursor: pointer;
