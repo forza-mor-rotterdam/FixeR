@@ -38,12 +38,6 @@ export default class extends Controller {
     }, 5000)
   }
 
-  // addNumber() {
-  //   console.log('addNumber, currentLabel', currentLabel)
-  //   const target = currentLabel.querySelector('i')
-  //   if (target) target.textContent = checkedItems.length
-  // }
-
   updateWijken(e) {
     if (e) {
       wijken = e.params.wijken
@@ -94,8 +88,6 @@ export default class extends Controller {
           cb.closest('li').style.display = 'block'
         }
       })
-      // checkedItems = this.element.querySelectorAll('input:checked')
-      // currentLabel = this.element.querySelector('.container__wijkenlijst .label')
       this.element.querySelector('.container__wijkenlijst').classList.remove('hidden')
       this.updateCounters()
     }

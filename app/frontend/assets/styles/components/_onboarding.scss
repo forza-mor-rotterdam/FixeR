@@ -176,4 +176,13 @@ turbo-frame {
             margin: 0.5rem 0;
         }
     }
+
+    .invalid-text {
+        display: inline-block;
+        margin-top: 1em;
+    }
+    .list--form-check-input + .invalid-text {
+        margin-top: 0em;
+        margin-bottom: 1em;
+    }
 }

@@ -19,7 +19,7 @@
         </div>
     </div>
 {% elif field|is_multiple_checkbox %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}{% if field.errors %} is-invalid{% endif %}">
         {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
             <h3 class="label {% if field.field.widget.attrs.hasMoreInfo and field.help_text %}has-more-info{% endif %}">
                 <span>{{ field.label }}
@@ -77,7 +77,7 @@
         </div>
     </div>
 {% elif field|is_radio %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}{% if field.errors %} is-invalid{% endif %}">
         {% if classes.icon %}
             {% include "rotterdam_formulier_html/field_icon.html" %}
         {% endif %}
@@ -107,7 +107,7 @@
         {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
     </div>
 {% elif field|is_datetime_input %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %}hidden{% endif %}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %}hidden{% endif %}{% if field.errors %}is-invalid{% endif %}">
         {% if classes.icon %}
             {% include "rotterdam_formulier_html/field_icon.html" %}
         {% endif %}
@@ -133,7 +133,7 @@
         </div>
     </div>
 {% elif field|is_select %}
-    <div class="form-row col {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
+    <div class="form-row col {{ classes.label }} {{ classes.value }} {{ classes.single_value }}{% if field.errors %} is-invalid{% endif %}">
         {% if field|is_select_multiple %}
             {% if classes.icon %}
                 {% include "rotterdam_formulier_html/field_icon.html" %}
@@ -179,7 +179,7 @@
         {% endif %}
     </div>
 {% elif field|is_textarea %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}{% if field.errors %} is-invalid{% endif %}">
         {% if classes.icon %}
             {% include "rotterdam_formulier_html/field_icon.html" %}
         {% endif %}
@@ -202,7 +202,7 @@
         </div>
     </div>
 {% elif field|is_file %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}{% if field.errors %} is-invalid{% endif %}">
         {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
             <label class="label--file {% if field.field.required %}{{ form.required_css_class }}{% endif %}"
                    for="{{ field.auto_id }}">
@@ -248,7 +248,7 @@
 {% elif field|is_hidden %}
     {{ field }}
 {% else %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %}hidden{% endif %}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %}hidden{% endif %}{% if field.errors %} is-invalid{% endif %}">
         {% if classes.icon %}
             {% include "rotterdam_formulier_html/field_icon.html" %}
         {% endif %}

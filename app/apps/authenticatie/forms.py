@@ -269,6 +269,7 @@ class WerklocatieForm(forms.ModelForm):
                 "data-onboarding-target": "stadsdeel",
             }
         )
+        self.fields["stadsdeel"].required = True
         self.fields["stadsdeel"].initial = None
 
         self.update_wijken_choices(stadsdeel=self.fields["stadsdeel"].initial)
