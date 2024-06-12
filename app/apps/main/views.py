@@ -155,12 +155,9 @@ def taken(request):
     gebruiker = request.user
     MeldingenService().set_gebruiker(gebruiker=gebruiker.serialized_instance())
 
-    filters = gebruiker.profiel.filters.get("nieuw", {})
-
-    buurt_empty = not filters.get("buurt") or all(not item for item in filters["buurt"])
-    taken_empty = not filters.get("taken") or all(not item for item in filters["taken"])
     if (
-        not gebruiker.profiel.onboarding_compleet or (buurt_empty and taken_empty)
+        not gebruiker.profiel.onboarding_compleet
+        or gebruiker.profiel.buurt_and_taken_filters_empty
     ) and gebruiker.profiel.context.template != "benc":  # Skip onboarding if B&C
         return redirect(reverse("onboarding"), False)
 

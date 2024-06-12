@@ -119,3 +119,14 @@ class Profiel(BasisModel):
         if self.gebruiker:
             return f"Profiel voor: {self.gebruiker}"
         return f"Profiel id: {self.pk}"
+
+    @property
+    def buurt_and_taken_filters_empty(self):
+        filters = self.filters.get("nieuw", {})
+        buurt_empty = not filters.get("buurt") or all(
+            not item for item in filters.get("buurt", [])
+        )
+        taken_empty = not filters.get("taken") or all(
+            not item for item in filters.get("taken", [])
+        )
+        return buurt_empty and taken_empty
