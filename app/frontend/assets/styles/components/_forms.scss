@@ -548,7 +548,8 @@ ul.list--form-check-input--tile-image {
                     }
                 }
             }
-            &:focus + label {
+            &:focus + label,
+            .form-as-p & label {
                 outline: 2px solid black;
             }
         }

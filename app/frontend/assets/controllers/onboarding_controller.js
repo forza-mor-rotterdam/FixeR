@@ -1,11 +1,12 @@
 import { Controller } from '@hotwired/stimulus'
 
-let currentLabel, stadsdeel, wijken, noordWijken, zuidWijken, cbList
-let checkedItems = 0
+let stadsdeel, wijken, noordWijken, zuidWijken, cbList
 export default class extends Controller {
   static targets = ['form', 'stadsdeel']
 
   connect() {
+    this.updateCounters()
+
     if (this.hasStadsdeelTarget) {
       if (this.stadsdeelTarget.value) {
         this.stadsdeel = this.element.querySelector('select').value
@@ -14,15 +15,19 @@ export default class extends Controller {
     }
   }
 
+  updateCounters() {
+    const countersToShow = this.element.querySelectorAll('.count')
+    countersToShow.forEach((counter) => {
+      const formRow = counter.closest('.form-row')
+      const number = formRow.querySelectorAll('input:checked').length
+      counter.textContent = number
+    })
+  }
+
   onNext() {
     setTimeout(() => {
       window.scrollTo(0, 0)
     }, 100)
-  }
-  selectTask(e) {
-    checkedItems = e.target.closest('.form-row').querySelectorAll('input:checked')
-    currentLabel = e.target.closest('.form-row').querySelector('.label')
-    this.addNumber()
   }
 
   onComplete(e) {
@@ -33,9 +38,11 @@ export default class extends Controller {
     }, 5000)
   }
 
-  addNumber() {
-    currentLabel.querySelector('i').textContent = checkedItems.length
-  }
+  // addNumber() {
+  //   console.log('addNumber, currentLabel', currentLabel)
+  //   const target = currentLabel.querySelector('i')
+  //   if (target) target.textContent = checkedItems.length
+  // }
 
   updateWijken(e) {
     if (e) {
@@ -87,11 +94,10 @@ export default class extends Controller {
           cb.closest('li').style.display = 'block'
         }
       })
-      checkedItems = this.element.querySelectorAll('input:checked')
-      console.log(e.target)
-      currentLabel = this.element.querySelector('.container__wijkenlijst .label')
+      // checkedItems = this.element.querySelectorAll('input:checked')
+      // currentLabel = this.element.querySelector('.container__wijkenlijst .label')
       this.element.querySelector('.container__wijkenlijst').classList.remove('hidden')
-      this.addNumber()
+      this.updateCounters()
     }
   }
 }

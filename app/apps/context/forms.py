@@ -124,7 +124,7 @@ class TaaktypesFilteredForm(forms.ModelForm):
                         widget=forms.CheckboxSelectMultiple(
                             attrs={
                                 "class": "form-check-input",
-                                "data-action": "change->onboarding#selectTask",
+                                "data-action": "change->onboarding#updateCounters",
                                 "showSelectAll": True,
                                 "hasMoreInfo": True,
                                 "showCount": True,

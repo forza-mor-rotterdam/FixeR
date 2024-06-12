@@ -244,7 +244,7 @@ class WerklocatieForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(
             attrs={
                 "showSelectAll": True,
-                "data-action": "change->onboarding#selectTask",
+                "data-action": "change->onboarding#updateCounters",
                 "hasMoreInfo": True,
                 "showCount": True,
             }
