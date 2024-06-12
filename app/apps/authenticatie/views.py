@@ -8,6 +8,7 @@ from apps.authenticatie.forms import (
     GebruikerBulkImportForm,
     GebruikerProfielForm,
     ProfielfotoForm,
+    WelkomForm,
     WerklocatieForm,
 )
 from apps.context.forms import TaaktypesFilteredForm
@@ -20,10 +21,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import redirect, render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from formtools.wizard.views import SessionWizardView
@@ -160,17 +160,8 @@ class GebruikerProfielView(UpdateView):
         return super().form_valid(form)
 
 
-class OnboardingWelkomView(TemplateView):
-    template_name = "onboarding/welkom.html"
-
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return redirect(reverse("onboarding"))
-
-
 FORMS = [
+    ("welkom", WelkomForm),
     # ("profielfoto", ProfielfotoForm),
     ("afdeling", AfdelingForm),
     ("taken", TaaktypesFilteredForm),
@@ -179,6 +170,7 @@ FORMS = [
 ]
 
 TEMPLATES = {
+    "welkom": "onboarding/welkom.html",
     # "profielfoto": "onboarding/profielfoto_form.html",
     "afdeling": "onboarding/afdeling_form.html",
     "taken": "onboarding/taken_form.html",
@@ -196,10 +188,10 @@ class OnboardingView(SessionWizardView):
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, *args, **kwargs):
         if not self.afdelingen_data:
             self.afdelingen_data = TaakRService().get_afdelingen()
-        return super().dispatch(request, *args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def done(self, form_list, **kwargs):
         pdok_service = PDOKService()

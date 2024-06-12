@@ -9,14 +9,27 @@
     container
 {% endblock container_class %}
 {% block body %}
+    <turbo-frame id="taak_basis" data-turbo-action="advance">
     <div data-controller="onboarding">
-        <form method="post" enctype="multipart/form-data" class="onboarding">
-            {% csrf_token %}
+        <form method="post"
+              enctype="multipart/form-data"
+              class="onboarding"
+              data-onboarding-target="form">
             <div class="flex-container--sticky">
-                <h1>Welkom bij de Filter Hulp</h1>
-                <p>Bepaal in een aantal stappen welke taken je te zien krijgt.</p>
-                <button type="submit" class="btn btn-action">Start</button>
+                <div>
+                    {% csrf_token %}
+                    {{ wizard.management_form }}
+                    <div class="flex-container--sticky">
+                        <h1>Welkom bij de Filter Hulp</h1>
+                        <p>Bepaal in een aantal stappen welke taken je te zien krijgt.</p>
+                        <button type="submit"
+                                class="btn btn-action"
+                                formnovalidate
+                                data-action="onboarding#onNext">Start</button>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
+    </turbo-frame>
 {% endblock body %}

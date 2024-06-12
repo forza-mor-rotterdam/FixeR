@@ -159,7 +159,7 @@ def taken(request):
         not gebruiker.profiel.onboarding_compleet
         or gebruiker.profiel.buurt_and_taken_filters_empty
     ) and gebruiker.profiel.context.template != "benc":  # Skip onboarding if B&C
-        return redirect(reverse("onboarding_welkom"), False)
+        return redirect(reverse("onboarding"), False)
 
     return render(request, "taken/taken.html", {})
 

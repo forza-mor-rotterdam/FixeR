@@ -204,6 +204,10 @@ class GebruikerProfielForm(forms.ModelForm):
         fields = ("telefoonnummer", "first_name", "last_name")
 
 
+class WelkomForm(forms.Form):
+    pass
+
+
 class ProfielfotoForm(forms.ModelForm):
     class Meta:
         model = Profiel

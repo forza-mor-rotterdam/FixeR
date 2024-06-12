@@ -21,7 +21,9 @@
                     <div class="progress">
                         <ul class="list-progress">
                             {% for step in wizard.steps.all %}
-                                <li class="progress__step{% if forloop.counter <= wizard.steps.index|add:1 %} active{% endif %}"></li>
+                                {% if step != 'welkom' %}
+                                    <li class="progress__step{% if forloop.counter <= wizard.steps.index|add:1 %} active{% endif %}"></li>
+                                {% endif %}
                             {% endfor %}
                         </ul>
                         {% if wizard.steps.prev %}
