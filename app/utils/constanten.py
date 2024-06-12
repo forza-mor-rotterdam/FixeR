@@ -82,7 +82,7 @@ MSB_WIJKEN = [
             {"code": "20", "omschrijving": "Delfshaven"},
             {"code": "25", "omschrijving": "Middelland"},
             {"code": "24", "omschrijving": "Nieuwe Westen"},
-            {"code": "27", "omschrijving": "Oud Mathenesse"},
+            {"code": "27", "omschrijving": "Oud-Mathenesse"},
             {"code": "29", "omschrijving": "Schiemond"},
             {"code": "23", "omschrijving": "Spangen"},
             {"code": "22", "omschrijving": "Tussendijken"},
@@ -158,8 +158,8 @@ MSB_WIJKEN = [
     },
     {
         "code": "19",
-        "omschrijving": "Nieuw Mathenesse",
-        "buurten": [{"code": "26", "omschrijving": "Nieuw Mathenesse"}],
+        "omschrijving": "Nieuw-Mathenesse",
+        "buurten": [{"code": "26", "omschrijving": "Nieuw-Mathenesse"}],
     },
     {
         "code": "5",
@@ -260,7 +260,7 @@ MSB_WIJKEN = [
 #     # noord
 #     "Rotterdam Centrum",
 #     "Delfshaven",
-#     "Nieuw Mathenesse",
+#     "Nieuw-Mathenesse",
 #     "Noord",
 #     "Hillegersberg-Schiebroek",
 #     "Overschie",
@@ -292,7 +292,7 @@ PDOK_WIJKEN = [
     },
     {"wijkcode": "WK059908", "wijknaam": "Kralingen-Crooswijk", "stadsdeel": "Noord"},
     {"wijkcode": "WK059905", "wijknaam": "Noord", "stadsdeel": "Noord"},
-    {"wijkcode": "WK059919", "wijknaam": "Nieuw Mathenesse", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059919", "wijknaam": "Nieuw-Mathenesse", "stadsdeel": "Noord"},
     {"wijkcode": "WK059904", "wijknaam": "Overschie", "stadsdeel": "Noord"},
     {"wijkcode": "WK059925", "wijknaam": "Rivium", "stadsdeel": "Noord"},
     {"wijkcode": "WK059901", "wijknaam": "Rotterdam Centrum", "stadsdeel": "Noord"},
