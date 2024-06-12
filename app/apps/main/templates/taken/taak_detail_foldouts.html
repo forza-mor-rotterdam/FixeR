@@ -396,7 +396,8 @@
                     Tijdlijn
                 </h2>
             </summary>
-            {% include "incident/part_tijdlijn.html" %}
+            <turbo-frame id="taak_detail_melding_tijdlijn" src="{% url 'taak_detail_melding_tijdlijn' taak.id %}" loading="lazy">
+            </turbo-frame>
         </details>
     </div>
 </section>

@@ -38,6 +38,7 @@ from apps.main.views import (
     sorteer_filter,
     taak_delen,
     taak_detail,
+    taak_detail_melding_tijdlijn,
     taak_detail_preview,
     taak_toewijzen,
     taak_toewijzing_intrekken,
@@ -125,6 +126,11 @@ urlpatterns = [
     path("taak-zoeken/", taak_zoeken, name="taak_zoeken"),
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
+    path(
+        "taak/<int:id>/melding-tijdlijn",
+        taak_detail_melding_tijdlijn,
+        name="taak_detail_melding_tijdlijn",
+    ),
     path(
         "taak/<int:id>/delen/<str:signed_data>/",
         taak_detail_preview,

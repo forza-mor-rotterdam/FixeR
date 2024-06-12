@@ -368,6 +368,23 @@ def taak_detail(request, id):
     )
 
 
+@login_required
+@permission_required("authorisatie.taak_bekijken", raise_exception=True)
+def taak_detail_melding_tijdlijn(request, id):
+    taak = get_object_or_404(Taak, pk=id)
+    tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
+
+    return render(
+        request,
+        "taken/taak_detail_melding_tijdlijn.html",
+        {
+            "id": id,
+            "taak": taak,
+            "tijdlijn_data": tijdlijn_data,
+        },
+    )
+
+
 class WhatsappSchemeRedirect(HttpResponsePermanentRedirect):
     allowed_schemes = ["whatsapp", "https"]
 
