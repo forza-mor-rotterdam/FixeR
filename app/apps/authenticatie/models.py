@@ -97,6 +97,8 @@ class Profiel(BasisModel):
         upload_to=get_upload_path, null=True, blank=True, max_length=255
     )
 
+    onboarding_compleet = models.BooleanField(default=False)
+
     class StadsdeelOpties(models.TextChoices):
         VOLLEDIG = "volledig", "Volledig"
         NOORD = "noord", "Noord"

@@ -83,16 +83,9 @@ class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
 
     def get(self, request, *args, **kwargs):
         taaktype_url = request.GET.get("taaktype_url", "")
-        print("TaaktypeAanmakenView get")
-        print(taaktype_url)
-        print(absolute(request).get("ABSOLUTE_ROOT"))
         if taaktype_url.startswith(absolute(request).get("ABSOLUTE_ROOT")):
-            print("taaktype_uuid")
             taaktype_uuid = taaktype_url.split("/")[-2]
-            print(taaktype_uuid)
             taaktype = Taaktype.objects.filter(uuid=taaktype_uuid).first()
-            print("taaktype")
-            print(taaktype)
             if taaktype:
                 return redirect(reverse("taaktype_aanpassen", args=[taaktype.id]))
         return super().get(request, *args, **kwargs)

@@ -228,6 +228,7 @@ class OnboardingView(SessionWizardView):
                 "begraafplaats": [],
             },
         }
+        profiel.onboarding_compleet = True
         profiel.save()
 
         return redirect("taken")

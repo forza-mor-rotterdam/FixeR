@@ -152,14 +152,19 @@ def ui_settings_handler(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken(request):
-    MeldingenService().set_gebruiker(
-        gebruiker=request.user.serialized_instance(),
-    )
-    return render(
-        request,
-        "taken/taken.html",
-        {},
-    )
+    gebruiker = request.user
+    MeldingenService().set_gebruiker(gebruiker=gebruiker.serialized_instance())
+
+    filters = gebruiker.profiel.filters.get("nieuw", {})
+
+    buurt_empty = not filters.get("buurt") or all(not item for item in filters["buurt"])
+    taken_empty = not filters.get("taken") or all(not item for item in filters["taken"])
+    if (
+        not gebruiker.profiel.onboarding_compleet or (buurt_empty and taken_empty)
+    ) and gebruiker.profiel.context.template != "benc":  # Skip onboarding if B&C
+        return redirect(reverse("onboarding"), False)
+
+    return render(request, "taken/taken.html", {})
 
 
 @login_required
@@ -192,7 +197,8 @@ def taken_filter(request):
     filter_manager = FilterManager(taken, actieve_filters, foldout_states)
 
     taken_gefilterd = filter_manager.filter_taken()
-
+    print(f"=== Actieve filters: {actieve_filters} ===")
+    print(f"Filter manager filters: {filter_manager.filters()}")
     # request.session["taken_gefilterd"] = taken_gefilterd
 
     taken_aantal = taken_gefilterd.count()
