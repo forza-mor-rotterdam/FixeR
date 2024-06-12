@@ -548,8 +548,7 @@ ul.list--form-check-input--tile-image {
                     }
                 }
             }
-            &:focus + label,
-            .form-as-p & label {
+            &:focus + label {
                 outline: 2px solid black;
             }
         }
@@ -788,6 +787,19 @@ form.onboarding {
         input[type="checkbox"] + label {
             padding-left: 0;
             color: $black;
+        }
+        ul.list--form-check-input--tile-image {
+            label {
+                background-color: $green-tint04;
+                outline: 2px solid $green-tint01;
+                cursor: default;
+
+                svg {
+                    .highlight {
+                        fill: $green-tint01;
+                    }
+                }
+            }
         }
     }
 }
