@@ -63,10 +63,7 @@ class TaakBehandelForm(forms.Form):
             self.fields["nieuwe_taak"] = forms.MultipleChoiceField(
                 widget=forms.CheckboxSelectMultiple,
                 label="",
-                choices=[
-                    (taaktype.id, taaktype.omschrijving)
-                    for taaktype in volgende_taaktypes
-                ],
+                choices=volgende_taaktypes,
                 required=False,
             )
             # Omschrijving nieuwe taak nodig?
