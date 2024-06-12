@@ -20,9 +20,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from formtools.wizard.views import SessionWizardView
@@ -159,6 +160,16 @@ class GebruikerProfielView(UpdateView):
         return super().form_valid(form)
 
 
+class OnboardingWelkomView(TemplateView):
+    template_name = "onboarding/welkom.html"
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return redirect(reverse("onboarding"))
+
+
 FORMS = [
     # ("profielfoto", ProfielfotoForm),
     ("afdeling", AfdelingForm),
@@ -185,10 +196,10 @@ class OnboardingView(SessionWizardView):
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
-    def dispatch(self, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         if not self.afdelingen_data:
             self.afdelingen_data = TaakRService().get_afdelingen()
-        return super().dispatch(*args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def done(self, form_list, **kwargs):
         pdok_service = PDOKService()
