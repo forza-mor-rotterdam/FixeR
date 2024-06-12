@@ -189,7 +189,9 @@ def taken_filter(request):
                 actieve_filters[filter_name] = new_value
         set_actieve_filters(request.user, actieve_filters)
 
-    filter_manager = FilterManager(taken, actieve_filters, foldout_states)
+    filter_manager = FilterManager(
+        taken, actieve_filters, foldout_states, profiel=request.user.profiel
+    )
 
     taken_gefilterd = filter_manager.filter_taken()
 
@@ -241,7 +243,7 @@ def taken_lijst(request):
         else []
     )
     actieve_filters = get_actieve_filters(request.user, filters)
-    filter_manager = FilterManager(taken, actieve_filters)
+    filter_manager = FilterManager(taken, actieve_filters, profiel=request.user.profiel)
     taken_gefilterd = filter_manager.filter_taken()
 
     # zoeken

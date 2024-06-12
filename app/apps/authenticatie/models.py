@@ -112,6 +112,11 @@ class Profiel(BasisModel):
     wijken = ArrayField(
         models.CharField(max_length=500, blank=True), blank=True, null=True
     )
+    taaktypes = models.ManyToManyField(
+        to="taken.Taaktype",
+        related_name="profielen_voor_taaktypes",
+        blank=True,
+    )
 
     def __str__(self):
         if self.gebruiker:

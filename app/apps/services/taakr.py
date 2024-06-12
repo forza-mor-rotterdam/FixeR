@@ -13,12 +13,13 @@ class TaakRService(BasisService):
         self._api_base_url = settings.TAAKR_URL
         super().__init__(*args, **kwargs)
 
-    def get_afdelingen(self, use_cache=True) -> list:
+    def get_afdelingen(self, use_cache=True, taakapplicatie_basis_urls=[]) -> list:
         alle_afdelingen = []
         next_page = f"{self._api_base_url}/api/v1/afdeling"
         while next_page:
             response = self.do_request(
                 next_page,
+                params={"taakapplicatie_basis_url": taakapplicatie_basis_urls},
                 cache_timeout=0,  # Back to 60*60
                 raw_response=False,
                 force_cache=not use_cache,
