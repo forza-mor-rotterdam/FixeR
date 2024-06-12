@@ -15,6 +15,7 @@ from apps.context.forms import TaaktypesFilteredForm
 from apps.meldingen.service import MeldingenService
 from apps.services.pdok import PDOKService
 from apps.services.taakr import TaakRService
+from apps.taken.models import Taaktype
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -27,6 +28,7 @@ from django.views import View
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from formtools.wizard.views import SessionWizardView
+from utils.diversen import absolute
 
 Gebruiker = get_user_model()
 logger = logging.getLogger(__name__)
@@ -190,11 +192,16 @@ class OnboardingView(SessionWizardView):
 
     def dispatch(self, *args, **kwargs):
         if not self.afdelingen_data:
-            self.afdelingen_data = TaakRService().get_afdelingen()
+            self.afdelingen_data = TaakRService().get_afdelingen(
+                taakapplicatie_basis_urls=[absolute(self.request).get("ABSOLUTE_ROOT")]
+            )
         return super().dispatch(*args, **kwargs)
 
     def done(self, form_list, **kwargs):
         pdok_service = PDOKService()
+        profiel_filters_base_key = "nieuw"
+        gebruiker = self.request.user
+        profiel = gebruiker.profiel
         form_data = {form.prefix: form.cleaned_data for form in form_list}
 
         profielfoto_data = form_data.get("profielfoto")
@@ -205,13 +212,21 @@ class OnboardingView(SessionWizardView):
 
         selected_taaktypes = []
         buurtnamen = []
+        profiel.taaktypes.clear()
         if taken_data:
             for key, value in taken_data.items():
                 if key.startswith("taaktypes_"):
-                    selected_taaktypes.extend([str(taaktype.id) for taaktype in value])
+                    taaktype_ids = [str(taaktype.id) for taaktype in value]
+                    taaktypes = Taaktype.objects.filter(id__in=taaktype_ids)
+                    profiel.taaktypes.add(*taaktypes)
+                    selected_taaktypes.extend(taaktype_ids)
+        selected_taaktypes = [
+            taaktype_id
+            for taaktype_id in selected_taaktypes
+            if taaktype_id
+            in profiel.filters.get(profiel_filters_base_key, {}).get("taken", [])
+        ]
 
-        gebruiker = self.request.user
-        profiel = gebruiker.profiel
         # Set profile data based on collected form data
         if profielfoto_data:
             profiel.profielfoto = profielfoto_data.get("profielfoto")
@@ -219,14 +234,20 @@ class OnboardingView(SessionWizardView):
             profiel.stadsdeel = werklocatie_data.get("stadsdeel")
             wijkcodes = werklocatie_data.get("wijken", [])
             profiel.wijken = wijkcodes
-            buurtnamen = pdok_service.get_buurten_middels_wijkcodes(
-                settings.WIJKEN_EN_BUURTEN_GEMEENTECODE, wijkcodes
-            )
+            buurtnamen = [
+                buurtnaam
+                for buurtnaam in pdok_service.get_buurten_middels_wijkcodes(
+                    settings.WIJKEN_EN_BUURTEN_GEMEENTECODE, wijkcodes
+                )
+                if buurtnaam
+                in profiel.filters.get(profiel_filters_base_key, {}).get("buurt", [])
+            ]
+
         profiel.filters = {
-            "nieuw": {
+            profiel_filters_base_key: {
                 "q": [""],
                 "buurt": buurtnamen,
-                "taken": list(set(selected_taaktypes)),
+                "taken": selected_taaktypes,
                 "taak_status": ["nieuw"],
                 "begraafplaats": [],
             },

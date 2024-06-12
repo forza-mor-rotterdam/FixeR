@@ -12,7 +12,9 @@ logger = logging.getLogger(__name__)
 class PDOKService(BasisService):
     _basis_url = "https://api.pdok.nl/bzk/locatieserver/search/v3_1"
 
-    def get_buurten_middels_gemeentecode(self, gemeentecode) -> dict:
+    def get_buurten_middels_gemeentecode(
+        self, gemeentecode, cache_timeout=60 * 60 * 24
+    ) -> dict:
         url = f"{self._basis_url}/free"
         results = []
         start = 0
@@ -34,9 +36,9 @@ class PDOKService(BasisService):
                 "buurtnaam",
             ],
         }
-        response = self.do_request(url, params=params, raw_response=False).get(
-            "response", {}
-        )
+        response = self.do_request(
+            url, params=params, raw_response=False, cache_timeout=cache_timeout
+        ).get("response", {})
         result_count = response.get("numFound", 0)
         results.extend(response.get("docs", []))
         loop_range = range(
@@ -49,9 +51,12 @@ class PDOKService(BasisService):
                     "start": i,
                 }
             )
-            r = self.do_request(url, params=params_clone, raw_response=False).get(
-                "response", {}
-            )
+            r = self.do_request(
+                url,
+                params=params_clone,
+                raw_response=False,
+                cache_timeout=cache_timeout,
+            ).get("response", {})
             results.extend(r.get("docs", []))
 
         wijken = {r.get("wijkcode"): r for r in results}
