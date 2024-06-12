@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ wizard.form.media }}
+{% endblock head %}
+{% block title %}
+    Onboarding | FixeR
+{% endblock title %}
+{% block container_class %}
+    container
+{% endblock container_class %}
+{% block body %}
+    <div data-controller="onboarding">
+        <form method="post" enctype="multipart/form-data" class="onboarding">
+            {% csrf_token %}
+            <div class="flex-container--sticky">
+                <h1>Welcome to the Onboarding Process</h1>
+                <p>Click the button below to start.</p>
+                <button type="submit">Start</button>
+            </div>
+        </form>
+    </div>
+{% endblock body %}
