@@ -111,6 +111,10 @@ class Profiel(BasisModel):
         blank=True,
     )
 
+    afdelingen = ArrayField(
+        models.CharField(max_length=500, blank=True), blank=True, null=True
+    )
+
     wijken = ArrayField(
         models.CharField(max_length=500, blank=True), blank=True, null=True
     )

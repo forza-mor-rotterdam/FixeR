@@ -205,7 +205,7 @@ class OnboardingView(SessionWizardView):
         form_data = {form.prefix: form.cleaned_data for form in form_list}
 
         profielfoto_data = form_data.get("profielfoto")
-        # afdeling_data = form_data.get("afdeling")
+        afdeling_data = form_data.get("afdeling")
         taken_data = form_data.get("taken")
         werklocatie_data = form_data.get("werklocatie")
         # bevestig_data = form_data.get("bevestigen")
@@ -230,6 +230,8 @@ class OnboardingView(SessionWizardView):
         # Set profile data based on collected form data
         if profielfoto_data:
             profiel.profielfoto = profielfoto_data.get("profielfoto")
+        if afdeling_data:
+            profiel.afdelingen = afdeling_data.get("afdelingen", [])
         if werklocatie_data:
             profiel.stadsdeel = werklocatie_data.get("stadsdeel")
             wijkcodes = werklocatie_data.get("wijken", [])
@@ -279,3 +281,50 @@ class OnboardingView(SessionWizardView):
                         previous_steps_data.update(step_cleaned_data)
                 kwargs["previous_steps_data"] = previous_steps_data
         return kwargs
+
+    def get_form_initial(self, step):
+        initial = super().get_form_initial(step)
+        profiel = self.request.user.profiel
+
+        if step == "werklocatie":
+            initial.update(
+                {
+                    "stadsdeel": profiel.stadsdeel,
+                    "wijken": profiel.wijken,
+                }
+            )
+        elif step == "afdeling":
+            initial.update(
+                {
+                    "afdelingen": profiel.afdelingen,
+                }
+            )
+        elif step == "taken":
+            taaktypes_initial = {}
+            for taaktype in profiel.taaktypes.all():
+                afdeling_name = next(
+                    (
+                        afdeling["naam"]
+                        for afdeling in self.afdelingen_data
+                        if taaktype.omschrijving
+                        in [
+                            tt["omschrijving"]
+                            for tt in afdeling.get("taaktypes_voor_afdelingen", [])
+                        ]
+                    ),
+                    None,
+                )
+                if afdeling_name:
+                    field_name = f"taaktypes_{afdeling_name}"
+                    if field_name not in taaktypes_initial:
+                        taaktypes_initial[field_name] = []
+                    taaktypes_initial[field_name].append(taaktype.id)
+            initial.update(taaktypes_initial)
+        # elif step == "profielfoto":
+        #     initial.update(
+        #         {
+        #             "profielfoto": profiel.profielfoto,
+        #         }
+        #     )
+
+        return initial

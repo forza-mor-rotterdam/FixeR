@@ -96,7 +96,7 @@ class TaaktypesForm(forms.ModelForm):
 class TaaktypesFilteredForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         afdelingen_data = kwargs.pop("afdelingen_data", [])
-        afdelingen_selected = kwargs.pop("afdelingen_selected", None)
+        afdelingen_selected = kwargs.pop("afdelingen_selected", [])
         super().__init__(*args, **kwargs)
 
         for afdeling_uuid in afdelingen_selected:
