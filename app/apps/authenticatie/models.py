@@ -126,12 +126,7 @@ class Profiel(BasisModel):
         return f"Profiel id: {self.pk}"
 
     @property
-    def buurt_and_taken_filters_empty(self):
-        filters = self.filters.get("nieuw", {})
-        buurt_empty = not filters.get("buurt") or all(
-            not item for item in filters.get("buurt", [])
-        )
-        taken_empty = not filters.get("taken") or all(
-            not item for item in filters.get("taken", [])
-        )
-        return buurt_empty and taken_empty
+    def wijken_or_taaktypes_empty(self):
+        buurt_empty = not self.wijken or all(not wijk for wijk in self.wijken)
+        taken_empty = not self.taaktypes.exists()
+        return buurt_empty or taken_empty
