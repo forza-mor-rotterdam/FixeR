@@ -1,4 +1,5 @@
 import csv
+import json
 from io import StringIO
 
 import chardet
@@ -257,25 +258,26 @@ class WerklocatieForm(forms.ModelForm):
         required=True,
     )
 
+    stadsdeel = forms.ChoiceField(
+        label="Stadsdeel",
+        choices=Profiel.StadsdeelOpties.choices,
+        widget=forms.RadioSelect(
+            attrs={
+                "data-action": "change->onboarding#updateWijken",
+                "data-onboarding-wijken-param": json.dumps(PDOK_WIJKEN),
+                "data-onboarding-target": "stadsdeel",
+            }
+        ),
+        required=True,
+        initial=None,
+    )
+
     class Meta:
         model = Profiel
         fields = ["stadsdeel"]
 
     def __init__(self, *args, **kwargs):
-        import json
-
         super().__init__(*args, **kwargs)
-
-        self.fields["stadsdeel"].widget.attrs.update(
-            {
-                "data-action": "change->onboarding#updateWijken",
-                "data-onboarding-wijken-param": json.dumps(PDOK_WIJKEN),
-                "data-onboarding-target": "stadsdeel",
-            }
-        )
-        self.fields["stadsdeel"].required = True
-        self.fields["stadsdeel"].initial = None
-
         self.update_wijken_choices(stadsdeel=self.fields["stadsdeel"].initial)
 
     def update_wijken_choices(self, stadsdeel=None):
