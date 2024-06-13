@@ -499,9 +499,10 @@ ul.list--form-check-input {
         margin-left: 0;
 
         input {
-            margin-right: 0;
-            top: 0;
+            margin: 0;
+            top: 50%;
             left: $input-padding-y;
+            transform: translateY(-50%);
         }
     }
 }
@@ -789,6 +790,9 @@ form.onboarding {
             color: $black;
         }
         ul.list--form-check-input--tile-image {
+            li {
+                margin-bottom: 20px;
+            }
             label {
                 background-color: $green-tint04;
                 outline: 2px solid $green-tint01;

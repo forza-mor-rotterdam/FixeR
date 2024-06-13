@@ -15,18 +15,50 @@
               enctype="multipart/form-data"
               class="onboarding"
               data-onboarding-target="form">
-            <div class="flex-container--sticky">
-                <div>
-                    {% csrf_token %}
-                    {{ wizard.management_form }}
-                    <div class="flex-container--sticky">
-                        <h1>Welkom bij de Filter Hulp</h1>
-                        <p>Bepaal in een aantal stappen welke taken je te zien krijgt.</p>
-                        <button type="submit"
-                                class="btn btn-action"
-                                formnovalidate
-                                data-action="onboarding#onNext">Start</button>
-                    </div>
+            <div>
+                {% csrf_token %}
+                {{ wizard.management_form }}
+                <h1>Stel je filters in</h1>
+                <p>
+                    FixeR bevat de taken voor alle uitvoerders. Door je filters in te stellen zie je alleen de taken die voor jou interessant zijn.
+                </p>
+                <h2 class="h4">We stellen je 3 vragen</h2>
+                <div class="container__cards">
+                    <ul class="list--cards">
+                        <li class="card">
+                            <div class="container__flex">
+                                {% include "icons/checkmark-filled.svg" %}
+                                <div>
+                                    <strong>Waar ben je van?</strong>
+                                    <p>Bij welke afdeling(en) werk je?</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="card">
+                            <div class="container__flex">
+                                {% include "icons/checkmark-filled.svg" %}
+                                <div>
+                                    <strong>Wat zijn jouw taken?</strong>
+                                    <p>Welke werkzaamheden voer je uit?</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="card">
+                            <div class="container__flex">
+                                {% include "icons/checkmark-filled.svg" %}
+                                <div>
+                                    <strong>In welk gebied werk je?</strong>
+                                    <p>Van welk stadsdeel wil je taken zien?</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="sticky sticky--bottom">
+                    <button type="submit"
+                            class="btn btn-action btn-start"
+                            formnovalidate
+                            data-action="onboarding#onNext">Stel je filters in</button>
                 </div>
             </div>
         </form>

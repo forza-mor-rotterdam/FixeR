@@ -129,7 +129,7 @@ body {
 turbo-frame {
     &[complete] {
         > * {
-            transition: opacity 0.5s;
+            transition: opacity 0.25s;
             opacity: 1;
         }
     }

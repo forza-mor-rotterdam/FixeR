@@ -3,14 +3,14 @@
 .count {
     color: $white;
     background-color: $primary;
-    font-size: 12px;
+    font-size: 0.75em;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 1.8em;
+    height: 1.8em;
     padding: 0 !important;
     display: inline-block;
     text-align: center;
-    line-height: 24px;
+    line-height: 1.9em;
     margin: 0 3px;
 
     button & {

@@ -15,31 +15,31 @@
               enctype="multipart/form-data"
               class="onboarding"
               data-onboarding-target="form">
-            <div class="flex-container--sticky">
-                <div>
-                    {% csrf_token %}
-                    <div class="progress">
-                        <ul class="list-progress">
-                            {% for step in wizard.steps.all %}
-                                {% if step != 'welkom' %}
-                                    <li class="progress__step{% if forloop.counter <= wizard.steps.index|add:1 %} active{% endif %}"></li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                        {% if wizard.steps.prev %}
-                            <button class="btn-previous--icon"
-                                    name="wizard_goto_step"
-                                    type="submit"
-                                    formnovalidate
-                                    value="{{ wizard.steps.prev }}">{% include "icons/arrow-right.svg" %}</button>
-                        {% endif %}
-                    </div>
-                    <div>
-                        {% block step_content %}
-                        {% endblock step_content %}
-                    </div>
-                    {{ wizard.management_form }}
+            <div>
+                {% csrf_token %}
+                <div class="progress">
+                    <ul class="list-progress">
+                        {% for step in wizard.steps.all %}
+                            {% if step != 'welkom' %}
+                                <li class="progress__step{% if forloop.counter <= wizard.steps.index|add:1 %} active{% endif %}"></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% if wizard.steps.prev %}
+                        <button class="btn-previous--icon"
+                                name="wizard_goto_step"
+                                type="submit"
+                                formnovalidate
+                                value="{{ wizard.steps.prev }}">{% include "icons/arrow-right.svg" %}</button>
+                    {% endif %}
                 </div>
+                <div>
+                    {% block step_content %}
+                    {% endblock step_content %}
+                </div>
+                {{ wizard.management_form }}
+            </div>
+            <div class="sticky sticky--bottom">
                 <div class="container__buttons">
                     {% if wizard.steps.next %}
                         <button class="btn btn-action"

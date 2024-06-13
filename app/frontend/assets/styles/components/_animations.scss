@@ -1,3 +1,16 @@
+.fade-in-sequence {
+    > * {
+        opacity: 0;
+        animation: fade-in 1s forwards;
+        animation-iteration-count: 1;
+        @for $i from 1 through 10 {
+            &:nth-child(#{$i}n) {
+                animation-delay: #{$i * 0.2}s;
+            }
+        }
+    }
+}
+
 @keyframes circle--green {
     0% {
         box-shadow:
@@ -74,5 +87,27 @@
     }
     100% {
         opacity: 1;
+    }
+}
+
+@keyframes slide-in-from-right {
+    0% {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slide-in-from-bottom {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
