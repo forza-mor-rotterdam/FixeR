@@ -282,19 +282,18 @@ class OnboardingView(SessionWizardView):
                 kwargs["previous_steps_data"] = previous_steps_data
         return kwargs
 
-    def get_taaktypes_initial(self, afdelingen_selected, profiel):
+    def get_taaktypes_initial(self, profiel):
         taaktypes_initial = {}
         for taaktype in profiel.taaktypes.all():
             for afdeling in self.afdelingen_data:
-                if afdeling["uuid"] in afdelingen_selected:
-                    if taaktype.omschrijving in [
-                        tt["omschrijving"]
-                        for tt in afdeling.get("taaktypes_voor_afdelingen", [])
-                    ]:
-                        field_name = f"taaktypes_{afdeling['naam']}"
-                        if field_name not in taaktypes_initial:
-                            taaktypes_initial[field_name] = []
-                        taaktypes_initial[field_name].append(taaktype.id)
+                if str(taaktype.uuid) in [
+                    tt["taakapplicatie_taaktype_uuid"]
+                    for tt in afdeling.get("taaktypes_voor_afdelingen", [])
+                ]:
+                    field_name = f"taaktypes_{afdeling['naam']}"
+                    if field_name not in taaktypes_initial:
+                        taaktypes_initial[field_name] = []
+                    taaktypes_initial[field_name].append(taaktype.id)
         return taaktypes_initial
 
     def get_form_initial(self, step):
@@ -316,7 +315,7 @@ class OnboardingView(SessionWizardView):
                     }
                 )
             elif step == "taken":
-                initial.update(self.get_taaktypes_initial(profiel.afdelingen, profiel))
+                initial.update(self.get_taaktypes_initial(profiel))
 
             # elif step == "profielfoto":
             #     initial.update(
