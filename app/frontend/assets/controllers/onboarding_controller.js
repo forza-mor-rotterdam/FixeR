@@ -34,8 +34,12 @@ export default class extends Controller {
     e.preventDefault()
     this.element.closest('turbo-frame').classList.add('complete')
     setTimeout(() => {
-      this.formTarget.requestSubmit()
+      this.onSubmit()
     }, 3500)
+  }
+
+  onSubmit() {
+    this.formTarget.requestSubmit()
   }
 
   updateWijken(e) {
