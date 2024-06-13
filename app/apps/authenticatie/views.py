@@ -286,45 +286,46 @@ class OnboardingView(SessionWizardView):
         initial = super().get_form_initial(step)
         profiel = self.request.user.profiel
 
-        if step == "werklocatie":
-            initial.update(
-                {
-                    "stadsdeel": profiel.stadsdeel,
-                    "wijken": profiel.wijken,
-                }
-            )
-        elif step == "afdeling":
-            initial.update(
-                {
-                    "afdelingen": profiel.afdelingen,
-                }
-            )
-        elif step == "taken":
-            taaktypes_initial = {}
-            for taaktype in profiel.taaktypes.all():
-                afdeling_name = next(
-                    (
-                        afdeling["naam"]
-                        for afdeling in self.afdelingen_data
-                        if taaktype.omschrijving
-                        in [
-                            tt["omschrijving"]
-                            for tt in afdeling.get("taaktypes_voor_afdelingen", [])
-                        ]
-                    ),
-                    None,
+        if profiel.onboarding_compleet:
+            if step == "werklocatie":
+                initial.update(
+                    {
+                        "stadsdeel": profiel.stadsdeel,
+                        "wijken": profiel.wijken,
+                    }
                 )
-                if afdeling_name:
-                    field_name = f"taaktypes_{afdeling_name}"
-                    if field_name not in taaktypes_initial:
-                        taaktypes_initial[field_name] = []
-                    taaktypes_initial[field_name].append(taaktype.id)
-            initial.update(taaktypes_initial)
-        # elif step == "profielfoto":
-        #     initial.update(
-        #         {
-        #             "profielfoto": profiel.profielfoto,
-        #         }
-        #     )
+            elif step == "afdeling":
+                initial.update(
+                    {
+                        "afdelingen": profiel.afdelingen,
+                    }
+                )
+            elif step == "taken":
+                taaktypes_initial = {}
+                for taaktype in profiel.taaktypes.all():
+                    afdeling_name = next(
+                        (
+                            afdeling["naam"]
+                            for afdeling in self.afdelingen_data
+                            if taaktype.omschrijving
+                            in [
+                                tt["omschrijving"]
+                                for tt in afdeling.get("taaktypes_voor_afdelingen", [])
+                            ]
+                        ),
+                        None,
+                    )
+                    if afdeling_name:
+                        field_name = f"taaktypes_{afdeling_name}"
+                        if field_name not in taaktypes_initial:
+                            taaktypes_initial[field_name] = []
+                        taaktypes_initial[field_name].append(taaktype.id)
+                initial.update(taaktypes_initial)
+            # elif step == "profielfoto":
+            #     initial.update(
+            #         {
+            #             "profielfoto": profiel.profielfoto,
+            #         }
+            #     )
 
         return initial
