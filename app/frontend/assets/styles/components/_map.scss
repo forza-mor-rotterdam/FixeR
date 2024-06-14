@@ -110,7 +110,7 @@
         label {
             @extend .btn;
             text-align: center;
-            line-height: 44px;
+            line-height: 2.6em !important;
             padding: 0 12px 0 39px;
             height: 40px;
             display: inline-block;
@@ -120,10 +120,11 @@
             position: relative;
             border: 1px solid $gray-tint08;
             box-sizing: border-box;
-
-            &.active {
+        }
+        .active {
+            label {
                 height: 38px;
-                line-height: 42px;
+                line-height: 2.4em !important;
                 border: 3px solid $gray-tint11;
                 padding: 0 10px 0 37px;
             }

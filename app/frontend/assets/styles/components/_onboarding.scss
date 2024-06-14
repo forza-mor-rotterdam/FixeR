@@ -87,11 +87,9 @@ turbo-frame {
                 }
             }
 
-            h2 {
-                animation: fade-in 0.5s ease-in 1.5s forwards;
-            }
+            h2,
             p {
-                animation: fade-in 0.5s ease-in 1.8s forwards;
+                animation: fade-in 0.5s ease-in 1.5s forwards;
             }
         }
     }
@@ -117,11 +115,16 @@ turbo-frame {
 
     .list--form-check-input--tile-image {
         li {
-            opacity: 0;
-            animation: fade-in 0.25s ease-in 2.5s forwards;
+            label {
+                opacity: 0;
+                animation: fade-in 1s ease-in-out 2.5s forwards;
+            }
+
             @for $i from 1 through 10 {
                 &:nth-child(#{$i}n) {
-                    animation-delay: #{$i * 0.15}s;
+                    label {
+                        animation-delay: #{$i * 0.1}s;
+                    }
                 }
             }
         }

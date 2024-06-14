@@ -265,7 +265,6 @@ class WerklocatieForm(forms.ModelForm):
             attrs={
                 "data-action": "change->onboarding#updateWijken",
                 "data-onboarding-wijken-param": json.dumps(PDOK_WIJKEN),
-                "data-onboarding-target": "stadsdeel",
             }
         ),
         required=True,

@@ -200,6 +200,7 @@ textarea {
     background-size: contain;
     border: 1px solid #7c8b90;
     border-radius: 0;
+    margin-bottom: 0;
 
     &:checked[type="checkbox"] {
         background-color: $primary;
@@ -209,7 +210,7 @@ textarea {
 
     &[type="radio"] {
         border-radius: 50%;
-        margin-left: 0;
+        margin: 0;
     }
 
     &:checked[type="radio"] {
@@ -511,18 +512,21 @@ ul.list--form-check-input--tile-image {
     @include list-clean();
     margin: 0;
     display: flex;
+    gap: 1em;
     flex-wrap: wrap;
     justify-content: space-between;
     > li {
         flex: 0 0 47%;
+        position: relative;
+        background-color: $white;
+        border-radius: 7px;
+        text-align: center;
 
         label {
             display: flex;
-            background-color: $white;
-            border-radius: 7px;
-            text-align: center;
             width: 100%;
             height: 110px;
+            border-radius: 7px;
             justify-content: center;
             flex-direction: column;
             font-weight: 700;
@@ -537,7 +541,9 @@ ul.list--form-check-input--tile-image {
         input {
             -webkit-appearance: none;
             position: relative;
-            width: 100%;
+            width: 0;
+            height: 0;
+            position: absolute;
             cursor: pointer;
             &:checked + label {
                 background-color: $green-tint04;
@@ -558,12 +564,18 @@ ul.list--form-check-input--tile-image {
 
 ul.list--form-radio-input {
     li {
-        border: 1px solid $gray-tint04;
+        background-color: $white;
     }
     .form--beheer & {
         li,
         li:first-child {
             margin-bottom: 0.5rem;
+        }
+    }
+
+    .modal & {
+        li {
+            border: 1px solid $gray-tint04;
         }
     }
 }

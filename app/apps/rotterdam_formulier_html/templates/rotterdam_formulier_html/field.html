@@ -47,7 +47,7 @@
         <div id="{{ field.auto_id }}">
             <ul class="{% if field.field.widget.attrs.classList %}{{ field.field.widget.attrs.classList }}{% else %}list--form-check-input{% endif %}">
                 {% for choice in field %}
-                    <li class="{% if field.field.required and form.required_css_class %}{{ form.required_css_class }}{% endif %}">
+                    <li {% if field.field.required and form.required_css_class %}class="{{ form.required_css_class }}"{% endif %}>
                         <div class="form-check">
                             {{ choice.tag }}
                             <label class="form-check-label" for="{{ choice.id_for_label }}">
@@ -82,7 +82,29 @@
             {% include "rotterdam_formulier_html/field_icon.html" %}
         {% endif %}
         {% if field.auto_id and not field.field.widget.attrs.hideLabel %}<h3 class="label">{{ field.label }}</h3>{% endif %}
-        <div>{{ field }}</div>
+        <ul class="{% if field.field.widget.attrs.classList %}{{ field.field.widget.attrs.classList }}{% else %}list--form-radio-input{% endif %}">
+            {% for choice in field %}
+                <li {% if field.field.required and form.required_css_class %}class="{{ form.required_css_class }}"{% endif %}>
+                    <div class="form-check">
+                        {{ choice.tag }}
+                        <label class="form-check-label" for="{{ choice.id_for_label }}">
+                            {% if field.field.widget.attrs.hasIcon %}
+                                {% with choice.choice_label.icon as icon_url %}
+                                    {% if icon_url %}
+                                        {{ icon_url|get_svg_path|safe }}
+                                    {% else %}
+                                        {% include "icons/noimage.svg" %}
+                                    {% endif %}
+                                {% endwith %}
+                                {{ choice.choice_label.naam }}
+                            {% else %}
+                                {{ choice.choice_label }}
+                            {% endif %}
+                        </label>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
         <p class="help-block invalid-text"></p>
         {% for error in field.errors %}
             <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
@@ -198,7 +220,9 @@
                       {% render_attrs field %}
                       {% if field.field.required %}required{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
             <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
-            {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
+            {% if field.help_text %}
+                <p class="help-block">{{ field.help_text|safe }}</p>
+            {% endif %}
         </div>
     </div>
 {% elif field|is_file %}
