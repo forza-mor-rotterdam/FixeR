@@ -8,8 +8,10 @@ export default class extends Controller {
     this.updateCounters()
 
     if (this.hasStadsdeelTarget) {
-      stadsdeel = this.element.querySelector('input[type=radio]:checked').value
       this.sortAndSaveWijken()
+      if (this.element.querySelector('input[type=radio]:checked')) {
+        stadsdeel = this.element.querySelector('input[type=radio]:checked').value
+      }
 
       if (stadsdeel) {
         this.updateWijken()
