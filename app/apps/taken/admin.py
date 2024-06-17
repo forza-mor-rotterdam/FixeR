@@ -52,6 +52,7 @@ class TaakAdmin(admin.ModelAdmin):
                     "additionele_informatie",
                     "taakopdracht",
                     "taak_zoek_data",
+                    "bezig_met_verwerken",
                 )
             },
         ),

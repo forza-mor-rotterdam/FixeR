@@ -49,14 +49,15 @@ class TaakRService(BasisService):
 
         return afdeling
 
-    def get_taaktypes(self, use_cache=True) -> list:
+    def get_taaktypes(self, params, force_cache=True) -> list:
         alle_taaktypes = []
         next_page = f"{self._api_base_url}/api/v1/taaktype"
         while next_page:
             response = self.do_request(
                 next_page,
-                cache_timeout=0,  # Back to 60*60
-                force_cache=not use_cache,
+                params=params,
+                cache_timeout=60 * 60,
+                force_cache=force_cache,
                 raw_response=False,
             )
             current_taaktypes = response.get("results", [])
@@ -64,21 +65,23 @@ class TaakRService(BasisService):
             next_page = response.get("next")
         return alle_taaktypes
 
-    def get_taaktype(self, taaktype_uuid):
+    def get_taaktype(self, taaktype_uuid, force_cache=False):
         url = f"{self._api_base_url}/api/v1/taaktype/{taaktype_uuid}"
         taaktype = self.do_request(
             url,
-            cache_timeout=0,  # Back to 60*60
+            cache_timeout=60 * 60,
             raw_response=False,
+            force_cache=force_cache,
         )
 
         return taaktype
 
-    def get_taaktype_by_url(self, taaktype_url):
+    def get_taaktype_by_url(self, taaktype_url, force_cache=False):
         taaktype = self.do_request(
             taaktype_url,
-            cache_timeout=0,  # Back to 60*60
+            cache_timeout=60 * 60,
             raw_response=False,
+            force_cache=force_cache,
         )
 
         return taaktype

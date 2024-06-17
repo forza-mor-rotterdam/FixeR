@@ -10,6 +10,7 @@ from django.core import signing
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import timezone
+from rest_framework.reverse import reverse as drf_reverse
 from utils.diversen import absolute
 from utils.models import BasisModel
 
@@ -57,6 +58,13 @@ class Taaktype(BasisModel):
         blank=True,
     )
     actief = models.BooleanField(default=True)
+
+    def taaktype_url(self, request):
+        return drf_reverse(
+            "v1:taaktype-detail",
+            kwargs={"uuid": self.uuid},
+            request=request,
+        )
 
     class Meta:
         ordering = ("-aangemaakt_op",)
@@ -242,6 +250,9 @@ class Taak(BasisModel):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+    )
+    bezig_met_verwerken = models.BooleanField(
+        default=False,
     )
 
     objects = TaakQuerySet.as_manager()

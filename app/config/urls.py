@@ -28,7 +28,6 @@ from apps.main.views import (
     http_403,
     http_404,
     http_500,
-    incident_modal_handle,
     informatie,
     kaart_modus,
     meldingen_bestand,
@@ -36,8 +35,10 @@ from apps.main.views import (
     navigeer,
     root,
     sorteer_filter,
+    taak_afhandelen,
     taak_delen,
     taak_detail,
+    taak_detail_melding_tijdlijn,
     taak_detail_preview,
     taak_toewijzen,
     taak_toewijzing_intrekken,
@@ -126,6 +127,11 @@ urlpatterns = [
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
     path(
+        "taak/<int:id>/melding-tijdlijn",
+        taak_detail_melding_tijdlijn,
+        name="taak_detail_melding_tijdlijn",
+    ),
+    path(
         "taak/<int:id>/delen/<str:signed_data>/",
         taak_detail_preview,
         name="taak_detail_preview",
@@ -152,9 +158,9 @@ urlpatterns = [
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
     path("navigeer/<str:lat>/<str:long>/", navigeer, name="navigeer"),
     path(
-        "part/taak-modal-handle/<int:id>/",
-        incident_modal_handle,
-        name="incident_modal_handle_part",
+        "taak/<int:id>/afhandelen/",
+        taak_afhandelen,
+        name="taak_afhandelen",
     ),
     # END partials
     # START beheer

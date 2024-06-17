@@ -84,6 +84,7 @@ class TaakManager(models.Manager):
                 locked_taak.afgesloten_op = timezone.now().isoformat()
                 if resolutie in [ro[0] for ro in Taak.ResolutieOpties.choices]:
                     locked_taak.resolutie = resolutie
+            locked_taak.bezig_met_verwerken = False
             locked_taak.save()
 
             transaction.on_commit(
