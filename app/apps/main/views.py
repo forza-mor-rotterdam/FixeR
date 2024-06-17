@@ -350,7 +350,6 @@ def kaart_modus(request):
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
-    tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
     taakdeellinks = TaakDeellink.objects.filter(taak=taak)
@@ -360,7 +359,6 @@ def taak_detail(request, id):
         {
             "id": id,
             "taak": taak,
-            "tijdlijn_data": tijdlijn_data,
             "device_os": device.os_name().lower(),
             "taakdeellinks": taakdeellinks,
             "taakdeellinks_bezoekers": [
