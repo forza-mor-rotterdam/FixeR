@@ -28,7 +28,6 @@ from apps.main.views import (
     http_403,
     http_404,
     http_500,
-    incident_modal_handle,
     informatie,
     kaart_modus,
     meldingen_bestand,
@@ -36,6 +35,7 @@ from apps.main.views import (
     navigeer,
     root,
     sorteer_filter,
+    taak_afhandelen,
     taak_delen,
     taak_detail,
     taak_detail_melding_tijdlijn,
@@ -158,9 +158,9 @@ urlpatterns = [
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
     path("navigeer/<str:lat>/<str:long>/", navigeer, name="navigeer"),
     path(
-        "part/taak-modal-handle/<int:id>/",
-        incident_modal_handle,
-        name="incident_modal_handle_part",
+        "taak/<int:id>/afhandelen/",
+        taak_afhandelen,
+        name="taak_afhandelen",
     ),
     # END partials
     # START beheer

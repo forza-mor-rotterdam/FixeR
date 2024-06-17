@@ -30,6 +30,8 @@ def task_taak_status_voltooid(
     vervolg_taak_bericht="",
 ):
     taak = Taak.objects.get(id=taak_id)
+    taak.bezig_met_verwerken = True
+    taak.save(update_fields=["bezig_met_verwerken"])
 
     taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
         taakopdracht_url=taak.taakopdracht,

@@ -10,6 +10,24 @@ class RadioSelectSimple(forms.RadioSelect):
     option_template_name = "widgets/radio_option_simple.html"
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
+
 class TaakBehandelForm(forms.Form):
     resolutie = forms.ChoiceField(
         widget=RadioSelectSimple(
@@ -24,14 +42,14 @@ class TaakBehandelForm(forms.Form):
         required=True,
     )
 
-    bijlagen = forms.FileField(
-        widget=forms.widgets.FileInput(
+    bijlagen = MultipleFileField(
+        widget=MultipleFileInput(
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenExtra",
-                # "multiple": "multiple",
                 "hideLabel": True,
+                "class": "file-upload-input",
             }
         ),
         label="Foto's",

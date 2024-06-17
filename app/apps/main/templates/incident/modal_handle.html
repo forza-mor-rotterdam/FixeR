@@ -1,62 +1,57 @@
-{% extends "base.html" %}
 {% load webpack_static from webpack_loader %}
 {% load json_encode from main_tags %}
 {% load rotterdam_formulier_html %}
-{% block body %}
-    <turbo-frame id="incident_modal_handle_{{ taak.id }}">
-    <div class="container__form" data-controller="incidentHandleForm">
-        {% include "snippets/messages.html" %}
-        {% if form %}
-            <form action="{% url 'incident_modal_handle_part' taak.id %}"
-                  method="post"
-                  data-testid="handleIncidentForm"
-                  class="form--incident-handle"
-                  data-incidentHandleForm-target="form"
-                  {% comment %}
-                  data-turbo-frame="_top"
-                  {% endcomment %}
-                  enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.errors }}
-                <div data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
-                {{ form.resolutie|render_rotterdam_formulier }}
-                <div class="wrapper--flex-order">
-                    <div>
-                        {% if form.nieuwe_taak %}
-                            <h3 class="h5">Moet er nog iets gebeuren?</h3>
-                            <div data-incidentHandleForm-target="newTask">
-                                <div class="list-horizontal">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
-                            </div>
-                        {% endif %}
-                        {% if actieve_vervolg_taken %}
+<turbo-frame id="incident_modal_handle_{{ taak.id }}">
+<div class="container__form" data-controller="incidentHandleForm">
+    {% include "snippets/messages.html" %}
+    {% if form %}
+        <form action="{% url 'taak_afhandelen' taak.id %}"
+              method="post"
+              data-testid="handleIncidentForm"
+              class="form--incident-handle"
+              data-incidentHandleForm-target="form"
+              data-turbo-frame="_top"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.errors }}
+            {{ form.bijlagen }}
+            {{ form.resolutie|render_rotterdam_formulier }}
+            <div class="wrapper--flex-order">
+                <div>
+                    {% if form.nieuwe_taak %}
+                        <h3 class="h5">Moet er nog iets gebeuren?</h3>
+                        <div data-incidentHandleForm-target="newTask">
+                            <div class="list-horizontal">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
+                        </div>
+                    {% endif %}
+                    {% if actieve_vervolg_taken %}
+                        <div class="form-row">
                             <div class="form-row">
-                                <div class="form-row">
-                                    <h3 class="h5">Reeds openstaande taken voor deze melding</h3>
-                                    <ul>
-                                        {% for vervolg_taak in actieve_vervolg_taken %}<li>{{ vervolg_taak.1 }}</li>{% endfor %}
-                                    </ul>
-                                </div>
+                                <h3 class="h5">Reeds openstaande taken voor deze melding</h3>
+                                <ul>
+                                    {% for vervolg_taak in actieve_vervolg_taken %}<li>{{ vervolg_taak.1 }}</li>{% endfor %}
+                                </ul>
                             </div>
-                        {% endif %}
-                    </div>
-                    <div class="form-control__with-helptext label-strong"
-                         data-incidentHandleForm-target="internalText">
-                        {{ form.omschrijving_intern|render_rotterdam_formulier }}
-                    </div>
+                        </div>
+                    {% endif %}
                 </div>
-                <div class="form-row">
-                    <button type="submit"
-                            class="btn btn-action"
-                            data-action="incidentHandleForm#onSubmit"
-                            data-action="modal#closeModal">
-                        <span>Taak afhandelen</span>
-                    </button>
-                    <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
-                        <span>Annuleren</span>
-                    </button>
+                <div class="form-control__with-helptext label-strong"
+                     data-incidentHandleForm-target="internalText">
+                    {{ form.omschrijving_intern|render_rotterdam_formulier }}
                 </div>
-            </form>
-        {% endif %}
-    </div>
-    </turbo-frame>
-{% endblock body %}
+            </div>
+            <div class="form-row" data-incidentHandleForm-target="submitContainer">
+                <button type="submit"
+                        class="btn btn-action"
+                        data-action="incidentHandleForm#onSubmit"
+                        data-action="modal#closeModal">
+                    <span>Taak afhandelen</span>
+                </button>
+                <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
+                    <span>Annuleren</span>
+                </button>
+            </div>
+        </form>
+    {% endif %}
+</div>
+</turbo-frame>

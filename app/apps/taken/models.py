@@ -251,6 +251,9 @@ class Taak(BasisModel):
         blank=True,
         null=True,
     )
+    bezig_met_verwerken = models.BooleanField(
+        default=False,
+    )
 
     objects = TaakQuerySet.as_manager()
     acties = TaakManager()

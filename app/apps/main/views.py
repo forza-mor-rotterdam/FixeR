@@ -558,7 +558,7 @@ def taak_toewijzing_intrekken(request, id):
 
 @login_required
 @permission_required("authorisatie.taak_afronden", raise_exception=True)
-def incident_modal_handle(request, id):
+def taak_afhandelen(request, id):
     resolutie = request.GET.get("resolutie", "opgelost")
     taak = get_object_or_404(Taak, pk=id)
     taaktypes = TaakRService().get_taaktypes(
@@ -588,20 +588,6 @@ def incident_modal_handle(request, id):
             for to in taak.melding.response_json.get("taakopdrachten_voor_melding", [])
             if to.get("status", {}).get("naam") == "nieuw"
         ]
-        print(len(taak.melding.response_json.get("taakopdrachten_voor_melding", [])))
-        print(
-            len(
-                [
-                    to
-                    for to in taak.melding.response_json.get(
-                        "taakopdrachten_voor_melding", []
-                    )
-                    if to.get("status", {}).get("naam") == "nieuw"
-                ]
-            )
-        )
-        print(len(openstaande_taaktype_urls_voor_melding))
-        print(openstaande_taaktype_urls_voor_melding)
         alle_volgende_taaktypes = [
             (
                 TaakRService()
@@ -635,14 +621,13 @@ def incident_modal_handle(request, id):
             initial={"resolutie": resolutie},
         )
         if form.is_valid():
-            print("is valid")
             volgende_taaktypes_lookup = {
                 taaktype[0]: taaktype[1] for taaktype in volgende_taaktypes
             }
             vervolg_taaktypes = [
                 {
                     "taaktype_url": taaktype_url,
-                    "omschrijving": volgende_taaktypes_lookup.get("taaktype_url"),
+                    "omschrijving": volgende_taaktypes_lookup.get(taaktype_url),
                 }
                 for taaktype_url in form.cleaned_data.get("nieuwe_taak", [])
             ]
@@ -661,10 +646,9 @@ def incident_modal_handle(request, id):
                 vervolg_taaktypes=vervolg_taaktypes,
                 vervolg_taak_bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
             )
-            messages.success(request, "De taak wordt afgehandeld.")
             return redirect("taken")
         else:
-            logger.error(f"incident_modal_handle: for errors: {form.errors}")
+            logger.error(f"taak_afhandelen: for errors: {form.errors}")
 
     return render(
         request,
