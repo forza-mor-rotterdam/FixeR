@@ -30,7 +30,7 @@ class MultipleFileField(forms.FileField):
 
 class TaakBehandelForm(forms.Form):
     resolutie = forms.ChoiceField(
-        widget=RadioSelectSimple(
+        widget=forms.RadioSelect(
             attrs={
                 "class": "list--form-radio-input",
                 "data-action": "change->incidentHandleForm#onChangeResolution",

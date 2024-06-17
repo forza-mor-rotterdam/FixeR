@@ -2,7 +2,6 @@ from apps.context.filters import FilterManager
 from apps.context.models import Context
 from apps.taken.models import Taaktype
 from django import forms
-from utils.forms import RadioSelect
 
 
 class ContextAanpassenForm(forms.ModelForm):
@@ -18,10 +17,9 @@ class ContextAanpassenForm(forms.ModelForm):
         required=False,
     )
     template = forms.ChoiceField(
-        widget=RadioSelect(
+        widget=forms.RadioSelect(
             attrs={
                 "class": "list--form-radio-input",
-                # "data-action": "change->bijlagen#updateImageDisplay",
             }
         ),
         label="Sjabloon",

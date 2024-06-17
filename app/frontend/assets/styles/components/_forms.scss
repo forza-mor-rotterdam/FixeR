@@ -436,7 +436,7 @@ ul.list--form-radio-input {
     input {
         @include form-check-input();
         position: absolute;
-        top: 25%;
+        top: 1.2em;
         left: 10px;
 
         ~ .form-check-label {
@@ -456,7 +456,8 @@ ul.list--form-radio-input {
                 line-height: 1.25rem;
             }
             input {
-                top: -2px;
+                top: 0;
+                transform: none;
             }
         }
     }
@@ -563,8 +564,10 @@ ul.list--form-check-input--tile-image {
 }
 
 ul.list--form-radio-input {
-    li {
-        background-color: $white;
+    &.background--white {
+        li {
+            background-color: $white;
+        }
     }
     .form--beheer & {
         li,
@@ -710,13 +713,6 @@ input.form-check-input {
 
     > div {
         flex: 1;
-
-        input {
-            ~ .form-check-label {
-                line-height: 1.5rem;
-                min-height: 48px;
-            }
-        }
     }
 }
 
