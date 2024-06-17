@@ -38,6 +38,10 @@ export default class extends Controller {
     })
   }
 
+  showTaken() {
+    this.taakItemLijstTarget.classList.toggle('hide-list-items')
+  }
+
   addEventListeners() {
     this.element.addEventListener('orderChangeEvent', (e) => this.orderChangeHandler(e))
     this.element.addEventListener('searchChangeEvent', () => this.reloadTakenLijst())
