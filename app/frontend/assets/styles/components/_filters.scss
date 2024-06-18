@@ -47,10 +47,15 @@
         margin: 0 $input-padding-x;
     }
 
+    .btn-close {
+        right: -(map-get($container-margin, sm));
+    }
+
     .show-filters & {
         .full-page-view__main {
             // opacity: 1;
             transform: translateZ(0);
+            padding: 0 map-get($container-margin, sm) map-get($container-margin, sm);
         }
     }
 
@@ -195,6 +200,11 @@
                 border-top: 0;
             }
         }
+    }
+
+    .container__skyline-alert--confirmation {
+        margin: 3em auto 0;
+        max-width: map-get($container-max-widths, md);
     }
 }
 

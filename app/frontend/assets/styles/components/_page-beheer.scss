@@ -8,6 +8,12 @@
         small {
             font-size: 1rem;
         }
+
+        .icon--person {
+            @media (max-width: map-get($grid-breakpoints, sm)) {
+                transform: translateY(0.2em);
+            }
+        }
     }
 
     .alert {

@@ -511,7 +511,6 @@ ul.list--form-check-input {
 
 ul.list--form-check-input--tile-image {
     @include list-clean();
-    margin: 0;
     display: flex;
     gap: 1em;
     flex-wrap: wrap;
