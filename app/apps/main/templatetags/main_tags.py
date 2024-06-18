@@ -6,6 +6,8 @@ import requests
 from django import template
 from django.conf import settings
 from django.contrib.gis.geos import Point
+from django.core.cache import cache
+from requests import Request, Response
 from utils.datetime import stringdatetime_naar_datetime
 
 register = template.Library()
@@ -104,9 +106,20 @@ def startswith(text, starts):
 
 @register.filter("get_svg_path")
 def get_svg_pathl(url):
+    method = "get"
+    action: Request = getattr(requests, method)
+    cache_timeout = 60 * 60
+
     try:
-        response = requests.get(url)
-        if response.status_code == 200:
+        cache_key = url
+        response = cache.get(url)
+        if not response:
+            response: Response = action(url=url)
+
+            if int(response.status_code) == 200:
+                cache.set(cache_key, response, cache_timeout)
+
+        if response:
             return response.text
         else:
             return None
