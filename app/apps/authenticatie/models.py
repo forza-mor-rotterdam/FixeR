@@ -100,7 +100,7 @@ class Profiel(BasisModel):
     onboarding_compleet = models.BooleanField(default=False)
 
     class StadsdeelOpties(models.TextChoices):
-        VOLLEDIG = "volledig", "Volledig"
+        VOLLEDIG = "volledig", "Heel Rotterdam"
         NOORD = "noord", "Noord"
         ZUID = "zuid", "Zuid"
 

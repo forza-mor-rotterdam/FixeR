@@ -18,9 +18,9 @@
             <div>
                 {% csrf_token %}
                 {{ wizard.management_form }}
-                <h1>Stel je filters in</h1>
+                <h1>Stel je profiel in</h1>
                 <p>
-                    FixeR bevat de taken voor alle uitvoerders. Door je filters in te stellen zie je alleen de taken die voor jou interessant zijn.
+                    FixeR bevat de taken voor alle uitvoerders. Door je profiel in te stellen zie je alleen de taken die voor jou interessant zijn.
                 </p>
                 <h2 class="h4">We stellen je 3 vragen</h2>
                 <div class="container__cards">
@@ -48,7 +48,7 @@
                                 {% include "icons/checkmark-filled.svg" %}
                                 <div>
                                     <strong>In welk gebied werk je?</strong>
-                                    <p>Van welk stadsdeel wil je taken zien?</p>
+                                    <p>Van welk gebied wil je taken zien?</p>
                                 </div>
                             </div>
                         </li>
@@ -58,7 +58,7 @@
                     <button type="submit"
                             class="btn btn-action btn-start"
                             formnovalidate
-                            data-action="onboarding#onNext">Stel je filters in</button>
+                            data-action="onboarding#onNext">Stel je profiel in</button>
                 </div>
             </div>
         </form>

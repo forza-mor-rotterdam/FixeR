@@ -259,7 +259,7 @@ class WerklocatieForm(forms.ModelForm):
     )
 
     stadsdeel = forms.ChoiceField(
-        label="Stadsdeel",
+        label="Gebied",
         choices=Profiel.StadsdeelOpties.choices,
         widget=forms.RadioSelect(
             attrs={

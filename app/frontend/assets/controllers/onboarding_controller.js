@@ -17,6 +17,7 @@ export default class extends Controller {
         this.updateWijken()
       }
     }
+    this.element.closest('turbo-frame').classList.remove('complete')
   }
 
   updateCounters() {
@@ -67,7 +68,7 @@ export default class extends Controller {
     }
 
     if (stadsdeel.toLowerCase() === 'volledig') {
-      this.element.querySelector('h3.label span').innerHTML = 'Wijken voor heel Rotterdam'
+      this.element.querySelector('h3.label span').innerHTML = 'Wijken in heel Rotterdam'
     } else {
       const capt = stadsdeel.charAt(0).toUpperCase() + stadsdeel.slice(1)
       this.element.querySelector('h3.label span').innerHTML = `Wijken in ${capt}`
