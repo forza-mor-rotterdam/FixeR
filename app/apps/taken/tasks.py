@@ -25,13 +25,17 @@ def task_taak_status_voltooid(
     resolutie,
     gebruiker_email,
     omschrijving_intern="",
-    bijlagen_base64=[],
+    bijlage_paden=[],
     vervolg_taaktypes=[],
     vervolg_taak_bericht="",
 ):
+    from apps.main.utils import to_base64
+
     taak = Taak.objects.get(id=taak_id)
     taak.bezig_met_verwerken = True
     taak.save(update_fields=["bezig_met_verwerken"])
+
+    bijlagen = [{"bestand": to_base64(b)} for b in bijlage_paden]
 
     taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
         taakopdracht_url=taak.taakopdracht,
@@ -39,7 +43,7 @@ def task_taak_status_voltooid(
         resolutie=resolutie,
         gebruiker=gebruiker_email,
         omschrijving_intern=omschrijving_intern,
-        bijlagen=bijlagen_base64,
+        bijlagen=bijlagen,
     )
     if taak_status_aanpassen_response.status_code != 200:
         raise Exception(
