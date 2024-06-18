@@ -629,18 +629,19 @@ def taak_afhandelen(request, id):
                 }
                 for taaktype_url in form.cleaned_data.get("nieuwe_taak", [])
             ]
+
             bijlagen = request.FILES.getlist("bijlagen", [])
-            bijlagen_base64 = []
+            bijlage_paded = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
+                bijlage_paded.append(file_name)
 
             task_taak_status_voltooid.delay(
                 taak_id=taak.id,
                 gebruiker_email=request.user.email,
                 resolutie=form.cleaned_data.get("resolutie"),
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                bijlagen_base64=bijlagen_base64,
+                bijlage_paden=bijlage_paded,
                 vervolg_taaktypes=vervolg_taaktypes,
                 vervolg_taak_bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
             )
