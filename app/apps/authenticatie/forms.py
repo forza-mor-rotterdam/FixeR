@@ -221,11 +221,9 @@ class AfdelingForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(
             attrs={
                 "hasIcon": True,
-                "hasMoreInfo": True,
                 "classList": "list--form-check-input--tile-image",
             }
         ),
-        help_text="Selecteer de afdeling waarvoor je momenteel werkt. Je kunt er meer dan één kiezen.",
         required=True,
     )
 
@@ -250,11 +248,9 @@ class WerklocatieForm(forms.ModelForm):
             attrs={
                 "showSelectAll": True,
                 "data-action": "change->onboarding#updateCounters",
-                "hasMoreInfo": True,
                 "showCount": True,
             }
         ),
-        help_text="Weet je niet zeker wat je moet kiezen? Selecteer dan alle wijken in dit gebied. Specifieke buurten kun je later aan- of uitzetten.",
         required=True,
     )
 

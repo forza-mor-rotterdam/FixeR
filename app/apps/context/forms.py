@@ -124,13 +124,11 @@ class TaaktypesFilteredForm(forms.ModelForm):
                                 "class": "form-check-input",
                                 "data-action": "change->onboarding#updateCounters",
                                 "showSelectAll": True,
-                                "hasMoreInfo": True,
                                 "showCount": True,
                             }
                         ),
                         queryset=taaktypes_queryset,
                         label=f"Taken van {afdeling_detail['naam']}",
-                        help_text="Welke van deze taken pak je weleens op? Selecteer alle werkzaamheden die jij normaal gesproken uitvoert. Je kunt taken later altijd uitzetten en aan je collega’s overlaten",
                         required=True,
                     )
 

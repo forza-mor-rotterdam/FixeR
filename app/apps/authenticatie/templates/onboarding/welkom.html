@@ -19,18 +19,15 @@
                 {% csrf_token %}
                 {{ wizard.management_form }}
                 <h1>Stel je profiel in</h1>
-                <p>
-                    FixeR bevat de taken voor alle uitvoerders. Door je profiel in te stellen zie je alleen de taken die voor jou interessant zijn.
-                </p>
-                <h2 class="h4">We stellen je 3 vragen</h2>
+                <p>FixeR toont taken voor alle uitvoerders. Door je filters in te stellen zie je alleen je eigen taken.</p>
                 <div class="container__cards">
                     <ul class="list--cards">
                         <li class="card">
                             <div class="container__flex">
                                 {% include "icons/checkmark-filled.svg" %}
                                 <div>
-                                    <strong>Waar ben je van?</strong>
-                                    <p>Bij welke afdeling(en) werk je?</p>
+                                    <strong>Jouw afdeling</strong>
+                                    <p>Geef aan bij welke afdeling(en) je werkt</p>
                                 </div>
                             </div>
                         </li>
@@ -38,8 +35,8 @@
                             <div class="container__flex">
                                 {% include "icons/checkmark-filled.svg" %}
                                 <div>
-                                    <strong>Wat zijn jouw taken?</strong>
-                                    <p>Welke werkzaamheden voer je uit?</p>
+                                    <strong>Jouw taken</strong>
+                                    <p>Geef aan welk werk je doet</p>
                                 </div>
                             </div>
                         </li>
@@ -47,8 +44,8 @@
                             <div class="container__flex">
                                 {% include "icons/checkmark-filled.svg" %}
                                 <div>
-                                    <strong>In welk gebied werk je?</strong>
-                                    <p>Van welk gebied wil je taken zien?</p>
+                                    <strong>Jouw gebied</strong>
+                                    <p>Geef aan in welke wijk(en) je werkt</p>
                                 </div>
                             </div>
                         </li>
@@ -58,7 +55,7 @@
                     <button type="submit"
                             class="btn btn-action btn-start"
                             formnovalidate
-                            data-action="onboarding#onNext">Stel je profiel in</button>
+                            data-action="onboarding#onNext">Start</button>
                 </div>
             </div>
         </form>
