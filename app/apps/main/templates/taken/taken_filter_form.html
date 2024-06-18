@@ -73,7 +73,7 @@
             {% include "filters/options.html" with filter=filter %}
         {% endif %}
     {% endfor %}
-    {% comment %} {% include "snippets/alert_onboarding.html" %} {% endcomment %}
+    {% include "snippets/alert_onboarding.html" %}
     <div class="full-page-view__footer">
         {% if incident_count == 0 %}
             <button type="button"
