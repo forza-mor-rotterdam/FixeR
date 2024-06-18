@@ -1,0 +1,29 @@
+.welcome {
+    height: 100%;
+    .flex-vertical {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+
+        h1 {
+            font-size: 3em;
+        }
+        p {
+            margin: 0 auto;
+        }
+
+        > div:first-child {
+            flex: 1;
+        }
+    }
+    .center {
+        a {
+            margin: 0 auto;
+        }
+
+        .logo {
+            max-width: 160px;
+            margin-bottom: 3em;
+        }
+    }
+}
