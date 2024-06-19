@@ -53,7 +53,6 @@
                             <label class="form-check-label" for="{{ choice.id_for_label }}">
                                 {% if field.field.widget.attrs.hasIcon %}
                                     {% with choice.choice_label.icon as icon_url %}
-                                        -{{ icon_url|get_last_n_characters }}-
                                         {% if icon_url|get_last_n_characters == 'svg' %}
                                             {{ icon_url|get_svg_path|safe }}
                                         {% else %}
