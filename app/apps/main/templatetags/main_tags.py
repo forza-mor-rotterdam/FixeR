@@ -126,3 +126,9 @@ def get_svg_pathl(url):
     except requests.exceptions.RequestException as e:
         print(f"Error: {e}")
         return None
+
+
+@register.filter("get_last_n_characters")
+def get_last_n_characters(string, n=3):
+    last_n_characters = string[-n:]
+    return last_n_characters

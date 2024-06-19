@@ -1,6 +1,6 @@
 {% load rotterdam_formulier_html %}
 {% load l10n %}
-{% load get_svg_path from main_tags %}
+{% load get_svg_path get_last_n_characters from main_tags %}
 {{ form }}
 {% if field|is_checkbox %}
     <div class="col {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
@@ -53,7 +53,8 @@
                             <label class="form-check-label" for="{{ choice.id_for_label }}">
                                 {% if field.field.widget.attrs.hasIcon %}
                                     {% with choice.choice_label.icon as icon_url %}
-                                        {% if icon_url %}
+                                        -{{ icon_url|get_last_n_characters }}-
+                                        {% if icon_url|get_last_n_characters == 'svg' %}
                                             {{ icon_url|get_svg_path|safe }}
                                         {% else %}
                                             {% include "icons/noimage.svg" %}
