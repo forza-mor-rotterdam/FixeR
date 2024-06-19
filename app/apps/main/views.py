@@ -4,6 +4,7 @@ import logging
 import requests
 from apps.authenticatie.models import Gebruiker
 from apps.context.filters import FilterManager
+from apps.instellingen.models import Instelling
 from apps.main.forms import (
     KaartModusForm,
     SorteerFilterForm,
@@ -674,7 +675,11 @@ def config(request):
 
 
 def _meldingen_bestand(request, modified_path):
-    url = f"{settings.MELDINGEN_URL}{modified_path}"
+    instelling = Instelling.acieve_instelling()
+    MELDINGEN_URL = (
+        settings.MELDINGEN_URL if not instelling else instelling.mor_core_basis_url
+    )
+    url = f"{MELDINGEN_URL}{modified_path}"
     headers = {"Authorization": f"Token {MeldingenService().haal_token()}"}
     response = requests.get(url, stream=True, headers=headers)
     return StreamingHttpResponse(

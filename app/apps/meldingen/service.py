@@ -13,9 +13,12 @@ logger = logging.getLogger(__name__)
 
 
 class MeldingenService:
-    _api_base_url = None
+    _base_url = None
     _timeout: tuple[int, ...] = (10, 20)
     _api_path: str = "/api/v1"
+    _token_api: str = "/api-token-auth/"
+    _use_token = True
+    _token_timeout = 0
 
     class BasisUrlFout(Exception):
         ...
@@ -24,23 +27,41 @@ class MeldingenService:
         ...
 
     def __init__(self, *args, **kwargs: dict):
-        self._api_base_url = settings.MELDINGEN_URL
+        instelling = Instelling.acieve_instelling()
+        self._use_token = (
+            True
+            if not instelling
+            else (
+                instelling.mor_core_gebruiker_email
+                and instelling.mor_core_gebruiker_wachtwoord
+            )
+        )
+        self._token_timeout = (
+            settings.MELDINGEN_TOKEN_TIMEOUT
+            if not instelling
+            else instelling.mor_core_token_timeout
+        )
+        self._base_url = (
+            settings.MELDINGEN_URL if not instelling else instelling.mor_core_basis_url
+        )
         super().__init__(*args, **kwargs)
 
     def get_url(self, url):
         url_o = urlparse(url)
         if not url_o.scheme and not url_o.netloc:
-            return f"{self._api_base_url}{url}"
-        if f"{url_o.scheme}://{url_o.netloc}" == self._api_base_url:
+            return f"{self._base_url}{url}"
+        if f"{url_o.scheme}://{url_o.netloc}" == self._base_url:
             return url
-        raise MeldingenService.BasisUrlFout(
-            f"url: {url}, basis_url: {self._api_base_url}"
-        )
+        raise MeldingenService.BasisUrlFout(f"url: {url}, basis_url: {self._base_url}")
 
     def haal_token(self):
         meldingen_token = cache.get("meldingen_token")
+        if not self._token_timeout:
+            cache.delete("meldingen_token")
+
         if not meldingen_token:
-            instelling = Instelling.objects.first()
+            instelling = Instelling.acieve_instelling()
+            logger.warning(instelling)
             email = (
                 settings.MELDINGEN_USERNAME
                 if not instelling
@@ -55,7 +76,7 @@ class MeldingenService:
                     else instelling.mor_core_gebruiker_email
                 )
             token_response = requests.post(
-                settings.MELDINGEN_TOKEN_API,
+                f"{self._base_url}{self._token_api}",
                 json={
                     "username": email,
                     "password": settings.MELDINGEN_PASSWORD
@@ -65,9 +86,8 @@ class MeldingenService:
             )
             if token_response.status_code == 200:
                 meldingen_token = token_response.json().get("token")
-                cache.set(
-                    "meldingen_token", meldingen_token, settings.MELDINGEN_TOKEN_TIMEOUT
-                )
+                if self._token_timeout:
+                    cache.set("meldingen_token", meldingen_token, self._token_timeout)
             else:
                 raise MeldingenService.DataOphalenFout(
                     f"status code: {token_response.status_code}, response text: {token_response.text}"
@@ -76,7 +96,9 @@ class MeldingenService:
         return meldingen_token
 
     def get_headers(self):
-        headers = {"Authorization": f"Token {self.haal_token()}"}
+        headers = {}
+        if self._use_token:
+            headers.update({"Authorization": f"Token {self.haal_token()}"})
         return headers
 
     def do_request(
