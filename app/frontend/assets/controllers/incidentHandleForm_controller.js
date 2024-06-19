@@ -61,20 +61,23 @@ export default class extends Controller {
     const formData = new FormData(form)
     var request = new XMLHttpRequest()
     let uploadStart = Date.now()
+
+    self.submitContainerTarget.classList.add('busy')
+    document.activeElement.blur()
+    let progressContainer = document.createElement('div')
     let progressRemainingTime = document.createElement('div')
     let progressPercentage = document.createElement('div')
-    progressPercentage.style.width = '0%'
-    progressPercentage.style.height = '10px'
-    progressPercentage.style.backgroundColor = 'red'
+    progressContainer.classList.add('container__progress')
+    progressRemainingTime.classList.add('progress--time')
+    progressPercentage.classList.add('progress--bar')
 
-    self.submitContainerTarget.parentNode.insertBefore(
-      progressRemainingTime,
-      self.submitContainerTarget
+    self.submitContainerTarget.insertBefore(
+      progressContainer,
+      self.submitContainerTarget.querySelector('.btn-action')
     )
-    self.submitContainerTarget.parentNode.insertBefore(
-      progressPercentage,
-      self.submitContainerTarget
-    )
+    progressContainer.insertBefore(progressRemainingTime, null)
+    progressContainer.insertBefore(progressPercentage, null)
+
     request.upload.addEventListener('progress', function (e) {
       if (e.lengthComputable) {
         let duration = Date.now() - uploadStart
@@ -83,16 +86,10 @@ export default class extends Controller {
         let estimatedRemainingMinutes =
           (estimatedRemainingTotalSeconds - (estimatedRemainingTotalSeconds % 60)) / 60
         let percentageLoaded = Math.round((e.loaded / e.total) * 100)
-        console.log(`percentage: ${percentageLoaded}%`)
-        console.log(
-          `estimatedRemainingTime: ${estimatedRemainingMinutes}:${String(
-            estimatedRemainingSeconds
-          ).padStart(2, '0')}`
-        )
 
         progressRemainingTime.textContent =
           percentageLoaded < 100
-            ? `Verwachte resterende tijd: ${estimatedRemainingMinutes}:${String(
+            ? `Momentje, de foto('s) worden verzonden. Verwachte resterende tijd: ${estimatedRemainingMinutes}:${String(
                 estimatedRemainingSeconds
               ).padStart(2, '0')}`
             : 'De upload is geslaagd. Je gaat nu terug naar het taken overzicht.'

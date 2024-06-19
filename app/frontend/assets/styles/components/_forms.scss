@@ -255,7 +255,6 @@ textarea {
     }
 
     ~ .form-check-label {
-        line-height: 3rem;
         font-weight: 400;
         display: inline-block;
     }
@@ -578,6 +577,7 @@ ul.list--form-radio-input {
     .modal & {
         li {
             border: 1px solid $gray-tint04;
+            line-height: 3rem;
         }
     }
 }
@@ -812,6 +812,42 @@ form.onboarding {
                 }
             }
         }
+    }
+}
+
+.form-row.busy {
+    position: relative;
+    z-index: 1000;
+    .btn {
+        background-color: $gray-tint01;
+        border-color: $gray-tint05;
+        color: $gray-tint07;
+    }
+}
+
+.container__progress {
+    z-index: 20;
+    position: absolute;
+    top: 0;
+    transform: translateY(-100%);
+    background: $white;
+    border: 2px solid $green-tint01;
+    padding: 1em;
+    width: calc(100% - 80px);
+    left: 20px;
+
+    margin-top: 0.5em;
+
+    .progress--time {
+        font-size: 1em;
+        text-wrap: balance;
+    }
+
+    .progress--bar {
+        margin-top: 0.5em;
+        width: 0;
+        height: 12px;
+        background-color: $green-tint01;
     }
 }
 

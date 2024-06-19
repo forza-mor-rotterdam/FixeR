@@ -7,14 +7,14 @@
 {% block step_content %}
     <h1 class="text-wrap--balance">
         {% if request.user.first_name %}
-            <span class="color--primary">{{ request.user.first_name }}</span>je
+            <span class="color--primary">{{ request.user.first_name }}</span> je
         {% else %}
             Je
         {% endif %}
         bent er bijna klaar voor!
     </h1>
     <p class="text-wrap--balance">
-        Check je jou instellingen nog even? Dan ben je klaar om met je taken aan de slag te gaan.
+        Check je jouw instellingen nog even? Dan ben je klaar om met je taken aan de slag te gaan.
     </p>
     {% comment %} {{ wizard.form.as_p }} {% endcomment %}
     <div class="container__flex">
