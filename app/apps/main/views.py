@@ -283,7 +283,7 @@ def taken_lijst(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     taken_paginated = page_obj.object_list
-    taken_gefilterd_total = len(taken_gefilterd)
+    taken_gefilterd_total = taken_gefilterd.count()
     if request.session.get("taken_gefilterd"):
         del request.session["taken_gefilterd"]
 
