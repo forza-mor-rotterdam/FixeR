@@ -71,7 +71,7 @@ class TaakAdmin(admin.ModelAdmin):
         "id",
         "uuid",
         "taakopdracht",
-        "melding__uuid",
+        "melding__bron_url",
     ]
     list_filter = (
         TaakstatusFilter,
