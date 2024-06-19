@@ -5,15 +5,17 @@
     Onboarding {{ wizard.steps.current }} | FixeR
 {% endblock title %}
 {% block step_content %}
-    <h1>
+    <h1 class="text-wrap--balance">
         {% if request.user.first_name %}
-            {{ request.user.first_name }}, je
+            <span class="color--primary">{{ request.user.first_name }}</span>je
         {% else %}
             Je
         {% endif %}
         bent er bijna klaar voor!
     </h1>
-    <p>Controleer onderstaande gegevens. Klopt het? Dan ben je klaar om aan de slag te gaan.</p>
+    <p class="text-wrap--balance">
+        Check je jou instellingen nog even? Dan ben je klaar om met je taken aan de slag te gaan.
+    </p>
     {% comment %} {{ wizard.form.as_p }} {% endcomment %}
     <div class="container__flex">
         <h2 class="h3">Jouw afdeling(en)</h2>

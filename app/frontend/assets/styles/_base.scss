@@ -486,6 +486,10 @@ body.no-js {
     color: $green-tint01;
 }
 
+.text-wrap--balance {
+    text-wrap: balance;
+}
+
 .vertical-center {
     display: flex;
     flex-direction: column;

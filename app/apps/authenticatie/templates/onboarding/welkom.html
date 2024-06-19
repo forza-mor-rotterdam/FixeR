@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load webpack_static from webpack_loader %}
 {% block head %}
     {{ wizard.form.media }}
 {% endblock head %}
@@ -18,47 +19,59 @@
             <div>
                 {% csrf_token %}
                 {{ wizard.management_form }}
-                <h1>Stel je profiel in</h1>
-                <p>FixeR toont taken voor alle uitvoerders. Door je filters in te stellen zie je alleen je eigen taken.</p>
-                <div class="container__cards">
-                    <ul class="list--cards">
-                        <li class="card">
-                            <div class="container__flex">
-                                {% include "icons/checkmark-filled.svg" %}
-                                <div>
-                                    <strong>Jouw afdeling</strong>
-                                    <p>Geef aan bij welke afdeling(en) je werkt</p>
-                                </div>
+                <h1>
+                    Welkom <span class="color--primary">
+                    {% if request.user.first_name %}{{ request.user.first_name }}{% endif %}
+                </span>
+            </h1>
+            <p class="text-wrap--balance">
+                FixeR toont taken voor alle uitvoerders. Door je profiel in te stellen zie je jouw taken.
+            </p>
+            <div class="container__cards">
+                <ul class="list--cards">
+                    <li class="card">
+                        <div class="container__flex">
+                            <img src="{% webpack_static 'icons/icon-task--overview.svg' %}"
+                                 alt=""
+                                 class="icon-overview" />
+                            <div>
+                                <strong>Overzicht van je taken</strong>
+                                <p>Zie al jouw openstaande taken.</p>
                             </div>
-                        </li>
-                        <li class="card">
-                            <div class="container__flex">
-                                {% include "icons/checkmark-filled.svg" %}
-                                <div>
-                                    <strong>Jouw taken</strong>
-                                    <p>Geef aan welk werk je doet</p>
-                                </div>
+                        </div>
+                    </li>
+                    <li class="card">
+                        <div class="container__flex">
+                            <img src="{% webpack_static 'icons/icon-task--information.svg' %}"
+                                 alt=""
+                                 class="icon-information" />
+                            <div>
+                                <strong>Informatie over je taak</strong>
+                                <p>Alle informatie die je nodig hebt</p>
                             </div>
-                        </li>
-                        <li class="card">
-                            <div class="container__flex">
-                                {% include "icons/checkmark-filled.svg" %}
-                                <div>
-                                    <strong>Jouw gebied</strong>
-                                    <p>Geef aan in welke wijk(en) je werkt</p>
-                                </div>
+                        </div>
+                    </li>
+                    <li class="card">
+                        <div class="container__flex">
+                            <img src="{% webpack_static 'icons/icon-task--checked.svg' %}"
+                                 alt=""
+                                 class="icon-checked" />
+                            <div>
+                                <strong>Taak uitgevoerd</strong>
+                                <p>Geef je uitgevoerde taak door.</p>
                             </div>
-                        </li>
-                    </ul>
-                </div>
-                <div class="sticky sticky--bottom">
-                    <button type="submit"
-                            class="btn btn-action btn-start"
-                            formnovalidate
-                            data-action="onboarding#onNext">Start</button>
-                </div>
+                        </div>
+                    </li>
+                </ul>
             </div>
-        </form>
-    </div>
-    </turbo-frame>
+            <div class="sticky sticky--bottom">
+                <button type="submit"
+                        class="btn btn-action btn-start"
+                        formnovalidate
+                        data-action="onboarding#onNext">Stel je profiel in</button>
+            </div>
+        </div>
+    </form>
+</div>
+</turbo-frame>
 {% endblock body %}

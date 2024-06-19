@@ -115,16 +115,12 @@ turbo-frame {
 
     .list--form-check-input--tile-image {
         li {
-            label {
-                opacity: 0;
-                animation: fade-in 1s ease-in-out 2.5s forwards;
-            }
+            opacity: 0;
+            animation: fade-in 1s ease-in-out 2.5s forwards;
 
             @for $i from 1 through 10 {
                 &:nth-child(#{$i}n) {
-                    label {
-                        animation-delay: #{$i * 0.1}s;
-                    }
+                    animation-delay: #{$i * 0.2}s;
                 }
             }
         }
@@ -213,14 +209,23 @@ turbo-frame {
             opacity: 0;
             animation: slide-in-from-right 0.5s forwards;
             animation-iteration-count: 1;
+
             @for $i from 1 through 10 {
                 &:nth-child(#{$i}n) {
                     animation-delay: #{$i * 0.25}s;
                 }
             }
 
-            svg {
-                transform: translate(-2px, -4px);
+            .icon-overview {
+                padding-left: 7px;
+                padding-right: 9px;
+            }
+            .icon-information {
+                padding-left: 12px;
+                padding-right: 10px;
+            }
+            .icon-checked {
+                padding-right: 20px;
             }
         }
     }
