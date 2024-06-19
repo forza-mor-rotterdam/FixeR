@@ -150,7 +150,10 @@ class TaakZoekDataAdmin(admin.ModelAdmin):
     )
     readonly_fields = ("display_geometrie",)
     raw_id_fields = ("melding_alias",)
-    # list_filter = (TakenAantalFilter,)
+    list_filter = (TakenAantalFilter,)
+    search_fields = [
+        "melding_alias__bron_url",
+    ]
 
     def taken_aantal(self, obj):
         return str(obj.taak.count())
