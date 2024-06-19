@@ -2,14 +2,14 @@
 {% load json_encode from main_tags %}
 {% load context_template from context_tags %}
 <turbo-frame id="taken_lijst">
-<div class="list__incidents__scroll-wrapper{% if taken_gefilterd_total > 1 or taken_gefilterd_total == 0 %} hide-list-items {% endif %}"
+<div class="list__incidents__scroll-wrapper{% if taken_gefilterd_total > 100 or taken_gefilterd_total == 0 %} hide-list-items {% endif %}"
      data-incidentlist-target="taakItemLijst"
      data-taken-count="{{ page_obj.paginator.count }}">
     {% if taken_gefilterd_total %}
         {% for taak in taken %}
             {% include "taken/taak_lijst_item.html" %}
         {% endfor %}
-        {% if taken_gefilterd_total > 1 %}
+        {% if taken_gefilterd_total > 100 %}
             <div class="container__message">
                 <h2>Meer dan 100 taken?!</h2>
                 <div class="alert">
