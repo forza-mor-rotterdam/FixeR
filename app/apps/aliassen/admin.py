@@ -1,5 +1,5 @@
 from apps.aliassen.models import BijlageAlias, MeldingAlias
-from apps.aliassen.tasks import _update_melding_alias_data
+from apps.aliassen.tasks import task_update_melding_alias_data
 from django.contrib import admin
 from django.db.models import Count
 
@@ -7,8 +7,7 @@ from django.db.models import Count
 @admin.action(description="Update melding alias data")
 def action_update_melding_alias_data(self, request, queryset):
     for melding_alias in queryset:
-        # task_update_melding_alias_data.delay(melding_alias.id)
-        _update_melding_alias_data(melding_alias_id=melding_alias.id)
+        task_update_melding_alias_data.delay(melding_alias.id)
 
 
 class TakenAantalFilter(admin.SimpleListFilter):
