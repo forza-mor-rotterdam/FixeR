@@ -26,12 +26,13 @@
                         Je filter-instellingen zorgen voor meer dan 100 resultaten. Wil je alleen taken zien die voor jou interessant zijn?
                     </div>
                 </div>
-                <a href="{% url 'onboarding' %}"
-                   class="btn btn-action"
-                   data-turbo-frame="taak_basis">Doorloop de onboarding opnieuw</a>
                 <button class="btn btn-action" data-action="main#showFilters">Pas je filters aan</button>
-                <button class="btn btn-secondary" data-action="incidentlist#showTaken">Toon toch de hele lijst</button>
-                {# @TODO @Remco handle this button to still show the taken, maybe render this container on top of the taken if there are any and above 1000, the make it hidden once you click toon toch de hele lijst . #}
+                <button class="btn btn-tertiary" data-action="incidentlist#showTaken">Toon toch de hele lijst</button>
+                <p class="center">
+                    Heb je FixeR nog niet ingesteld?
+                    <br>
+                    <a href="{% url 'onboarding' %}" class="" data-turbo-frame="taak_basis">Stel hier je profiel in</a>
+                </p>
             </div>
         {% endif %}
     {% else %}
@@ -51,10 +52,12 @@
                     We hebben geen taken gevonden binnen je huidige filter-instellingen. Wil je taken zien die voor jou interessant zijn?
                 </div>
             </div>
-            <a href="{% url 'onboarding' %}"
-               class="btn btn-action"
-               data-turbo-frame="taak_basis">Doorloop de onboarding opnieuw</a>
             <button class="btn btn-action" data-action="main#showFilters">Pas je filters aan</button>
+            <p class="center">
+                Heb je FixeR nog niet ingesteld?
+                <br>
+                <a href="{% url 'onboarding' %}" class="" data-turbo-frame="taak_basis">Stel hier je profiel in</a>
+            </p>
         </div>
     {% endif %}
 </div>

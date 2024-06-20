@@ -257,6 +257,7 @@ textarea {
     ~ .form-check-label {
         font-weight: 400;
         display: inline-block;
+        padding: 1em 0;
     }
 
     &[type="checkbox"] {
@@ -435,12 +436,13 @@ ul.list--form-radio-input {
     input {
         @include form-check-input();
         position: absolute;
-        top: 1.2em;
-        left: 10px;
+        top: 50%;
+        left: $input-padding-y;
+        transform: translateY(-50%);
 
         ~ .form-check-label {
             width: 100%;
-            padding-left: 45px;
+            padding: 1em 0 1em 45px;
             box-sizing: border-box;
         }
     }
@@ -577,7 +579,7 @@ ul.list--form-radio-input {
     .modal & {
         li {
             border: 1px solid $gray-tint04;
-            line-height: 3rem;
+            line-height: rem;
         }
     }
 }
