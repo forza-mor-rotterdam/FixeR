@@ -89,3 +89,12 @@ def get_taakgebeurtenissen(melding, taakopdracht_url):
         ],
         key=lambda b: b.get("aangemaakt_op"),
     )
+
+
+@register.simple_tag
+def get_omschrijving_intern(taakgebeurtenissen):
+    omschrijving_intern = taakgebeurtenissen[0].get("omschrijving_intern")
+    if omschrijving_intern == "Taak aangemaakt":
+        omschrijving_intern = ""
+
+    return omschrijving_intern

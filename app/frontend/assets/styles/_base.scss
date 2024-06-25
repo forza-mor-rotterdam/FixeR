@@ -553,22 +553,6 @@ body.no-js {
     pointer-events: none;
 }
 
-.display-flex {
-    display: flex;
-    justify-content: space-between;
-
-    &--2cols-md {
-        @media (min-width: map-get($grid-breakpoints, md)) {
-            display: flex;
-            gap: $alert-padding-x;
-            > div {
-                flex: 0 0 50%;
-                max-width: calc(50% - $alert-padding-x/2);
-            }
-        }
-    }
-}
-
 .no-padding {
     padding: 0 !important;
 }
