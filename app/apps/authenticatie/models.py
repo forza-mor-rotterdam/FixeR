@@ -2,9 +2,11 @@ from apps.authenticatie.managers import GebruikerManager
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.forms.models import model_to_dict
 from django.utils.html import mark_safe
 from utils.fields import DictJSONField
+from utils.images import get_upload_path
 from utils.models import BasisModel
 
 
@@ -52,11 +54,13 @@ class Gebruiker(AbstractUser):
         dict_instance.update(
             {
                 "naam": self.__str__(),
-                "rol": self.profiel.context.naam
-                if hasattr(self, "profiel")
-                and hasattr(self.profiel, "context")
-                and hasattr(self.profiel.context, "naam")
-                else None,
+                "rol": (
+                    self.profiel.context.naam
+                    if hasattr(self, "profiel")
+                    and hasattr(self.profiel, "context")
+                    and hasattr(self.profiel.context, "naam")
+                    else None
+                ),
                 "rechten": (
                     self.groups.all().first().name if self.groups.all() else None
                 ),
@@ -89,8 +93,44 @@ class Profiel(BasisModel):
         blank=True,
         null=True,
     )
+    profielfoto = models.ImageField(
+        upload_to=get_upload_path, null=True, blank=True, max_length=255
+    )
+
+    onboarding_compleet = models.BooleanField(default=False)
+
+    class StadsdeelOpties(models.TextChoices):
+        VOLLEDIG = "volledig", "Heel Rotterdam"
+        NOORD = "noord", "Noord"
+        ZUID = "zuid", "Zuid"
+
+    stadsdeel = models.CharField(
+        max_length=50,
+        choices=StadsdeelOpties.choices,
+        null=True,
+        blank=True,
+    )
+
+    afdelingen = ArrayField(
+        models.CharField(max_length=500, blank=True), blank=True, null=True
+    )
+
+    wijken = ArrayField(
+        models.CharField(max_length=500, blank=True), blank=True, null=True
+    )
+    taaktypes = models.ManyToManyField(
+        to="taken.Taaktype",
+        related_name="profielen_voor_taaktypes",
+        blank=True,
+    )
 
     def __str__(self):
         if self.gebruiker:
             return f"Profiel voor: {self.gebruiker}"
         return f"Profiel id: {self.pk}"
+
+    @property
+    def wijken_or_taaktypes_empty(self):
+        buurt_empty = not self.wijken or all(not wijk for wijk in self.wijken)
+        taken_empty = not self.taaktypes.exists()
+        return buurt_empty or taken_empty

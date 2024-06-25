@@ -2,7 +2,6 @@ from apps.context.filters import FilterManager
 from apps.context.models import Context
 from apps.taken.models import Taaktype
 from django import forms
-from utils.forms import RadioSelect
 
 
 class ContextAanpassenForm(forms.ModelForm):
@@ -18,10 +17,9 @@ class ContextAanpassenForm(forms.ModelForm):
         required=False,
     )
     template = forms.ChoiceField(
-        widget=RadioSelect(
+        widget=forms.RadioSelect(
             attrs={
                 "class": "list--form-radio-input",
-                # "data-action": "change->bijlagen#updateImageDisplay",
             }
         ),
         label="Sjabloon",
@@ -73,3 +71,67 @@ class ContextAanmakenForm(ContextAanpassenForm):
         ].help_text = "Ieder sjabloon toont andere informatie. Het ‘Standaard’ sjabloon voldoet voor de meeste afdelingen."
         self.fields["taaktypes"].label = "Met welke taaktypes werkt deze rol?"
         self.fields["filters"].label = "Welke filters zijn relevant voor deze rol?"
+
+
+class TaaktypesForm(forms.ModelForm):
+    taaktypes = forms.ModelMultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "class": "form-check-input",
+                "data-action": "change->incidentHandleForm#toggleNewTask",
+            }
+        ),
+        queryset=Taaktype.objects.all(),
+        label="Taaktypes",
+        required=False,
+    )
+
+    class Meta:
+        model = Context
+        fields = ("taaktypes",)
+
+
+class TaaktypesFilteredForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        afdelingen_data = kwargs.pop("afdelingen_data", [])
+        afdelingen_selected = kwargs.pop("afdelingen_selected", [])
+        super().__init__(*args, **kwargs)
+
+        for afdeling_uuid in afdelingen_selected:
+            afdeling_detail = next(
+                (
+                    afdeling
+                    for afdeling in afdelingen_data
+                    if afdeling["uuid"] == afdeling_uuid
+                ),
+                None,
+            )
+            if afdeling_detail:
+                taaktype_omschrijvingen = [
+                    taaktype["omschrijving"]
+                    for taaktype in afdeling_detail.get("taaktypes_voor_afdelingen", [])
+                ]
+
+                taaktypes_queryset = Taaktype.objects.filter(
+                    omschrijving__in=taaktype_omschrijvingen
+                ).distinct()
+
+                if taaktypes_queryset.exists():
+                    field_name = f"taaktypes_{afdeling_detail['naam']}"
+                    self.fields[field_name] = forms.ModelMultipleChoiceField(
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "class": "form-check-input",
+                                "data-action": "change->onboarding#updateCounters",
+                                "showSelectAll": True,
+                                "showCount": True,
+                            }
+                        ),
+                        queryset=taaktypes_queryset,
+                        label=f"Taken van {afdeling_detail['naam']}",
+                        required=True,
+                    )
+
+    class Meta:
+        model = Context
+        fields = ()

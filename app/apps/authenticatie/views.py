@@ -1,22 +1,34 @@
 import logging
 
 from apps.authenticatie.forms import (
+    AfdelingForm,
+    BevestigenForm,
     GebruikerAanmakenForm,
     GebruikerAanpassenForm,
     GebruikerBulkImportForm,
     GebruikerProfielForm,
+    ProfielfotoForm,
+    WelkomForm,
+    WerklocatieForm,
 )
+from apps.context.forms import TaaktypesFilteredForm
 from apps.meldingen.service import MeldingenService
+from apps.services.pdok import PDOKService
+from apps.services.taakr import TaakRService
+from apps.taken.models import Taaktype
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import render
+from django.core.files.storage import FileSystemStorage
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+from formtools.wizard.views import SessionWizardView
+from utils.diversen import absolute
 
 Gebruiker = get_user_model()
 logger = logging.getLogger(__name__)
@@ -148,3 +160,169 @@ class GebruikerProfielView(UpdateView):
         )
         messages.success(self.request, "Gebruikersgegevens succesvol opgeslagen.")
         return super().form_valid(form)
+
+
+FORMS = [
+    ("welkom", WelkomForm),
+    # ("profielfoto", ProfielfotoForm),
+    ("afdeling", AfdelingForm),
+    ("taken", TaaktypesFilteredForm),
+    ("werklocatie", WerklocatieForm),
+    ("bevestigen", BevestigenForm),
+]
+
+TEMPLATES = {
+    "welkom": "onboarding/welkom.html",
+    # "profielfoto": "onboarding/profielfoto_form.html",
+    "afdeling": "onboarding/afdeling_form.html",
+    "taken": "onboarding/taken_form.html",
+    "werklocatie": "onboarding/werklocatie_form.html",
+    "bevestigen": "onboarding/bevestigen_form.html",
+}
+
+
+@method_decorator(login_required, name="dispatch")
+class OnboardingView(SessionWizardView):
+    form_list = FORMS
+    file_storage = FileSystemStorage(location=settings.MEDIA_ROOT)
+    afdelingen_data = None
+
+    def get_template_names(self):
+        return [TEMPLATES[self.steps.current]]
+
+    def dispatch(self, *args, **kwargs):
+        if not self.afdelingen_data:
+            self.afdelingen_data = TaakRService().get_afdelingen(
+                taakapplicatie_basis_urls=[absolute(self.request).get("ABSOLUTE_ROOT")]
+            )
+        return super().dispatch(*args, **kwargs)
+
+    def done(self, form_list, **kwargs):
+        self.request.session["toon_alle_taken"] = False
+        pdok_service = PDOKService()
+        profiel_filters_base_key = "nieuw"
+        gebruiker = self.request.user
+        profiel = gebruiker.profiel
+        form_data = {form.prefix: form.cleaned_data for form in form_list}
+
+        profielfoto_data = form_data.get("profielfoto")
+        afdeling_data = form_data.get("afdeling")
+        taken_data = form_data.get("taken")
+        werklocatie_data = form_data.get("werklocatie")
+        # bevestig_data = form_data.get("bevestigen")
+
+        selected_taaktypes = []
+        buurtnamen = []
+        profiel.taaktypes.clear()
+        if taken_data:
+            for key, value in taken_data.items():
+                if key.startswith("taaktypes_"):
+                    taaktype_ids = [str(taaktype.id) for taaktype in value]
+                    taaktypes = Taaktype.objects.filter(id__in=taaktype_ids)
+                    profiel.taaktypes.add(*taaktypes)
+                    selected_taaktypes.extend(taaktype_ids)
+        selected_taaktypes = [
+            taaktype_id
+            for taaktype_id in selected_taaktypes
+            if taaktype_id
+            in profiel.filters.get(profiel_filters_base_key, {}).get("taken", [])
+        ]
+
+        # Set profile data based on collected form data
+        if profielfoto_data:
+            profiel.profielfoto = profielfoto_data.get("profielfoto")
+        if afdeling_data:
+            profiel.afdelingen = afdeling_data.get("afdelingen", [])
+        if werklocatie_data:
+            profiel.stadsdeel = werklocatie_data.get("stadsdeel")
+            wijkcodes = werklocatie_data.get("wijken", [])
+            profiel.wijken = wijkcodes
+            buurtnamen = [
+                buurtnaam
+                for buurtnaam in pdok_service.get_buurten_middels_wijkcodes(
+                    settings.WIJKEN_EN_BUURTEN_GEMEENTECODE, wijkcodes
+                )
+                if buurtnaam
+                in profiel.filters.get(profiel_filters_base_key, {}).get("buurt", [])
+            ]
+
+        profiel.filters = {
+            profiel_filters_base_key: {
+                "q": [""],
+                "buurt": buurtnamen,
+                "taken": selected_taaktypes,
+                "taak_status": ["nieuw"],
+                "begraafplaats": [],
+            },
+        }
+        profiel.onboarding_compleet = True
+        profiel.save()
+
+        return redirect("taken")
+
+    def get_form_kwargs(self, step=None):
+        kwargs = super().get_form_kwargs(step)
+        if self.request.user.is_authenticated:
+            if step in "afdeling":
+                kwargs["afdelingen_data"] = self.afdelingen_data
+            if step == "taken" and (
+                afdeling_cleaned_data := self.get_cleaned_data_for_step("afdeling")
+            ):
+                kwargs["afdelingen_data"] = self.afdelingen_data
+
+                kwargs["afdelingen_selected"] = afdeling_cleaned_data.get(
+                    "afdelingen", []
+                )
+            elif step == "bevestigen":
+                kwargs["afdelingen_data"] = self.afdelingen_data
+                previous_steps_data = {}
+
+                for step in self.steps.all[:-1]:
+                    if step_cleaned_data := self.get_cleaned_data_for_step(step):
+                        previous_steps_data.update(step_cleaned_data)
+                kwargs["previous_steps_data"] = previous_steps_data
+        return kwargs
+
+    def get_taaktypes_initial(self, profiel):
+        taaktypes_initial = {}
+        for taaktype in profiel.taaktypes.all():
+            for afdeling in self.afdelingen_data:
+                if taaktype.taaktype_url(self.request) in [
+                    tt["taakapplicatie_taaktype_url"]
+                    for tt in afdeling.get("taaktypes_voor_afdelingen", [])
+                ]:
+                    field_name = f"taaktypes_{afdeling['naam']}"
+                    if field_name not in taaktypes_initial:
+                        taaktypes_initial[field_name] = []
+                    taaktypes_initial[field_name].append(taaktype.id)
+        return taaktypes_initial
+
+    def get_form_initial(self, step):
+        initial = super().get_form_initial(step)
+        profiel = self.request.user.profiel
+
+        if profiel.onboarding_compleet:
+            if step == "werklocatie":
+                initial.update(
+                    {
+                        "stadsdeel": profiel.stadsdeel,
+                        "wijken": profiel.wijken,
+                    }
+                )
+            elif step == "afdeling":
+                initial.update(
+                    {
+                        "afdelingen": profiel.afdelingen,
+                    }
+                )
+            elif step == "taken":
+                initial.update(self.get_taaktypes_initial(profiel))
+
+            # elif step == "profielfoto":
+            #     initial.update(
+            #         {
+            #             "profielfoto": profiel.profielfoto,
+            #         }
+            #     )
+
+        return initial

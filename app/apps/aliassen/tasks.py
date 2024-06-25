@@ -61,6 +61,18 @@ def task_update_melding_alias_data_for_all_meldingen(self, cache_timeout=0):
     return f"updated/totaal={melding_alias_items_for_update.count()}/{all_melding_alias_items.count()}"
 
 
+def _update_melding_alias_data(melding_alias_id):
+    from apps.aliassen.models import MeldingAlias
+
+    melding_alias = MeldingAlias.objects.filter(pk=melding_alias_id).first()
+    if melding_alias:
+        melding_alias.valideer_bron_url()
+        melding_alias.save()
+        melding_alias.update_zoek_data()
+
+    return f"MeldingAlias with id={melding_alias_id}, updated"
+
+
 @shared_task(bind=True, base=BaseTaskWithRetryBackoff)
 def task_update_melding_alias_data(self, melding_alias_id):
     from apps.aliassen.models import MeldingAlias

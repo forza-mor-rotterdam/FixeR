@@ -1,0 +1,15 @@
+{% extends "onboarding/multipart_form.html" %}
+{% load rotterdam_formulier_html %}
+{% block title %}
+    Profiel instellen {{ wizard.steps.current }} | FixeR
+{% endblock title %}
+{% block step_content %}
+    <h1>In welk gebied werk je?</h1>
+    <p class="text-wrap--balance">
+        Selecteer het gebied en de wijken waarin je werkt. Je kunt dit later aanpassen in je filters.
+    </p>
+    <div data-controller="selectAll" data-onboarding-target="stadsdeel">
+        {{ wizard.form.stadsdeel|render_rotterdam_formulier }}
+        <div class="container__wijkenlijst hidden">{{ wizard.form.wijken|render_rotterdam_formulier }}</div>
+    </div>
+{% endblock step_content %}

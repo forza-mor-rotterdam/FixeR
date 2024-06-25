@@ -17,10 +17,21 @@ SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY", os.environ.get("SECRET_KEY", os.environ.get("APP_SECRET"))
 )
 
+# APP_ENV's
+PRODUCTIE = "productie"
+ACCEPTATIE = "acceptatie"
+TEST = "test"
+
 GIT_SHA = os.getenv("GIT_SHA")
 DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
+APP_ENV = os.getenv("APP_ENV", PRODUCTIE)  # acceptatie/test/productie
 DEBUG = ENVIRONMENT == "development"
+
+# Fernet Key
+FIELD_ENCRYPTION_KEY = os.getenv(
+    "FIELD_ENCRYPTION_KEY", "Fp9p5Ml9hK2BravAUDd4O4pn9_KcBTfFbh-QEuuBN0E="
+)
 
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
@@ -36,16 +47,33 @@ DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
 MELDINGEN_URL = os.getenv("MELDINGEN_URL", "https://mor-core-acc.forzamor.nl")
-MELDINGEN_API_URL = os.getenv("MELDINGEN_API_URL", f"{MELDINGEN_URL}/api/v1")
-MELDINGEN_API_HEALTH_CHECK_URL = os.getenv(
-    "MELDINGEN_API_HEALTH_CHECK_URL", f"{MELDINGEN_URL}/health/"
-)
-MELDINGEN_TOKEN_API = os.getenv(
-    "MELDINGEN_TOKEN_API", f"{MELDINGEN_URL}/api-token-auth/"
-)
 MELDINGEN_TOKEN_TIMEOUT = 60 * 60
 MELDINGEN_USERNAME = os.getenv("MELDINGEN_USERNAME")
 MELDINGEN_PASSWORD = os.getenv("MELDINGEN_PASSWORD")
+
+onderwerpen_urls = {
+    PRODUCTIE: "https://onderwerpen.forzamor.nl",
+    ACCEPTATIE: "https://onderwerpen-acc.forzamor.nl",
+    TEST: "https://onderwerpen-test.forzamor.nl",
+}
+ONDERWERPEN_URL = (
+    "https://onderwerpen-acc.forzamor.nl"
+    if DEBUG
+    else os.getenv(
+        "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
+    )
+)
+
+taakr_urls = {
+    PRODUCTIE: "https://taakr.forzamor.nl",
+    ACCEPTATIE: "https://taakr-acc.forzamor.nl",
+    TEST: "https://taakr-test.forzamor.nl",
+}
+TAAKR_URL = (
+    "http://taakr.mor.local:8009"
+    if DEBUG
+    else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV, taakr_urls[ACCEPTATIE]))
+)
 
 DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
 
@@ -53,6 +81,7 @@ UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
 
 INSTALLED_APPS = (
     # templates override
+    "apps.main",
     "apps.health",
     "django.contrib.humanize",
     "django.contrib.contenttypes",
@@ -64,6 +93,8 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.gis",
     "django.contrib.postgres",
+    "django.forms",
+    "formtools",
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
@@ -82,8 +113,8 @@ INSTALLED_APPS = (
     "django_celery_beat",
     "django_celery_results",
     "sorl.thumbnail",
+    "django_select2",
     # Apps
-    "apps.main",
     "apps.authorisatie",
     "apps.authenticatie",
     "apps.taken",
@@ -92,6 +123,8 @@ INSTALLED_APPS = (
     "apps.context",
     "apps.beheer",
     "apps.release_notes",
+    "apps.services",
+    "apps.instellingen",
 )
 
 LOGIN_URL = "/login/"
@@ -179,6 +212,8 @@ CELERYBEAT_SCHEDULE = {
 CELERY_WORKER_CONCURRENCY = 2
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 20
 CELERY_WORKER_MAX_MEMORY_PER_CHILD = 200000
+CELERY_WORKER_SEND_TASK_EVENTS = True
+
 
 SITE_ID = 1
 SITE_NAME = os.getenv("SITE_NAME", "FixeR")
@@ -295,6 +330,7 @@ CSP_IMG_SRC = (
     "cdn.jsdelivr.net",
     "ows.gis.rotterdam.nl",
     "www.gis.rotterdam.nl",
+    TAAKR_URL,
 )
 CSP_STYLE_SRC = (
     "'self'",
@@ -310,6 +346,7 @@ CSP_CONNECT_SRC = (
         "mercure.fixer-acc.forzamor.nl",
         "mercure.fixer.forzamor.nl",
         "cke4.ckeditor.com",
+        "forzamor.nl",
     )
     if not DEBUG
     else (
@@ -317,10 +354,12 @@ CSP_CONNECT_SRC = (
         "ws:",
         "localhost:7001",
         "cke4.ckeditor.com",
+        "taakr.mor.local:8009",
     )
 )
 CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
 
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -350,6 +389,10 @@ CACHES = {
         },
     }
 }
+
+WIJKEN_EN_BUURTEN_CACHE_KEY = "wijken_en_buurten_cache_key"
+WIJKEN_EN_BUURTEN_GEMEENTECODE = "0599"
+WIJKEN_EN_BUURTEN_CACHE_TIMEOUT = 60 * 60 * 24
 
 
 # Sessions are managed by django-session-timeout-joinup
@@ -526,8 +569,6 @@ CKEDITOR_CONFIGS = {
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
-
-APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
 
 SIGNED_DATA_MAX_AGE_SECONDS = int(
     os.getenv("SIGNED_DATA_MAX_AGE_SECONDS", 259200)

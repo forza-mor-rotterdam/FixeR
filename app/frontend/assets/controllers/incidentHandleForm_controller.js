@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['externalText', 'internalText', 'newTask', 'form']
+  static targets = ['externalText', 'internalText', 'newTask', 'form', 'submitContainer']
 
   connect() {
     this.requiredLabelInternalText = 'Waarom kan de taak niet worden afgerond?'
@@ -13,6 +13,7 @@ export default class extends Controller {
     } else {
       this.onResolutionTrue()
     }
+    this.formTarget.addEventListener(`submit`, this.handleSubmit.bind(this))
   }
 
   onResolutionFalse() {
@@ -53,12 +54,64 @@ export default class extends Controller {
     }
     return count === 0
   }
+  handleSubmit(event) {
+    const self = this
+    event.preventDefault()
+    const form = event.target
+    const formData = new FormData(form)
+    var request = new XMLHttpRequest()
+    let uploadStart = Date.now()
 
+    self.submitContainerTarget.classList.add('busy')
+    document.activeElement.blur()
+    let progressContainer = document.createElement('div')
+    let progressRemainingTime = document.createElement('div')
+    let progressPercentage = document.createElement('div')
+    progressContainer.classList.add('container__progress')
+    progressRemainingTime.classList.add('progress--time')
+    progressPercentage.classList.add('progress--bar')
+
+    self.submitContainerTarget.insertBefore(
+      progressContainer,
+      self.submitContainerTarget.querySelector('.btn-action')
+    )
+    progressContainer.insertBefore(progressRemainingTime, null)
+    progressContainer.insertBefore(progressPercentage, null)
+
+    request.upload.addEventListener('progress', function (e) {
+      if (e.lengthComputable) {
+        let duration = Date.now() - uploadStart
+        let estimatedRemainingTotalSeconds = (duration * (e.total / e.loaded) - duration) / 1000
+        let estimatedRemainingSeconds = Math.round(estimatedRemainingTotalSeconds % 60)
+        let estimatedRemainingMinutes =
+          (estimatedRemainingTotalSeconds - (estimatedRemainingTotalSeconds % 60)) / 60
+        let percentageLoaded = Math.round((e.loaded / e.total) * 100)
+
+        progressRemainingTime.textContent =
+          percentageLoaded < 100
+            ? `Momentje, de foto('s) worden verzonden. Verwachte resterende tijd: ${estimatedRemainingMinutes}:${String(
+                estimatedRemainingSeconds
+              ).padStart(2, '0')}`
+            : 'De upload is geslaagd. Je gaat nu terug naar het taken overzicht.'
+        progressPercentage.style.width = `${percentageLoaded}%`
+      }
+    })
+    request.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        window.location.replace('/taken/')
+      }
+    }
+
+    request.open('post', form.action)
+    request.timeout = 300000
+    request.send(formData)
+  }
   onSubmit(event) {
     const allFieldsValid = this.checkValids()
     event.preventDefault()
     if (allFieldsValid) {
       this.formTarget.requestSubmit()
+      document.querySelector('body').style.pointerEvents = 'none'
     }
   }
 }

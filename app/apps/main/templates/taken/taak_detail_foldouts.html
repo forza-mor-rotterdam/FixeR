@@ -164,7 +164,7 @@
                         <input id="egd_id"
                                type="checkbox"
                                data-detail-map-layer-type-param="EGD"
-                               data-action="detail#onMapLayerChange">
+                               data-action="detail#onMapLayerChange" />
                         Toon EGD-kaartlaag
                     </label>
                     <div class="container__uitklapper">
@@ -396,7 +396,8 @@
                     Tijdlijn
                 </h2>
             </summary>
-            {% include "incident/part_tijdlijn.html" %}
+            <turbo-frame id="taak_detail_melding_tijdlijn" src="{% url 'taak_detail_melding_tijdlijn' taak.id %}" loading="lazy">
+            </turbo-frame>
         </details>
     </div>
 </section>

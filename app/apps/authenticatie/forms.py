@@ -1,14 +1,18 @@
 import csv
+import json
 from io import StringIO
 
 import chardet
 from apps.authenticatie.models import Profiel
 from apps.context.models import Context
+from apps.main.utils import get_wijknaam_by_wijkcode
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.db.models.query import QuerySet
+from utils.constanten import PDOK_WIJKEN
 
 Gebruiker = get_user_model()
 
@@ -110,10 +114,14 @@ class GebruikerBulkImportForm(forms.Form):
                     "Er is al een gebruiker met dit e-mailadres in deze lijst aanwezig"
                 )
             row_is_not_valid = self.validate_row(default_row, errors)
-            if not row_is_not_valid:
-                valid_rows.append(default_row)
-                valid_checked_rows_email.append(default_row[0])
             default_row.append(row_is_not_valid)
+            default_row.append("")
+            if not row_is_not_valid:
+                if Gebruiker.objects.all().filter(email=default_row[0]):
+                    default_row[5] = "aanpassen"
+                valid_rows.append(default_row)
+
+                valid_checked_rows_email.append(default_row[0])
             all_rows.append(default_row)
         return {
             "all_rows": all_rows,
@@ -129,8 +137,6 @@ class GebruikerBulkImportForm(forms.Form):
             validate_email(email.strip())
         except ValidationError:
             errors.append(f"{email} is geen e-mailadres")
-        if Gebruiker.objects.all().filter(email=email):
-            errors.append("Een gebruiker met dit e-mailadres bestaat reeds")
         if first_name and len(first_name) > 150:
             errors.append("voornaam mag niet langer zijn dan 150 karakters")
         if last_name and len(last_name) > 150:
@@ -150,16 +156,29 @@ class GebruikerBulkImportForm(forms.Form):
             [
                 Gebruiker(**{f: row[i] for i, f in enumerate(gebruiker_fieldnames)})
                 for row in valid_rows
-            ]
+            ],
+            ignore_conflicts=False,
+            update_conflicts=True,
+            unique_fields=["email"],
+            update_fields=["first_name", "last_name", "telefoonnummer"],
         )
+
+        aangemaakte_aangepaste_gebruikers = []
         for gebruiker in aangemaakte_gebruikers:
+            if not gebruiker.id:
+                gebruiker = Gebruiker.objects.get(email=gebruiker.email)
+            gebruiker.groups.clear()
             gebruiker.groups.add(self.cleaned_data.get("group"))
-            Profiel.objects.create(
-                gebruiker=gebruiker,
-                context=self.cleaned_data.get("context"),
-            )
-            gebruiker.save()
-        return aangemaakte_gebruikers
+            if not hasattr(gebruiker, "profiel"):
+                Profiel.objects.create(
+                    gebruiker=gebruiker,
+                    context=self.cleaned_data.get("context"),
+                )
+            else:
+                gebruiker.profiel.context = self.cleaned_data.get("context")
+                gebruiker.profiel.save()
+            aangemaakte_aangepaste_gebruikers.append(gebruiker)
+        return aangemaakte_aangepaste_gebruikers
 
 
 class GebruikerProfielForm(forms.ModelForm):
@@ -184,3 +203,190 @@ class GebruikerProfielForm(forms.ModelForm):
     class Meta:
         model = Gebruiker
         fields = ("telefoonnummer", "first_name", "last_name")
+
+
+class WelkomForm(forms.Form):
+    pass
+
+
+class ProfielfotoForm(forms.ModelForm):
+    class Meta:
+        model = Profiel
+        fields = ["profielfoto"]
+
+
+class AfdelingForm(forms.Form):
+    afdelingen = forms.MultipleChoiceField(
+        choices=[],
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "hasIcon": True,
+                "classList": "list--form-check-input--tile-image",
+            }
+        ),
+        required=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        afdelingen_data = kwargs.pop("afdelingen_data", [])
+        super().__init__(*args, **kwargs)
+        afdelingen = [
+            (
+                afdeling["uuid"],
+                {"naam": afdeling["naam"], "icon": afdeling.get("icoon", None)},
+            )
+            for afdeling in afdelingen_data
+        ]
+        self.fields["afdelingen"].choices = afdelingen
+
+
+class WerklocatieForm(forms.ModelForm):
+    wijken = forms.MultipleChoiceField(
+        label="Wijken",
+        choices=[],
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "showSelectAll": True,
+                "data-action": "change->onboarding#updateCounters",
+                "showCount": True,
+            }
+        ),
+        required=True,
+    )
+
+    stadsdeel = forms.ChoiceField(
+        label="Gebied",
+        choices=Profiel.StadsdeelOpties.choices,
+        widget=forms.RadioSelect(
+            attrs={
+                "data-action": "change->onboarding#updateWijken",
+                "data-onboarding-wijken-param": json.dumps(PDOK_WIJKEN),
+                "classList": "list--form-radio-input background--white",
+            }
+        ),
+        required=True,
+        initial=None,
+    )
+
+    class Meta:
+        model = Profiel
+        fields = ["stadsdeel"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.update_wijken_choices(stadsdeel=self.fields["stadsdeel"].initial)
+
+    def update_wijken_choices(self, stadsdeel=None):
+        sorted_pdok_wijken = sorted(PDOK_WIJKEN, key=lambda wijk: wijk["wijknaam"])
+        wijken_choices = [
+            (wijk["wijkcode"], wijk["wijknaam"]) for wijk in sorted_pdok_wijken
+        ]
+        self.fields["wijken"].choices = wijken_choices
+
+
+class BevestigenForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        afdelingen_data = kwargs.pop("afdelingen_data", {})
+        previous_steps_data = kwargs.pop("previous_steps_data", {})
+        super(BevestigenForm, self).__init__(*args, **kwargs)
+
+        # Dynamically add fields from previous steps as read-only fields
+        for field_name, field_value in previous_steps_data.items():
+            if field_value:
+                # print(
+                #     f"Field name: {field_name}, value: {field_value}, type: {type(field_value)}"
+                # )
+                if field_name == "afdelingen" and isinstance(field_value, list):
+                    self.fields[field_name] = forms.MultipleChoiceField(
+                        choices=[
+                            (
+                                val,
+                                next(
+                                    (
+                                        {
+                                            "naam": afdeling["naam"],
+                                            "icon": afdeling.get("icoon", None),
+                                        }
+                                        for afdeling in afdelingen_data
+                                        if afdeling["uuid"] == val
+                                    ),
+                                    val,
+                                ),
+                            )
+                            for val in field_value
+                        ],
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                                "hasIcon": True,
+                                "classList": "list--form-check-input--tile-image",
+                            }
+                        ),
+                        required=False,
+                    )
+                elif field_name.startswith("taaktypes_") and isinstance(
+                    field_value, QuerySet
+                ):
+                    self.fields[field_name] = forms.ModelMultipleChoiceField(
+                        queryset=field_value,
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                            }
+                        ),
+                        required=False,
+                    )
+                elif isinstance(field_value, QuerySet):
+                    self.fields[field_name] = forms.ModelMultipleChoiceField(
+                        queryset=field_value,
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                            }
+                        ),
+                        required=False,
+                    )
+                elif isinstance(field_value, str):
+                    self.fields[field_name] = forms.CharField(
+                        initial=field_value.title(),
+                        widget=forms.TextInput(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                            }
+                        ),
+                        required=False,
+                    )
+                elif isinstance(field_value, list):
+                    self.fields[field_name] = forms.MultipleChoiceField(
+                        choices=[
+                            (
+                                val,
+                                (
+                                    get_wijknaam_by_wijkcode(val)
+                                    if field_name == "wijken"
+                                    else val
+                                ),
+                            )
+                            for val in field_value
+                        ],
+                        initial=field_value,
+                        widget=forms.CheckboxSelectMultiple(
+                            attrs={
+                                "readonly": "readonly",
+                                "disabled": "disabled",
+                                "hideLabel": True,
+                            }
+                        ),
+                        required=False,
+                    )
+
+    class Meta:
+        fields = []

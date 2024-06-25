@@ -1,0 +1,19 @@
+{% extends "onboarding/multipart_form.html" %}
+{% load rotterdam_formulier_html %}
+{% block title %}
+    Profiel instellen {{ wizard.steps.current }} | FixeR
+{% endblock title %}
+{% block step_content %}
+    <h1>Wat zijn jouw taken?</h1>
+    <p class="text-wrap--balance">Selecteer alle werkzaamheden die jij normaal gesproken uitvoert.</p>
+    <div data-controller="selectAll" class="container__takenlijst">
+        {% if wizard.form.forms %}
+            {{ wizard.form.management_form }}
+            {% for form in wizard.form.forms %}{{ form|render_rotterdam_formulier }}{% endfor %}
+        {% elif wizard.form %}
+            {% for form in wizard.form %}{{ form|render_rotterdam_formulier }}{% endfor %}
+        {% else %}
+            {{ wizard.form|render_rotterdam_formulier }}
+        {% endif %}
+    </div>
+{% endblock step_content %}

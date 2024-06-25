@@ -4,6 +4,7 @@ from apps.authenticatie.views import (
     GebruikerAanpassenView,
     GebruikerLijstView,
     GebruikerProfielView,
+    OnboardingView,
     gebruiker_bulk_import,
 )
 from apps.authorisatie.views import (
@@ -27,7 +28,6 @@ from apps.main.views import (
     http_403,
     http_404,
     http_500,
-    incident_modal_handle,
     informatie,
     kaart_modus,
     meldingen_bestand,
@@ -35,8 +35,10 @@ from apps.main.views import (
     navigeer,
     root,
     sorteer_filter,
+    taak_afhandelen,
     taak_delen,
     taak_detail,
+    taak_detail_melding_tijdlijn,
     taak_detail_preview,
     taak_toewijzen,
     taak_toewijzing_intrekken,
@@ -45,6 +47,7 @@ from apps.main.views import (
     taken_filter,
     taken_lijst,
     ui_settings_handler,
+    wijken_en_buurten,
 )
 from apps.release_notes.views import (
     ReleaseNoteAanmakenView,
@@ -65,6 +68,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
+from django_select2 import urls as select2_urls
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -80,6 +84,7 @@ router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 urlpatterns = [
     path("", root, name="root"),
     # Tijdelijke url voor nieuwe homepage
+    path("wijken-en-buurten/", wijken_en_buurten, name="wijken_en_buurten"),
     path(
         "home/",
         HomepageView.as_view(),
@@ -122,6 +127,11 @@ urlpatterns = [
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
     path(
+        "taak/<int:id>/melding-tijdlijn",
+        taak_detail_melding_tijdlijn,
+        name="taak_detail_melding_tijdlijn",
+    ),
+    path(
         "taak/<int:id>/delen/<str:signed_data>/",
         taak_detail_preview,
         name="taak_detail_preview",
@@ -148,9 +158,9 @@ urlpatterns = [
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
     path("navigeer/<str:lat>/<str:long>/", navigeer, name="navigeer"),
     path(
-        "part/taak-modal-handle/<int:id>/",
-        incident_modal_handle,
-        name="incident_modal_handle_part",
+        "taak/<int:id>/afhandelen/",
+        taak_afhandelen,
+        name="taak_afhandelen",
     ),
     # END partials
     # START beheer
@@ -171,6 +181,7 @@ urlpatterns = [
         GebruikerAanpassenView.as_view(),
         name="gebruiker_aanpassen",
     ),
+    path("onboarding/", OnboardingView.as_view(), name="onboarding"),
     path("beheer/context/", ContextLijstView.as_view(), name="context_lijst"),
     path(
         "beheer/context/aanmaken/",
@@ -262,6 +273,7 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path("select2/", include(select2_urls)),
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
     re_path(
         r"core-protected/media/",

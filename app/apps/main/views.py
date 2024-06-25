@@ -4,6 +4,7 @@ import logging
 import requests
 from apps.authenticatie.models import Gebruiker
 from apps.context.filters import FilterManager
+from apps.instellingen.models import Instelling
 from apps.main.forms import (
     KaartModusForm,
     SorteerFilterForm,
@@ -24,9 +25,13 @@ from apps.main.utils import (
 )
 from apps.meldingen.service import MeldingenService
 from apps.release_notes.models import ReleaseNote
-from apps.taken.models import Taak, TaakDeellink, Taakstatus, Taaktype
+from apps.services.pdok import PDOKService
+from apps.services.taakr import TaakRService
+from apps.taken.models import Taak, TaakDeellink
+from apps.taken.tasks import task_taak_status_voltooid
 from device_detector import DeviceDetector
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import (
     login_required,
     permission_required,
@@ -51,9 +56,17 @@ from django.http import (
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import View
-from rest_framework.reverse import reverse as drf_reverse
 
 logger = logging.getLogger(__name__)
+
+
+@login_required
+def wijken_en_buurten(request):
+    service = PDOKService()
+    response = service.get_buurten_middels_gemeentecode(
+        request.GET.get("gemeentecode", settings.WIJKEN_EN_BUURTEN_GEMEENTECODE)
+    )
+    return JsonResponse(response)
 
 
 def http_403(request):
@@ -110,7 +123,7 @@ def navigeer(request, lat, long):
 
 
 # Verander hier de instellingen voor de nieuwe homepagina.
-@login_required
+# @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
         return redirect(reverse("taken"), False)
@@ -142,14 +155,16 @@ def ui_settings_handler(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken(request):
-    MeldingenService().set_gebruiker(
-        gebruiker=request.user.serialized_instance(),
-    )
-    return render(
-        request,
-        "taken/taken.html",
-        {},
-    )
+    gebruiker = request.user
+    MeldingenService().set_gebruiker(gebruiker=gebruiker.serialized_instance())
+
+    if (
+        not gebruiker.profiel.onboarding_compleet
+        or gebruiker.profiel.wijken_or_taaktypes_empty
+    ) and gebruiker.profiel.context.template != "benc":  # Skip onboarding if B&C
+        return redirect(reverse("onboarding"), False)
+
+    return render(request, "taken/taken.html", {})
 
 
 @login_required
@@ -179,12 +194,11 @@ def taken_filter(request):
                 actieve_filters[filter_name] = new_value
         set_actieve_filters(request.user, actieve_filters)
 
-    filter_manager = FilterManager(taken, actieve_filters, foldout_states)
+    filter_manager = FilterManager(
+        taken, actieve_filters, foldout_states, profiel=request.user.profiel
+    )
 
     taken_gefilterd = filter_manager.filter_taken()
-
-    # request.session["taken_gefilterd"] = taken_gefilterd
-
     taken_aantal = taken_gefilterd.count()
     return render(
         request,
@@ -209,6 +223,9 @@ def taken_lijst(request):
     except Exception:
         pnt = Point(0, 0, srid=4326)
 
+    if request.GET.get("toon_alle_taken"):
+        request.session["toon_alle_taken"] = True
+
     sortering = get_sortering(request.user)
     sort_reverse = len(sortering.split("-")) > 1
     sortering = sortering.split("-")[0]
@@ -231,7 +248,7 @@ def taken_lijst(request):
         else []
     )
     actieve_filters = get_actieve_filters(request.user, filters)
-    filter_manager = FilterManager(taken, actieve_filters)
+    filter_manager = FilterManager(taken, actieve_filters, profiel=request.user.profiel)
     taken_gefilterd = filter_manager.filter_taken()
 
     # zoeken
@@ -266,6 +283,7 @@ def taken_lijst(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     taken_paginated = page_obj.object_list
+    taken_gefilterd_total = taken_gefilterd.count()
     if request.session.get("taken_gefilterd"):
         del request.session["taken_gefilterd"]
 
@@ -273,8 +291,10 @@ def taken_lijst(request):
         request,
         "taken/taken_lijst.html",
         {
+            "taken_gefilterd_total": taken_gefilterd_total,
             "taken": taken_paginated,
             "page_obj": page_obj,
+            "toon_alle_taken": request.session.get("toon_alle_taken", False),
         },
     )
 
@@ -333,7 +353,6 @@ def kaart_modus(request):
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
-    tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
     taakdeellinks = TaakDeellink.objects.filter(taak=taak)
@@ -343,12 +362,28 @@ def taak_detail(request, id):
         {
             "id": id,
             "taak": taak,
-            "tijdlijn_data": tijdlijn_data,
             "device_os": device.os_name().lower(),
             "taakdeellinks": taakdeellinks,
             "taakdeellinks_bezoekers": [
                 b for link in taakdeellinks for b in link.bezoekers
             ],
+        },
+    )
+
+
+@login_required
+@permission_required("authorisatie.taak_bekijken", raise_exception=True)
+def taak_detail_melding_tijdlijn(request, id):
+    taak = get_object_or_404(Taak, pk=id)
+    tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
+
+    return render(
+        request,
+        "taken/taak_detail_melding_tijdlijn.html",
+        {
+            "id": id,
+            "taak": taak,
+            "tijdlijn_data": tijdlijn_data,
         },
     )
 
@@ -524,109 +559,96 @@ def taak_toewijzing_intrekken(request, id):
 
 @login_required
 @permission_required("authorisatie.taak_afronden", raise_exception=True)
-def incident_modal_handle(request, id):
-    context = request.user.profiel.context
+def taak_afhandelen(request, id):
     resolutie = request.GET.get("resolutie", "opgelost")
     taak = get_object_or_404(Taak, pk=id)
-
-    # Alle taken voor deze melding
-    openstaande_taken_voor_melding = Taak.objects.select_related(
-        "melding",
-        "taakstatus",
-    ).filter(
-        melding__response_json__id=taak.melding.response_json.get("id"),
-        taakstatus__naam__in=Taakstatus.niet_voltooid_statussen(),
+    taaktypes = TaakRService().get_taaktypes(
+        params={
+            "taakapplicatie_taaktype_url": taak.taaktype.taaktype_url(request),
+        },
+        force_cache=True,
     )
+    volgende_taaktypes = []
+    actieve_vervolg_taken = []
+    if taak.taakstatus.naam == "voltooid":
+        messages.warning(request, "Deze taak is ondertussen al afgerond.")
+        return render(
+            request,
+            "incident/modal_handle.html",
+            {
+                "taak": taak,
+            },
+        )
 
-    # Alle taaktype ids voor deze melding
-    openstaande_taaktype_ids_voor_melding = list(
-        {
-            taaktype_id
-            for taaktype_id in openstaande_taken_voor_melding.values_list(
-                "taaktype__id", flat=True
+    if taaktypes:
+        openstaande_taaktype_urls_voor_melding = [
+            to.get("taaktype")
+            for to in taak.melding.response_json.get("taakopdrachten_voor_melding", [])
+            if to.get("status", {}).get("naam") == "nieuw"
+        ]
+        alle_volgende_taaktypes = [
+            (
+                TaakRService()
+                .get_taaktype_by_url(taaktype_url)
+                .get("taakapplicatie_taaktype_url"),
+                TaakRService().get_taaktype_by_url(taaktype_url).get("omschrijving"),
             )
-            .order_by("taaktype__id")
-            .distinct()
-        }
-    )
-
-    # Exclude alle taaktype ids voor vervolgtaken
-    volgende_taaktypes = taak.taaktype.volgende_taaktypes.all().exclude(
-        id__in=openstaande_taaktype_ids_voor_melding
-    )
+            for taaktype_url in taaktypes[0].get("volgende_taaktypes", [])
+        ]
+        volgende_taaktypes = [
+            taaktype
+            for taaktype in alle_volgende_taaktypes
+            if taaktype[0] not in openstaande_taaktype_urls_voor_melding
+        ]
+        actieve_vervolg_taken = [
+            taaktype
+            for taaktype in alle_volgende_taaktypes
+            if taaktype[0] in openstaande_taaktype_urls_voor_melding
+        ]
 
     form = TaakBehandelForm(
         volgende_taaktypes=volgende_taaktypes,
         initial={"resolutie": resolutie},
     )
 
-    # Alle andere actieve /openstaande taken voor deze melding
-    actieve_vervolg_taken = openstaande_taken_voor_melding.filter(
-        taaktype__in=context.taaktypes.all(),
-    ).exclude(
-        id=taak.id,
-    )
     if request.POST:
         form = TaakBehandelForm(
             request.POST,
+            request.FILES,
             volgende_taaktypes=volgende_taaktypes,
             initial={"resolutie": resolutie},
         )
         if form.is_valid():
-            # Afhandelen bijlagen
+            volgende_taaktypes_lookup = {
+                taaktype[0]: taaktype[1] for taaktype in volgende_taaktypes
+            }
+            vervolg_taaktypes = [
+                {
+                    "taaktype_url": taaktype_url,
+                    "omschrijving": volgende_taaktypes_lookup.get(taaktype_url),
+                }
+                for taaktype_url in form.cleaned_data.get("nieuwe_taak", [])
+            ]
+
             bijlagen = request.FILES.getlist("bijlagen", [])
-            bijlagen_base64 = []
+            bijlage_paded = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
+                bijlage_paded.append(file_name)
 
-            # Taak status aanpassen
-            taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
-                taakopdracht_url=taak.taakopdracht,
-                status="voltooid",
+            task_taak_status_voltooid.delay(
+                taak_id=taak.id,
+                gebruiker_email=request.user.email,
                 resolutie=form.cleaned_data.get("resolutie"),
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                bijlagen=bijlagen_base64,
-                gebruiker=request.user.email,
+                bijlage_paden=bijlage_paded,
+                vervolg_taaktypes=vervolg_taaktypes,
+                vervolg_taak_bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
             )
-            if taak_status_aanpassen_response.status_code != 200:
-                logger.error(
-                    f"incident_modal_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
-                )
-
-            # Aanmaken extra taken
-            if (
-                taak_status_aanpassen_response.status_code == 200
-                and form.cleaned_data.get("nieuwe_taak")
-            ):
-                taken = form.cleaned_data.get("nieuwe_taak", [])
-                for vervolg_taak in taken:
-                    taaktype = Taaktype.objects.filter(id=vervolg_taak).first()
-                    taaktype_url = (
-                        drf_reverse(
-                            "v1:taaktype-detail",
-                            kwargs={"uuid": taaktype.uuid},
-                            request=request,
-                        )
-                        if taaktype
-                        else None
-                    )
-
-                    if taaktype_url:
-                        taak_aanmaken_response = MeldingenService().taak_aanmaken(
-                            melding_uuid=taak.melding.response_json.get("uuid"),
-                            taaktype_url=taaktype_url,
-                            titel=taaktype.omschrijving,
-                            bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
-                            gebruiker=request.user.email,
-                        )
-                        if taak_aanmaken_response.status_code != 200:
-                            logger.error(
-                                f"incident_modal_handle taak_aanmaken: status code: {taak_aanmaken_response.status_code}, taak id: {id}, text: {taak_aanmaken_response.text}"
-                            )
             return redirect("taken")
         else:
-            logger.error(f"incident_modal_handle: for errors: {form.errors}")
+            logger.error(f"taak_afhandelen: for errors: {form.errors}")
+
     return render(
         request,
         "incident/modal_handle.html",
@@ -647,7 +669,11 @@ def config(request):
 
 
 def _meldingen_bestand(request, modified_path):
-    url = f"{settings.MELDINGEN_URL}{modified_path}"
+    instelling = Instelling.acieve_instelling()
+    MELDINGEN_URL = (
+        settings.MELDINGEN_URL if not instelling else instelling.mor_core_basis_url
+    )
+    url = f"{MELDINGEN_URL}{modified_path}"
     headers = {"Authorization": f"Token {MeldingenService().haal_token()}"}
     response = requests.get(url, stream=True, headers=headers)
     return StreamingHttpResponse(

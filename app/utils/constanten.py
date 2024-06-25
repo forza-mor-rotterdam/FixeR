@@ -82,7 +82,7 @@ MSB_WIJKEN = [
             {"code": "20", "omschrijving": "Delfshaven"},
             {"code": "25", "omschrijving": "Middelland"},
             {"code": "24", "omschrijving": "Nieuwe Westen"},
-            {"code": "27", "omschrijving": "Oud Mathenesse"},
+            {"code": "27", "omschrijving": "Oud-Mathenesse"},
             {"code": "29", "omschrijving": "Schiemond"},
             {"code": "23", "omschrijving": "Spangen"},
             {"code": "22", "omschrijving": "Tussendijken"},
@@ -158,8 +158,8 @@ MSB_WIJKEN = [
     },
     {
         "code": "19",
-        "omschrijving": "Nieuw Mathenesse",
-        "buurten": [{"code": "26", "omschrijving": "Nieuw Mathenesse"}],
+        "omschrijving": "Nieuw-Mathenesse",
+        "buurten": [{"code": "26", "omschrijving": "Nieuw-Mathenesse"}],
     },
     {
         "code": "5",
@@ -254,4 +254,64 @@ MSB_WIJKEN = [
             {"code": "98", "omschrijving": "Waalhaven Zuid"},
         ],
     },
+]
+
+# "wijken": [
+#     # noord
+#     "Rotterdam Centrum",
+#     "Delfshaven",
+#     "Nieuw-Mathenesse",
+#     "Noord",
+#     "Hillegersberg-Schiebroek",
+#     "Overschie",
+#     "Kralingen-Crooswijk",
+#     "Prins Alexander",
+#     "Spaanse Polder",
+#     "Rotterdam-Noord-West",
+#     "Rivium",
+#     # zuid
+#     "Feijenoord",
+#     "IJsselmonde",
+#     "Charlois",
+#     "Hoogvliet",
+#     "Pernis",
+#     "Rozenburg",
+#     "Hoek van Holland",
+#     "Botlek-Europoort-Maasvlakte",
+#     "Vondelingenplaat",
+#     "Waalhaven-Eemhaven",
+# ]
+
+PDOK_WIJKEN = [
+    # Noord
+    {"wijkcode": "WK059903", "wijknaam": "Delfshaven", "stadsdeel": "Noord"},
+    {
+        "wijkcode": "WK059906",
+        "wijknaam": "Hillegersberg-Schiebroek",
+        "stadsdeel": "Noord",
+    },
+    {"wijkcode": "WK059908", "wijknaam": "Kralingen-Crooswijk", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059905", "wijknaam": "Noord", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059919", "wijknaam": "Nieuw-Mathenesse", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059904", "wijknaam": "Overschie", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059925", "wijknaam": "Rivium", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059901", "wijknaam": "Rotterdam Centrum", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059924", "wijknaam": "Rotterdam-Noord-West", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059914", "wijknaam": "Prins Alexander", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059918", "wijknaam": "Spaanse Polder", "stadsdeel": "Noord"},
+    # Zuid
+    {
+        "wijkcode": "WK059923",
+        "wijknaam": "Botlek-Europoort-Maasvlakte",
+        "stadsdeel": "Zuid",
+    },
+    {"wijkcode": "WK059915", "wijknaam": "Charlois", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059910", "wijknaam": "Feijenoord", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059917", "wijknaam": "Hoek van Holland", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059916", "wijknaam": "Hoogvliet", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059912", "wijknaam": "IJsselmonde", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059913", "wijknaam": "Pernis", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059927", "wijknaam": "Rozenburg", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059922", "wijknaam": "Vondelingenplaat", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059921", "wijknaam": "Waalhaven-Eemhaven", "stadsdeel": "Zuid"},
 ]
