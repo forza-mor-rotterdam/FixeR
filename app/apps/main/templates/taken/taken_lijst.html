@@ -2,14 +2,11 @@
 {% load json_encode from main_tags %}
 {% load context_template from context_tags %}
 <turbo-frame id="taken_lijst">
-<div class="list__incidents__scroll-wrapper{% if taken_gefilterd_total > 100 or taken_gefilterd_total == 0 %} hide-list-items {% endif %}"
+<div class="list__incidents__scroll-wrapper"
      data-incidentlist-target="taakItemLijst"
      data-taken-count="{{ page_obj.paginator.count }}">
     {% if taken_gefilterd_total %}
-        {% for taak in taken %}
-            {% include "taken/taak_lijst_item.html" %}
-        {% endfor %}
-        {% if taken_gefilterd_total > 100 %}
+        {% if taken_gefilterd_total > 100 and not toon_alle_taken %}
             <div class="container__message">
                 <h2>Meer dan 100 taken?!</h2>
                 <div class="alert">
@@ -27,13 +24,18 @@
                     </div>
                 </div>
                 <button class="btn btn-action" data-action="main#showFilters">Pas je filters aan</button>
-                <button class="btn btn-tertiary" data-action="incidentlist#showTaken">Toon toch de hele lijst</button>
+                <a class="btn btn-tertiary"
+                   href="{% url 'taken_lijst' %}?toon_alle_taken=true">Toon toch de hele lijst</a>
                 <p class="center">
                     Heb je FixeR nog niet ingesteld?
                     <br>
                     <a href="{% url 'onboarding' %}" class="" data-turbo-frame="taak_basis">Stel hier je profiel in</a>
                 </p>
             </div>
+        {% else %}
+            {% for taak in taken %}
+                {% include "taken/taak_lijst_item.html" %}
+            {% endfor %}
         {% endif %}
     {% else %}
         <div class="container__message">
@@ -61,5 +63,7 @@
         </div>
     {% endif %}
 </div>
-{% include "snippets/paginator.html" with page_obj=page_obj %}
+{% if toon_alle_taken %}
+    {% include "snippets/paginator.html" with page_obj=page_obj %}
+{% endif %}
 </turbo-frame>

@@ -143,20 +143,6 @@
         flex-direction: column;
         justify-content: safe flex-end;
         border-top: 1px solid $gray-tint04;
-
-        .container__message {
-            display: none;
-        }
-
-        &.hide-list-items {
-            .list-item {
-                display: none;
-            }
-
-            > .container__message {
-                display: block;
-            }
-        }
     }
     .container__pagination + .list-item {
         border-top: 1px solid $gray-tint04;

@@ -199,10 +199,6 @@ def taken_filter(request):
     )
 
     taken_gefilterd = filter_manager.filter_taken()
-    print(f"=== Actieve filters: {actieve_filters} ===")
-    print(f"Filter manager filters: {filter_manager.filters()}")
-    # request.session["taken_gefilterd"] = taken_gefilterd
-
     taken_aantal = taken_gefilterd.count()
     return render(
         request,
@@ -226,6 +222,9 @@ def taken_lijst(request):
         )
     except Exception:
         pnt = Point(0, 0, srid=4326)
+
+    if request.GET.get("toon_alle_taken"):
+        request.session["toon_alle_taken"] = True
 
     sortering = get_sortering(request.user)
     sort_reverse = len(sortering.split("-")) > 1
@@ -295,6 +294,7 @@ def taken_lijst(request):
             "taken_gefilterd_total": taken_gefilterd_total,
             "taken": taken_paginated,
             "page_obj": page_obj,
+            "toon_alle_taken": request.session.get("toon_alle_taken", False),
         },
     )
 
