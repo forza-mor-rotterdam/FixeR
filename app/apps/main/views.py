@@ -565,7 +565,6 @@ def taak_afhandelen(request, id):
     taaktypes = TaakRService().get_taaktypes(
         params={
             "taakapplicatie_taaktype_url": taak.taaktype.taaktype_url(request),
-            "actief": True,
         },
         force_cache=True,
     )
@@ -579,11 +578,6 @@ def taak_afhandelen(request, id):
             {
                 "taak": taak,
             },
-        )
-    if not taaktypes:
-        messages.error(
-            request,
-            f"Vervolg taaktypes voor taaktype '{taak.taaktype.omschrijving}' konden niet worden opgehaald.",
         )
 
     if taaktypes:
