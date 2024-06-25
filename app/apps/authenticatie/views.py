@@ -198,6 +198,7 @@ class OnboardingView(SessionWizardView):
         return super().dispatch(*args, **kwargs)
 
     def done(self, form_list, **kwargs):
+        self.request.session["toon_alle_taken"] = False
         pdok_service = PDOKService()
         profiel_filters_base_key = "nieuw"
         gebruiker = self.request.user
@@ -286,8 +287,8 @@ class OnboardingView(SessionWizardView):
         taaktypes_initial = {}
         for taaktype in profiel.taaktypes.all():
             for afdeling in self.afdelingen_data:
-                if str(taaktype.uuid) in [
-                    tt["taakapplicatie_taaktype_uuid"]
+                if taaktype.taaktype_url(self.request) in [
+                    tt["taakapplicatie_taaktype_url"]
                     for tt in afdeling.get("taaktypes_voor_afdelingen", [])
                 ]:
                     field_name = f"taaktypes_{afdeling['naam']}"

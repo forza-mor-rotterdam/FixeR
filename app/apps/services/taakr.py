@@ -17,9 +17,7 @@ class TaakRService(BasisService):
         )
         super().__init__(*args, **kwargs)
 
-    def get_afdelingen(
-        self, use_cache=True, taakapplicatie_basis_urls=[], taaktype_actief=True
-    ) -> list:
+    def get_afdelingen(self, use_cache=True, taakapplicatie_basis_urls=[]) -> list:
         alle_afdelingen = []
         next_page = f"{self._base_url}/api/v1/afdeling"
         while next_page:
@@ -27,7 +25,6 @@ class TaakRService(BasisService):
                 next_page,
                 params={
                     "taakapplicatie_basis_url": taakapplicatie_basis_urls,
-                    "taaktype_actief": taaktype_actief,
                 },
                 cache_timeout=0,  # Back to 60*60
                 raw_response=False,

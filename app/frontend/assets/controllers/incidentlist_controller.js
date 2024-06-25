@@ -36,16 +36,6 @@ export default class extends Controller {
     screen.orientation.addEventListener('change', () => {
       window.location.reload()
     })
-    console.log(this)
-    console.log(this.element)
-    console.log(sessionStorage.getItem('toon_taken_lijst'))
-
-    this.waitForElm('.list__incidents__scroll-wrapper').then(() => {
-      console.log('Element is ready')
-      if (sessionStorage.getItem('toon_taken_lijst') === 'true') {
-        this.showTaken()
-      }
-    })
   }
 
   waitForElm(selector) {
@@ -67,18 +57,6 @@ export default class extends Controller {
         subtree: true,
       })
     })
-  }
-
-  showTaken() {
-    console.log('show taken', this.element.querySelector('.list__incidents'))
-    sessionStorage.setItem('toon_taken_lijst', true)
-    this.element
-      .querySelector('.list__incidents__scroll-wrapper')
-      .classList.remove('hide-list-items')
-
-    // if (this.hasTaakItemLijstTarget) {
-    //   this.taakItemLijstTarget.classList.remove('hide-list-items')
-    // }
   }
 
   addEventListeners() {
