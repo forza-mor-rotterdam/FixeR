@@ -1,5 +1,7 @@
 {% load replace_comma_by_dot from main_tags %}
+{% load taakopdracht get_bijlagen get_taakgebeurtenissen from melding_tags %}
 {% load l10n %}
+{% get_taakgebeurtenissen taak.melding.response_json taak.taakopdracht as taakgebeurtenissen %}
 <div>
     <h2 class="h5">
         {{ taak.adres }}
@@ -11,6 +13,9 @@
     {% if taak.taak_zoek_data.postcode %}<strong>{{ taak.taak_zoek_data.postcode }}</strong>{% endif %}
     <div>
         <span class="incident__category">{{ taak.titel }}</span>
+        {% if taakgebeurtenissen.0.omschrijving_intern and taakgebeurtenissen.0.omschrijving_intern|lower != "taak aangemaakt" %}
+            <span class="sign--info">I</span>
+        {% endif %}
     </div>
     <div class="incident__moment">
         <span data-taak-target="incidentDate">
