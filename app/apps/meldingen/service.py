@@ -210,7 +210,7 @@ class MeldingenService:
         return self.do_request(
             f"{self._api_path}/gebruiker/{gebruiker_email}/",
             method="get",
-            cache_timeout=120,
+            cache_timeout=60 * 60 * 24,
         )
 
     def set_gebruiker(self, gebruiker):

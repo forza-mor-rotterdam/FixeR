@@ -27,8 +27,9 @@ from apps.meldingen.service import MeldingenService
 from apps.release_notes.models import ReleaseNote
 from apps.services.pdok import PDOKService
 from apps.services.taakr import TaakRService
-from apps.taken.models import Taak, TaakDeellink
+from apps.taken.models import Taak, TaakDeellink, Taakstatus, Taaktype
 from apps.taken.tasks import task_taak_status_voltooid
+
 from device_detector import DeviceDetector
 from django.conf import settings
 from django.contrib import messages

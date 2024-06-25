@@ -53,20 +53,20 @@ class OnderwerpenService(BasisService):
 
     def get_onderwerp(self, url) -> dict:
         try:
-            return self.do_request(url, cache_timeout=60 * 10, raw_response=False)
+            return self.do_request(url, cache_timeout=60 * 60 * 24, raw_response=False)
         except OnderwerpenService.BasisUrlFout:
             return {"name": "Onderwerp onbekend"}
 
     def get_groep(self, group_uuid) -> dict:
         return self.do_request(
             f"{self._base_url}{self._api_path}/group/{group_uuid}",
-            cache_timeout=60 * 10,
+            cache_timeout=60 * 60 * 24,
             raw_response=False,
         )
 
     def get_onderwerpen(self) -> dict:
         return self.do_request(
             f"{self._base_url}{self._api_path}/category?limit=1000",
-            cache_timeout=60 * 10,
+            cache_timeout=60 * 60 * 24,
             raw_response=False,
         )
