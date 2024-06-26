@@ -99,7 +99,7 @@ def informatie(request):
 
 
 def navigeer(request, lat, long):
-    ua = request.META.get("HTTP_USER_AGENT")
+    ua = request.META.get("HTTP_USER_AGENT", "")
     device = DeviceDetector(ua).parse()
     return render(
         request,
@@ -353,7 +353,7 @@ def kaart_modus(request):
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
-    ua = request.META.get("HTTP_USER_AGENT")
+    ua = request.META.get("HTTP_USER_AGENT", "")
     device = DeviceDetector(ua).parse()
     taakdeellinks = TaakDeellink.objects.filter(taak=taak)
     return render(
@@ -409,7 +409,7 @@ def taak_delen(request, id):
         return JsonResponse({})
     """
 
-    ua = request.META.get("HTTP_USER_AGENT")
+    ua = request.META.get("HTTP_USER_AGENT", "")
     device = DeviceDetector(ua).parse()
     whatsapp_url = "whatsapp://" if device.is_mobile() else settings.WHATSAPP_URL
 
@@ -457,7 +457,7 @@ def taak_detail_preview(request, id, signed_data):
         )
         taak_gedeeld.save()
 
-    ua = request.META.get("HTTP_USER_AGENT")
+    ua = request.META.get("HTTP_USER_AGENT", "")
     device = DeviceDetector(ua).parse()
     return render(
         request,
