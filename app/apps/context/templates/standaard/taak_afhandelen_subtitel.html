@@ -1,4 +1,5 @@
 {% load l10n %}
 <strong>{{ taak.adres }}</strong>
 <br />
-{{ subtitel }}
+{% comment %} TODO Check B&C, voorheen werd parameter 'subtitel' meegegeven en hier getoond {% endcomment %}
+{% if taak.titel %}{{ taak.titel }}{% endif %}

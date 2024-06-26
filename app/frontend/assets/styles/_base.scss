@@ -553,22 +553,6 @@ body.no-js {
     pointer-events: none;
 }
 
-.display-flex {
-    display: flex;
-    justify-content: space-between;
-
-    &--2cols-md {
-        @media (min-width: map-get($grid-breakpoints, md)) {
-            display: flex;
-            gap: $alert-padding-x;
-            > div {
-                flex: 0 0 50%;
-                max-width: calc(50% - $alert-padding-x/2);
-            }
-        }
-    }
-}
-
 .no-padding {
     padding: 0 !important;
 }
@@ -687,5 +671,32 @@ body.no-js {
 
     div:first-child {
         flex: 1;
+    }
+}
+
+.overflow__activate {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 1.25em;
+    cursor: pointer;
+}
+
+.overflow {
+    position: relative;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    width: 100%;
+    cursor: pointer;
+
+    &:focus,
+    &:focus-within {
+        -webkit-line-clamp: unset;
+
+        + .overflow__activate {
+            display: block;
+        }
     }
 }

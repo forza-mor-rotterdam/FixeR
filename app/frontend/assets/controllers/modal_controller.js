@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['title', 'subTitle', 'turboFrame', 'closeModalElement', 'taakItem']
+  static targets = ['title', 'subTitle', 'infoExtra', 'turboFrame', 'closeModalElement', 'taakItem']
 
   initialize() {
     document.body.classList.remove('show-modal')
@@ -52,6 +52,13 @@ export default class extends Controller {
         self.subTitleTarget.innerHTML = params.subTitle
       } else {
         self.subTitleTarget.style.display = 'none'
+      }
+    }
+    if (self.hasInfoExtraTarget) {
+      if (params.infoExtra) {
+        self.infoExtraTarget.innerHTML = params.infoExtra
+      } else {
+        self.infoExtraTarget.style.display = 'none'
       }
     }
     let modal = this.element.querySelector('.modal')
