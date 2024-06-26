@@ -673,3 +673,29 @@ body.no-js {
         flex: 1;
     }
 }
+
+.overflow__activate {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 1.25em;
+    cursor: pointer;
+}
+
+.overflow {
+    position: relative;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    width: 100%;
+
+    &:focus,
+    &:focus-within {
+        -webkit-line-clamp: unset;
+
+        + .overflow__activate {
+            display: block;
+        }
+    }
+}
