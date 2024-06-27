@@ -572,6 +572,9 @@ body.no-js {
 .margin-bottom {
     margin-bottom: 1em !important;
 }
+.margin-top {
+    margin-top: 1em !important;
+}
 
 .margin-vertical {
     margin-top: 1em !important;
@@ -674,29 +677,34 @@ body.no-js {
     }
 }
 
-.overflow__activate {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 1.25em;
-    cursor: pointer;
-}
-
-.overflow {
+.container__overflow {
     position: relative;
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: 2;
+    max-height: 2.5em;
     -webkit-box-orient: vertical;
     width: 100%;
-    cursor: pointer;
-
-    &:focus,
-    &:focus-within {
-        -webkit-line-clamp: unset;
-
-        + .overflow__activate {
+}
+.has-overflow {
+    .wrapper {
+        .toggle {
             display: block;
+            text-align: right;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin: 0.5em 0;
+        }
+
+        &.show {
+            .container__overflow {
+                overflow: auto;
+                -webkit-line-clamp: unset;
+                max-height: 20em;
+                transition: max-height 0.25s ease-in-out;
+            }
         }
     }
 }
