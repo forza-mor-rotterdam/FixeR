@@ -36,7 +36,7 @@
     }
 }
 
-.badge--unread-count {
+.badge-count {
     display: inline-block;
     height: 25px;
     width: 25px;
@@ -74,6 +74,9 @@
         text-decoration: none;
         display: inline-block;
         margin-left: 6px;
+    }
+    &--blue {
+        background-color: $blue-tint01;
     }
 }
 
