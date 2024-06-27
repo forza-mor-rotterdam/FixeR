@@ -3,12 +3,13 @@
     padding: 1.25em 1.25em;
     margin-bottom: 1rem;
     border: 1px solid transparent;
-    border-radius: 0;
+    border-radius: 8px;
     display: flex;
-    font-size: 1em;
+    font-size: 0.889em;
 
     p {
         margin: 0;
+        font-size: 0.889em;
     }
     a {
         color: inherit;
@@ -19,7 +20,15 @@
     }
 
     &--info {
-        background-color: rgba(23, 145, 212, 0.1);
+        background-color: $blue-tint02;
+        .badge-count {
+            background-color: $blue-tint01;
+        }
+        strong {
+            display: block;
+            color: $blue-tint01;
+            margin-bottom: 0.25em;
+        }
     }
     &--warning {
         background-color: rgba(237, 181, 0, 0.1);
@@ -28,6 +37,17 @@
     &--confirmation {
         background-color: rgba(230, 243, 233, 1);
         border-color: rgba(172, 214, 183, 1);
+    }
+
+    .badge-count {
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        transform: translateY(-2px) !important;
+        display: inline-block;
+        margin-right: 0.5em;
+        right: auto !important;
+        position: relative !important;
     }
 }
 
