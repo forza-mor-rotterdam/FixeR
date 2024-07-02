@@ -223,7 +223,11 @@ def taken_filter(request):
     )
     # zoeken
     if request.session.get("q"):
-        q = [qp.strip() for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        q = [
+            qp.strip()
+            for qp in request.session.get("q").split(" ")
+            if len(qp.strip(" ")) > 3
+        ]
         q_list = [Q(taak_zoek_data__bron_signaal_ids__icontains=qp) for qp in q]
         taken_gefilterd = taken_gefilterd.annotate(
             zoek_score=TrigramSimilarity("adres", str(request.session.get("q")))
@@ -301,7 +305,11 @@ def taken_lijst(request):
     )
     # zoeken
     if request.session.get("q"):
-        q = [qp.strip() for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        q = [
+            qp.strip()
+            for qp in request.session.get("q").split(" ")
+            if len(qp.strip(" ")) > 3
+        ]
         q_list = [Q(taak_zoek_data__bron_signaal_ids__icontains=qp) for qp in q]
         taken_gefilterd = taken_gefilterd.annotate(
             zoek_score=TrigramSimilarity("adres", str(request.session.get("q")))
