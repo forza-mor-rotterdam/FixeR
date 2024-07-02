@@ -1,5 +1,7 @@
 import json
 import logging
+import operator
+from functools import reduce
 
 import requests
 from apps.authenticatie.models import Gebruiker
@@ -40,13 +42,14 @@ from django.contrib.auth.decorators import (
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.contrib.postgres.search import TrigramSimilarity
 from django.core import signing
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import Q, Value
-from django.db.models.functions import Concat
+from django.db.models import Case, F, Q, Value, When
+from django.db.models.functions import Cast, Concat
 from django.http import (
     HttpResponse,
     HttpResponsePermanentRedirect,
@@ -199,6 +202,33 @@ def taken_filter(request):
     )
 
     taken_gefilterd = filter_manager.filter_taken()
+
+    taken_gefilterd = taken_gefilterd.annotate(
+        adres=Concat(
+            "taak_zoek_data__straatnaam",
+            Value(" "),
+            Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
+            "taak_zoek_data__huisletter",
+            Case(
+                When(
+                    Q(taak_zoek_data__toevoeging__isnull=False)
+                    & ~Q(taak_zoek_data__toevoeging=""),
+                    then=Concat(
+                        Value("-"),
+                        "taak_zoek_data__toevoeging",
+                    ),
+                )
+            ),
+        )
+    )
+    # zoeken
+    if request.session.get("q"):
+        q = [qp.strip() for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        q_list = [Q(taak_zoek_data__bron_signaal_ids__icontains=qp) for qp in q]
+        taken_gefilterd = taken_gefilterd.annotate(
+            zoek_score=TrigramSimilarity("adres", str(request.session.get("q")))
+        ).filter(Q(zoek_score__gt=0.3) | reduce(operator.or_, q_list))
+
     taken_aantal = taken_gefilterd.count()
     return render(
         request,
@@ -231,7 +261,7 @@ def taken_lijst(request):
     sortering = sortering.split("-")[0]
     sorting_fields = {
         "Postcode": "taak_zoek_data__postcode",
-        "Adres": "zoekadres",
+        "Adres": "adres",
         "Datum": "taakstatus__aangemaakt_op",
         "Afstand": "afstand",
     }
@@ -251,24 +281,32 @@ def taken_lijst(request):
     filter_manager = FilterManager(taken, actieve_filters, profiel=request.user.profiel)
     taken_gefilterd = filter_manager.filter_taken()
 
+    taken_gefilterd = taken_gefilterd.annotate(
+        adres=Concat(
+            "taak_zoek_data__straatnaam",
+            Value(" "),
+            Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
+            "taak_zoek_data__huisletter",
+            Case(
+                When(
+                    Q(taak_zoek_data__toevoeging__isnull=False)
+                    & ~Q(taak_zoek_data__toevoeging=""),
+                    then=Concat(
+                        Value("-"),
+                        "taak_zoek_data__toevoeging",
+                    ),
+                )
+            ),
+        )
+    )
     # zoeken
     if request.session.get("q"):
-        taken_gefilterd = taken_gefilterd.filter(
-            Q(taak_zoek_data__straatnaam__iregex=request.session.get("q"))
-            | Q(taak_zoek_data__huisnummer__iregex=request.session.get("q"))
-            | Q(taak_zoek_data__bron_signaal_ids__icontains=request.session.get("q"))
-        )
-
-    # sorteren
-    if sortering == "Adres":
+        q = [qp.strip() for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        q_list = [Q(taak_zoek_data__bron_signaal_ids__icontains=qp) for qp in q]
         taken_gefilterd = taken_gefilterd.annotate(
-            zoekadres=Concat(
-                "taak_zoek_data__straatnaam",
-                Value(" "),
-                "taak_zoek_data__huisnummer",
-                output_field=models.CharField(),
-            )
-        )
+            zoek_score=TrigramSimilarity("adres", str(request.session.get("q")))
+        ).filter(Q(zoek_score__gt=0.3) | reduce(operator.or_, q_list))
+
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(
             afstand=Distance("taak_zoek_data__geometrie", pnt)
