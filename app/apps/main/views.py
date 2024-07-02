@@ -229,9 +229,10 @@ def taken_filter(request):
             if len(qp.strip(" ")) > 3
         ]
         q_list = [Q(taak_zoek_data__bron_signaal_ids__icontains=qp) for qp in q]
+        q_list.append(Q(zoek_score__gt=0.3))
         taken_gefilterd = taken_gefilterd.annotate(
             zoek_score=TrigramSimilarity("adres", str(request.session.get("q")))
-        ).filter(Q(zoek_score__gt=0.3) | reduce(operator.or_, q_list))
+        ).filter(reduce(operator.or_, q_list))
 
     taken_aantal = taken_gefilterd.count()
     return render(
@@ -311,9 +312,10 @@ def taken_lijst(request):
             if len(qp.strip(" ")) > 3
         ]
         q_list = [Q(taak_zoek_data__bron_signaal_ids__icontains=qp) for qp in q]
+        q_list.append(Q(zoek_score__gt=0.3))
         taken_gefilterd = taken_gefilterd.annotate(
             zoek_score=TrigramSimilarity("adres", str(request.session.get("q")))
-        ).filter(Q(zoek_score__gt=0.3) | reduce(operator.or_, q_list))
+        ).filter(reduce(operator.or_, q_list))
 
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(
