@@ -17,9 +17,16 @@
             {% if taakgebeurtenissen.0.gebruiker %}
                 {% with gebruiker=taakgebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email %}
                     <p class='margin-top'>
-                        <b>{{ gebruiker.rol }}</b>
+                        {% comment %} Haal rol en telefoonnummer uit gebruiker-object
+                        <b>{{ gebruiker.rol }}</b> {% endcomment %}
                         <br />
                         <a href='mailto:{{ gebruiker.email }}'>{{ gebruiker.full_name }}</a>
+                        <br />
+                        {% comment %} {% if gebruiker.telefoonnummer %}
+                            <a href='tel:{{ gebruiker.telefoonnummer }}' target='_blank' class='link link--phone'>
+                                {{ gebruiker.telefoonnummer }}
+                            </a>
+                        {% endif %} {% endcomment %}
                     </p>
                 {% endwith %}
             {% endif %}
