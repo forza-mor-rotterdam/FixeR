@@ -42,7 +42,6 @@ from django.contrib.auth.decorators import (
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
-from django.contrib.postgres.search import TrigramSimilarity
 from django.core import signing
 from django.core.cache import cache
 from django.core.files.storage import default_storage
@@ -204,9 +203,7 @@ def taken_filter(request):
     taken_gefilterd = filter_manager.filter_taken()
 
     taken_gefilterd = taken_gefilterd.annotate(
-        adres=Concat(
-            "taak_zoek_data__straatnaam",
-            Value(" "),
+        huisnr_huisltr_toev=Concat(
             Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
             "taak_zoek_data__huisletter",
             Case(
@@ -221,18 +218,26 @@ def taken_filter(request):
             ),
         )
     )
+    taken_gefilterd = taken_gefilterd.annotate(
+        adres=Concat(
+            "taak_zoek_data__straatnaam",
+            Value(" "),
+            "huisnr_huisltr_toev",
+        )
+    )
     # zoeken
     if request.session.get("q"):
-        q = [
-            qp.strip()
-            for qp in request.session.get("q").split(" ")
-            if len(qp.strip(" ")) > 3
+        q = [qp.strip() for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        q_list = [
+            Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+            | Q(taak_zoek_data__straatnaam__iregex=qp)
+            | Q(taak_zoek_data__huisnummer__iregex=qp)
+            if len(qp) > 3
+            else Q(taak_zoek_data__straatnaam__iregex=qp)
+            | Q(taak_zoek_data__huisnummer__iregex=qp)
+            for qp in q
         ]
-        q_list = [Q(taak_zoek_data__bron_signaal_ids__icontains=qp) for qp in q]
-        q_list.append(Q(zoek_score__gt=0.3))
-        taken_gefilterd = taken_gefilterd.annotate(
-            zoek_score=TrigramSimilarity("adres", str(request.session.get("q")))
-        ).filter(reduce(operator.or_, q_list))
+        taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     taken_aantal = taken_gefilterd.count()
     return render(
@@ -287,9 +292,7 @@ def taken_lijst(request):
     taken_gefilterd = filter_manager.filter_taken()
 
     taken_gefilterd = taken_gefilterd.annotate(
-        adres=Concat(
-            "taak_zoek_data__straatnaam",
-            Value(" "),
+        huisnr_huisltr_toev=Concat(
             Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
             "taak_zoek_data__huisletter",
             Case(
@@ -304,18 +307,26 @@ def taken_lijst(request):
             ),
         )
     )
+    taken_gefilterd = taken_gefilterd.annotate(
+        adres=Concat(
+            "taak_zoek_data__straatnaam",
+            Value(" "),
+            "huisnr_huisltr_toev",
+        )
+    )
     # zoeken
     if request.session.get("q"):
-        q = [
-            qp.strip()
-            for qp in request.session.get("q").split(" ")
-            if len(qp.strip(" ")) > 3
+        q = [qp.strip() for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        q_list = [
+            Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+            | Q(taak_zoek_data__straatnaam__iregex=qp)
+            | Q(taak_zoek_data__huisnummer__iregex=qp)
+            if len(qp) > 3
+            else Q(taak_zoek_data__straatnaam__iregex=qp)
+            | Q(taak_zoek_data__huisnummer__iregex=qp)
+            for qp in q
         ]
-        q_list = [Q(taak_zoek_data__bron_signaal_ids__icontains=qp) for qp in q]
-        q_list.append(Q(zoek_score__gt=0.3))
-        taken_gefilterd = taken_gefilterd.annotate(
-            zoek_score=TrigramSimilarity("adres", str(request.session.get("q")))
-        ).filter(reduce(operator.or_, q_list))
+        taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(
