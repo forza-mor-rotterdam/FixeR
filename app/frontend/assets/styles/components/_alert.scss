@@ -61,9 +61,10 @@
     }
 
     .badge-count {
-        width: 1em;
-        height: 1em;
-        line-height: 1em;
+        font-size: 0.75em !important;
+        width: 1.35em !important;
+        height: 1.35em !important;
+        line-height: 1.35em !important;
         transform: translateY(-2px) !important;
         display: inline-block;
         margin-right: 0.5em;
