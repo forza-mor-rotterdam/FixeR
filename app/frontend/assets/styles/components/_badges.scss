@@ -49,6 +49,11 @@
     background-color: $red-tint02;
     transform: translateY(-50%);
 
+    &.badge-count--info {
+        background-color: $blue-tint01;
+        color: $white;
+    }
+
     .btn-togglemenu &,
     .list-item &,
     .leaflet-popup-content-wrapper & {
@@ -63,9 +68,13 @@
     }
 
     .list-item & {
-        right: 0;
-        top: 0;
+        right: 2px;
+        top: 2px;
         transform: none;
+        width: 1.35em;
+        height: 1.35em;
+        line-height: 1.35em;
+        font-size: 0.75em;
     }
     .leaflet-popup-content-wrapper & {
         position: relative;
@@ -74,6 +83,7 @@
         text-decoration: none;
         display: inline-block;
         margin-left: 6px;
+        vertical-align: text-bottom;
     }
     &--blue {
         background-color: $blue-tint01;

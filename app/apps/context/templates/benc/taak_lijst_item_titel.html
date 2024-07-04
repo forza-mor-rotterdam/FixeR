@@ -14,7 +14,7 @@
             {% if taak.taakstatus.naam %}
                 <span class="badge {% if taak.taakstatus.naam == 'nieuw' or taak.taakstatus.naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span>
             {% endif %}
-            {% if hasRemark %}<span class="badge-count">1</span>{% endif %}
+            {% if hasRemark %}<span class="badge-count badge-count--info">i</span>{% endif %}
         </h2>
         <div>
             <span class="incident__category">{{ taak.titel }}</span>

@@ -206,7 +206,9 @@ export default class MapController extends Controller {
         })
 
         const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
-        const spanRemark = coord.hasRemark ? `<span class="badge-count">1</span>` : ''
+        const spanRemark = coord.hasRemark
+          ? `<span class="badge-count badge-count--info">i</span>`
+          : ''
         const anchorDetail = `<a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">Details ${spanRemark}</a>`
         const anchorNavigeer = `<a href="#" data-kaart-title-param="Navigeren" data-kaart-url-param="/navigeer/${lat}/${long}" data-kaart-id-param="navigeer" data-action="kaart#makeRoute">Navigeren</a>`
         const divDetailNavigeer = `<div class="">${anchorDetail} ${anchorNavigeer}</div>`
