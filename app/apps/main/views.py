@@ -1,6 +1,7 @@
 import json
 import logging
 import operator
+import re
 from functools import reduce
 
 import requests
@@ -227,17 +228,18 @@ def taken_filter(request):
     )
     # zoeken
     if request.session.get("q"):
-        q = [qp.strip() for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-        q_list = [
-            Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-            | Q(taak_zoek_data__straatnaam__iregex=qp)
-            | Q(taak_zoek_data__huisnummer__iregex=qp)
-            if len(qp) > 3
-            else Q(taak_zoek_data__straatnaam__iregex=qp)
-            | Q(taak_zoek_data__huisnummer__iregex=qp)
-            for qp in q
-        ]
-        taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
+        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        if q:
+            q_list = [
+                Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                if len(qp) > 3
+                else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                for qp in q
+            ]
+            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     taken_aantal = taken_gefilterd.count()
     return render(
@@ -316,17 +318,18 @@ def taken_lijst(request):
     )
     # zoeken
     if request.session.get("q"):
-        q = [qp.strip() for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-        q_list = [
-            Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-            | Q(taak_zoek_data__straatnaam__iregex=qp)
-            | Q(taak_zoek_data__huisnummer__iregex=qp)
-            if len(qp) > 3
-            else Q(taak_zoek_data__straatnaam__iregex=qp)
-            | Q(taak_zoek_data__huisnummer__iregex=qp)
-            for qp in q
-        ]
-        taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
+        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        if q:
+            q_list = [
+                Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                if len(qp) > 3
+                else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                for qp in q
+            ]
+            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(

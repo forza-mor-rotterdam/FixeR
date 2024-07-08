@@ -93,6 +93,8 @@ def get_taakgebeurtenissen(melding, taakopdracht_url):
 
 @register.simple_tag
 def get_omschrijving_intern(taakgebeurtenissen):
+    if not taakgebeurtenissen:
+        return ""
     omschrijving_intern = taakgebeurtenissen[0].get("omschrijving_intern")
     if omschrijving_intern == "Taak aangemaakt":
         omschrijving_intern = ""
