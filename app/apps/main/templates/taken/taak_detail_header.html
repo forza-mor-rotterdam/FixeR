@@ -1,12 +1,43 @@
 {% load webpack_static from webpack_loader %}
 {% load multiply previous next from list_tags %}
-{% load taakopdracht render_onderwerp get_bijlagen from melding_tags %}
+{% load taakopdracht render_onderwerp get_bijlagen get_taakgebeurtenissen from melding_tags %}
 {% load replace_comma_by_dot vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
 {% load webpack_static from webpack_loader %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
+{% get_taakgebeurtenissen taak.melding.response_json taak.taakopdracht as taakgebeurtenissen %}
+{% if taakgebeurtenissen.0.omschrijving_intern and taakgebeurtenissen.0.omschrijving_intern|lower != "taak aangemaakt" %}
+    <div class="alert alert--info margin-vertical">
+        <div class="wrapper">
+            <div class="overflow" tabindex="0" data-controller="overflow">
+                <strong>
+                    <span class="badge-count">i</span>Interne opmerking
+                </strong>
+                <div class="container__overflow">
+                    <p class="content__overflow">{{ taakgebeurtenissen.0.omschrijving_intern }}</p>
+                </div>
+            </div>
+            {% if taakgebeurtenissen.0.gebruiker %}
+                {% with gebruiker=taakgebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email %}
+                    <p class="margin-top">
+                        {% comment %} Haal rol en telefoonnummer uit gebruiker-object {% endcomment %}
+                        <b>Mid-office</b>
+                        <br />
+                        <a href="mailto:{{ gebruiker.email }}">{{ gebruiker.full_name }}</a>
+                        <br />
+                        {% comment %} {% if gebruiker.telefoonnummer %}
+                            <a href="tel:{{ gebruiker.telefoonnummer }}" target="_blank" class="link">
+                                {{ gebruiker.telefoonnummer }}
+                            </a>
+                        {% endif %} {% endcomment %}
+                    </p>
+                {% endwith %}
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
 {% if taak.taak_zoek_data.locatie_type == "graf" %}
     <h1 class="h3">
         {% if taak_zoek_data.grafnummer %}Graf {{ taak_zoek_data.grafnummer }}{% endif %}

@@ -73,3 +73,30 @@ def get_bijlagen(melding):
         alle_bijlagen, key=lambda b: b.get("aangemaakt_op")
     )
     return alle_bijlagen_gesorteerd
+
+
+@register.simple_tag
+def get_taakgebeurtenissen(melding, taakopdracht_url):
+    return sorted(
+        [
+            meldinggebeurtenis.get("taakgebeurtenis")
+            for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
+            if meldinggebeurtenis.get("taakgebeurtenis")
+            and meldinggebeurtenis.get("taakgebeurtenis")
+            .get("_links")
+            .get("taakopdracht")
+            == taakopdracht_url
+        ],
+        key=lambda b: b.get("aangemaakt_op"),
+    )
+
+
+@register.simple_tag
+def get_omschrijving_intern(taakgebeurtenissen):
+    if not taakgebeurtenissen:
+        return ""
+    omschrijving_intern = taakgebeurtenissen[0].get("omschrijving_intern")
+    if omschrijving_intern == "Taak aangemaakt":
+        omschrijving_intern = ""
+
+    return omschrijving_intern

@@ -1,5 +1,8 @@
 import json
 import logging
+import operator
+import re
+from functools import reduce
 
 import requests
 from apps.authenticatie.models import Gebruiker
@@ -45,8 +48,8 @@ from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import Q, Value
-from django.db.models.functions import Concat
+from django.db.models import Case, F, Q, Value, When
+from django.db.models.functions import Cast, Concat
 from django.http import (
     HttpResponse,
     HttpResponsePermanentRedirect,
@@ -199,6 +202,45 @@ def taken_filter(request):
     )
 
     taken_gefilterd = filter_manager.filter_taken()
+
+    taken_gefilterd = taken_gefilterd.annotate(
+        huisnr_huisltr_toev=Concat(
+            Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
+            "taak_zoek_data__huisletter",
+            Case(
+                When(
+                    Q(taak_zoek_data__toevoeging__isnull=False)
+                    & ~Q(taak_zoek_data__toevoeging=""),
+                    then=Concat(
+                        Value("-"),
+                        "taak_zoek_data__toevoeging",
+                    ),
+                )
+            ),
+        )
+    )
+    taken_gefilterd = taken_gefilterd.annotate(
+        adres=Concat(
+            "taak_zoek_data__straatnaam",
+            Value(" "),
+            "huisnr_huisltr_toev",
+        )
+    )
+    # zoeken
+    if request.session.get("q"):
+        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        if q:
+            q_list = [
+                Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                if len(qp) > 3
+                else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                for qp in q
+            ]
+            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
+
     taken_aantal = taken_gefilterd.count()
     return render(
         request,
@@ -231,7 +273,7 @@ def taken_lijst(request):
     sortering = sortering.split("-")[0]
     sorting_fields = {
         "Postcode": "taak_zoek_data__postcode",
-        "Adres": "zoekadres",
+        "Adres": "adres",
         "Datum": "taakstatus__aangemaakt_op",
         "Afstand": "afstand",
     }
@@ -251,24 +293,44 @@ def taken_lijst(request):
     filter_manager = FilterManager(taken, actieve_filters, profiel=request.user.profiel)
     taken_gefilterd = filter_manager.filter_taken()
 
+    taken_gefilterd = taken_gefilterd.annotate(
+        huisnr_huisltr_toev=Concat(
+            Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
+            "taak_zoek_data__huisletter",
+            Case(
+                When(
+                    Q(taak_zoek_data__toevoeging__isnull=False)
+                    & ~Q(taak_zoek_data__toevoeging=""),
+                    then=Concat(
+                        Value("-"),
+                        "taak_zoek_data__toevoeging",
+                    ),
+                )
+            ),
+        )
+    )
+    taken_gefilterd = taken_gefilterd.annotate(
+        adres=Concat(
+            "taak_zoek_data__straatnaam",
+            Value(" "),
+            "huisnr_huisltr_toev",
+        )
+    )
     # zoeken
     if request.session.get("q"):
-        taken_gefilterd = taken_gefilterd.filter(
-            Q(taak_zoek_data__straatnaam__iregex=request.session.get("q"))
-            | Q(taak_zoek_data__huisnummer__iregex=request.session.get("q"))
-            | Q(taak_zoek_data__bron_signaal_ids__icontains=request.session.get("q"))
-        )
+        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        if q:
+            q_list = [
+                Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                if len(qp) > 3
+                else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                for qp in q
+            ]
+            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
-    # sorteren
-    if sortering == "Adres":
-        taken_gefilterd = taken_gefilterd.annotate(
-            zoekadres=Concat(
-                "taak_zoek_data__straatnaam",
-                Value(" "),
-                "taak_zoek_data__huisnummer",
-                output_field=models.CharField(),
-            )
-        )
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(
             afstand=Distance("taak_zoek_data__geometrie", pnt)
@@ -669,11 +731,12 @@ def config(request):
 
 
 def _meldingen_bestand(request, modified_path):
-    instelling = Instelling.acieve_instelling()
-    MELDINGEN_URL = (
-        settings.MELDINGEN_URL if not instelling else instelling.mor_core_basis_url
-    )
-    url = f"{MELDINGEN_URL}{modified_path}"
+    instelling = Instelling.actieve_instelling()
+    if not instelling:
+        raise Exception(
+            "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+        )
+    url = f"{instelling.mor_core_basis_url}{modified_path}"
     headers = {"Authorization": f"Token {MeldingenService().haal_token()}"}
     response = requests.get(url, stream=True, headers=headers)
     return StreamingHttpResponse(

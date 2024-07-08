@@ -37,7 +37,7 @@
                     </g>
                 </svg>
                 {% if UNWATCHED_COUNT > 0 %}
-                    <span class="badge--unread-count">
+                    <span class="badge-count">
                         {% if UNWATCHED_COUNT < 101 %}
                             {{ UNWATCHED_COUNT }}
                         {% else %}
@@ -74,7 +74,7 @@
                             <li class="wrapper-horizontal">
                                 <a href="{% url 'release_note_lijst_public' %}">Nieuw in FixeR
                                     {% if UNWATCHED_COUNT > 0 %}
-                                        <span class="badge--unread-count">
+                                        <span class="badge-count">
                                             {% if UNWATCHED_COUNT < 101 %}
                                                 {{ UNWATCHED_COUNT }}
                                             {% else %}
@@ -85,7 +85,13 @@
                                 </a>
                             </li>
                             <li class="wrapper-horizontal">
-                                <a href="https://meldr.rotterdam.nl/" target="_blank">Melding indienen</a>
+                                {% if APP_ENV == "productie" %}
+                                    <a href="https://meldr.rotterdam.nl/" target="_blank">Melding indienen</a>
+                                {% elif APP_ENV == "acceptatie" %}
+                                    <a href="https://mor-accp.mendixcloud.com/" target="_blank">Melding indienen</a>
+                                {% else %}
+                                    <a href="https://mor-test.mendixcloud.com/" target="_blank">Melding indienen</a>
+                                {% endif %}
                             </li>
                         </ul>
                         {% include "snippets/form_pageheader.html" %}

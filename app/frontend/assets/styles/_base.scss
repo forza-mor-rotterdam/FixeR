@@ -553,22 +553,6 @@ body.no-js {
     pointer-events: none;
 }
 
-.display-flex {
-    display: flex;
-    justify-content: space-between;
-
-    &--2cols-md {
-        @media (min-width: map-get($grid-breakpoints, md)) {
-            display: flex;
-            gap: $alert-padding-x;
-            > div {
-                flex: 0 0 50%;
-                max-width: calc(50% - $alert-padding-x/2);
-            }
-        }
-    }
-}
-
 .no-padding {
     padding: 0 !important;
 }
@@ -587,6 +571,9 @@ body.no-js {
 
 .margin-bottom {
     margin-bottom: 1em !important;
+}
+.margin-top {
+    margin-top: 1em !important;
 }
 
 .margin-vertical {
@@ -687,5 +674,37 @@ body.no-js {
 
     div:first-child {
         flex: 1;
+    }
+}
+
+.container__overflow {
+    position: relative;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    max-height: 2.7em;
+    -webkit-box-orient: vertical;
+    width: 100%;
+}
+.has-overflow {
+    .wrapper {
+        .toggle {
+            display: block;
+            text-align: right;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin: 0.5em 0;
+        }
+
+        &.show {
+            .container__overflow {
+                overflow: auto;
+                -webkit-line-clamp: unset;
+                max-height: 20em;
+                transition: max-height 0.25s ease-in-out;
+            }
+        }
     }
 }
