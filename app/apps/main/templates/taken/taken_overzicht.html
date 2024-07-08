@@ -48,6 +48,7 @@
                         {% csrf_token %}
                         <input type="search"
                                name="q"
+                               maxlength="50"
                                value="{{ request.session.q }}"
                                class="form-control search"
                                placeholder="Zoek op straatnaam of MeldR-nummer"
