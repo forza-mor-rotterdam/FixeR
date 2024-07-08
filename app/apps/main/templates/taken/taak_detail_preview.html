@@ -40,7 +40,7 @@
         <p>
             Deze link is verlopen.
             <br>
-            <a href="{% url 'taak_detail' taak.id %}" data-turbo-action="replace">Terug naar de taak</a>
+            <a href="{% url 'taak_detail' taak.id %}" target="_top">Terug naar de taak</a>
         </p>
     {% else %}
         {% with melding=taak.melding.response_json %}
@@ -228,7 +228,7 @@
                                 </p>
                                 {% include "incident/part_gebruiker_telefoon.html" with gebruiker=gebruiker_email|get_gebruiker_object_middels_email %}
                                 <p>
-                                    <a href="{% url 'taak_detail' taak.id %}" data-turbo-action="replace">Naar orginele taak</a>
+                                    <a href="{% url 'taak_detail' taak.id %}" target="_top">Naar orginele taak</a>
                                 </p>
                             </section>
                         </div>
