@@ -93,7 +93,6 @@ class TaakSerializer(serializers.ModelSerializer):
             "bericht",
             "additionele_informatie",
             "taakstatus",
-            "resolutie",
             "melding",
             "gebruiker",
             "taakopdracht",

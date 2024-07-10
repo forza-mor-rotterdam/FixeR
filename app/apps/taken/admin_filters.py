@@ -1,5 +1,6 @@
-from apps.taken.models import Taak
+from apps.taken.models import Taak, Taakgebeurtenis
 from django.contrib import admin
+from django.db.models import F, OuterRef, Subquery
 from django.utils.translation import gettext_lazy as _
 
 
@@ -24,13 +25,23 @@ class ResolutieFilter(admin.SimpleListFilter):
     parameter_name = "resolutie"
 
     def lookups(self, request, model_admin):
-        return Taak.ResolutieOpties.choices
+        return Taakgebeurtenis.ResolutieOpties.choices
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(resolutie=self.value())
-        else:
-            return queryset
+            latest_taakgebeurtenis_subquery = (
+                Taakgebeurtenis.objects.filter(taak=OuterRef("pk"))
+                .order_by("-aangemaakt_op")
+                .values("id")[:1]
+            )
+
+            return queryset.annotate(
+                latest_taakgebeurtenis_id=Subquery(latest_taakgebeurtenis_subquery)
+            ).filter(
+                taakgebeurtenissen_voor_taak__id=F("latest_taakgebeurtenis_id"),
+                taakgebeurtenissen_voor_taak__resolutie=self.value(),
+            )
+        return queryset
 
 
 class TitelFilter(admin.SimpleListFilter):
