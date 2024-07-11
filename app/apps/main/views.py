@@ -7,6 +7,7 @@ from functools import reduce
 import requests
 from apps.authenticatie.models import Gebruiker
 from apps.context.filters import FilterManager
+from apps.context.models import Context
 from apps.instellingen.models import Instelling
 from apps.main.forms import (
     KaartModusForm,
@@ -175,6 +176,7 @@ def taken(request):
 def taken_filter(request):
     taken = Taak.objects.select_related(
         "melding",
+        "taaktype",
         "taakstatus",
         "taak_zoek_data",
     ).get_taken_recent(request.user)
@@ -203,43 +205,44 @@ def taken_filter(request):
 
     taken_gefilterd = filter_manager.filter_taken()
 
-    taken_gefilterd = taken_gefilterd.annotate(
-        huisnr_huisltr_toev=Concat(
-            Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
-            "taak_zoek_data__huisletter",
-            Case(
-                When(
-                    Q(taak_zoek_data__toevoeging__isnull=False)
-                    & ~Q(taak_zoek_data__toevoeging=""),
-                    then=Concat(
-                        Value("-"),
-                        "taak_zoek_data__toevoeging",
-                    ),
-                )
-            ),
+    if request.user.profiel.context.template != Context.TemplateOpties.BENC:
+        taken_gefilterd = taken_gefilterd.annotate(
+            huisnr_huisltr_toev=Concat(
+                Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
+                "taak_zoek_data__huisletter",
+                Case(
+                    When(
+                        Q(taak_zoek_data__toevoeging__isnull=False)
+                        & ~Q(taak_zoek_data__toevoeging=""),
+                        then=Concat(
+                            Value("-"),
+                            "taak_zoek_data__toevoeging",
+                        ),
+                    )
+                ),
+            )
         )
-    )
-    taken_gefilterd = taken_gefilterd.annotate(
-        adres=Concat(
-            "taak_zoek_data__straatnaam",
-            Value(" "),
-            "huisnr_huisltr_toev",
+        taken_gefilterd = taken_gefilterd.annotate(
+            adres=Concat(
+                "taak_zoek_data__straatnaam",
+                Value(" "),
+                "huisnr_huisltr_toev",
+            )
         )
-    )
-    # zoeken
-    if request.session.get("q"):
-        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-        if q:
-            q_list = [
-                Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                if len(qp) > 3
-                else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                for qp in q
-            ]
-            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
+        # zoeken
+        if request.session.get("q"):
+            q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+            if q:
+                q_list = [
+                    Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                    | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                    if len(qp) > 3
+                    else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                    for qp in q
+                ]
+                taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     taken_aantal = taken_gefilterd.count()
     return render(
@@ -282,6 +285,7 @@ def taken_lijst(request):
     taken = Taak.objects.select_related(
         "melding",
         "taakstatus",
+        "taaktype",
         "taak_zoek_data",
     ).get_taken_recent(request.user)
     filters = (
@@ -293,43 +297,44 @@ def taken_lijst(request):
     filter_manager = FilterManager(taken, actieve_filters, profiel=request.user.profiel)
     taken_gefilterd = filter_manager.filter_taken()
 
-    taken_gefilterd = taken_gefilterd.annotate(
-        huisnr_huisltr_toev=Concat(
-            Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
-            "taak_zoek_data__huisletter",
-            Case(
-                When(
-                    Q(taak_zoek_data__toevoeging__isnull=False)
-                    & ~Q(taak_zoek_data__toevoeging=""),
-                    then=Concat(
-                        Value("-"),
-                        "taak_zoek_data__toevoeging",
-                    ),
-                )
-            ),
+    if request.user.profiel.context.template != Context.TemplateOpties.BENC:
+        taken_gefilterd = taken_gefilterd.annotate(
+            huisnr_huisltr_toev=Concat(
+                Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
+                "taak_zoek_data__huisletter",
+                Case(
+                    When(
+                        Q(taak_zoek_data__toevoeging__isnull=False)
+                        & ~Q(taak_zoek_data__toevoeging=""),
+                        then=Concat(
+                            Value("-"),
+                            "taak_zoek_data__toevoeging",
+                        ),
+                    )
+                ),
+            )
         )
-    )
-    taken_gefilterd = taken_gefilterd.annotate(
-        adres=Concat(
-            "taak_zoek_data__straatnaam",
-            Value(" "),
-            "huisnr_huisltr_toev",
+        taken_gefilterd = taken_gefilterd.annotate(
+            adres=Concat(
+                "taak_zoek_data__straatnaam",
+                Value(" "),
+                "huisnr_huisltr_toev",
+            )
         )
-    )
-    # zoeken
-    if request.session.get("q"):
-        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-        if q:
-            q_list = [
-                Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                if len(qp) > 3
-                else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                for qp in q
-            ]
-            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
+        # zoeken
+        if request.session.get("q"):
+            q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+            if q:
+                q_list = [
+                    Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                    | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                    if len(qp) > 3
+                    else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                    for qp in q
+                ]
+                taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(
