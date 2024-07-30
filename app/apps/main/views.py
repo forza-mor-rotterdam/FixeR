@@ -187,11 +187,14 @@ def taken_filter(request):
             "melding__id",
             "taaktype__id",
             "taakstatus__id",
+            "taakstatus__aangemaakt_op",
             "taak_zoek_data__bron_signaal_ids",
             "taak_zoek_data__straatnaam",
             "taak_zoek_data__huisnummer",
             "taak_zoek_data__huisletter",
             "taak_zoek_data__toevoeging",
+            "taak_zoek_data__postcode",
+            "taak_zoek_data__geometrie",
         )
         .get_taken_recent(request.user)
     )
@@ -313,11 +316,14 @@ def taken_lijst(request):
             "melding__id",
             "taaktype__id",
             "taakstatus__id",
+            "taakstatus__aangemaakt_op",
             "taak_zoek_data__bron_signaal_ids",
             "taak_zoek_data__straatnaam",
             "taak_zoek_data__huisnummer",
             "taak_zoek_data__huisletter",
             "taak_zoek_data__toevoeging",
+            "taak_zoek_data__postcode",
+            "taak_zoek_data__geometrie",
         )
         .get_taken_recent(request.user)
     )
