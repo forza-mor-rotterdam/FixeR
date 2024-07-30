@@ -17,7 +17,7 @@ def move_resolutie_to_taakgebeurtenis(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("taken", "0015_auto_20240702_1112"),
+        ("taken", "0016_taak_taken_taak_taaksta_0e016e_idx_and_more"),
     ]
 
     operations = [
