@@ -1,8 +1,5 @@
 import json
 import logging
-import operator
-import re
-from functools import reduce
 
 import requests
 from apps.authenticatie.models import Gebruiker
@@ -44,6 +41,7 @@ from django.contrib.auth.decorators import (
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core import signing
 from django.core.cache import cache
 from django.core.files.storage import default_storage
@@ -174,7 +172,7 @@ def taken(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_filter(request):
-    is_benc = request.user.profiel.context.template != Context.TemplateOpties.BENC
+    is_benc = request.user.profiel.context.template == Context.TemplateOpties.BENC
     taken = (
         Taak.objects.select_related(
             "melding",
@@ -187,10 +185,14 @@ def taken_filter(request):
             "melding__id",
             "taaktype__id",
             "taakstatus__id",
+            "taakstatus__aangemaakt_op",
+            "taak_zoek_data__bron_signaal_ids",
             "taak_zoek_data__straatnaam",
             "taak_zoek_data__huisnummer",
             "taak_zoek_data__huisletter",
             "taak_zoek_data__toevoeging",
+            "taak_zoek_data__postcode",
+            "taak_zoek_data__geometrie",
         )
         .get_taken_recent(request.user)
     )
@@ -219,26 +221,6 @@ def taken_filter(request):
 
     taken_gefilterd = filter_manager.filter_taken()
 
-    if request.session.get("q"):
-        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-        if q:
-            q_list = [
-                (
-                    (Q(taak_zoek_data__bron_signaal_ids__icontains=qp))
-                    if is_benc
-                    else (
-                        Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                        | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                        if len(qp) > 3
-                        else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    )
-                )
-                for qp in q
-            ]
-            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
-
     if not is_benc:
         taken_gefilterd = taken_gefilterd.annotate(
             huisnr_huisltr_toev=Concat(
@@ -264,6 +246,22 @@ def taken_filter(request):
             )
         )
 
+        # Searching not possible for BENC, no bron signaal or adres data.
+        if request.session.get("q"):
+            search_query = SearchQuery(request.session.get("q"))
+            taken_gefilterd = (
+                taken_gefilterd.annotate(
+                    search=SearchVector(
+                        "taak_zoek_data__bron_signaal_ids",
+                        "taak_zoek_data__straatnaam",
+                        "huisnr_huisltr_toev",
+                    ),
+                    rank=SearchRank(F("search"), search_query),
+                )
+                .filter(search=search_query)
+                .order_by("-rank")
+            )
+
     taken_aantal = taken_gefilterd.count()
     return render(
         request,
@@ -288,7 +286,7 @@ def taken_lijst(request):
     except Exception:
         pnt = Point(0, 0, srid=4326)
 
-    is_benc = request.user.profiel.context.template != Context.TemplateOpties.BENC
+    is_benc = request.user.profiel.context.template == Context.TemplateOpties.BENC
 
     if request.GET.get("toon_alle_taken"):
         request.session["toon_alle_taken"] = True
@@ -316,10 +314,14 @@ def taken_lijst(request):
             "melding__id",
             "taaktype__id",
             "taakstatus__id",
+            "taakstatus__aangemaakt_op",
+            "taak_zoek_data__bron_signaal_ids",
             "taak_zoek_data__straatnaam",
             "taak_zoek_data__huisnummer",
             "taak_zoek_data__huisletter",
             "taak_zoek_data__toevoeging",
+            "taak_zoek_data__postcode",
+            "taak_zoek_data__geometrie",
         )
         .get_taken_recent(request.user)
     )
@@ -331,27 +333,6 @@ def taken_lijst(request):
     actieve_filters = get_actieve_filters(request.user, filters)
     filter_manager = FilterManager(taken, actieve_filters, profiel=request.user.profiel)
     taken_gefilterd = filter_manager.filter_taken()
-
-    # zoeken
-    if request.session.get("q"):
-        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-        if q:
-            q_list = [
-                (
-                    (Q(taak_zoek_data__bron_signaal_ids__icontains=qp))
-                    if is_benc
-                    else (
-                        Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                        | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                        if len(qp) > 3
-                        else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    )
-                )
-                for qp in q
-            ]
-            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     if not is_benc:
         taken_gefilterd = taken_gefilterd.annotate(
@@ -377,6 +358,22 @@ def taken_lijst(request):
                 "huisnr_huisltr_toev",
             )
         )
+
+        # Searching not possible for BENC, no bron signaal or adres data.
+        if request.session.get("q"):
+            search_query = SearchQuery(request.session.get("q"))
+            taken_gefilterd = (
+                taken_gefilterd.annotate(
+                    search=SearchVector(
+                        "taak_zoek_data__bron_signaal_ids",
+                        "taak_zoek_data__straatnaam",
+                        "huisnr_huisltr_toev",
+                    ),
+                    rank=SearchRank(F("search"), search_query),
+                )
+                .filter(search=search_query)
+                .order_by("-rank")
+            )
 
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(

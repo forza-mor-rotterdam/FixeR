@@ -302,6 +302,14 @@ class Taak(BasisModel):
         ordering = ("-aangemaakt_op",)
         verbose_name = "Taak"
         verbose_name_plural = "Taken"
+        indexes = [
+            models.Index(fields=["taakstatus"]),
+            models.Index(fields=["taaktype"]),
+            models.Index(fields=["melding"]),
+            models.Index(fields=["taak_zoek_data"]),
+            models.Index(fields=["geometrie"]),
+            models.Index(fields=["taakopdracht"]),
+        ]
 
 
 class TaakDeellink(BasisModel):
