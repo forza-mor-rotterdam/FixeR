@@ -187,6 +187,7 @@ def taken_filter(request):
             "melding__id",
             "taaktype__id",
             "taakstatus__id",
+            "taak_zoek_data__bron_signaal_ids",
             "taak_zoek_data__straatnaam",
             "taak_zoek_data__huisnummer",
             "taak_zoek_data__huisletter",
@@ -219,22 +220,6 @@ def taken_filter(request):
 
     taken_gefilterd = filter_manager.filter_taken()
 
-    if request.session.get("q"):
-        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-        if q:
-            q_list = [
-                (
-                    Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                    | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    if len(qp) > 3
-                    else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                )
-                for qp in q
-            ]
-            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
-
     if not is_benc:
         taken_gefilterd = taken_gefilterd.annotate(
             huisnr_huisltr_toev=Concat(
@@ -259,6 +244,22 @@ def taken_filter(request):
                 "huisnr_huisltr_toev",
             )
         )
+
+    if request.session.get("q"):
+        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        if q:
+            q_list = [
+                (
+                    Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                    | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                    if len(qp) > 3
+                    else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                )
+                for qp in q
+            ]
+            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     taken_aantal = taken_gefilterd.count()
     return render(
@@ -312,6 +313,7 @@ def taken_lijst(request):
             "melding__id",
             "taaktype__id",
             "taakstatus__id",
+            "taak_zoek_data__bron_signaal_ids",
             "taak_zoek_data__straatnaam",
             "taak_zoek_data__huisnummer",
             "taak_zoek_data__huisletter",
@@ -327,23 +329,6 @@ def taken_lijst(request):
     actieve_filters = get_actieve_filters(request.user, filters)
     filter_manager = FilterManager(taken, actieve_filters, profiel=request.user.profiel)
     taken_gefilterd = filter_manager.filter_taken()
-
-    # zoeken
-    if request.session.get("q"):
-        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-        if q:
-            q_list = [
-                (
-                    Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                    | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    if len(qp) > 3
-                    else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                )
-                for qp in q
-            ]
-            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     if not is_benc:
         taken_gefilterd = taken_gefilterd.annotate(
@@ -369,6 +354,22 @@ def taken_lijst(request):
                 "huisnr_huisltr_toev",
             )
         )
+
+    if request.session.get("q"):
+        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        if q:
+            q_list = [
+                (
+                    Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                    | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                    if len(qp) > 3
+                    else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                )
+                for qp in q
+            ]
+            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(
