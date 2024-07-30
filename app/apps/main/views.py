@@ -248,21 +248,22 @@ def taken_filter(request):
             )
         )
 
-    if request.session.get("q"):
-        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-        if q:
-            q_list = [
-                (
-                    Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                    | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    if len(qp) > 3
-                    else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                )
-                for qp in q
-            ]
-            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
+        # Searching not possible for BENC, no bron signaal or adres data.
+        if request.session.get("q"):
+            q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+            if q:
+                q_list = [
+                    (
+                        Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                        | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                        if len(qp) > 3
+                        else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                    )
+                    for qp in q
+                ]
+                taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     taken_aantal = taken_gefilterd.count()
     return render(
@@ -361,21 +362,22 @@ def taken_lijst(request):
             )
         )
 
-    if request.session.get("q"):
-        q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-        if q:
-            q_list = [
-                (
-                    Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                    | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    if len(qp) > 3
-                    else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                )
-                for qp in q
-            ]
-            taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
+        # Searching not possible for BENC, no bron signaal or adres data.
+        if request.session.get("q"):
+            q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+            if q:
+                q_list = [
+                    (
+                        Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                        | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                        if len(qp) > 3
+                        else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                    )
+                    for qp in q
+                ]
+                taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(
