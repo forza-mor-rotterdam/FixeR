@@ -174,7 +174,7 @@ def taken(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_filter(request):
-    is_benc = request.user.profiel.context.template != Context.TemplateOpties.BENC
+    is_benc = request.user.profiel.context.template == Context.TemplateOpties.BENC
     taken = (
         Taak.objects.select_related(
             "melding",
@@ -224,16 +224,12 @@ def taken_filter(request):
         if q:
             q_list = [
                 (
-                    (Q(taak_zoek_data__bron_signaal_ids__icontains=qp))
-                    if is_benc
-                    else (
-                        Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                        | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                        if len(qp) > 3
-                        else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    )
+                    Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                    | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                    if len(qp) > 3
+                    else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
                 )
                 for qp in q
             ]
@@ -288,7 +284,7 @@ def taken_lijst(request):
     except Exception:
         pnt = Point(0, 0, srid=4326)
 
-    is_benc = request.user.profiel.context.template != Context.TemplateOpties.BENC
+    is_benc = request.user.profiel.context.template == Context.TemplateOpties.BENC
 
     if request.GET.get("toon_alle_taken"):
         request.session["toon_alle_taken"] = True
@@ -338,16 +334,12 @@ def taken_lijst(request):
         if q:
             q_list = [
                 (
-                    (Q(taak_zoek_data__bron_signaal_ids__icontains=qp))
-                    if is_benc
-                    else (
-                        Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                        | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                        if len(qp) > 3
-                        else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    )
+                    Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+                    | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
+                    if len(qp) > 3
+                    else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
+                    | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
                 )
                 for qp in q
             ]
