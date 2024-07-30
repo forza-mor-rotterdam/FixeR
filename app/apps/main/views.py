@@ -1,8 +1,5 @@
 import json
 import logging
-import operator
-import re
-from functools import reduce
 
 import requests
 from apps.authenticatie.models import Gebruiker
@@ -44,6 +41,7 @@ from django.contrib.auth.decorators import (
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core import signing
 from django.core.cache import cache
 from django.core.files.storage import default_storage
@@ -250,20 +248,19 @@ def taken_filter(request):
 
         # Searching not possible for BENC, no bron signaal or adres data.
         if request.session.get("q"):
-            q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-            if q:
-                q_list = [
-                    (
-                        Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                        | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                        if len(qp) > 3
-                        else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    )
-                    for qp in q
-                ]
-                taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
+            search_query = SearchQuery(request.session.get("q"))
+            taken_gefilterd = (
+                taken_gefilterd.annotate(
+                    search=SearchVector(
+                        "taak_zoek_data__bron_signaal_ids",
+                        "taak_zoek_data__straatnaam",
+                        "huisnr_huisltr_toev",
+                    ),
+                    rank=SearchRank(F("search"), search_query),
+                )
+                .filter(search=search_query)
+                .order_by("-rank")
+            )
 
     taken_aantal = taken_gefilterd.count()
     return render(
@@ -364,20 +361,19 @@ def taken_lijst(request):
 
         # Searching not possible for BENC, no bron signaal or adres data.
         if request.session.get("q"):
-            q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-            if q:
-                q_list = [
-                    (
-                        Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                        | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                        if len(qp) > 3
-                        else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    )
-                    for qp in q
-                ]
-                taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
+            search_query = SearchQuery(request.session.get("q"))
+            taken_gefilterd = (
+                taken_gefilterd.annotate(
+                    search=SearchVector(
+                        "taak_zoek_data__bron_signaal_ids",
+                        "taak_zoek_data__straatnaam",
+                        "huisnr_huisltr_toev",
+                    ),
+                    rank=SearchRank(F("search"), search_query),
+                )
+                .filter(search=search_query)
+                .order_by("-rank")
+            )
 
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(
