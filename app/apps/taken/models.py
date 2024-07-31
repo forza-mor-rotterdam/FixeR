@@ -207,6 +207,7 @@ class TaakZoekData(BasisModel):
             models.Index(fields=["geometrie"]),  # Might have to be a GistIndex
             models.Index(fields=["wijknaam"]),
             models.Index(fields=["buurtnaam"]),
+            models.Index(fields=["begraafplaats"]),
             GinIndex(fields=["bron_signaal_ids"]),
         ]
 
