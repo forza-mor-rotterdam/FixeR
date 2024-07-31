@@ -172,34 +172,55 @@ def taken(request):
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken_filter(request):
     is_benc = request.user.profiel.context.template == Context.TemplateOpties.BENC
-    taken = (
-        Taak.objects.select_related(
-            "melding",
-            "taaktype",
-            "taakstatus",
-            "taak_zoek_data",
+    if is_benc:
+        taken = (
+            Taak.objects.select_related(
+                "melding",
+                "taaktype",
+                "taakstatus",
+                "taak_zoek_data",
+            )
+            .only(
+                "id",
+                "melding__id",
+                "taaktype__id",
+                "taaktype__omschrijving",
+                "taakstatus__id",
+                "taakstatus__naam",
+                "taakstatus__aangemaakt_op",
+                "taak_zoek_data__bron_signaal_ids",
+                "taak_zoek_data__begraafplaats",
+            )
+            .get_taken_recent(request.user)
         )
-        .only(
-            "id",
-            "melding__id",
-            "taaktype__id",
-            "taaktype__omschrijving",
-            "taakstatus__id",
-            "taakstatus__naam",
-            "taakstatus__aangemaakt_op",
-            "taak_zoek_data__bron_signaal_ids",
-            "taak_zoek_data__straatnaam",
-            "taak_zoek_data__huisnummer",
-            "taak_zoek_data__huisletter",
-            "taak_zoek_data__toevoeging",
-            "taak_zoek_data__postcode",
-            "taak_zoek_data__geometrie",
-            "taak_zoek_data__wijknaam",
-            "taak_zoek_data__buurtnaam",
-            "taak_zoek_data__begraafplaats",
+    else:
+        taken = (
+            Taak.objects.select_related(
+                "melding",
+                "taaktype",
+                "taakstatus",
+                "taak_zoek_data",
+            )
+            .only(
+                "id",
+                "melding__id",
+                "taaktype__id",
+                "taaktype__omschrijving",
+                "taakstatus__id",
+                "taakstatus__naam",
+                "taakstatus__aangemaakt_op",
+                "taak_zoek_data__bron_signaal_ids",
+                "taak_zoek_data__straatnaam",
+                "taak_zoek_data__huisnummer",
+                "taak_zoek_data__huisletter",
+                "taak_zoek_data__toevoeging",
+                "taak_zoek_data__postcode",
+                "taak_zoek_data__geometrie",
+                "taak_zoek_data__wijknaam",
+                "taak_zoek_data__buurtnaam",
+            )
+            .get_taken_recent(request.user)
         )
-        .get_taken_recent(request.user)
-    )
 
     filters = (
         get_filters(request.user.profiel.context)
@@ -284,35 +305,55 @@ def taken_lijst(request):
         "Afstand": "afstand",
     }
 
-    # filteren
-    taken = (
-        Taak.objects.select_related(
-            "melding",
-            "taakstatus",
-            "taaktype",
-            "taak_zoek_data",
+    if is_benc:
+        taken = (
+            Taak.objects.select_related(
+                "melding",
+                "taaktype",
+                "taakstatus",
+                "taak_zoek_data",
+            )
+            .only(
+                "id",
+                "melding__id",
+                "taaktype__id",
+                "taaktype__omschrijving",
+                "taakstatus__id",
+                "taakstatus__naam",
+                "taakstatus__aangemaakt_op",
+                "taak_zoek_data__bron_signaal_ids",
+                "taak_zoek_data__begraafplaats",
+            )
+            .get_taken_recent(request.user)
         )
-        .only(
-            "id",
-            "melding__id",
-            "taaktype__id",
-            "taaktype__omschrijving",
-            "taakstatus__id",
-            "taakstatus__naam",
-            "taakstatus__aangemaakt_op",
-            "taak_zoek_data__bron_signaal_ids",
-            "taak_zoek_data__straatnaam",
-            "taak_zoek_data__huisnummer",
-            "taak_zoek_data__huisletter",
-            "taak_zoek_data__toevoeging",
-            "taak_zoek_data__postcode",
-            "taak_zoek_data__geometrie",
-            "taak_zoek_data__wijknaam",
-            "taak_zoek_data__buurtnaam",
-            "taak_zoek_data__begraafplaats",
+    else:
+        taken = (
+            Taak.objects.select_related(
+                "melding",
+                "taaktype",
+                "taakstatus",
+                "taak_zoek_data",
+            )
+            .only(
+                "id",
+                "melding__id",
+                "taaktype__id",
+                "taaktype__omschrijving",
+                "taakstatus__id",
+                "taakstatus__naam",
+                "taakstatus__aangemaakt_op",
+                "taak_zoek_data__bron_signaal_ids",
+                "taak_zoek_data__straatnaam",
+                "taak_zoek_data__huisnummer",
+                "taak_zoek_data__huisletter",
+                "taak_zoek_data__toevoeging",
+                "taak_zoek_data__postcode",
+                "taak_zoek_data__geometrie",
+                "taak_zoek_data__wijknaam",
+                "taak_zoek_data__buurtnaam",
+            )
+            .get_taken_recent(request.user)
         )
-        .get_taken_recent(request.user)
-    )
     filters = (
         get_filters(request.user.profiel.context)
         if request.user.profiel.context
