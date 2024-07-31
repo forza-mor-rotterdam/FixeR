@@ -6,6 +6,7 @@ from apps.taken.querysets import TaakQuerySet
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.indexes import GinIndex
 from django.core import signing
 from django.core.exceptions import ValidationError
 from django.urls import reverse
@@ -197,6 +198,17 @@ class TaakZoekData(BasisModel):
         ordering = ("-aangemaakt_op",)
         verbose_name = "Taak zoek data"
         verbose_name_plural = "Taak zoek data"
+        indexes = [
+            models.Index(fields=["straatnaam"]),
+            models.Index(fields=["huisnummer"]),
+            models.Index(fields=["huisletter"]),
+            models.Index(fields=["toevoeging"]),
+            models.Index(fields=["postcode"]),
+            models.Index(fields=["geometrie"]),  # Might have to be a GistIndex
+            models.Index(fields=["wijknaam"]),
+            models.Index(fields=["buurtnaam"]),
+            GinIndex(fields=["bron_signaal_ids"]),
+        ]
 
 
 class Taak(BasisModel):
@@ -293,6 +305,13 @@ class Taak(BasisModel):
         ordering = ("-aangemaakt_op",)
         verbose_name = "Taak"
         verbose_name_plural = "Taken"
+        indexes = [
+            models.Index(fields=["taakstatus"]),
+            models.Index(fields=["taaktype"]),
+            models.Index(fields=["melding"]),
+            models.Index(fields=["taak_zoek_data"]),
+            models.Index(fields=["bezig_met_verwerken"]),
+        ]
 
 
 class TaakDeellink(BasisModel):
