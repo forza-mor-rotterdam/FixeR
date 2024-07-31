@@ -396,29 +396,6 @@ class FilterManager:
                     filter_lookup = filter_class.get_filter_lookup()
                     filters &= Q(**{filter_lookup: selected_options})
 
-        # Prefetch related objects to reduce database queries
-        queryset = queryset.select_related(
-            "melding",
-            "taaktype",
-            "taakstatus",
-            "taak_zoek_data",
-        ).only(
-            "id",
-            "melding__id",
-            "taaktype__id",
-            "taaktype__omschrijving",
-            "taakstatus__id",
-            "taakstatus__naam",
-            "taak_zoek_data__straatnaam",
-            "taak_zoek_data__huisnummer",
-            "taak_zoek_data__huisletter",
-            "taak_zoek_data__toevoeging",
-            "taak_zoek_data__buurtnaam",
-            "taak_zoek_data__wijknaam",
-            "taak_zoek_data__bron_signaal_ids",
-            "taak_zoek_data__begraafplaats",
-        )
-
         self._taken_filtered = queryset.filter(filters)
         self._set_filter_options()
         return self._taken_filtered
