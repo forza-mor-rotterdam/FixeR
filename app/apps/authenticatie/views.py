@@ -7,7 +7,6 @@ from apps.authenticatie.forms import (
     GebruikerAanpassenForm,
     GebruikerBulkImportForm,
     GebruikerProfielForm,
-    ProfielfotoForm,
     WelkomForm,
     WerklocatieForm,
 )

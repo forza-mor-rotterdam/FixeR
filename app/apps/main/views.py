@@ -25,7 +25,6 @@ from apps.main.utils import (
     set_actieve_filters,
     set_kaart_modus,
     set_sortering,
-    to_base64,
 )
 from apps.meldingen.service import MeldingenService
 from apps.release_notes.models import ReleaseNote
@@ -48,9 +47,7 @@ from django.core import signing
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
-from django.db import models
-from django.db.models import Case, F, Q, Value, When
-from django.db.models.functions import Cast, Concat
+from django.db.models import Q
 from django.http import (
     HttpResponse,
     HttpResponsePermanentRedirect,
@@ -186,7 +183,9 @@ def taken_filter(request):
             "id",
             "melding__id",
             "taaktype__id",
+            "taaktype__omschrijving",
             "taakstatus__id",
+            "taakstatus__naam",
             "taakstatus__aangemaakt_op",
             "taak_zoek_data__bron_signaal_ids",
             "taak_zoek_data__straatnaam",
@@ -195,6 +194,9 @@ def taken_filter(request):
             "taak_zoek_data__toevoeging",
             "taak_zoek_data__postcode",
             "taak_zoek_data__geometrie",
+            "taak_zoek_data__wijknaam",
+            "taak_zoek_data__buurtnaam",
+            "taak_zoek_data__begraafplaats",
         )
         .get_taken_recent(request.user)
     )
@@ -224,29 +226,7 @@ def taken_filter(request):
     taken_gefilterd = filter_manager.filter_taken()
 
     if not is_benc:
-        taken_gefilterd = taken_gefilterd.annotate(
-            huisnr_huisltr_toev=Concat(
-                Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
-                "taak_zoek_data__huisletter",
-                Case(
-                    When(
-                        Q(taak_zoek_data__toevoeging__isnull=False)
-                        & ~Q(taak_zoek_data__toevoeging=""),
-                        then=Concat(
-                            Value("-"),
-                            "taak_zoek_data__toevoeging",
-                        ),
-                    )
-                ),
-            )
-        )
-        taken_gefilterd = taken_gefilterd.annotate(
-            adres=Concat(
-                "taak_zoek_data__straatnaam",
-                Value(" "),
-                "huisnr_huisltr_toev",
-            )
-        )
+        taken_gefilterd = taken_gefilterd.annotate_adres()
 
         # Searching not possible for BENC, no bron signaal or adres data.
         if request.session.get("q"):
@@ -316,7 +296,9 @@ def taken_lijst(request):
             "id",
             "melding__id",
             "taaktype__id",
+            "taaktype__omschrijving",
             "taakstatus__id",
+            "taakstatus__naam",
             "taakstatus__aangemaakt_op",
             "taak_zoek_data__bron_signaal_ids",
             "taak_zoek_data__straatnaam",
@@ -325,6 +307,9 @@ def taken_lijst(request):
             "taak_zoek_data__toevoeging",
             "taak_zoek_data__postcode",
             "taak_zoek_data__geometrie",
+            "taak_zoek_data__wijknaam",
+            "taak_zoek_data__buurtnaam",
+            "taak_zoek_data__begraafplaats",
         )
         .get_taken_recent(request.user)
     )
@@ -338,29 +323,7 @@ def taken_lijst(request):
     taken_gefilterd = filter_manager.filter_taken()
 
     if not is_benc:
-        taken_gefilterd = taken_gefilterd.annotate(
-            huisnr_huisltr_toev=Concat(
-                Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
-                "taak_zoek_data__huisletter",
-                Case(
-                    When(
-                        Q(taak_zoek_data__toevoeging__isnull=False)
-                        & ~Q(taak_zoek_data__toevoeging=""),
-                        then=Concat(
-                            Value("-"),
-                            "taak_zoek_data__toevoeging",
-                        ),
-                    )
-                ),
-            )
-        )
-        taken_gefilterd = taken_gefilterd.annotate(
-            adres=Concat(
-                "taak_zoek_data__straatnaam",
-                Value(" "),
-                "huisnr_huisltr_toev",
-            )
-        )
+        taken_gefilterd = taken_gefilterd.annotate_adres()
 
         # Searching not possible for BENC, no bron signaal or adres data.
         if request.session.get("q"):
