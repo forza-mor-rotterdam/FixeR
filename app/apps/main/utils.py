@@ -15,12 +15,11 @@ def get_filters(context):
 
 def get_actieve_filters(gebruiker, filters, status="nieuw"):
     actieve_filters = {f: [] for f in filters}
-    profiel_filters = (
-        gebruiker.profiel.filters.get(status, {})
-        if isinstance(gebruiker.profiel.filters.get("status", {}), dict)
-        else {}
-    )
-    actieve_filters.update({k: v for k, v in profiel_filters.items() if k in filters})
+    profiel_filters = gebruiker.profiel.filters.get(status, {})
+    if isinstance(profiel_filters, dict):
+        actieve_filters.update(
+            {k: v for k, v in profiel_filters.items() if k in filters}
+        )
     return actieve_filters
 
 

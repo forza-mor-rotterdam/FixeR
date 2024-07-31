@@ -43,9 +43,11 @@ class MeldingAlias(BasisModel):
         taak_zoek_data_instance, _ = TaakZoekData.objects.update_or_create(
             melding_alias=self,
             defaults={
-                "geometrie": GEOSGeometry(json.dumps(location_data.get("geometrie")))
-                if location_data.get("geometrie")
-                else None,
+                "geometrie": (
+                    GEOSGeometry(json.dumps(location_data.get("geometrie")))
+                    if location_data.get("geometrie")
+                    else None
+                ),
                 "locatie_type": location_data.get("locatie_type"),
                 "plaatsnaam": location_data.get("plaatsnaam"),
                 "straatnaam": location_data.get("straatnaam"),

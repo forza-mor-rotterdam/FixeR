@@ -371,28 +371,32 @@ class FilterManager:
 
     @property
     def active_filter_count(self):
-        return len([vv for k, v in self._active_filters.items() for vv in v])
+        return sum(len(v) for v in self._active_filters.values())
 
     @property
     def active_filters(self):
         return self._active_filters
 
     def filter_taken(self):
-        search_query = self._active_filters.pop("q", "")
-        queryset_filter = Q()
+        queryset = self._taken
+        search_query = self._active_filters.pop("q", [""])
+        filters = Q()
 
         if search_query and search_query[0]:
             search_conditions = ZoekFilter.get_filter_lookup(search_query[0])
-            queryset_filter &= search_conditions
+            filters &= search_conditions
 
-        for k, v in self._active_filters.items():
-            filter_class = self._get_filter_class(k)
-            v = filter_class.get_selected_options_for_filter(v, self._profiel)
-            if v:
-                if filter_class:
-                    queryset_filter &= Q(**{filter_class.get_filter_lookup(): v})
+        for filter_key, filter_values in self._active_filters.items():
+            filter_class = self._get_filter_class(filter_key)
+            if filter_class:
+                selected_options = filter_class.get_selected_options_for_filter(
+                    filter_values, self._profiel
+                )
+                if selected_options:
+                    filter_lookup = filter_class.get_filter_lookup()
+                    filters &= Q(**{filter_lookup: selected_options})
 
-        self._taken_filtered = self._taken.filter(queryset_filter)
+        self._taken_filtered = queryset.filter(filters)
         self._set_filter_options()
         return self._taken_filtered
 
