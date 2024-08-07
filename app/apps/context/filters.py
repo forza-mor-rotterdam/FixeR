@@ -193,12 +193,21 @@ class StandaardFilter:
 class BegraafplaatsFilter(StandaardFilter):
     _key = "begraafplaats"
     _option_key_lookup = "taak_zoek_data__begraafplaats"
-    _option_value_lookup = (
-        "melding__response_json__meta_uitgebreid__begraafplaats__choices"
-    )
-    _option_value_fallback_lookup = "melding__response_json__signalen_voor_melding__0__meta_uitgebreid__begraafplaats__choices"
     _filter_lookup = "taak_zoek_data__begraafplaats__in"
     _label = "Begraafplaats"
+    _predefined_options = (
+        ("1", "Begraafplaats Crooswijk"),
+        ("2", "Begraafplaats Hoek van Holland"),
+        ("3", "Begraafplaats en crematorium Hofwijk"),
+        ("4", "Begraafplaats Oudeland, Hoogvliet"),
+        ("5", "Begraafplaats Oud-Hoogvliet"),
+        ("6", "Begraafplaats Oud-Overschie"),
+        ("7", "Begraafplaats Oud-Pernis"),
+        ("8", "Begraafplaats Oud-Schiebroek"),
+        ("9", "Begraafplaats Pernis"),
+        ("10", "Begraafplaats Rozenburg"),
+        ("11", "Zuiderbegraafplaats"),
+    )
 
 
 class TaaktypeFilter(StandaardFilter):
