@@ -63,7 +63,7 @@ class TaakAdmin(admin.ModelAdmin):
         "taaktype",
         "melding",
         "taakstatus",
-        "resolutie",
+        "get_resolutie",
         "aangemaakt_op",
         "aangepast_op",
         "taakopdracht",
@@ -75,6 +75,7 @@ class TaakAdmin(admin.ModelAdmin):
         "aangemaakt_op",
         "aangepast_op",
         "afgesloten_op",
+        "get_resolutie",
     )
     fieldsets = (
         (
@@ -86,7 +87,7 @@ class TaakAdmin(admin.ModelAdmin):
                     "melding",
                     "taaktype",
                     "taakstatus",
-                    "resolutie",
+                    "get_resolutie",
                     "bericht",
                     "additionele_informatie",
                     "taakopdracht",
@@ -136,9 +137,9 @@ class TaakAdmin(admin.ModelAdmin):
         )
 
     def compare_taakopdracht_status(self, request, queryset):
-        voltooid_taak_ids = queryset.filter(taakstatus__naam="voltooid").values_list(
-            "id", flat=True
-        )
+        voltooid_taak_ids = queryset.filter(
+            taakstatus__naam__in=["voltooid", "voltooid_met_feedback"]
+        ).values_list("id", flat=True)
         for taak_id in voltooid_taak_ids:
             compare_and_update_status.delay(taak_id)
         self.message_user(
@@ -148,6 +149,19 @@ class TaakAdmin(admin.ModelAdmin):
     compare_taakopdracht_status.short_description = (
         "Compare taak and taakopdracht status"
     )
+
+    def get_resolutie(self, obj):
+        taakgebeurtenis = (
+            obj.taakgebeurtenissen_voor_taak.filter(
+                taakstatus__naam__in=["voltooid", "voltooid_met_feedback"]
+            )
+            .order_by("-id")
+            .first()
+        )
+        return taakgebeurtenis.resolutie if taakgebeurtenis else "-"
+
+    get_resolutie.short_description = "Resolutie"
+    get_resolutie.admin_order_field = "taakgebeurtenissen_voor_taak__resolutie"
 
 
 class TaaktypeAdmin(admin.ModelAdmin):
@@ -216,6 +230,8 @@ class TaakgebeurtenisAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "gebruiker",
+        "taakstatus",
+        "resolutie",
     )
 
 
