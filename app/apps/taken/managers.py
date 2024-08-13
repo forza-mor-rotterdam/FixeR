@@ -89,6 +89,7 @@ class TaakManager(models.Manager):
                 if resolutie in [
                     ro[0] for ro in Taakgebeurtenis.ResolutieOpties.choices
                 ]:
+                    locked_taak.resolutie = resolutie
                     taakgebeurtenis.resolutie = resolutie
                     taakgebeurtenis.save()
             locked_taak.bezig_met_verwerken = False

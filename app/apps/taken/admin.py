@@ -63,7 +63,7 @@ class TaakAdmin(admin.ModelAdmin):
         "taaktype",
         "melding",
         "taakstatus",
-        "get_resolutie",
+        "resolutie",
         "aangemaakt_op",
         "aangepast_op",
         "taakopdracht",
@@ -75,7 +75,6 @@ class TaakAdmin(admin.ModelAdmin):
         "aangemaakt_op",
         "aangepast_op",
         "afgesloten_op",
-        "get_resolutie",
     )
     fieldsets = (
         (
@@ -87,7 +86,7 @@ class TaakAdmin(admin.ModelAdmin):
                     "melding",
                     "taaktype",
                     "taakstatus",
-                    "get_resolutie",
+                    "resolutie",
                     "bericht",
                     "additionele_informatie",
                     "taakopdracht",
@@ -115,7 +114,6 @@ class TaakAdmin(admin.ModelAdmin):
     ]
     list_filter = (
         TaakstatusFilter,
-        ResolutieFilter,
         AfgeslotenOpFilter,
         TitelFilter,
     )
@@ -149,19 +147,6 @@ class TaakAdmin(admin.ModelAdmin):
     compare_taakopdracht_status.short_description = (
         "Compare taak and taakopdracht status"
     )
-
-    def get_resolutie(self, obj):
-        taakgebeurtenis = (
-            obj.taakgebeurtenissen_voor_taak.filter(
-                taakstatus__naam__in=["voltooid", "voltooid_met_feedback"]
-            )
-            .order_by("-id")
-            .first()
-        )
-        return taakgebeurtenis.resolutie if taakgebeurtenis else "-"
-
-    get_resolutie.short_description = "Resolutie"
-    get_resolutie.admin_order_field = "taakgebeurtenissen_voor_taak__resolutie"
 
 
 class TaaktypeAdmin(admin.ModelAdmin):
