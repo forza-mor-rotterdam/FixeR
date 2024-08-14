@@ -114,6 +114,7 @@ class TaakAdmin(admin.ModelAdmin):
     ]
     list_filter = (
         TaakstatusFilter,
+        ResolutieFilter,
         AfgeslotenOpFilter,
         TitelFilter,
     )
