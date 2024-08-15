@@ -136,9 +136,9 @@ class TaakAdmin(admin.ModelAdmin):
         )
 
     def compare_taakopdracht_status(self, request, queryset):
-        voltooid_taak_ids = queryset.filter(taakstatus__naam="voltooid").values_list(
-            "id", flat=True
-        )
+        voltooid_taak_ids = queryset.filter(
+            taakstatus__naam__in=["voltooid", "voltooid_met_feedback"]
+        ).values_list("id", flat=True)
         for taak_id in voltooid_taak_ids:
             compare_and_update_status.delay(taak_id)
         self.message_user(
@@ -216,6 +216,8 @@ class TaakgebeurtenisAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "gebruiker",
+        "taakstatus",
+        "resolutie",
     )
 
 
