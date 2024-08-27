@@ -3,7 +3,9 @@
     Gebruikerslijst | Beheer | FixeR
 {% endblock title %}
 {% block body %}
-    <div class="page__beheer" data-controller="row-search">
+    <div class="page__beheer"
+         data-controller="row-search"
+         data-row-search-disable-result-highlight-value="true">
         <div>
             <a href="{% url 'beheer' %}" class="link--back">
                 <svg width="25"
