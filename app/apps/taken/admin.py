@@ -218,6 +218,7 @@ class TaakgebeurtenisAdmin(admin.ModelAdmin):
         "gebruiker",
         "taakstatus",
         "resolutie",
+        "omschrijving_intern",
     )
 
 
