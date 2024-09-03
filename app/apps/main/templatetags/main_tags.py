@@ -7,6 +7,7 @@ from django import template
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.core.cache import cache
+from django.utils.html import strip_tags
 from requests import Request, Response
 from utils.datetime import stringdatetime_naar_datetime
 
@@ -132,3 +133,8 @@ def get_svg_pathl(url):
 def get_last_n_characters(string, n=3):
     last_n_characters = string[-n:]
     return last_n_characters
+
+
+@register.filter(name="strip_html")
+def strip_html(value):
+    return strip_tags(value)

@@ -81,6 +81,9 @@ class TaakSerializer(serializers.ModelSerializer):
     )
     taakstatus = TaakstatusSerializer(read_only=True)
     gebruiker = serializers.CharField(required=False, allow_null=True)
+    omschrijving_intern = serializers.CharField(
+        required=False, allow_null=True, allow_blank=True
+    )
 
     class Meta:
         model = Taak
@@ -93,10 +96,10 @@ class TaakSerializer(serializers.ModelSerializer):
             "bericht",
             "additionele_informatie",
             "taakstatus",
-            "resolutie",
             "melding",
             "gebruiker",
             "taakopdracht",
+            "omschrijving_intern",
         )
         read_only_fields = (
             "_links",

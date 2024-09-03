@@ -19,6 +19,19 @@ class BaseTaskWithRetry(celery.Task):
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
+def move_resolutie_to_taakgebeurtenis(self):
+    from apps.taken.models import Taak, Taakgebeurtenis
+
+    for taak in Taak.objects.exclude(resolutie__isnull=True):
+        taakgebeurtenis = Taakgebeurtenis.objects.filter(
+            taak=taak, taakstatus__naam="voltooid"
+        ).first()
+        if taakgebeurtenis:
+            taakgebeurtenis.resolutie = taak.resolutie
+            taakgebeurtenis.save()
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
 def task_taak_status_voltooid(
     self,
     taak_id,
@@ -105,7 +118,7 @@ def compare_and_update_status(self, taak_id):
                 update_data = {
                     "taakopdracht_url": taak.taakopdracht,
                     "status": {"naam": taak.taakstatus.naam},
-                    "resolutie": taak.resolutie,
+                    "resolutie": taakgebeurtenis.resolutie,
                     "omschrijving_intern": taakgebeurtenis.omschrijving_intern,
                     "gebruiker": taakgebeurtenis.gebruiker,
                     "bijlagen": [],
