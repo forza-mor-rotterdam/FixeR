@@ -37,8 +37,6 @@ class Migration(migrations.Migration):
                 null=True,
             ),
         ),
-        # Step 2: Data migration to move values from Taak.resolutie to Taakgebeurtenis.resolutie
-        migrations.RunPython(move_resolutie_to_taakgebeurtenis),
         migrations.AlterField(
             model_name="taakstatus",
             name="naam",
