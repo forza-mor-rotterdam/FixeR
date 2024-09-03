@@ -31,7 +31,7 @@ export default class extends Controller {
     const modalList = self.element.querySelectorAll('.modal')
     const modalBackdrop = self.element.querySelector('.modal-backdrop')
     if (self.hasTurboFrameTarget) {
-      self.turboFrameTarget.textContent = ''
+      self.turboFrameTarget.innerHTML = ''
     }
 
     modalList.forEach((modal) => {
@@ -45,18 +45,18 @@ export default class extends Controller {
     const params = event.params || event.detail.e.params
     let self = this
     if (self.hasTitleTarget) {
-      self.titleTarget.textContent = params.title
+      self.titleTarget.innerHTML = params.title
     }
     if (self.hasSubTitleTarget) {
       if (params.subTitle) {
-        self.subTitleTarget.textContent = params.subTitle
+        self.subTitleTarget.innerHTML = params.subTitle
       } else {
         self.subTitleTarget.style.display = 'none'
       }
     }
     if (self.hasInfoExtraTarget) {
       if (params.infoExtra) {
-        self.infoExtraTarget.textContent = params.infoExtra
+        self.infoExtraTarget.innerHTML = params.infoExtra
       } else {
         self.infoExtraTarget.style.display = 'none'
       }
