@@ -4,7 +4,10 @@ from django.db.models.functions import Cast, Concat
 
 class TaakQuerySet(QuerySet):
     def get_taken_recent(self, user):
-        return self.filter(bezig_met_verwerken=False).order_by("-aangemaakt_op")
+        return self.filter(
+            bezig_met_verwerken=False,
+            verwijderd_op__isnull=True,
+        ).order_by("-aangemaakt_op")
 
     def annotate_adres(self):
         return self.annotate(
