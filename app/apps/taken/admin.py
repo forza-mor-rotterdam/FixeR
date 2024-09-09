@@ -66,12 +66,14 @@ class TaakAdmin(admin.ModelAdmin):
         "resolutie",
         "aangemaakt_op",
         "aangepast_op",
+        "verwijderd_op",
         "taakopdracht",
         "taak_zoek_data",
         "bezig_met_verwerken",
     )
     readonly_fields = (
         "uuid",
+        "verwijderd_op",
         "aangemaakt_op",
         "aangepast_op",
         "afgesloten_op",
@@ -102,6 +104,7 @@ class TaakAdmin(admin.ModelAdmin):
                     "aangemaakt_op",
                     "aangepast_op",
                     "afgesloten_op",
+                    "verwijderd_op",
                 )
             },
         ),

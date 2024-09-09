@@ -4,6 +4,7 @@ from apps.taken.serializers import (
     TaakSerializer,
     TaaktypeSerializer,
 )
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -68,6 +69,15 @@ class TaakViewSet(
 
         serializer = self.get_serializer(taak, context={"request": request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, *args, **kwargs):
+        taak = self.get_object()
+        taak.verwijderd_op = timezone.now()
+        taak.save()
+        return Response(
+            data={},
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
     @extend_schema(
         description="Verander de status van een melding",
