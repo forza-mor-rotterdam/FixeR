@@ -370,7 +370,7 @@ WIJKEN_EN_BUURTEN_CACHE_TIMEOUT = 60 * 60 * 24
 # Sessions are managed by django-session-timeout-joinup
 # Django session settings
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 # Session settings for django-session-timeout-joinup
 SESSION_EXPIRE_MAXIMUM_SECONDS = int(
