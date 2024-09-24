@@ -43,6 +43,7 @@ export default class extends Controller {
   openModal(event) {
     event.preventDefault()
     const params = event.params || event.detail.e.params
+
     let self = this
     if (self.hasTitleTarget) {
       self.titleTarget.innerHTML = params.title
@@ -71,7 +72,7 @@ export default class extends Controller {
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
     let classes = ''
-    if (event.params && event.params.type === 'navigation') {
+    if (params && params.type === 'navigation') {
       classes = 'show-navigation'
     } else {
       classes = 'show-modal'
