@@ -3,6 +3,7 @@ import logging
 
 import jwt
 import requests
+import urllib3
 from django.conf import settings
 from django.core.validators import URLValidator
 
@@ -59,6 +60,7 @@ class MercureService:
         headers = {
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/x-www-form-urlencoded",
+            "user-agent": urllib3.util.SKIP_HEADER,
         }
         data = {
             "topic": topic,
