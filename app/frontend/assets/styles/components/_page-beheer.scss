@@ -42,6 +42,12 @@
         margin-top: -1.5rem;
     }
 
+    .form-control__with-helptext {
+        .form-control {
+            margin-bottom: 1.5em;
+        }
+    }
+
     .pagetitle,
     h2 {
         margin-bottom: 0.25em;
