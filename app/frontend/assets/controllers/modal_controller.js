@@ -24,10 +24,8 @@ export default class extends Controller {
     }
   }
   closeModal() {
-    console.log('closeModal')
     let self = this
     if (self.hasTaakItemTarget) {
-      console.log('self.taakItemTarget', self.taakItemTarget)
       self.taakItemTarget.classList.remove('selected')
     }
     const modalList = self.element.querySelectorAll('.modal')
@@ -43,7 +41,6 @@ export default class extends Controller {
     document.body.classList.remove('show-modal', 'show-modal--transparent', 'show-navigation')
   }
   openModal(event) {
-    console.log('openModal, event', event)
     event.preventDefault()
     const params = event.params || event.detail.e.params
 
@@ -75,10 +72,6 @@ export default class extends Controller {
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
     let classes = ''
-    if (event.params) {
-      console.log('event.params.type', event.params.type)
-      console.log('params.type', params.type)
-    }
     if (event.params && event.params.type === 'navigation') {
       classes = 'show-navigation'
     } else {
