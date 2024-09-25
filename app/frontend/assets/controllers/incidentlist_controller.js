@@ -82,10 +82,12 @@ export default class extends Controller {
   }
 
   deselecteerTaakItem() {
-    console.log('incidentList_controller#deselecteerTaakItem')
-    this.taakItemTargets.forEach((taakItemTarget) => {
-      taakItemTarget.classList.remove('selected')
-    })
+    if (!document.body.classList.contains('show-modal')) {
+      console.log('incidentList_controller#deselecteerTaakItem')
+      this.taakItemTargets.forEach((taakItemTarget) => {
+        taakItemTarget.classList.remove('selected')
+      })
+    }
   }
 
   taakAfstandTargetConnected(element) {
