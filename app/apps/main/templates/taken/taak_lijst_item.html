@@ -23,7 +23,7 @@
          {% if bijlagen %}data-afbeelding-url="{{ bijlagen.0.afbeelding_verkleind_relative_url|mor_core_protected_url }}"{% endif %}
          {% if omschrijving_intern %}data-has-remark="true"{% endif %}
          class="list-item"
-         {% if taak.taak_zoek_data.locatie_type != "graf" and not taak.afgesloten_op %}data-controller="taak modal"{% endif %}>
+         data-controller="modal{% if taak.taak_zoek_data.locatie_type != 'graf' and not taak.afgesloten_op %} taak{% endif %}">
         <div class="wrapper__swipe" data-taak-target="swipeContainer">
             {% if taak.taak_zoek_data.locatie_type != "graf" and not taak.afgesloten_op %}
                 <button class="container__actions handle--no-success"
