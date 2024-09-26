@@ -1,6 +1,9 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
+  static values = {
+    disableSumbitOnInvalid: String,
+  }
   connect() {
     //clear the filelist
     this.temp_files = {}
@@ -67,6 +70,8 @@ export default class extends Controller {
   updateImageDisplay(adding = true) {
     const input = this.fileInput
     const preview = this.element.querySelector('.preview')
+    const form = this.element.closest('form')
+    const submitButton = form.querySelector("[type='submit']")
     const newFiles = input.files //contains only new file(s)
 
     if (!this.multiple) {
@@ -144,9 +149,15 @@ export default class extends Controller {
           }
           listItem.appendChild(content)
           listItem.appendChild(remove)
+          if (submitButton && this.disableSumbitOnInvalidValue) {
+            submitButton.disabled = false
+          }
         } else {
           content.textContent = `Het bestand "${file.name}" is geen geldig bestandstype."`
           listItem.appendChild(content)
+          if (submitButton && this.disableSumbitOnInvalidValue) {
+            submitButton.disabled = true
+          }
         }
 
         list.appendChild(listItem)
