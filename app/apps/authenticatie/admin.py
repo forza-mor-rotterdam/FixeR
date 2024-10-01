@@ -7,6 +7,9 @@ class GebruikerAdmin(UserAdmin):
     model = Gebruiker
     list_display = (
         "email",
+        "first_name",
+        "last_name",
+        "telefoonnummer",
         "is_staff",
         "is_active",
         "is_superuser",

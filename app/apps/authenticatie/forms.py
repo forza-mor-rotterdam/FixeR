@@ -1,5 +1,6 @@
 import csv
 import json
+import logging
 from io import StringIO
 
 import chardet
@@ -15,6 +16,7 @@ from django.db.models.query import QuerySet
 from utils.constanten import PDOK_WIJKEN
 
 Gebruiker = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 class GebruikerAanpassenForm(forms.ModelForm):
@@ -87,42 +89,56 @@ class GebruikerBulkImportForm(forms.Form):
     )
 
     def clean_csv_file(self):
-        csv_file = self.cleaned_data["csv_file"]
-        file_read = csv_file.read()
+        try:
+            csv_file = self.cleaned_data["csv_file"]
+            file_read = csv_file.read()
 
-        encoding = "utf-8"
-        auto_detect_encoding = chardet.detect(file_read)
-        if auto_detect_encoding.get("confidence") > 0.5:
-            encoding = auto_detect_encoding.get("encoding")
-
+            encoding = "utf-8"
+            auto_detect_encoding = chardet.detect(file_read)
+            if auto_detect_encoding.get("confidence") > 0.5:
+                encoding = auto_detect_encoding.get("encoding")
+        except Exception:
+            return {}
         return self._get_rows(file_read.decode(encoding, "ignore"))
 
     def _get_rows(self, str_data):
         all_rows = []
         valid_rows = []
-        csv_fo = StringIO(str_data)
 
-        csvreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
-        valid_checked_rows_email = []
-        for row in csvreader:
-            if len(row) and not row[0]:
-                continue
-            default_row = [row[r] if r < len(row) else None for r in range(0, 4)]
-            errors = []
-            if default_row[0] in valid_checked_rows_email:
-                errors.append(
-                    "Er is al een gebruiker met dit e-mailadres in deze lijst aanwezig"
-                )
-            row_is_not_valid = self.validate_row(default_row, errors)
-            default_row.append(row_is_not_valid)
-            default_row.append("")
-            if not row_is_not_valid:
-                if Gebruiker.objects.all().filter(email=default_row[0]):
-                    default_row[5] = "aanpassen"
-                valid_rows.append(default_row)
+        try:
+            csv_fo = StringIO(str_data)
+            csvreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
+            valid_checked_rows_email = []
+            for row in csvreader:
+                if len(row) and not row[0] or len(row) == 0:
+                    continue
+                default_row = [row[r] if r < len(row) else None for r in range(0, 4)]
+                try:
+                    validate_email(default_row[0])
+                except ValidationError:
+                    continue
+                default_row[0] = default_row[0].lower()
+                errors = []
+                if default_row[0] in valid_checked_rows_email:
+                    errors.append(
+                        "Er is al een gebruiker met dit e-mailadres in deze lijst aanwezig"
+                    )
+                row_is_not_valid = self.validate_row(default_row, errors)
+                default_row.append(row_is_not_valid)
+                default_row.append("")
+                if not row_is_not_valid:
+                    if Gebruiker.objects.all().filter(
+                        email__iexact=default_row[0].lower()
+                    ):
+                        default_row[5] = "aanpassen"
+                    valid_rows.append(default_row)
 
-                valid_checked_rows_email.append(default_row[0])
-            all_rows.append(default_row)
+                    valid_checked_rows_email.append(default_row[0])
+                all_rows.append(default_row)
+        except Exception as e:
+            logger.warning(f"csv validatie fout {e}")
+            return {}
+
         return {
             "all_rows": all_rows,
             "valid_rows": valid_rows,

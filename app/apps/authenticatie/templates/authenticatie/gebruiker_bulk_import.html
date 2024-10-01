@@ -5,7 +5,7 @@
     Gebruiker bulk import | Beheer | FixeR
 {% endblock title %}
 {% block body %}
-    <div class="page__beheer" data-controller="row-search">
+    <div class="page__beheer">
         <div>
             <a href="{% url 'gebruiker_lijst' %}"
                class="link--back"
@@ -26,9 +26,11 @@
         {% if form %}
             <form method="post"
                   action="{% url 'gebruiker_bulk_import' %}"
-                  enctype="multipart/form-data"
-                  novalidate>
+                  enctype="multipart/form-data">
                 {% csrf_token %}
+                {% if not form.errors and form.cleaned_data and not form.cleaned_data.csv_file.all_rows %}
+                    <p>Het bestand bevat geen valide data!</p>
+                {% endif %}
                 <fieldset>
                     {% if not form.errors and form.cleaned_data.csv_file.all_rows %}
                         <div>
@@ -161,7 +163,9 @@
                             </table>
                         {% endif %}
                     {% endif %}
-                    <div class="form-control__with-helptext" data-controller="bijlagen">
+                    <div class="form-control__with-helptext"
+                         data-controller="bijlagen"
+                         data-bijlagen-disable-sumbit-on-invalid-value="true">
                         {{ form.csv_file|render_rotterdam_formulier }}
                     </div>
                     <div class="form-control__with-helptext">{{ form.context|render_rotterdam_formulier }}</div>

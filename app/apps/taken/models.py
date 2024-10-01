@@ -57,7 +57,7 @@ class Taakgebeurtenis(BasisModel):
 class Taaktype(BasisModel):
     omschrijving = models.CharField(max_length=200)
     toelichting = models.CharField(
-        max_length=500,
+        max_length=2000,
         blank=True,
         null=True,
     )
@@ -241,6 +241,7 @@ class Taak(BasisModel):
         NIET_GEVONDEN = "niet_gevonden", "Niets aangetroffen"
 
     afgesloten_op = models.DateTimeField(null=True, blank=True)
+    verwijderd_op = models.DateTimeField(null=True, blank=True)
     melding = models.ForeignKey(
         to="aliassen.MeldingAlias",
         related_name="taken_voor_meldingalias",

@@ -12,8 +12,15 @@ export default class extends Controller {
       }
     })
 
-    addEventListener('openModalFromMap', (e) => this.openModal(e))
+    addEventListener('openModalFromMap', (e) => {
+      if (this.element.closest('.list-item')) {
+        if (this.element.closest('.list-item').classList.contains('selected')) {
+          this.openModal(e)
+        }
+      }
+    })
   }
+
   closeModalElementTargetConnected(element) {
     let self = this
     if (element.dataset.turboFrameId) {
@@ -43,6 +50,7 @@ export default class extends Controller {
   openModal(event) {
     event.preventDefault()
     const params = event.params || event.detail.e.params
+
     let self = this
     if (self.hasTitleTarget) {
       self.titleTarget.innerHTML = params.title
