@@ -57,7 +57,7 @@ class Taakgebeurtenis(BasisModel):
 class Taaktype(BasisModel):
     omschrijving = models.CharField(max_length=200)
     toelichting = models.CharField(
-        max_length=500,
+        max_length=2000,
         blank=True,
         null=True,
     )
