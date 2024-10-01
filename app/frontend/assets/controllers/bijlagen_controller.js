@@ -159,7 +159,6 @@ export default class extends Controller {
             submitButton.disabled = true
           }
         }
-
         list.appendChild(listItem)
       }
     }
