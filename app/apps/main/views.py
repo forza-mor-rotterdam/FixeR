@@ -794,7 +794,7 @@ def _meldingen_bestand(request, modified_path):
         response.raw,
         content_type=response.headers.get("content-type"),
         headers={
-            "Content-Disposition": "inline",
+            "Content-Disposition": "attachment",
         },
         status=response.status_code,
         reason=response.reason,
