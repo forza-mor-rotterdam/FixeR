@@ -51,7 +51,7 @@
         </div>
     {% endif %}
 </div>
-{% if toon_alle_taken %}
+{% if toon_alle_taken or taken_gefilterd_total <= 100 %}
     {% include "snippets/paginator.html" with page_obj=page_obj %}
 {% endif %}
 </turbo-frame>
