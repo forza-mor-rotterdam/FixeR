@@ -73,8 +73,7 @@ INSTALLED_APPS = (
     "django_filters",
     "webpack_loader",
     "corsheaders",
-    "ckeditor",
-    "ckeditor_uploader",
+    "django_ckeditor_5",
     "debug_toolbar",
     "mozilla_django_oidc",
     "health_check",
@@ -318,7 +317,6 @@ CSP_CONNECT_SRC = (
         "mercure.fixer-test.forzamor.nl",
         "mercure.fixer-acc.forzamor.nl",
         "mercure.fixer.forzamor.nl",
-        "cke4.ckeditor.com",
         "forzamor.nl",
     )
     if not DEBUG
@@ -326,7 +324,6 @@ CSP_CONNECT_SRC = (
         "'self'",
         "ws:",
         "localhost:7001",
-        "cke4.ckeditor.com",
         "taakr.mor.local:8009",
     )
 )
@@ -512,39 +509,77 @@ APP_MERCURE_INTERNAL_URL = os.getenv("APP_MERCURE_INTERNAL_URL", APP_MERCURE_PUB
 MERCURE_PUBLISHER_JWT_KEY = os.getenv("MERCURE_PUBLISHER_JWT_KEY")
 MERCURE_SUBSCRIBER_JWT_KEY = os.getenv("MERCURE_SUBSCRIBER_JWT_KEY")
 
-CKEDITOR_CONFIGS = {
+CKEDITOR_5_CONFIGS = {
     "default": {
-        "toolbar": "Custom",  # change to Custom if you want the below settings
-        # create custom config here: https://ckeditor.com/latest/samples/toolbarconfigurator/index.html#advanced
-        "toolbar_Custom": [
-            {"name": "basicstyles", "items": ["Bold", "Italic", "Underline", "Strike"]},
-            {
-                "name": "paragraph",
-                "items": [
-                    "NumberedList",
-                    "BulletedList",
-                    "-",
-                    "Outdent",
-                    "Indent",
-                    "-",
-                    "-",
-                    "JustifyLeft",
-                    "JustifyCenter",
-                    "JustifyRight",
-                    "JustifyBlock",
-                    "-",
-                ],
-            },
-            "/",
-            {"name": "styles", "items": ["Format", "FontSize"]},
-            {"name": "links", "items": ["Link", "Unlink"]},
-            {"name": "format", "items": ["CopyFormatting", "RemoveFormat"]},
+        "toolbar": [
+            "heading",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "underline",
+            "strikethrough",
+            "|",
+            "bulletedList",
+            "numberedList",
+            "alignment",
+            "blockQuote",
+            "removeFormat",
         ],
-        "height": 300,
+        "heading": {
+            "options": [
+                {
+                    "model": "paragraph",
+                    "title": "Normaal",
+                    "class": "ck-heading_paragraph",
+                },
+                {
+                    "model": "heading1",
+                    "view": "h1",
+                    "title": "Kop 1",
+                    "class": "ck-heading_heading1",
+                },
+                {
+                    "model": "heading2",
+                    "view": "h2",
+                    "title": "Kop 2",
+                    "class": "ck-heading_heading2",
+                },
+                {
+                    "model": "heading3",
+                    "view": "h3",
+                    "title": "Kop 3",
+                    "class": "ck-heading_heading3",
+                },
+                {
+                    "model": "heading4",
+                    "view": "h3",
+                    "title": "Kop 4",
+                    "class": "ck-heading_heading4",
+                },
+                {
+                    "model": "heading5",
+                    "view": "h3",
+                    "title": "Kop 5",
+                    "class": "ck-heading_heading5",
+                },
+                {
+                    "model": "heading6",
+                    "view": "h3",
+                    "title": "Kop 6",
+                    "class": "ck-heading_heading6",
+                },
+            ]
+        },
+    },
+    "list": {
+        "properties": {
+            "styles": "true",
+            "startIndex": "true",
+            "reversed": "true",
+        }
     },
 }
-
-CKEDITOR_UPLOAD_PATH = "uploads/"
 
 SIGNED_DATA_MAX_AGE_SECONDS = int(
     os.getenv("SIGNED_DATA_MAX_AGE_SECONDS", 259200)
