@@ -22,10 +22,26 @@
                     {% if taak.spoed %}<span><span class="icon icon--warning">Spoed</span></span>{% endif %}
                 </h2>
             </summary>
-            {% if taak.id %}
-                <h3 class="h5">Taaknummer</h3>
-                <p>{{ taak.id }}</p>
-            {% endif %}
+            <div class="container__flex">
+                {% if taak.taak_zoek_data.locatie_type == "adres" %}
+                    <div>
+                        <h3 class="h5">MeldR-nummer</h3>
+                        <p class="no-margin">
+                            {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
+                                {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+                            {% else %}
+                                Onbekend
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+                {% if taak.id %}
+                    <div>
+                        <h3 class="h5">Taaknummer</h3>
+                        <p>{{ taak.id }}</p>
+                    </div>
+                {% endif %}
+            </div>
             {% if taak.titel %}
                 <h3 class="h5">Omschrijving</h3>
                 <p>{{ taak.titel }}</p>
@@ -235,23 +251,31 @@
                     Melding
                 </h2>
             </summary>
-            <h3 class="h5">Meldingnummer</h3>
-            <p class="no-margin">
-                {% if melding.id %}
-                    {{ melding.id }}
-                {% else %}
-                    Onbekend
+            <div class="container__flex">
+                {% if taak.taak_zoek_data.locatie_type == "adres" %}
+                    <div>
+                        <h3 class="h5">MeldR-nummer</h3>
+                        <p class="no-margin">
+                            {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
+                                {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+                            {% else %}
+                                Onbekend
+                            {% endif %}
+                        </p>
+                    </div>
                 {% endif %}
-            </p>
+                <div>
+                    <h3 class="h5">Meldingnummer</h3>
+                    <p class="no-margin">
+                        {% if melding.id %}
+                            {{ melding.id }}
+                        {% else %}
+                            Onbekend
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
             {% if taak.taak_zoek_data.locatie_type == "adres" %}
-                <h3 class="h5">MeldR-nummer</h3>
-                <p class="no-margin">
-                    {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
-                        {{ melding.signalen_voor_melding.0.bron_signaal_id }}
-                    {% else %}
-                        Onbekend
-                    {% endif %}
-                </p>
                 <small>
                     {% if melding.signalen_voor_melding|length > 1 %}
                         <strong>Bestaand uit de samengevoegde meldingen:</strong>
