@@ -22,6 +22,12 @@
 .container__details {
     &--sticky-bottom {
         min-height: 150px;
+
+        .sticky {
+            .form-row {
+                gap: 10px;
+            }
+        }
     }
 
     .locatie-container {
