@@ -7,9 +7,9 @@ services:
     env_file:
       - .env.test
     depends_on:
-      redis:
-        condition: service_started
       database:
+        condition: service_healthy
+      redis:
         condition: service_started
     networks:
       - fixer_network
