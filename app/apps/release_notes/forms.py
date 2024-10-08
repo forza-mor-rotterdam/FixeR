@@ -28,6 +28,7 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
             }
         ),
         label="Beschrijving",
+        required=False,
         help_text="Max 5000 tekens.",  # @TODO @Remco Add validation and counter.
         max_length=5000,
     )
