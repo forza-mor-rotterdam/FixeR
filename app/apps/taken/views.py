@@ -1,4 +1,5 @@
 from apps.instellingen.models import Instelling
+from apps.services.taakr import TaakRService
 from apps.taken.forms import TaaktypeAanmakenForm, TaaktypeAanpassenForm
 from apps.taken.models import Taaktype
 from django.contrib.auth.decorators import login_required, permission_required
@@ -32,7 +33,8 @@ class TaaktypeLijstView(TaaktypeView, ListView):
 
 
 class TaaktypeAanmakenAanpassenView(TaaktypeView):
-    ...
+    def get_success_url(self):
+        return reverse("taaktype_aanpassen", kwargs={"pk": self.object.id})
 
 
 @method_decorator(login_required, name="dispatch")
@@ -76,14 +78,17 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
                 "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
             )
         response = super().form_valid(form)
+
+        taaktype_url = drf_reverse(
+            "v1:taaktype-detail",
+            kwargs={"uuid": self.object.uuid},
+            request=self.request,
+        )
+
+        TaakRService().vernieuw_taaktypes(taaktype_url)
         if form.cleaned_data.get("redirect_field", "").startswith(
             instelling.taakr_basis_url
         ):
-            taaktype_url = drf_reverse(
-                "v1:taaktype-detail",
-                kwargs={"uuid": self.object.uuid},
-                request=self.request,
-            )
             return redirect(f"{form.cleaned_data.get('redirect_field')}{taaktype_url}")
         return response
 
@@ -128,13 +133,14 @@ class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
                 "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
             )
         response = super().form_valid(form)
+        taaktype_url = drf_reverse(
+            "v1:taaktype-detail",
+            kwargs={"uuid": self.object.uuid},
+            request=self.request,
+        )
+        TaakRService().vernieuw_taaktypes(taaktype_url)
         if form.cleaned_data.get("redirect_field", "").startswith(
             instelling.taakr_basis_url
         ):
-            taaktype_url = drf_reverse(
-                "v1:taaktype-detail",
-                kwargs={"uuid": self.object.uuid},
-                request=self.request,
-            )
             return redirect(f"{form.cleaned_data.get('redirect_field')}{taaktype_url}")
         return response
