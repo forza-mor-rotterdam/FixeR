@@ -233,6 +233,7 @@ def taken_filter(request):
     foldout_states = []
 
     if request.POST:
+        request.session["toon_alle_taken"] = True
         request_filters = {f: request.POST.getlist(f) for f in filters}
         foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
         for filter_name, new_value in request_filters.items():
@@ -794,7 +795,7 @@ def _meldingen_bestand(request, modified_path):
         response.raw,
         content_type=response.headers.get("content-type"),
         headers={
-            "Content-Disposition": "inline",
+            "Content-Disposition": "attachment",
         },
         status=response.status_code,
         reason=response.reason,

@@ -7,6 +7,9 @@
         {% if not taak.afgesloten_op %}
             <div class="sticky sticky--bottom">
                 <div class="form-row">
+                    <button data-detail-target="btnToTop"
+                            data-action="detail#scrollToTop"
+                            class="btn btn-to-top">{% include "icons/arrow-double.svg" %}</button>
                     <button class="btn btn-action"
                             data-modal-title-param="Taak afhandelen"
                             data-modal-url-param="{% url 'taak_afhandelen' taak.id %}"

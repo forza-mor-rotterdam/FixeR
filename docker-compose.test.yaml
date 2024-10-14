@@ -7,15 +7,15 @@ services:
     env_file:
       - .env.test
     depends_on:
-      redis:
-        condition: service_started
       database:
+        condition: service_healthy
+      redis:
         condition: service_started
     networks:
       - fixer_network
 
   database:
-    image: postgis/postgis:11-3.3
+    image: postgis/postgis:16-3.4
     shm_size: '1024m'
     ports:
       - "5432"
@@ -35,38 +35,6 @@ services:
       - fixer_network
     ports:
       - "6379"
-
-  # app_celery_worker:
-  #   build: ./app
-  #   command: "celery -A config worker -l info"
-  #   depends_on:
-  #     database:
-  #       condition: service_started
-  #     redis:
-  #       condition: service_started
-  #   # volumes:
-  #   #   - ./media:/media
-  #   env_file:
-  #     - .env.test
-  #   networks:
-  #     - fixer_network
-  #   restart: on-failure
-
-  # app_celery_beat:
-  #   build: ./app
-  #   command: "celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
-  #   depends_on:
-  #     database:
-  #       condition: service_started
-  #     redis:
-  #       condition: service_started
-  #   # volumes:
-  #   #   - ./media:/media
-  #   env_file:
-  #     - .env.test
-  #   networks:
-  #     - fixer_network
-  #   restart: on-failure
 
 networks:
   fixer_network:

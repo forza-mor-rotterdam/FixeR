@@ -275,6 +275,49 @@ button {
         }
     }
 
+    &-to-top {
+        align-self: flex-end;
+        font-size: 0.7em;
+        padding: 0.5em 0.7em;
+        width: auto;
+        background-color: $white;
+        box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.25);
+        opacity: 0;
+        display: none;
+        transition-property: opacity, display;
+        transition-duration: $transition-duration-default;
+        transition-timing-function: $transition-ease-default;
+        transition-behavior: allow-discrete;
+
+        svg {
+            width: 32px;
+            height: 32px;
+            transform: rotate(-90deg);
+            vertical-align: middle;
+        }
+
+        &.show {
+            opacity: 1;
+            display: block;
+            transition-property: opacity, display;
+            transition-duration: $transition-duration-default;
+            transition-timing-function: $transition-ease-default;
+            transition-behavior: allow-discrete;
+            @starting-style {
+                opacity: 0;
+            }
+        }
+
+        &:hover,
+        &:focus {
+            svg {
+                path {
+                    fill: $green-tint01;
+                }
+            }
+        }
+    }
+
     &:not(:disabled) {
         cursor: pointer;
     }

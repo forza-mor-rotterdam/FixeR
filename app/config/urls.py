@@ -280,6 +280,7 @@ urlpatterns = [
         meldingen_bestand_protected,
         name="meldingen_bestand_protected",
     ),
+    path("ckeditor5/", include("django_ckeditor_5.urls")),
 ]
 
 if settings.OIDC_ENABLED:

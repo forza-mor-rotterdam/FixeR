@@ -41,6 +41,7 @@ export default class extends Controller {
     'navigateImagesRight',
     'imageCounter',
     'imageSliderThumbContainer',
+    'btnToTop',
   ]
 
   Mapping = {
@@ -211,9 +212,29 @@ export default class extends Controller {
     })
   }
 
-  connect() {}
+  connect() {
+    window.addEventListener(
+      'scroll',
+      function () {
+        if (document.body.scrollTop >= 100 || document.documentElement.scrollTop >= 100) {
+          this.btnToTopTarget.classList.add('show')
+        } else {
+          this.btnToTopTarget.classList.remove('show')
+        }
+      }.bind(this),
+      false
+    )
+  }
 
   disconnect() {}
+
+  scrollToTop(e) {
+    e.target.blur()
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
 
   onMapLayerChange(e) {
     if (e.target.checked) {

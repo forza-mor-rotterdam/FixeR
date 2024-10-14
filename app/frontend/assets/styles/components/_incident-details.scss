@@ -22,6 +22,12 @@
 .container__details {
     &--sticky-bottom {
         min-height: 150px;
+
+        .sticky {
+            .form-row {
+                gap: 10px;
+            }
+        }
     }
 
     .locatie-container {
@@ -161,6 +167,17 @@
                     right: 12px;
                     transform: rotate(-90deg) scale(1.5);
                 }
+            }
+        }
+
+        .container__flex {
+            display: flex;
+            gap: 20px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+
+            > div {
+                flex: 1;
             }
         }
     }
