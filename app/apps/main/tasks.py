@@ -23,12 +23,10 @@ class BaseTaskWithRetryBackoff(celery.Task):
 
 @shared_task(bind=True, base=BaseTaskWithRetryBackoff)
 def task_update_wijken_en_buurten(self):
-    from apps.services.pdok import PDOKService
+    from apps.main.services import PDOKService
 
     service = PDOKService()
-    response = service.get_buurten_middels_gemeentecode(
-        settings.WIJKEN_EN_BUURTEN_GEMEENTECODE
-    )
+    response = service.get_buurten_middels_gemeentecode()
     cache.set(
         settings.WIJKEN_EN_BUURTEN_CACHE_KEY,
         response,

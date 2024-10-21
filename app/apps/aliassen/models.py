@@ -1,7 +1,7 @@
 import json
 import logging
 
-from apps.meldingen.service import MeldingenService
+from apps.main.services import MORCoreService
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import GEOSGeometry
 from utils.models import BasisModel
@@ -25,7 +25,7 @@ class MeldingAlias(BasisModel):
         pass
 
     def valideer_bron_url(self):
-        response = MeldingenService().get_by_uri(self.bron_url)
+        response = MORCoreService().get_by_uri(self.bron_url)
         if response.status_code != 200:
             error = f"Melding ophalen fout: status code: {response.status_code}, melding_alias id: {self.id}"
             logger.error(error)
@@ -97,7 +97,7 @@ class BijlageAlias(BasisModel):
         pass
 
     def valideer_bron_url(self):
-        response = MeldingenService().get_by_uri(self.bron_url)
+        response = MORCoreService().get_by_uri(self.bron_url)
         if response.status_code != 200:
             raise BijlageAlias.BijlageNietValide(
                 f"Response status_code: {response.status_code}"

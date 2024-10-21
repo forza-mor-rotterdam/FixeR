@@ -85,6 +85,7 @@ INSTALLED_APPS = (
     "django_celery_results",
     "sorl.thumbnail",
     "django_select2",
+    "mor_api_services",
     # Apps
     "apps.authorisatie",
     "apps.authenticatie",
@@ -94,7 +95,6 @@ INSTALLED_APPS = (
     "apps.context",
     "apps.beheer",
     "apps.release_notes",
-    "apps.services",
     "apps.instellingen",
 )
 
@@ -507,7 +507,13 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
 APP_MERCURE_PUBLIC_URL = os.getenv("APP_MERCURE_PUBLIC_URL")
 APP_MERCURE_INTERNAL_URL = os.getenv("APP_MERCURE_INTERNAL_URL", APP_MERCURE_PUBLIC_URL)
 MERCURE_PUBLISHER_JWT_KEY = os.getenv("MERCURE_PUBLISHER_JWT_KEY")
+MERCURE_PUBLISHER_JWT_ALG = os.getenv("MERCURE_PUBLISHER_JWT_ALG", "HS256")
 MERCURE_SUBSCRIBER_JWT_KEY = os.getenv("MERCURE_SUBSCRIBER_JWT_KEY")
+MERCURE_SUBSCRIBER_JWT_ALG = os.getenv("MERCURE_SUBSCRIBER_JWT_ALG", "HS256")
+
+MERCURE_PUBLISH_TARGETS = [
+    "/melding/{id}/",
+]
 
 CKEDITOR_5_CONFIGS = {
     "default": {
