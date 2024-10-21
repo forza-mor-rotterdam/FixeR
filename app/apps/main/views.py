@@ -16,6 +16,7 @@ from apps.main.forms import (
     TaakToewijzenForm,
     TaakToewijzingIntrekkenForm,
 )
+from apps.main.services import MORCoreService, PDOKService, TaakRService
 from apps.main.utils import (
     get_actieve_filters,
     get_filters,
@@ -26,10 +27,7 @@ from apps.main.utils import (
     set_kaart_modus,
     set_sortering,
 )
-from apps.meldingen.service import MeldingenService
 from apps.release_notes.models import ReleaseNote
-from apps.services.pdok import PDOKService
-from apps.services.taakr import TaakRService
 from apps.taken.models import Taak, TaakDeellink
 from apps.taken.tasks import task_taak_status_voltooid
 from device_detector import DeviceDetector
@@ -64,9 +62,7 @@ logger = logging.getLogger(__name__)
 @login_required
 def wijken_en_buurten(request):
     service = PDOKService()
-    response = service.get_buurten_middels_gemeentecode(
-        request.GET.get("gemeentecode", settings.WIJKEN_EN_BUURTEN_GEMEENTECODE)
-    )
+    response = service.get_buurten_middels_gemeentecode()
     return JsonResponse(response)
 
 
@@ -157,7 +153,7 @@ def ui_settings_handler(request):
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken(request):
     gebruiker = request.user
-    MeldingenService().set_gebruiker(gebruiker=gebruiker.serialized_instance())
+    MORCoreService().set_gebruiker(gebruiker=gebruiker.serialized_instance())
 
     if (
         not gebruiker.profiel.onboarding_compleet
@@ -515,7 +511,7 @@ def taak_delen(request, id):
     Standaard worden links die gedeeld worden alleen in FixeR opgeslagen
     Met de code hieronder kan ook MOR-Core deze info opslaan in context met de melding
 
-    response = MeldingenService().taak_gebeurtenis_toevoegen(
+    response = MORCoreService().taak_gebeurtenis_toevoegen(
         taakopdracht_url=taak.taakopdracht,
         gebeurtenis_type="gedeeld",
         gebruiker=gebruiker_email,
@@ -606,7 +602,7 @@ def taak_toewijzen(request, id):
     if request.POST:
         form = TaakToewijzenForm(request.POST, gebruikers=valide_gebruikers)
         if form.is_valid():
-            taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
+            taak_status_aanpassen_response = MORCoreService().taak_status_aanpassen(
                 taakopdracht_url=taak.taakopdracht,
                 status="toegewezen",
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
@@ -644,7 +640,7 @@ def taak_toewijzing_intrekken(request, id):
     if request.POST:
         form = TaakToewijzingIntrekkenForm(request.POST)
         if form.is_valid():
-            taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
+            taak_status_aanpassen_response = MORCoreService().taak_status_aanpassen(
                 taakopdracht_url=taak.taakopdracht,
                 status="openstaand",
                 gebruiker=request.user.email,
@@ -790,7 +786,7 @@ def _meldingen_bestand(request, modified_path):
             "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
         )
     url = f"{instelling.mor_core_basis_url}{modified_path}"
-    response = requests.get(url, stream=True, headers=MeldingenService().get_headers())
+    response = requests.get(url, stream=True, headers=MORCoreService().get_headers())
     return StreamingHttpResponse(
         response.raw,
         content_type=response.headers.get("content-type"),
