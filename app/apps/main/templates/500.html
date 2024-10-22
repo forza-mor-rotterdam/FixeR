@@ -27,22 +27,34 @@
                  alt="" />
             <h1 class="h3">Fout melden via e-mail</h1>
             <p>Door op ‘Verstuur via e-mail’  te klikken, meld je de volgende gegevens bij deze melding.</p>
-            <ul>
-                <li class="padding-bottom-half">
-                    Type foutmelding: <strong>Interne serverfout 500, FixeR {{ server_id }}</strong>
-                </li>
-                <li class="padding-bottom-half">
-                    Tijdstip van de foutmelding: <strong>{{ current_time }}</strong>
-                </li>
-                <li class="padding-bottom-half">
-                    Pagina URL van de foutmelding: <strong>{{ path }}</strong>
-                </li>
-                <li class="padding-bottom-half">
-                    Gebruikte browser: <strong>{{ user_agent }}</strong>
-                </li>
-            </ul>
+            <dl>
+                <div class="padding-bottom-half">
+                    <dt>Type foutmelding:</dt>
+                    <dd>
+                        Interne serverfout 500
+                    </dd>
+                </div>
+                <div class="padding-bottom-half">
+                    <dt>Tijdstip van de foutmelding:</dt>
+                    <dd id="errorTime">
+                        {{ current_time }}
+                    </dd>
+                </div>
+                <div class="padding-bottom-half">
+                    <dt>Pagina URL van de foutmelding:</dt>
+                    <dd id="errorURL">
+                        {{ path }}
+                    </dd>
+                </div>
+                <div class="padding-bottom-half">
+                    <dt>Gebruikte browser:</dt>
+                    <dd id="errorAgent">
+                        {{ user_agent }}
+                    </dd>
+                </div>
+            </dl>
             <div class="container__flex">
-                <a href="mailto:productowner-morsb@rotterdam.nl?subject=Interne serverfout: 500&body=Type foutmelding: Interne serverfout 500, FixeR {{ server_id }}%0D%0ATijdstip van de foutmelding: {{ current_time }}%0D%0AURL van de foutmelding: {{ path }}%0D%0ABrowser: {{ user_agent }}%0D%0A%0D%0AWellicht heb je nog meer  informatie voor ons:%0D%0AKomt deze fout vaker voor:%0D%0AHeb je een patroon kunnen ontdekken:%0D%0AErvaren je collega’s dezelfde fout:%0D%0A %0D%0AHoe meer informatie we ontvangen, des te beter we de fout kunnen analyseren. Dank voor het melden van de fout.%0D%0A %0D%0A"
+                <a href="mailto:productowner-morsb@rotterdam.nl?subject=FixeR - Interne serverfout: 500&body=Type foutmelding: Interne serverfout 500"
                    target="_blank"
                    rel="noopener noreferrer"
                    class="btn btn-action-v2"

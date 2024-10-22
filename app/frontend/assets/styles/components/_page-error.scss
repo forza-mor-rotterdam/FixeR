@@ -38,6 +38,24 @@
             gap: 1em;
         }
 
+        dl {
+            div {
+                display: block;
+                dt {
+                    font-weight: 700;
+                }
+                @media (min-width: map-get($grid-breakpoints, md)) {
+                    display: flex;
+                    dt {
+                        flex: 1 1 40%;
+                    }
+                    dd {
+                        flex: 1 1 60%;
+                    }
+                }
+            }
+        }
+
         .btn {
             width: auto;
             white-space: nowrap;
