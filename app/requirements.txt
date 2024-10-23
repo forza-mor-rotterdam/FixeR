@@ -42,4 +42,4 @@ hashids==1.3.1
 django-debug-toolbar==4.0.0
 django-encrypted-model-fields==0.6.5
 beautifulsoup4==4.12.3
-git+https://github.com/forza-mor-rotterdam/mor-api-services.git@780c9608968cfbe9307fe453f2844ddcf1397b9b
+git+https://github.com/forza-mor-rotterdam/mor-api-services.git@23bc035b696a528edaa4467226bc38adea8fb980
