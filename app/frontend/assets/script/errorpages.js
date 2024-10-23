@@ -1,8 +1,3 @@
-let errorTime,
-  errorURL,
-  errorAgent,
-  mailtoLink = null
-
 document.body.classList.remove('no-js')
 
 document.querySelector('#showAction').addEventListener('click', () => {
@@ -25,17 +20,11 @@ const getCurrentDate = () => {
   }-${today.getFullYear()}, ${today.getHours()}:${today.getMinutes()} (Computertijd)`
   return date
 }
-
-document.querySelector('#sendEmail').addEventListener('click', (e) => {
-  e.preventDefault()
-  window.location.href = mailtoLink
-})
-
-window.onload = () => {
-  errorAgent = navigator.userAgent
-  errorTime = getCurrentDate()
-  errorURL = window.location.href
-  mailtoLink = `${document
+const setData = () => {
+  let errorAgent = navigator.userAgent
+  let errorTime = getCurrentDate()
+  let errorURL = window.location.href
+  let mailtoLink = `${document
     .querySelector('#sendEmail')
     .getAttribute(
       'href'
@@ -59,4 +48,11 @@ window.onload = () => {
   ) {
     document.querySelector('#errorAgent').textContent = errorAgent
   }
+
+  document.querySelector('#sendEmail').addEventListener('click', (e) => {
+    e.preventDefault()
+    window.location.href = mailtoLink
+  })
 }
+
+setData()
