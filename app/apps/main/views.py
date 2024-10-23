@@ -86,7 +86,7 @@ def http_404(request):
             "current_time": current_time,
             "server_id": server_id,
             "user_agent": request.META.get("HTTP_USER_AGENT", "Onbekend"),
-            "path": request.path,
+            "path": request.build_absolute_uri(request.path),
         },
     )
 
@@ -102,7 +102,7 @@ def http_500(request):
             "current_time": current_time,
             "server_id": server_id,
             "user_agent": request.META.get("HTTP_USER_AGENT", "Onbekend"),
-            "path": request.path,
+            "path": request.build_absolute_uri(request.path),
         },
     )
 
