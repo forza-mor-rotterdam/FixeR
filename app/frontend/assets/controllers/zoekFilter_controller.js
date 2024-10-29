@@ -15,7 +15,6 @@ export default class extends Controller {
     this.element.dispatchEvent(orderChangeEvent)
   }
   onChangeHandler() {
-    console.log('onChangeHandler')
     clearTimeout(this.to)
     // used for scrolling to last selected task
     sessionStorage.removeItem('selectedTaakId')
