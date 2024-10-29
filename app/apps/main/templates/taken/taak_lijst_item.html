@@ -45,6 +45,7 @@
                         data-modal-title-param="Taak afhandelen"
                         data-modal-url-param="{% url 'taak_afhandelen' taak.id %}?resolutie=opgelost"
                         data-modal-id-param="incident_modal_handle_{{ taak.id }}"
+                        data-modal-taakid-param="{{ taak.id }}"
                         data-action="modal#openModal"
                         data-modal-sub-title-param="{% include subtitel_template %}"
                         data-modal-info-extra-param="{% include info_extra_template %}">

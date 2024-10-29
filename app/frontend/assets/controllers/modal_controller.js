@@ -50,8 +50,12 @@ export default class extends Controller {
   openModal(event) {
     event.preventDefault()
     const params = event.params || event.detail.e.params
-
     let self = this
+
+    if (params.taakid) {
+      sessionStorage.setItem('selectedTaakId', params.taakid)
+    }
+
     if (self.hasTitleTarget) {
       self.titleTarget.innerHTML = params.title
     }
