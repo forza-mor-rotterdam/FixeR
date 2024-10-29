@@ -81,6 +81,8 @@ export default class extends Controller {
     let classes = ''
     if (event.params && event.params.type === 'navigation') {
       classes = 'show-navigation'
+      // used for scrolling to last selected task
+      sessionStorage.removeItem('selectedTaakId')
     } else {
       classes = 'show-modal'
     }

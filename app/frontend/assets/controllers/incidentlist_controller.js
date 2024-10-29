@@ -39,15 +39,9 @@ export default class extends Controller {
       window.location.reload()
     })
 
-    this.incidentlistTarget.addEventListener('scroll', this.saveScrollPosition, true)
-
     document.addEventListener('turbo:before-fetch-response', () => {
       this.setScrollPosition()
     })
-  }
-
-  saveScrollPosition = () => {
-    sessionStorage.setItem('scrollPositionList', this.incidentlistTarget.scrollTop)
   }
 
   disconnect() {
@@ -118,10 +112,6 @@ export default class extends Controller {
         //scroll to this element
         const topPos = taakItemTarget.offsetTop + taakItemTarget.offsetHeight
         const containerHeight = this.element.offsetHeight
-
-        console.log('topPos', topPos)
-        console.log('containerHeight', containerHeight)
-
         this.incidentlistTarget.scrollTop = topPos - containerHeight / 2
       }
     })

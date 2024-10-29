@@ -15,8 +15,13 @@ export default class extends Controller {
     this.element.dispatchEvent(orderChangeEvent)
   }
   onChangeHandler() {
+    console.log('onChangeHandler')
     clearTimeout(this.to)
-    this.to = setTimeout(() => this.submit(this.zoekFieldTarget.value), 200)
+    // used for scrolling to last selected task
+    sessionStorage.removeItem('selectedTaakId')
+    this.to = setTimeout(() => {
+      this.submit(this.zoekFieldTarget.value)
+    }, 200)
   }
 
   onSubmit(event) {
