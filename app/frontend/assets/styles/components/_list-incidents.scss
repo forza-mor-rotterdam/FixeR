@@ -57,24 +57,24 @@
 
 .container__list {
     display: flex;
-    border-top: 1px solid $gray-tint04;
     > .container__flex {
         width: 100%;
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+
+        .list__incidents {
+            flex: 1 1 0;
+            border-top: 1px solid $gray-tint04;
+            overflow-y: scroll;
+            scroll-behavior: smooth;
+        }
     }
     @media (min-width: map-get($grid-breakpoints, lg)) {
         border-top: none;
 
         > .container__flex {
-            display: flex;
-            flex-direction: column;
-            flex: 1 1 auto;
             max-width: 500px;
-
-            .list__incidents {
-                flex: 1 1 0;
-                border-top: 1px solid $gray-tint04;
-                overflow-y: auto;
-            }
         }
 
         .container__search {
@@ -168,6 +168,11 @@
 
         &.selected a:not(.link) {
             background-color: $gray-tint02;
+        }
+        &.highlight-once a:not(.link) {
+            background-color: $gray-tint02;
+            animation: gray-to-white 4 * $transition-duration-default $transition-ease-default 1s
+                forwards;
         }
         .show-modal & {
             cursor: initial;

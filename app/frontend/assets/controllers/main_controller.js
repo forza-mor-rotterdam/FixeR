@@ -89,6 +89,8 @@ export default class extends Controller {
 
   showFilters() {
     document.body.classList.add('show-filters')
+    // used for scrolling to last selected task
+    sessionStorage.removeItem('selectedTaakId')
   }
 
   hideFilters() {

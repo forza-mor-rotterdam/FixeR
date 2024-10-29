@@ -5,7 +5,7 @@
         data-controller="pageHeader modal">
     <div class="container">
         <div class="container__logo">
-            <a href="{% url 'root' %}">
+            <a href="{% url 'root' %}" data-action="pageHeader#clearSavedTaakId">
                 <img src="{% webpack_static 'images/logo-organisatie.svg' %}"
                      alt="Logo organisatie"
                      class="logo logo--large" />

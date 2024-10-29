@@ -14,4 +14,9 @@ export default class extends Controller {
       document.body.classList.add(size)
     }
   }
+
+  clearSavedTaakId() {
+    // used for scrolling to last selected task
+    sessionStorage.removeItem('selectedTaakId')
+  }
 }

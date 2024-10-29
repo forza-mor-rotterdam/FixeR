@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
+let timeoutId = null
 export default class extends Controller {
   static showSortingContainer = false
   static showSearchContainer = false
@@ -21,6 +22,7 @@ export default class extends Controller {
     'taakItemLijst',
     'activeFilterCount',
     'takenCount',
+    'incidentlist',
   ]
 
   initialize() {
@@ -36,6 +38,32 @@ export default class extends Controller {
     screen.orientation.addEventListener('change', () => {
       window.location.reload()
     })
+
+    document.addEventListener('turbo:before-fetch-response', () => {
+      this.setScrollPosition()
+    })
+  }
+
+  disconnect() {
+    document.removeEventListener('turbo:before-fetch-response', this.setScrollPosition)
+    clearTimeout(timeoutId)
+  }
+
+  setScrollPosition() {
+    if (this.hasIncidentlistTarget) {
+      let frame = this.incidentlistTarget.querySelector('turbo-frame')
+      if (frame.complete) {
+        timeoutId = setTimeout(() => {
+          this.incidentlistTarget.scrollTop = Number(sessionStorage.getItem('scrollPositionList'))
+          const activeItem = this.element.querySelector('.highlight-once')
+          const containerHeight = this.element.offsetHeight
+          if (activeItem) {
+            const topPos = activeItem.offsetTop + activeItem.offsetHeight
+            this.incidentlistTarget.scrollTop = topPos - containerHeight / 2
+          }
+        }, 100)
+      }
+    }
   }
 
   waitForElm(selector) {
@@ -76,8 +104,16 @@ export default class extends Controller {
   }
 
   selecteerTaakItem(taakId) {
+    sessionStorage.setItem('selectedTaakId', taakId)
     this.taakItemTargets.forEach((taakItemTarget) => {
+      taakItemTarget.classList.remove('highlight-once')
       taakItemTarget.classList.toggle('selected', taakItemTarget.dataset.id === taakId)
+      if (taakItemTarget.dataset.id === taakId) {
+        //scroll to this element
+        const topPos = taakItemTarget.offsetTop + taakItemTarget.offsetHeight
+        const containerHeight = this.element.offsetHeight
+        this.incidentlistTarget.scrollTop = topPos - containerHeight / 2
+      }
     })
   }
 

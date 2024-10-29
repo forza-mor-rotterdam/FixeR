@@ -111,3 +111,12 @@
         transform: translateY(0);
     }
 }
+
+@keyframes gray-to-white {
+    0% {
+        background-color: $gray-tint02;
+    }
+    100% {
+        background-color: $white;
+    }
+}
