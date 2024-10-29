@@ -49,7 +49,6 @@ export default class extends Controller {
   }
 
   initialize() {
-    document.documentElement.scrollTop = 0
     self = this
     let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', {
       bubbles: true,
@@ -224,12 +223,17 @@ export default class extends Controller {
       }.bind(this),
       false
     )
+    setTimeout(() => {
+      this.scrollToTop()
+    }, 100)
   }
 
   disconnect() {}
 
   scrollToTop(e) {
-    e.target.blur()
+    if (e) {
+      e.target.blur()
+    }
     window.scrollTo({
       top: 0,
       behavior: 'smooth',

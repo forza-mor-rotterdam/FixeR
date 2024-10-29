@@ -58,7 +58,9 @@
                    data-turbo-frame="taak_basis"
                    data-page="{{ page_obj.number }}"
                    aria-label="Bekijk taak {{ taak.id }}"
-                   data-controller="incidentlistItem">
+                   data-controller="incidentlistItem"
+                   data-action="incidentlistItem#saveTaakId"
+                   data-incidentlistItem-taakId-param="{{ taak.id }}">
                     <div class="container__image">
                         {% if bijlagen %}
                             {% with bijlagen|first as first_foto %}
