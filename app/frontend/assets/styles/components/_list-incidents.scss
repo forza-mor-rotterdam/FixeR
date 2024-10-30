@@ -59,6 +59,7 @@
     .container__list {
         display: flex;
         height: 97vh;
+
         > .container__flex {
             width: 100%;
             display: flex;
@@ -88,6 +89,12 @@
             .container__search {
                 display: none;
             }
+        }
+    }
+
+    @supports (height: 97dvh) {
+        .container__list {
+            height: 97dvh;
         }
     }
 
