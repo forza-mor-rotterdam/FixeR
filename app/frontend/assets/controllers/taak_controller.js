@@ -130,6 +130,7 @@ export default class extends Controller {
 
     // self.removeAllListeners()
     self.updateSwipeRestPosition(evt)
+    this.element.classList.remove('selected')
 
     self.initialTouchPos = null
     if (self.isMoving !== true) {
