@@ -54,8 +54,9 @@ export default class extends Controller {
       let frame = this.incidentlistTarget.querySelector('turbo-frame')
       if (frame.complete) {
         timeoutId = setTimeout(() => {
-          this.incidentlistTarget.scrollTop = Number(sessionStorage.getItem('scrollPositionList'))
-          const activeItem = this.element.querySelector('.highlight-once')
+          const activeItem = this.element.querySelector(
+            `[data-id="${sessionStorage.getItem('selectedTaakId')}"]`
+          )
           const containerHeight = this.element.offsetHeight
           if (activeItem) {
             const topPos = activeItem.offsetTop + activeItem.offsetHeight
