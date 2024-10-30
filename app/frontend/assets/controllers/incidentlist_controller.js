@@ -44,9 +44,41 @@ export default class extends Controller {
     })
   }
 
+  connect() {
+    this.enableScrollOnSmallScreens()
+  }
+
   disconnect() {
     document.removeEventListener('turbo:before-fetch-response', this.setScrollPosition)
     clearTimeout(timeoutId)
+  }
+
+  enableScrollOnSmallScreens() {
+    if (window.innerWidth < 769) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              // Container is volledig zichtbaar, sta scrollen toe
+              this.incidentlistTarget.style.overflow = 'auto'
+            } else {
+              // Container is niet volledig zichtbaar, verberg scrollen
+              this.incidentlistTarget.style.overflow = 'hidden'
+            }
+          })
+        },
+        {
+          root: null, // Bekijk binnen de viewport
+          threshold: 1.0, // Alleen uitvoeren als de container volledig zichtbaar is
+        }
+      )
+
+      // Start observer op de container
+      observer.observe(this.incidentlistTarget)
+    } else {
+      // Op grotere schermen: zorg dat de container altijd scrollbaar is
+      this.incidentlistTarget.style.overflow = 'auto'
+    }
   }
 
   setScrollPosition() {
@@ -105,6 +137,7 @@ export default class extends Controller {
   }
 
   selecteerTaakItem(taakId) {
+    // map related
     sessionStorage.setItem('selectedTaakId', taakId)
     this.taakItemTargets.forEach((taakItemTarget) => {
       taakItemTarget.classList.remove('highlight-once')
@@ -119,6 +152,7 @@ export default class extends Controller {
   }
 
   deselecteerTaakItem() {
+    // map related
     if (!document.body.classList.contains('show-modal')) {
       this.taakItemTargets.forEach((taakItemTarget) => {
         taakItemTarget.classList.remove('selected')

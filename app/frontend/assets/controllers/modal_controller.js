@@ -34,6 +34,10 @@ export default class extends Controller {
     let self = this
     if (self.hasTaakItemTarget) {
       self.taakItemTarget.classList.remove('selected')
+      self.taakItemTarget.classList.add('highlight-once')
+      setTimeout(() => {
+        self.taakItemTarget.classList.remove('highlight-once')
+      }, 2000)
     }
     const modalList = self.element.querySelectorAll('.modal')
     const modalBackdrop = self.element.querySelector('.modal-backdrop')

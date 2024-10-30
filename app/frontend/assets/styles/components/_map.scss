@@ -34,9 +34,9 @@
             z-index: 9999;
             pointer-events: none;
             opacity: 0;
-            background: rgba(0, 0, 0, 0);
+            background-color: rgba(0, 0, 0, 0);
             transition:
-                background 0.25s,
+                background-color 0.25s,
                 opacity 0.25s;
             transition-delay: 0.25s;
         }
@@ -175,6 +175,7 @@
         visibility: hidden;
         pointer-events: none;
         width: 0;
+        height: 0;
     }
 }
 
@@ -185,6 +186,7 @@
         visibility: visible;
         pointer-events: all;
         width: 100%;
+        height: auto;
     }
 }
 
@@ -317,6 +319,7 @@ button.toggle-view {
             display: flex;
             flex-direction: column;
             flex: 2 1 auto;
+            height: auto;
         }
     }
 }
