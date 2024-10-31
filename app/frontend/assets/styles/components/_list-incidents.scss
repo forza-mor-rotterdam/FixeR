@@ -93,8 +93,10 @@
     }
 
     @supports (height: 97dvh) {
-        .container__list {
-            height: 97dvh;
+        @media (max-width: map-get($grid-breakpoints, md)) {
+            .container__list {
+                height: 97dvh;
+            }
         }
     }
 
@@ -185,7 +187,7 @@
                 transition: background-color 0.3s ease-in-out;
             }
 
-            &.selected a:not(.link) {
+            &.active a:not(.link) {
                 background-color: $gray-tint02;
             }
             &.highlight-once a:not(.link) {

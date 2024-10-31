@@ -109,7 +109,7 @@ export default class extends Controller {
   // Handle the start of gestures
   handleGestureStart(evt) {
     let self = this
-    this.element.classList.add('selected')
+    this.element.classList.add('selected', 'active')
     evt.preventDefault()
     self.isMoving = false
     if (evt.touches && evt.touches.length > 1) {
@@ -122,6 +122,7 @@ export default class extends Controller {
 
   // Handle end gestures
   handleGestureEnd(evt) {
+    this.element.classList.remove('active')
     let self = this
     evt.preventDefault()
     if (evt.touches && evt.touches.length > 0) {
