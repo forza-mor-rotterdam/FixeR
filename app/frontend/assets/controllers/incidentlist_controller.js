@@ -39,7 +39,9 @@ export default class extends Controller {
     screen.orientation.addEventListener('change', () => {
       window.location.reload()
     })
+  }
 
+  connect() {
     document.addEventListener('turbo:before-fetch-response', () => {
       this.setScrollPosition()
     })
@@ -51,26 +53,28 @@ export default class extends Controller {
   }
 
   setScrollPosition() {
-    if (this.hasIncidentlistTarget) {
-      const frame = this.incidentlistTarget.querySelector('turbo-frame')
-      const scrollTarget =
-        window.innerWidth < 1024 ? document.documentElement : this.incidentlistTarget
-      const scrollCorrection =
-        window.innerWidth < 1024
-          ? document.querySelector('main').offsetTop +
-            this.containerHeaderTarget.clientHeight +
-            this.element.offsetHeight / 2
-          : this.element.offsetHeight / 2
-      if (frame.complete) {
-        timeoutId = setTimeout(() => {
-          const activeItem = this.element.querySelector(
-            `[data-id="${sessionStorage.getItem('selectedTaakId')}"]`
-          )
-          if (activeItem) {
-            const topPos = activeItem.offsetTop + activeItem.offsetHeight
-            scrollTarget.scrollTop = topPos - scrollCorrection
-          }
-        }, 100)
+    if (!document.body.classList.contains('show-modal')) {
+      if (this.hasIncidentlistTarget) {
+        const frame = this.incidentlistTarget.querySelector('turbo-frame')
+        const scrollTarget =
+          window.innerWidth < 1024 ? document.documentElement : this.incidentlistTarget
+        const scrollCorrection =
+          window.innerWidth < 1024
+            ? document.querySelector('main').offsetTop +
+              this.containerHeaderTarget.clientHeight +
+              this.element.offsetHeight / 2
+            : this.element.offsetHeight / 2
+        if (frame.complete) {
+          timeoutId = setTimeout(() => {
+            const activeItem = this.element.querySelector(
+              `[data-id="${sessionStorage.getItem('selectedTaakId')}"]`
+            )
+            if (activeItem) {
+              const topPos = activeItem.offsetTop + activeItem.offsetHeight
+              scrollTarget.scrollTop = topPos - scrollCorrection
+            }
+          }, 100)
+        }
       }
     }
   }
