@@ -120,14 +120,23 @@ export default class extends Controller {
     // map related
     sessionStorage.setItem('selectedTaakId', taakId)
     this.taakItemTargets.forEach((taakItemTarget) => {
-      taakItemTarget.classList.remove('highlight-once')
-      taakItemTarget.classList.toggle('active', taakItemTarget.dataset.id === taakId)
+      taakItemTarget.classList.toggle('highlight-once', taakItemTarget.dataset.id === taakId)
       if (taakItemTarget.dataset.id === taakId) {
         //scroll to this element
+        const scrollTarget =
+          window.innerWidth < 1024 ? document.documentElement : this.incidentlistTarget
+        const scrollCorrection =
+          window.innerWidth < 1024
+            ? document.querySelector('main').offsetTop +
+              this.containerHeaderTarget.clientHeight +
+              this.element.offsetHeight / 2
+            : this.element.offsetHeight / 2
         const topPos = taakItemTarget.offsetTop + taakItemTarget.offsetHeight
-        const containerHeight = this.element.offsetHeight
-        this.incidentlistTarget.scrollTop = topPos - containerHeight / 2
+        scrollTarget.scrollTop = topPos - scrollCorrection
       }
+      setTimeout(() => {
+        taakItemTarget.classList.remove('highlight-once')
+      }, 2000)
     })
   }
 

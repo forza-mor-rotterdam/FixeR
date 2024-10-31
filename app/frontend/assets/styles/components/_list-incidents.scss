@@ -82,6 +82,7 @@
                 flex: 1 1 auto;
                 .list__incidents {
                     overflow-y: scroll;
+                    scroll-behavior: smooth;
                     height: auto;
                 }
             }
