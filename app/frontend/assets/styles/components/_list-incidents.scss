@@ -47,8 +47,12 @@
                     }
                 }
             }
+        }
+    }
 
-            .showMap & {
+    &.showMap {
+        .container__header {
+            .container__controls {
                 .btn-sort--small {
                     display: none;
                 }
