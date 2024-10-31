@@ -33,7 +33,7 @@ export default class extends Controller {
   closeModal() {
     let self = this
     if (self.hasTaakItemTarget) {
-      self.taakItemTarget.classList.remove('selected')
+      self.taakItemTarget.classList.remove('active', 'selected')
       self.taakItemTarget.classList.add('highlight-once')
       setTimeout(() => {
         self.taakItemTarget.classList.remove('highlight-once')

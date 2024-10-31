@@ -141,7 +141,7 @@ export default class extends Controller {
     sessionStorage.setItem('selectedTaakId', taakId)
     this.taakItemTargets.forEach((taakItemTarget) => {
       taakItemTarget.classList.remove('highlight-once')
-      taakItemTarget.classList.toggle('selected', taakItemTarget.dataset.id === taakId)
+      taakItemTarget.classList.toggle('active', taakItemTarget.dataset.id === taakId)
       if (taakItemTarget.dataset.id === taakId) {
         //scroll to this element
         const topPos = taakItemTarget.offsetTop + taakItemTarget.offsetHeight
@@ -155,7 +155,7 @@ export default class extends Controller {
     // map related
     if (!document.body.classList.contains('show-modal')) {
       this.taakItemTargets.forEach((taakItemTarget) => {
-        taakItemTarget.classList.remove('selected')
+        taakItemTarget.classList.remove('active')
       })
     }
   }
