@@ -129,20 +129,20 @@ html {
     }
 }
 
-turbo-frame {
-    &[complete] {
-        > * {
-            transition: opacity 0.25s;
-            opacity: 1;
-        }
-    }
-    &[busy] {
-        > * {
-            transition: opacity 0.5s;
-            opacity: 0;
-        }
-    }
-}
+// turbo-frame {
+//     &[complete] {
+//         > * {
+//             transition: opacity 0.25s;
+//             opacity: 1;
+//         }
+//     }
+//     &[busy] {
+//         > * {
+//             transition: opacity 0.5s;
+//             opacity: 0;
+//         }
+//     }
+// }
 
 // HEADINGS
 h1,
