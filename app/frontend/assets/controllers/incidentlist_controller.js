@@ -23,6 +23,7 @@ export default class extends Controller {
     'activeFilterCount',
     'takenCount',
     'incidentlist',
+    'containerHeader',
   ]
 
   initialize() {
@@ -44,55 +45,30 @@ export default class extends Controller {
     })
   }
 
-  connect() {
-    this.enableScrollOnSmallScreens()
-  }
-
   disconnect() {
     document.removeEventListener('turbo:before-fetch-response', this.setScrollPosition)
     clearTimeout(timeoutId)
   }
 
-  enableScrollOnSmallScreens() {
-    if (window.innerWidth < 769) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              // Container is volledig zichtbaar, sta scrollen toe
-              this.incidentlistTarget.style.overflow = 'auto'
-            } else {
-              // Container is niet volledig zichtbaar, verberg scrollen
-              this.incidentlistTarget.style.overflow = 'hidden'
-            }
-          })
-        },
-        {
-          root: null, // Bekijk binnen de viewport
-          threshold: 1.0, // Alleen uitvoeren als de container volledig zichtbaar is
-        }
-      )
-
-      // Start observer op de container
-      observer.observe(this.incidentlistTarget)
-    } else {
-      // Op grotere schermen: zorg dat de container altijd scrollbaar is
-      this.incidentlistTarget.style.overflow = 'auto'
-    }
-  }
-
   setScrollPosition() {
     if (this.hasIncidentlistTarget) {
-      let frame = this.incidentlistTarget.querySelector('turbo-frame')
+      const frame = this.incidentlistTarget.querySelector('turbo-frame')
+      const scrollTarget =
+        window.innerWidth < 1024 ? document.documentElement : this.incidentlistTarget
+      const scrollCorrection =
+        window.innerWidth < 1024
+          ? document.querySelector('main').offsetTop +
+            this.containerHeaderTarget.clientHeight +
+            this.element.offsetHeight / 2
+          : this.element.offsetHeight / 2
       if (frame.complete) {
         timeoutId = setTimeout(() => {
           const activeItem = this.element.querySelector(
             `[data-id="${sessionStorage.getItem('selectedTaakId')}"]`
           )
-          const containerHeight = this.element.offsetHeight
           if (activeItem) {
             const topPos = activeItem.offsetTop + activeItem.offsetHeight
-            this.incidentlistTarget.scrollTop = topPos - containerHeight / 2
+            scrollTarget.scrollTop = topPos - scrollCorrection
           }
         }, 100)
       }
