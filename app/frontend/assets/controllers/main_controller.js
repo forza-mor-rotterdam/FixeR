@@ -35,6 +35,11 @@ export default class extends Controller {
     )
   }
 
+  connect() {
+    console.log('CONNECT MAIN, removing selectedTaakId from sessionStorage')
+    sessionStorage.removeItem('selectedTaakId')
+  }
+
   childControllerConnectedEventHandler = (e) => {
     if (e.detail.controller.identifier === 'incidentlist') {
       this.incidentlist = e.detail.controller
