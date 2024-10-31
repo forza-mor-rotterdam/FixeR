@@ -58,9 +58,11 @@ def task_taak_status_voltooid(
         omschrijving_intern=omschrijving_intern,
         bijlagen=bijlagen,
     )
-    if taak_status_aanpassen_response.status_code != 200:
+    if taak_status_aanpassen_response.get("error"):
+        taak.bezig_met_verwerken = False
+        taak.save(update_fields=["bezig_met_verwerken"])
         raise Exception(
-            f"task taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, taakopdracht_url={taak.taakopdracht}, taakopdracht_url={taak.taakopdracht}, repsonse_text={taak_status_aanpassen_response.text}"
+            f"task taak_status_aanpassen: fout={taak_status_aanpassen_response.get('error')}, taak_id={taak_id}, taakopdracht_url={taak.taakopdracht}"
         )
 
     for vervolg_taaktype in vervolg_taaktypes:

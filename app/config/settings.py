@@ -186,7 +186,7 @@ CELERY_WORKER_MAX_MEMORY_PER_CHILD = 200000
 CELERY_WORKER_SEND_TASK_EVENTS = True
 
 
-SITE_ID = 1
+SITE_ID = int(os.getenv("SITE_ID", 1))
 SITE_NAME = os.getenv("SITE_NAME", "FixeR")
 SITE_DOMAIN = os.getenv("SITE_DOMAIN", "localhost")
 
