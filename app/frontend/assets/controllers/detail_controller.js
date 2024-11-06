@@ -49,7 +49,6 @@ export default class extends Controller {
   }
 
   initialize() {
-    document.documentElement.scrollTop = 0
     self = this
     let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', {
       bubbles: true,
@@ -216,20 +215,27 @@ export default class extends Controller {
     window.addEventListener(
       'scroll',
       function () {
-        if (document.body.scrollTop >= 100 || document.documentElement.scrollTop >= 100) {
-          this.btnToTopTarget.classList.add('show')
-        } else {
-          this.btnToTopTarget.classList.remove('show')
+        if (this.hasBtnToTopTarget) {
+          if (document.body.scrollTop >= 100 || document.documentElement.scrollTop >= 100) {
+            this.btnToTopTarget.classList.add('show')
+          } else {
+            this.btnToTopTarget.classList.remove('show')
+          }
         }
       }.bind(this),
       false
     )
+    setTimeout(() => {
+      this.scrollToTop()
+    }, 100)
   }
 
   disconnect() {}
 
   scrollToTop(e) {
-    e.target.blur()
+    if (e) {
+      e.target.blur()
+    }
     window.scrollTo({
       top: 0,
       behavior: 'smooth',

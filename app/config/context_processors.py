@@ -1,8 +1,8 @@
 import logging
 
 from apps.instellingen.models import Instelling
+from apps.main.services import MercureService
 from apps.release_notes.models import ReleaseNote
-from apps.services.mercure import MercureService
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone

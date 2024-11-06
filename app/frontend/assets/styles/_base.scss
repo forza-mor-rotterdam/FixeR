@@ -96,6 +96,7 @@ main {
 html {
     height: 100%;
 }
+
 body {
     &.app {
         height: 100%;
@@ -103,6 +104,7 @@ body {
         flex-direction: column;
     }
 }
+
 .app {
     & main {
         flex: 1 1 0;
@@ -126,20 +128,20 @@ body {
     }
 }
 
-turbo-frame {
-    &[complete] {
-        > * {
-            transition: opacity 0.25s;
-            opacity: 1;
-        }
-    }
-    &[busy] {
-        > * {
-            transition: opacity 0.5s;
-            opacity: 0;
-        }
-    }
-}
+// turbo-frame {
+//     &[complete] {
+//         > * {
+//             transition: opacity 0.25s;
+//             opacity: 1;
+//         }
+//     }
+//     &[busy] {
+//         > * {
+//             transition: opacity 0.5s;
+//             opacity: 0;
+//         }
+//     }
+// }
 
 // HEADINGS
 h1,

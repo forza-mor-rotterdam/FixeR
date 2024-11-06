@@ -1,5 +1,5 @@
 import celery
-from apps.meldingen.service import MeldingenService
+from apps.main.services import MORCoreService
 from apps.taken.models import Taak
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -50,7 +50,7 @@ def task_taak_status_voltooid(
 
     bijlagen = [{"bestand": to_base64(b)} for b in bijlage_paden]
 
-    taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
+    taak_status_aanpassen_response = MORCoreService().taak_status_aanpassen(
         taakopdracht_url=taak.taakopdracht,
         status="voltooid",
         resolutie=resolutie,
@@ -58,9 +58,11 @@ def task_taak_status_voltooid(
         omschrijving_intern=omschrijving_intern,
         bijlagen=bijlagen,
     )
-    if taak_status_aanpassen_response.status_code != 200:
+    if taak_status_aanpassen_response.get("error"):
+        taak.bezig_met_verwerken = False
+        taak.save(update_fields=["bezig_met_verwerken"])
         raise Exception(
-            f"task taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, taakopdracht_url={taak.taakopdracht}, taakopdracht_url={taak.taakopdracht}, repsonse_text={taak_status_aanpassen_response.text}"
+            f"task taak_status_aanpassen: fout={taak_status_aanpassen_response.get('error')}, taak_id={taak_id}, taakopdracht_url={taak.taakopdracht}"
         )
 
     for vervolg_taaktype in vervolg_taaktypes:
@@ -82,7 +84,7 @@ def task_taak_status_voltooid(
 def task_taak_aanmaken(
     self, melding_uuid, taaktype_url, titel, bericht, gebruiker_email
 ):
-    taak_aanmaken_response = MeldingenService().taak_aanmaken(
+    taak_aanmaken_response = MORCoreService().taak_aanmaken(
         melding_uuid=melding_uuid,
         taaktype_url=taaktype_url,
         titel=titel,
@@ -102,7 +104,7 @@ def task_taak_aanmaken(
 @shared_task(bind=True, base=BaseTaskWithRetry)
 def compare_and_update_status(self, taak_id):
     taak = Taak.objects.get(id=taak_id)
-    get_taakopdracht_response = MeldingenService().get_taakopdracht_data(
+    get_taakopdracht_response = MORCoreService().get_taakopdracht_data(
         taak.taakopdracht
     )
     if get_taakopdracht_response.status_code == 200:
@@ -123,10 +125,8 @@ def compare_and_update_status(self, taak_id):
                     "gebruiker": taakgebeurtenis.gebruiker,
                     "bijlagen": [],
                 }
-                taak_status_aanpassen_response = (
-                    MeldingenService().taak_status_aanpassen(
-                        **update_data,
-                    )
+                taak_status_aanpassen_response = MORCoreService().taak_status_aanpassen(
+                    **update_data,
                 )
                 if taak_status_aanpassen_response.status_code != 200:
                     logger.error(

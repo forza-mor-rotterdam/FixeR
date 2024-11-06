@@ -1,5 +1,5 @@
 from apps.instellingen.models import Instelling
-from apps.services.taakr import TaakRService
+from apps.main.services import TaakRService
 from apps.taken.forms import TaaktypeAanmakenForm, TaaktypeAanpassenForm
 from apps.taken.models import Taaktype
 from django.contrib.auth.decorators import login_required, permission_required

@@ -17,6 +17,9 @@ export default class extends Controller {
     }
   }
   onChangeHandler() {
+    // used for scrolling to last selected task
+    sessionStorage.removeItem('selectedTaakId')
+
     this.formTarget.requestSubmit()
   }
 }

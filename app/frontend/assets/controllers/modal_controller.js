@@ -33,7 +33,11 @@ export default class extends Controller {
   closeModal() {
     let self = this
     if (self.hasTaakItemTarget) {
-      self.taakItemTarget.classList.remove('selected')
+      self.taakItemTarget.classList.remove('active', 'selected')
+      self.taakItemTarget.classList.add('highlight-once')
+      setTimeout(() => {
+        self.taakItemTarget.classList.remove('highlight-once')
+      }, 2000)
     }
     const modalList = self.element.querySelectorAll('.modal')
     const modalBackdrop = self.element.querySelector('.modal-backdrop')
@@ -50,8 +54,12 @@ export default class extends Controller {
   openModal(event) {
     event.preventDefault()
     const params = event.params || event.detail.e.params
-
     let self = this
+
+    if (params.taakid) {
+      sessionStorage.setItem('selectedTaakId', params.taakid)
+    }
+
     if (self.hasTitleTarget) {
       self.titleTarget.innerHTML = params.title
     }
@@ -81,6 +89,8 @@ export default class extends Controller {
     let classes = ''
     if (event.params && event.params.type === 'navigation') {
       classes = 'show-navigation'
+      // used for scrolling to last selected task
+      sessionStorage.removeItem('selectedTaakId')
     } else {
       classes = 'show-modal'
     }

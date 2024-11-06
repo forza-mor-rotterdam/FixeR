@@ -6,7 +6,7 @@
      data-controller="incidentlist"
      data-incidentlist-kaart-outlet="#incidentMap"
      id="taken">
-    <div class="container__header">
+    <div class="container__header" data-incidentlist-target="containerHeader">
         <div class="row">
             <h1 class="h3">
                 Taken (<span data-incidentlist-target="takenCount"></span>)
@@ -99,7 +99,9 @@
                     </form>
                 </div>
             </div>
-            <div class="list__incidents" data-testid="incidentsList">
+            <div class="list__incidents"
+                 data-testid="incidentsList"
+                 data-incidentlist-target="incidentlist">
                 <turbo-frame id="taken_lijst">
                 </turbo-frame>
             </div>

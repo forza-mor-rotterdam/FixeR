@@ -12,9 +12,7 @@ from apps.authenticatie.forms import (
 )
 from apps.context.forms import TaaktypesFilteredForm
 from apps.instellingen.models import Instelling
-from apps.meldingen.service import MeldingenService
-from apps.services.pdok import PDOKService
-from apps.services.taakr import TaakRService
+from apps.main.services import MORCoreService, PDOKService, TaakRService
 from apps.taken.models import Taaktype
 from django.conf import settings
 from django.contrib import messages
@@ -160,7 +158,7 @@ class GebruikerProfielView(UpdateView):
         return initial
 
     def form_valid(self, form):
-        MeldingenService().set_gebruiker(
+        MORCoreService().set_gebruiker(
             gebruiker=self.request.user.serialized_instance(),
         )
         messages.success(self.request, "Gebruikersgegevens succesvol opgeslagen.")

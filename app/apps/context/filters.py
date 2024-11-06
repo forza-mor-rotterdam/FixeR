@@ -1,6 +1,5 @@
 from apps.context.models import Context
-from apps.services.pdok import PDOKService
-from django.conf import settings
+from apps.main.services import PDOKService
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 
@@ -276,9 +275,7 @@ class WijkBuurtFilter(StandaardFilter):
     @classmethod
     def get_selected_options_for_filter(cls, selected_options, profiel):
         if not selected_options:
-            buurten = PDOKService().get_buurten_middels_wijkcodes(
-                settings.WIJKEN_EN_BUURTEN_GEMEENTECODE, profiel.wijken
-            )
+            buurten = PDOKService().get_buurten_middels_wijkcodes(profiel.wijken)
             return buurten
         return selected_options
 
@@ -286,9 +283,7 @@ class WijkBuurtFilter(StandaardFilter):
         if not self._profiel:
             return []
         pdok_service = PDOKService()
-        all_data = pdok_service.get_buurten_middels_gemeentecode(
-            settings.WIJKEN_EN_BUURTEN_GEMEENTECODE
-        )
+        all_data = pdok_service.get_buurten_middels_gemeentecode()
         self._groups = [
             {
                 "name": wijk["wijknaam"],

@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
+let timeoutId = null
 export default class extends Controller {
   static showSortingContainer = false
   static showSearchContainer = false
@@ -21,6 +22,8 @@ export default class extends Controller {
     'taakItemLijst',
     'activeFilterCount',
     'takenCount',
+    'incidentlist',
+    'containerHeader',
   ]
 
   initialize() {
@@ -32,10 +35,44 @@ export default class extends Controller {
         detail: { controller: this },
       })
     )
+  }
 
-    screen.orientation.addEventListener('change', () => {
-      window.location.reload()
+  connect() {
+    document.addEventListener('turbo:before-fetch-response', () => {
+      this.setScrollPosition()
     })
+  }
+
+  disconnect() {
+    document.removeEventListener('turbo:before-fetch-response', this.setScrollPosition)
+    clearTimeout(timeoutId)
+  }
+
+  setScrollPosition() {
+    if (!document.body.classList.contains('show-modal')) {
+      if (this.hasIncidentlistTarget) {
+        const frame = this.incidentlistTarget.querySelector('turbo-frame')
+        const scrollTarget =
+          window.innerWidth < 1024 ? document.documentElement : this.incidentlistTarget
+        const scrollCorrection =
+          window.innerWidth < 1024
+            ? document.querySelector('main').offsetTop +
+              this.containerHeaderTarget.clientHeight +
+              this.element.offsetHeight / 2
+            : this.element.offsetHeight / 2
+        if (frame.complete) {
+          timeoutId = setTimeout(() => {
+            const activeItem = this.element.querySelector(
+              `[data-id="${sessionStorage.getItem('selectedTaakId')}"]`
+            )
+            if (activeItem) {
+              const topPos = activeItem.offsetTop + activeItem.offsetHeight
+              scrollTarget.scrollTop = topPos - scrollCorrection
+            }
+          }, 100)
+        }
+      }
+    }
   }
 
   waitForElm(selector) {
@@ -76,15 +113,34 @@ export default class extends Controller {
   }
 
   selecteerTaakItem(taakId) {
+    // map related
+    sessionStorage.setItem('selectedTaakId', taakId)
     this.taakItemTargets.forEach((taakItemTarget) => {
-      taakItemTarget.classList.toggle('selected', taakItemTarget.dataset.id === taakId)
+      taakItemTarget.classList.toggle('highlight-once', taakItemTarget.dataset.id === taakId)
+      if (taakItemTarget.dataset.id === taakId) {
+        //scroll to this element
+        const scrollTarget =
+          window.innerWidth < 1024 ? document.documentElement : this.incidentlistTarget
+        const scrollCorrection =
+          window.innerWidth < 1024
+            ? document.querySelector('main').offsetTop +
+              this.containerHeaderTarget.clientHeight +
+              this.element.offsetHeight / 2
+            : this.element.offsetHeight / 2
+        const topPos = taakItemTarget.offsetTop + taakItemTarget.offsetHeight
+        scrollTarget.scrollTop = topPos - scrollCorrection
+      }
+      setTimeout(() => {
+        taakItemTarget.classList.remove('highlight-once')
+      }, 2000)
     })
   }
 
   deselecteerTaakItem() {
+    // map related
     if (!document.body.classList.contains('show-modal')) {
       this.taakItemTargets.forEach((taakItemTarget) => {
-        taakItemTarget.classList.remove('selected')
+        taakItemTarget.classList.remove('active')
       })
     }
   }

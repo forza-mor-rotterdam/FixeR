@@ -76,7 +76,7 @@ class MeldingAliasAdmin(admin.ModelAdmin):
         "aangepast_op",
         "taken_aantal",
         "taak_zoek_data_aantal",
-        "heeft_response_data",
+        "onderwerp_urls",
     )
     actions = (action_update_melding_alias_data,)
     search_fields = ("bron_url",)
@@ -95,6 +95,9 @@ class MeldingAliasAdmin(admin.ModelAdmin):
 
     def taken_aantal(self, obj):
         return str(obj.taken_voor_meldingalias.count())
+
+    def onderwerp_urls(self, obj):
+        return obj.response_json.get("onderwerpen")
 
     def taak_zoek_data_aantal(self, obj):
         return str(obj.taak_zoek_data.count())

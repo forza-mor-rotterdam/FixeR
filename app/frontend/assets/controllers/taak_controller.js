@@ -109,7 +109,8 @@ export default class extends Controller {
   // Handle the start of gestures
   handleGestureStart(evt) {
     let self = this
-    this.element.classList.add('selected')
+    console.log('handleGestureStart: identifier=', this.identifier)
+    this.element.classList.add('selected', 'active')
     evt.preventDefault()
     self.isMoving = false
     if (evt.touches && evt.touches.length > 1) {
@@ -122,7 +123,9 @@ export default class extends Controller {
 
   // Handle end gestures
   handleGestureEnd(evt) {
+    this.element.classList.remove('active')
     let self = this
+    console.log('handleGestureEnd: identifier=', this.identifier)
     evt.preventDefault()
     if (evt.touches && evt.touches.length > 0) {
       return
@@ -139,6 +142,8 @@ export default class extends Controller {
 
   handleGestureMove(evt) {
     let self = this
+    console.log('handleGestureMove: identifier=', this.identifier)
+    this.element.classList.add('selected')
     evt.preventDefault()
     self.isMoving = true
     if (!self.initialTouchPos) {
@@ -204,6 +209,7 @@ export default class extends Controller {
 
   updateSwipeRestPosition(evt) {
     let self = this
+    console.log(self.lastTouchPos)
     if (self.lastTouchPos) {
       let differenceInX = self.initialTouchPos.x - self.lastTouchPos.x
       if (differenceInX > -100 && differenceInX < 100) {

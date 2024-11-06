@@ -35,6 +35,11 @@ export default class extends Controller {
     )
   }
 
+  connect() {
+    console.log('CONNECT MAIN, removing selectedTaakId from sessionStorage')
+    sessionStorage.removeItem('selectedTaakId')
+  }
+
   childControllerConnectedEventHandler = (e) => {
     if (e.detail.controller.identifier === 'incidentlist') {
       this.incidentlist = e.detail.controller
@@ -89,6 +94,8 @@ export default class extends Controller {
 
   showFilters() {
     document.body.classList.add('show-filters')
+    // used for scrolling to last selected task
+    sessionStorage.removeItem('selectedTaakId')
   }
 
   hideFilters() {

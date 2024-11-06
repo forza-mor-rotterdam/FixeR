@@ -27,7 +27,18 @@ export default class extends Controller {
     })
   }
 
+  connect() {
+    const id = this.element.getAttribute('data-incidentlistitem-taakid-param')
+    if (id === sessionStorage.getItem('selectedTaakId')) {
+      this.element.closest('.list-item').classList.add('highlight-once')
+    }
+  }
+
   disconnect() {
     observer.disconnect(this.element)
+  }
+
+  saveTaakId(e) {
+    sessionStorage.setItem('selectedTaakId', e.params.taakid)
   }
 }
