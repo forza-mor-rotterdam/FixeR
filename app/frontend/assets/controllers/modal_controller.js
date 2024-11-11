@@ -14,7 +14,7 @@ export default class extends Controller {
 
     addEventListener('openModalFromMap', (e) => {
       if (this.element.closest('.list-item')) {
-        if (this.element.closest('.list-item').classList.contains('selected')) {
+        if (this.element.closest('.list-item').dataset.id === sessionStorage.selectedTaakId) {
           this.openModal(e)
         }
       }
@@ -50,6 +50,13 @@ export default class extends Controller {
     })
     modalBackdrop.classList.remove('show')
     document.body.classList.remove('show-modal', 'show-modal--transparent', 'show-navigation')
+
+    window.dispatchEvent(
+      new CustomEvent('closeModal', {
+        bubbles: true,
+        cancelable: false,
+      })
+    )
   }
   openModal(event) {
     event.preventDefault()
@@ -87,7 +94,7 @@ export default class extends Controller {
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
     let classes = ''
-    if (event.params && event.params.type === 'navigation') {
+    if (params && params.type === 'navigation') {
       classes = 'show-navigation'
       // used for scrolling to last selected task
       sessionStorage.removeItem('selectedTaakId')

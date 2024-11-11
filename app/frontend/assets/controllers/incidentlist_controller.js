@@ -110,6 +110,9 @@ export default class extends Controller {
     window.addEventListener('childControllerConnectedEvent', (e) =>
       this.childControllerConnectedHandler(e)
     )
+    window.addEventListener('closeModal', () => {
+      this.setScrollPosition()
+    })
   }
 
   selecteerTaakItem(taakId) {
@@ -227,6 +230,7 @@ export default class extends Controller {
 
   toggleMapView() {
     this.element.classList.toggle('showMap')
+    this.setScrollPosition()
   }
 
   onToggleSortingContainer() {
