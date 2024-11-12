@@ -110,6 +110,16 @@ def task_taak_aanmaken(
 
 
 @shared_task(bind=True)
+def start_update_taakopdracht_data_for_taak_ids(self, taak_ids=[]):
+    for id in taak_ids:
+        update_taakopdracht_data.delay(id)
+
+    return {
+        "taak_ids aantal": len(taak_ids),
+    }
+
+
+@shared_task(bind=True)
 def update_taakopdracht_data(self, taak_id):
     taak = Taak.objects.get(id=taak_id)
     get_taakopdracht_response = MORCoreService().haal_data(
