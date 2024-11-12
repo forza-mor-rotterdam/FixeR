@@ -19,8 +19,8 @@ from apps.taken.models import (
     TaakZoekData,
 )
 from apps.taken.tasks import (
+    start_update_taakopdracht_data_for_taak_ids,
     update_taak_status_met_taakopdracht_status,
-    update_taakopdracht_data,
 )
 from django.contrib import admin, messages
 from django.db.models import Count
@@ -163,8 +163,9 @@ class TaakAdmin(admin.ModelAdmin):
             return "-"
 
     def update_taakopdracht_data(self, request, queryset):
-        for taak in queryset:
-            update_taakopdracht_data.delay(taak.id)
+        start_update_taakopdracht_data_for_taak_ids.delay(
+            list(queryset.values_list(flat=True))
+        )
         self.message_user(
             request, f"Updating taakopdracht for {queryset.count()} taken!"
         )
