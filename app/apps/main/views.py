@@ -129,16 +129,6 @@ def navigeer(request, lat, long):
     )
 
 
-# def serve_protected_media(request):
-#     if request.user.is_authenticated or settings.ALLOW_UNAUTHORIZED_MEDIA_ACCESS:
-#         url = request.path.replace("media", "media-protected")
-#         response = HttpResponse("")
-#         response["X-Accel-Redirect"] = url
-#         response["Content-Type"] = ""
-#         return response
-#     return HttpResponseForbidden()
-
-
 # Verander hier de instellingen voor de nieuwe homepagina.
 # @login_required
 def root(request):

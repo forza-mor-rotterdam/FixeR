@@ -1,24 +1,32 @@
 import celery
 from apps.main.services import MORCoreService
-from apps.taken.models import Taak
+from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from dateutil import parser
 
 logger = get_task_logger(__name__)
 
 DEFAULT_RETRY_DELAY = 2
 MAX_RETRIES = 6
 
-LOCK_EXPIRE = 5
+
+DEFAULT_RETRY_DELAY = 2
+MAX_RETRIES = 6
+RETRY_BACKOFF_MAX = 60 * 30
+RETRY_BACKOFF = 120
 
 
 class BaseTaskWithRetry(celery.Task):
     autoretry_for = (Exception,)
     max_retries = MAX_RETRIES
     default_retry_delay = DEFAULT_RETRY_DELAY
+    retry_backoff_max = RETRY_BACKOFF_MAX
+    retry_backoff = RETRY_BACKOFF
+    retry_jitter = True
 
 
-@shared_task(bind=True, base=BaseTaskWithRetry)
+@shared_task(bind=True)
 def move_resolutie_to_taakgebeurtenis(self):
     from apps.taken.models import Taak, Taakgebeurtenis
 
@@ -101,57 +109,70 @@ def task_taak_aanmaken(
     }
 
 
-@shared_task(bind=True, base=BaseTaskWithRetry)
-def compare_and_update_status(self, taak_id):
+@shared_task(bind=True)
+def update_taakopdracht_data(self, taak_id):
     taak = Taak.objects.get(id=taak_id)
-    get_taakopdracht_response = MORCoreService().get_taakopdracht_data(
-        taak.taakopdracht
+    get_taakopdracht_response = MORCoreService().haal_data(
+        taak.taakopdracht,
     )
-    if get_taakopdracht_response.status_code == 200:
-        taakopdracht = get_taakopdracht_response.json()
+    status_code = 200
+    if isinstance(get_taakopdracht_response, dict) and get_taakopdracht_response.get(
+        "error"
+    ):
+        status_code = get_taakopdracht_response.get("error", {}).get("status_code")
 
-        if taak.taakstatus.naam != taakopdracht.get("status").get("naam"):
-            taakgebeurtenis = (
-                taak.taakgebeurtenissen_voor_taak.filter(taakstatus=taak.taakstatus)
-                .order_by("-aangemaakt_op")
-                .first()
-            )
-            if taakgebeurtenis:
-                update_data = {
-                    "taakopdracht_url": taak.taakopdracht,
-                    "status": {"naam": taak.taakstatus.naam},
-                    "resolutie": taakgebeurtenis.resolutie,
-                    "omschrijving_intern": taakgebeurtenis.omschrijving_intern,
-                    "gebruiker": taakgebeurtenis.gebruiker,
-                    "bijlagen": [],
-                }
-                taak_status_aanpassen_response = MORCoreService().taak_status_aanpassen(
-                    **update_data,
-                )
-                if taak_status_aanpassen_response.status_code != 200:
-                    logger.error(
-                        f"Celery compare and update status error, taak_status_aanpassen_response: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, taakopdracht_id={taakopdracht.get('id')}, update_data={update_data}"
-                    )
-                    return {
-                        "taak.id": taak_id,
-                        "taakopdracht.id": taakopdracht.get("id"),
-                        "taak_status_aanpassen_response.error_code": taak_status_aanpassen_response.status_code,
-                    }
+    taak.additionele_informatie["taakopdracht"] = get_taakopdracht_response
+    taak.additionele_informatie["taakopdracht_status_code"] = str(status_code)
 
-                else:
-                    logger.warning(
-                        f"Taakopdracht in Mor-Core updated successfully for FixeR taak_id: {taak_id} and MOR-Core taakopdracht_id: {taakopdracht.get('id')}."
-                    )
-                    return {
-                        "taak.id": taak_id,
-                        "taakopdracht.id": taakopdracht.get("id"),
-                    }
+    taak.save(update_fields=["additionele_informatie"])
 
-    else:
-        logger.error(
-            f"Celery compare and update status error, get_taakopdracht_response: status_code={get_taakopdracht_response.status_code}, taak_id={taak_id}"
+    return {
+        "taak_id": taak_id,
+    }
+
+
+@shared_task(bind=True)
+def update_taak_status_met_taakopdracht_status(self, taak_id):
+    taak = Taak.objects.get(id=taak_id)
+
+    taakopdracht_status_naam = (
+        taak.additionele_informatie.get("taakopdracht", {})
+        .get("status", {})
+        .get("naam")
+    )
+    if (
+        taakopdracht_status_naam in ("voltooid", "voltooid_met_feedback")
+        and taakopdracht_status_naam != taak.taakstatus.naam
+    ):
+        taakstatus = Taakstatus.objects.create(
+            naam=taakopdracht_status_naam,
+            taak=taak,
         )
-        return {
-            "taak.id": taak_id,
-            "get_taakopdracht_response.error_code": get_taakopdracht_response.status_code,
-        }
+        resolutie = taak.additionele_informatie.get("taakopdracht", {}).get("resolutie")
+        gebruiker = (
+            taak.additionele_informatie.get("taakopdracht", {})
+            .get("taakgebeurtenissen_voor_taakopdracht", [{}])[0]
+            .get("gebruiker")
+        )
+        afgesloten_op = None
+        try:
+            afgesloten_op = parser.parse(
+                taak.additionele_informatie.get("taakopdracht", {}).get("afgesloten_op")
+            )
+        except Exception:
+            ...
+        Taakgebeurtenis.objects.create(
+            taakstatus=taakstatus,
+            resolutie=resolutie,
+            gebruiker=gebruiker,
+            taak=taak,
+        )
+        taak.taakstatus = taakstatus
+        taak.resolutie = resolutie
+        taak.afgesloten_op = afgesloten_op
+        taak.bezig_met_verwerken = False
+        taak.save()
+
+    return {
+        "taak_id": taak_id,
+    }
