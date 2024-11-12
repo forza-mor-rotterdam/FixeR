@@ -29,7 +29,10 @@ def standaard_fout_afhandeling(service, response=None, fout=""):
         messages.error(service._request, message)
 
     return {
-        "error": log,
+        "error": {
+            "status_code": response.status_code if not fout else 500,
+            "bericht": service.naar_json(response) if not fout else "",
+        },
     }
 
 

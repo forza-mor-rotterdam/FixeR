@@ -150,7 +150,7 @@ class Taakstatus(BasisModel):
 
     def clean(self):
         errors = {}
-        huidige_status = self.taak.status.naam if self.taak.status else ""
+        huidige_status = self.taak.taakstatus.naam if self.taak.taakstatus else ""
         nieuwe_status = self.naam
 
         if nieuwe_status == huidige_status:
