@@ -29,13 +29,8 @@ body.show-modal {
         @include modalVisible();
     }
 
-    .list-item:not(.selected) {
-        .modal.show {
-            display: none;
-        }
-    }
     .list--navigation-tools {
-        display: flex;
+        display: block;
     }
 }
 

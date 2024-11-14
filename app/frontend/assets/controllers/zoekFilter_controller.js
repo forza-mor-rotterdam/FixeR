@@ -6,7 +6,19 @@ export default class extends Controller {
   connect() {
     this.to = null
     this.csrf_token = this.element.querySelector('input[name="csrfmiddlewaretoken"]').value
+    this.isSearching()
   }
+
+  isSearching() {
+    if (this.zoekFieldTarget.value.length) {
+      const container = this.zoekFieldTarget.closest('.container__search')
+      if (container) {
+        container.classList.remove('hidden-vertical')
+        container.classList.add('show-vertical')
+      }
+    }
+  }
+
   updateTakenList() {
     let orderChangeEvent = new CustomEvent('searchChangeEvent', {
       bubbles: true,

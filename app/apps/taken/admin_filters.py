@@ -19,6 +19,51 @@ class TaakstatusFilter(admin.SimpleListFilter):
         return queryset
 
 
+class TaakopdrachtStatusFilter(admin.SimpleListFilter):
+    title = _("TaakopdrachtStatus")
+    parameter_name = "taakopdrachtStatus"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("nieuw", "Nieuw"),
+            ("voltooid", "Voltooid"),
+            ("voltooid_met_feedback", "Voltooid met feedback"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(
+                additionele_informatie__taakopdracht__isnull=False,
+                additionele_informatie__taakopdracht__status__naam=self.value(),
+            )
+        return queryset
+
+
+class TaakopdrachtStatusCodeFilter(admin.SimpleListFilter):
+    title = _("Taakopdracht status code ")
+    parameter_name = "taakopdracht_status_code"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("geen", "Geen data"),
+            ("200", "Valide data"),
+            ("404", "Niet gevonden"),
+            ("500", "Fout"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value():
+            if self.value() in ("geen",):
+                return queryset.filter(
+                    additionele_informatie__taakopdracht_status_code__isnull=True,
+                )
+            if self.value() in ("200", "404", "500"):
+                return queryset.filter(
+                    additionele_informatie__taakopdracht_status_code=str(self.value()),
+                )
+        return queryset
+
+
 class ResolutieFilter(admin.SimpleListFilter):
     title = _("Resolutie")
     parameter_name = "resolutie"

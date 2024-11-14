@@ -5,6 +5,8 @@ import json
 from apps.taken.admin_filters import (
     AfgeslotenOpFilter,
     ResolutieFilter,
+    TaakopdrachtStatusCodeFilter,
+    TaakopdrachtStatusFilter,
     TaakstatusFilter,
     TitelFilter,
 )
@@ -16,7 +18,10 @@ from apps.taken.models import (
     Taaktype,
     TaakZoekData,
 )
-from apps.taken.tasks import compare_and_update_status
+from apps.taken.tasks import (
+    start_update_taakopdracht_data_for_taak_ids,
+    update_taak_status_met_taakopdracht_status,
+)
 from django.contrib import admin, messages
 from django.db.models import Count
 from django.utils.safestring import mark_safe
@@ -61,8 +66,10 @@ class TaakAdmin(admin.ModelAdmin):
         "uuid",
         "titel",
         "taaktype",
-        "melding",
         "taakstatus",
+        "taakopdracht_status",
+        "taakopdracht_status_code",
+        "melding",
         "resolutie",
         "aangemaakt_op",
         "aangepast_op",
@@ -117,6 +124,8 @@ class TaakAdmin(admin.ModelAdmin):
     ]
     list_filter = (
         TaakstatusFilter,
+        TaakopdrachtStatusFilter,
+        TaakopdrachtStatusCodeFilter,
         ResolutieFilter,
         AfgeslotenOpFilter,
         TitelFilter,
@@ -127,7 +136,10 @@ class TaakAdmin(admin.ModelAdmin):
         "taakstatus",
         "taak_zoek_data",
     )
-    actions = ["compare_taakopdracht_status"]
+    actions = [
+        "update_taakopdracht_data",
+        "update_taak_status_met_taakopdracht_status",
+    ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -138,19 +150,35 @@ class TaakAdmin(admin.ModelAdmin):
             "taak_zoek_data",
         )
 
-    def compare_taakopdracht_status(self, request, queryset):
-        voltooid_taak_ids = queryset.filter(
-            taakstatus__naam__in=["voltooid", "voltooid_met_feedback"]
-        ).values_list("id", flat=True)
-        for taak_id in voltooid_taak_ids:
-            compare_and_update_status.delay(taak_id)
+    def taakopdracht_status(self, obj):
+        try:
+            return obj.additionele_informatie["taakopdracht"]["status"]["naam"]
+        except Exception:
+            return "-"
+
+    def taakopdracht_status_code(self, obj):
+        try:
+            return obj.additionele_informatie["taakopdracht_status_code"]
+        except Exception:
+            return "-"
+
+    def update_taakopdracht_data(self, request, queryset):
+        start_update_taakopdracht_data_for_taak_ids.delay(
+            list(queryset.values_list(flat=True))
+        )
         self.message_user(
-            request, f"Updating taakopdracht for {len(voltooid_taak_ids)} taken!"
+            request, f"Updating taakopdracht for {queryset.count()} taken!"
         )
 
-    compare_taakopdracht_status.short_description = (
-        "Compare taak and taakopdracht status"
-    )
+    def update_taak_status_met_taakopdracht_status(self, request, queryset):
+        for taak in queryset:
+            update_taak_status_met_taakopdracht_status.delay(taak.id)
+        self.message_user(
+            request,
+            f"Updating taak status met taakopdracht status for {queryset.count()} taken!",
+        )
+
+    update_taakopdracht_data.short_description = "update_taakopdracht_data"
 
 
 class TaaktypeAdmin(admin.ModelAdmin):
@@ -223,6 +251,10 @@ class TaakgebeurtenisAdmin(admin.ModelAdmin):
         "resolutie",
         "omschrijving_intern",
     )
+    raw_id_fields = (
+        "taak",
+        "taakstatus",
+    )
 
 
 class TaakDeellinkAdmin(admin.ModelAdmin):
@@ -244,6 +276,7 @@ class TaakstatusAdmin(admin.ModelAdmin):
         "aangemaakt_op",
         "aangepast_op",
     )
+    raw_id_fields = ("taak",)
 
 
 class CustomTaskResultAdmin(TaskResultAdmin):

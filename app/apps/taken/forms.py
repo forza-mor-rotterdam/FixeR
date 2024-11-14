@@ -8,7 +8,6 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 "data-testid": "titel",
-                "rows": "4",
             }
         ),
         required=True,
@@ -18,7 +17,7 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         widget=forms.Textarea(
             attrs={
                 "data-testid": "omschrijving",
-                "rows": "4",
+                "rows": "8",
             }
         ),
         required=False,

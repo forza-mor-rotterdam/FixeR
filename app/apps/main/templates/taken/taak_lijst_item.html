@@ -27,12 +27,14 @@
         <div class="wrapper__swipe" data-taak-target="swipeContainer">
             {% if taak.taak_zoek_data.locatie_type != "graf" and not taak.afgesloten_op %}
                 <button class="container__actions handle--no-success"
+                        data-controller="incidentlistItem"
                         data-id="{{ taak.id }}"
                         data-taak-target="buttonNietOpgelost"
                         data-modal-title-param="Taak afhandelen"
                         data-modal-url-param="{% url 'taak_afhandelen' taak.id %}?resolutie=niet_opgelost"
                         data-modal-id-param="incident_modal_handle_{{ taak.id }}"
-                        data-action="modal#openModal"
+                        data-incidentListItem-taakid-param="{{ taak.id }}"
+                        data-action="incidentlistItem#saveTaakId modal#openModal"
                         data-modal-sub-title-param="{% include subtitel_template %}"
                         data-modal-info-extra-param="{% include info_extra_template %}">
                     <div>
@@ -40,13 +42,15 @@
                     </div>
                 </button>
                 <button class="container__actions handle--success"
+                        data-controller="incidentlistItem"
                         data-id="{{ taak.id }}"
                         data-taak-target="buttonOpgelost"
                         data-modal-title-param="Taak afhandelen"
                         data-modal-url-param="{% url 'taak_afhandelen' taak.id %}?resolutie=opgelost"
                         data-modal-id-param="incident_modal_handle_{{ taak.id }}"
                         data-modal-taakid-param="{{ taak.id }}"
-                        data-action="modal#openModal"
+                        data-incidentListItem-taakid-param="{{ taak.id }}"
+                        data-action="incidentlistItem#saveTaakId modal#openModal"
                         data-modal-sub-title-param="{% include subtitel_template %}"
                         data-modal-info-extra-param="{% include info_extra_template %}">
                     <div>
@@ -56,10 +60,10 @@
             {% endif %}
             <div class="container__flex">
                 <a href="{% url 'taak_detail' taak.id %}"
+                   data-controller="incidentlistItem"
                    data-turbo-frame="taak_basis"
                    data-page="{{ page_obj.number }}"
                    aria-label="Bekijk taak {{ taak.id }}"
-                   data-controller="incidentlistItem"
                    data-action="incidentlistItem#saveTaakId"
                    data-incidentlistItem-taakId-param="{{ taak.id }}">
                     <div class="container__image">

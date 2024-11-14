@@ -8,10 +8,12 @@ export default class extends Controller {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const container = entry.target.querySelectorAll('.background-image')[0]
-          const imageSrc = container.getAttribute('data-src')
-          if (imageSrc) {
-            container.querySelector('img').src = imageSrc
-            container.removeAttribute('data-src')
+          if (container) {
+            const imageSrc = container.getAttribute('data-src')
+            if (imageSrc) {
+              container.querySelector('img').src = imageSrc
+              container.removeAttribute('data-src')
+            }
           }
         }
       })
