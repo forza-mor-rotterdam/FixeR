@@ -202,7 +202,6 @@
         <div>
             <textarea id="{{ field.auto_id }}"
                       class="form-control {% if field.errors %}is-invalid{% endif %}"
-                      rows="4"
                       name="{{field.html_name}}"
                       {% render_attrs field %}
                       {% if field.field.required %}required{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
