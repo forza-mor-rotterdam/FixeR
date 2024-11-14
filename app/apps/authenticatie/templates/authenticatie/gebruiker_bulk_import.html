@@ -211,9 +211,14 @@
                     </li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'gebruiker_bulk_import' %}">Nog meer gebruikers aanmaken of aanpassen</a>
-            <br>
-            <a href="{% url 'beheer' %}">Beheer</a>
+            <ul class="list-clean">
+                <li class="margin-bottom">
+                    <a href="{% url 'gebruiker_bulk_import' %}">Nog meer gebruikers aanmaken of aanpassen</a>
+                </li>
+                <li>
+                    <a href="{% url 'beheer' %}">Beheer</a>
+                </li>
+            </ul>
         {% endif %}
     </div>
 {% endblock body %}
