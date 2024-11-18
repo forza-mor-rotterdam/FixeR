@@ -96,6 +96,10 @@ fieldset {
         background-position: 8px 50%;
         color: $gray-tint11;
         font-size: 0.875em;
+
+        &.active {
+            animation: highlight-primary 0.5s 1 forwards 0.5s;
+        }
     }
 }
 
