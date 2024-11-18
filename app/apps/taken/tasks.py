@@ -94,7 +94,7 @@ def task_taak_aanmaken(
 ):
     taak_aanmaken_response = MORCoreService().taak_aanmaken(
         melding_uuid=melding_uuid,
-        taaktype_url=taaktype_url,
+        taakapplicatie_taaktype_url=taaktype_url,
         titel=titel,
         bericht=bericht,
         gebruiker=gebruiker_email,
