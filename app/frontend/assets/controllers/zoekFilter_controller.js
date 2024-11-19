@@ -29,15 +29,18 @@ export default class extends Controller {
   }
 
   isSearching() {
+    const input = this.zoekFieldTarget
     if (this.zoekFieldTarget.value.length !== 0) {
-      this.zoekFieldTarget.classList.add('active')
-      const container = this.zoekFieldTarget.closest('.container__search')
+      input.classList.add('active')
+      const container = input.closest('.container__search')
       if (container) {
         container.classList.remove('hidden-vertical')
         container.classList.add('show-vertical')
       }
+      input.focus()
+      input.setSelectionRange(input.value.length, input.value.length)
     } else {
-      this.zoekFieldTarget.classList.remove('active')
+      input.classList.remove('active')
     }
   }
 

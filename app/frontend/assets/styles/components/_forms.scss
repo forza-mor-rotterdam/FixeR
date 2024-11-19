@@ -100,6 +100,10 @@ fieldset {
         &.active {
             animation: highlight-primary 0.5s 1 forwards 0.5s;
         }
+
+        &::-webkit-search-cancel-button {
+            cursor: pointer;
+        }
     }
 }
 
