@@ -3,7 +3,7 @@
 <header class="pageheader"
         data-testid="pageHeader"
         data-controller="pageHeader modal">
-    <div class="container">
+    <div class="container container-user">
         <div class="container__logo">
             <a href="{% url 'root' %}">
                 <img src="{% webpack_static 'images/logo-organisatie.svg' %}"
@@ -14,6 +14,13 @@
                      class="logo logo--small" />
             </a>
             {% if page_title %}<h1 class="pagetitle h2">{{ page_title }}</h1>{% endif %}
+        </div>
+        <div class="container__uitklapper">
+            <span class="trigger--block"></span>
+            {% if request.user.is_authenticated %}
+                <turbo-frame id="tf_snack_overzicht" src="{% url 'snack_overzicht' %}">
+                </turbo-frame>
+            {% endif %}
         </div>
         {% if request.user.is_authenticated %}
             <div data-controller="message"

@@ -1,7 +1,7 @@
+from apps.main.utils import truncate_tekst
 from apps.release_notes.tasks import task_aanmaken_afbeelding_versies
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
-from utils.diversen import truncate_tekst
 
 from .models import Bijlage, ReleaseNote
 
@@ -20,9 +20,15 @@ class ReleaseNoteAdmin(admin.ModelAdmin):
     # formfield_overrides = {
     #     models.TextField: {"widget": CKEditor5Widget()},
     # }
-    list_display = ("titel", "korte_tekst", "aangemaakt_op", "publicatie_datum")
+    list_display = (
+        "titel",
+        "bericht_type",
+        "korte_tekst",
+        "aangemaakt_op",
+        "publicatie_datum",
+    )
     search_fields = ("titel",)
-    list_filter = ("aangemaakt_op", "publicatie_datum")
+    list_filter = ("aangemaakt_op", "publicatie_datum", "bericht_type")
     ordering = ["-aangemaakt_op"]
     inlines = [BijlageInline]
 
