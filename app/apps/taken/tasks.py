@@ -99,10 +99,13 @@ def task_taak_aanmaken(
         bericht=bericht,
         gebruiker=gebruiker_email,
     )
-    if taak_aanmaken_response.status_code != 200:
-        raise Exception(
-            f"task taak_aanmaken: status_code={taak_aanmaken_response.status_code}, taaktype_url={taaktype_url}, melding_uuid={melding_uuid}, repsonse_text={taak_aanmaken_response.text}"
-        )
+
+    if isinstance(taak_aanmaken_response, dict) and taak_aanmaken_response.get("error"):
+        error = taak_aanmaken_response.get("error", {})
+        log_entry = f'task taak_aanmaken: status_code={error.get("status_code")}, taaktype_url={taaktype_url}, melding_uuid={melding_uuid}, bericht={error.get("bericht")}'
+        logger.error(log_entry)
+        raise Exception(log_entry)
+
     return {
         "taaktype_url": taaktype_url,
         "melding_uuid": melding_uuid,
