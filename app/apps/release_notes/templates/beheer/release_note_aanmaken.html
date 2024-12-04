@@ -29,16 +29,18 @@
                       method="post"
                       id="releaseNoteForm"
                       enctype="multipart/form-data"
-                      data-controller="berichten-beheer">
+                      data-controller="berichten-beheer"
+                      class="form--beheer">
                     {% csrf_token %}
                     {{ form.management_form }}
                     {{ form.media }}
-                    {{ form.errors }}
                     <fieldset>
                         <div class="form-control__with-helptext js-validation">{{ form.bericht_type|render_rotterdam_formulier }}</div>
                         <div data-berichten-beheer-target="releaseNote hideable">
                             <div class="alert alert--info">
-                                <span>{% include "icons/info.svg" %}</span>
+                                <strong>
+                                    <span class="badge-count">i</span>Toelichting
+                                </strong>
                                 <div class="info">Release notes worden vanaf de publicatie datum 5 weken lang getoond.</div>
                             </div>
                         </div>

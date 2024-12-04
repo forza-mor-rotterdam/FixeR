@@ -2,6 +2,7 @@
     position: fixed;
     top: 35px;
     height: 100%;
+    width: 100%;
     overflow: hidden;
     z-index: 20000;
     pointer-events: none;
@@ -29,16 +30,12 @@
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    // opacity: 0;
-    // animation: slide-in-from-top-centered $transition-duration-default $transition-ease-default
-    // forwards 0.5s;
     padding: 0 1em;
     pointer-events: none;
     touch-action: manipulation; /* Laat standaard click en hover gedrag toe */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 5px;
     transition: gap $transition-duration-default $transition-ease-default;
 
     .notification {
@@ -58,6 +55,7 @@
         justify-content: flex-start;
         gap: 10px;
         opacity: 0;
+        margin-top: 5px;
 
         &:not(:nth-child(-n + 10)) {
             display: none !important;
@@ -356,6 +354,14 @@
         padding: 0.5em $input-padding-x;
         border-bottom: 1px solid $blue-200;
 
+        ul {
+            @include list-clean();
+            margin: 0;
+            display: flex;
+            li:not(:last-child) {
+                margin-right: 12px;
+            }
+        }
         li {
             a {
                 text-decoration: none;
@@ -509,7 +515,7 @@
                 margin: 0.7em 0 0;
             }
             p {
-                margin: 0;
+                margin-top: 0;
                 overflow: hidden;
                 transition: height $transition-duration-default $transition-ease-default;
             }

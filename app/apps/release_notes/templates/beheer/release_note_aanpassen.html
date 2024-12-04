@@ -31,12 +31,8 @@
                       id="releaseNoteForm"
                       enctype="multipart/form-data"
                       data-controller="berichten-beheer"
-                      class="form--aanpassen">
-                    {% csrf_token %}
-                    {{ form.management_form }}
-                    {{ form.media }}
-                    {{ formset.management_form }}
-                    {{ formset.media }}
+                      class="form--aanpassen form--beheer">
+                    {% csrf_token %} {{ form.management_form }} {{ form.media }} {{ formset.management_form }} {{ formset.media }}
                     <fieldset>
                         <div class="form-control__with-helptext js-validation">{{ form.bericht_type|render_rotterdam_formulier }}</div>
                         <div data-berichten-beheer-target="releaseNote hideable">
