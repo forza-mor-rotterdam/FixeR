@@ -224,6 +224,7 @@ button {
             svg {
                 width: 13px;
                 height: 13px;
+                pointer-events: none;
                 path {
                     fill: $black;
                 }

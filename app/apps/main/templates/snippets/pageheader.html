@@ -16,10 +16,8 @@
             {% if page_title %}<h1 class="pagetitle h2">{{ page_title }}</h1>{% endif %}
         </div>
         <div class="container__uitklapper"
-             data-controller="utils"
-             data-action="click->utils#show"
+             data-action="click->pageHeader#show"
              tabindex="0">
-            <span class="trigger--block"></span>
             {% if request.user.is_authenticated %}
                 <turbo-frame id="tf_snack_overzicht" src="{% url 'snack_overzicht' %}">
                 </turbo-frame>
