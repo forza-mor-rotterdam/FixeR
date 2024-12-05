@@ -32,7 +32,14 @@ from apps.main.views import (
     taken_lijst,
     ui_settings_handler,
 )
-from apps.release_notes.views import ReleaseNoteDetailView, ReleaseNoteListViewPublic
+from apps.release_notes.views import (
+    ReleaseNoteDetailView,
+    ReleaseNoteListViewPublic,
+    SnackOverzichtStreamView,
+    SnackOverzichtView,
+    SnackView,
+    ToastView,
+)
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
 from django.conf import settings
 from django.conf.urls.static import static
@@ -153,6 +160,27 @@ urlpatterns = [
         "release-notes/<int:pk>/",
         ReleaseNoteDetailView.as_view(),
         name="release_note_detail",
+    ),
+    # Notificaties
+    path(
+        "notificaties/snack/",
+        SnackView.as_view(),
+        name="snack_lijst",
+    ),
+    path(
+        "notificaties/toast/",
+        ToastView.as_view(),
+        name="toast_lijst",
+    ),
+    path(
+        "notificaties/snack/overzicht/",
+        SnackOverzichtView.as_view(),
+        name="snack_overzicht",
+    ),
+    path(
+        "notificaties/snack/overzicht/stream/",
+        SnackOverzichtStreamView.as_view(),
+        name="snack_overzicht_stream",
     ),
     path("api/schema/", SpectacularAPIView.as_view(api_version="v1"), name="schema"),
     # Optional UI:
