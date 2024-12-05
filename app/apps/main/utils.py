@@ -54,6 +54,12 @@ def querystring_to_dict(s: str) -> dict:
     return dict(QueryDict(s))
 
 
+def truncate_tekst(text, length=200):
+    if len(text) > length:
+        return f"{text[:length]}..."
+    return text
+
+
 def to_base64(file):
     binary_file = default_storage.open(file)
     binary_file_data = binary_file.read()

@@ -237,6 +237,12 @@ table {
     }
 }
 
+* {
+    &:focus {
+        @include focus-outline();
+    }
+}
+
 a,
 .link {
     color: $primary;
@@ -246,10 +252,6 @@ a,
     &:hover,
     &:focus {
         text-decoration: none;
-    }
-
-    &:focus {
-        @include focus-outline();
     }
 
     &.link--location {

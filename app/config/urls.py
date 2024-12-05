@@ -56,6 +56,10 @@ from apps.release_notes.views import (
     ReleaseNoteListView,
     ReleaseNoteListViewPublic,
     ReleaseNoteVerwijderenView,
+    SnackOverzichtStreamView,
+    SnackOverzichtView,
+    SnackView,
+    ToastView,
 )
 from apps.taken.views import (
     TaaktypeAanmakenView,
@@ -228,6 +232,27 @@ urlpatterns = [
         "beheer/rechtengroep/<int:pk>/verwijderen/",
         RechtengroepVerwijderenView.as_view(),
         name="rechtengroep_verwijderen",
+    ),
+    # Notificaties
+    path(
+        "notificaties/snack/",
+        SnackView.as_view(),
+        name="snack_lijst",
+    ),
+    path(
+        "notificaties/toast/",
+        ToastView.as_view(),
+        name="toast_lijst",
+    ),
+    path(
+        "notificaties/snack/overzicht/",
+        SnackOverzichtView.as_view(),
+        name="snack_overzicht",
+    ),
+    path(
+        "notificaties/snack/overzicht/stream/",
+        SnackOverzichtStreamView.as_view(),
+        name="snack_overzicht_stream",
     ),
     # Release notes
     path(

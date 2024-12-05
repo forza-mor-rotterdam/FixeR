@@ -513,6 +513,7 @@ MERCURE_SUBSCRIBER_JWT_ALG = os.getenv("MERCURE_SUBSCRIBER_JWT_ALG", "HS256")
 
 MERCURE_PUBLISH_TARGETS = [
     "/melding/{id}/",
+    "/notificaties/snack/",
 ]
 
 CKEDITOR_5_CONFIGS = {
