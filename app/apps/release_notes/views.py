@@ -266,9 +266,6 @@ class ReleaseNoteAanmakenView(
             bijlage.save()
 
             task_aanmaken_afbeelding_versies.delay(bijlage.pk)
-        messages.success(
-            request=self.request, message=f"De {self.object.bericht_type} is aangemaakt"
-        )
 
         if self.object.bericht_type == ReleaseNote.BerichtTypeOpties.NOTIFICATIE:
             clocked_schedule = ClockedSchedule.objects.create(
@@ -340,10 +337,6 @@ class ReleaseNoteAanpassenView(
                 bijlage.save()
 
                 task_aanmaken_afbeelding_versies.delay(bijlage.pk)
-            messages.success(
-                request=self.request,
-                message=f"De {self.object.bericht_type} is aangepast",
-            )
 
             if self.object.bericht_type == ReleaseNote.BerichtTypeOpties.NOTIFICATIE:
                 PeriodicTask.objects.filter(
