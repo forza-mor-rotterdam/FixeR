@@ -39,7 +39,7 @@ export default class extends Controller {
           element.classList.remove('show')
         }
       })
-      e.target.closest('.container__uitklapper').classList.toggle('show')
+      e.target.closest('.container__uitklapper').classList.add('show')
     }
   }
 }

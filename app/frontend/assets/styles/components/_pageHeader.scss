@@ -39,13 +39,7 @@
         margin: 0.8em 0;
         flex-direction: column;
         justify-content: center;
-        &:focus,
-        &:hover {
-            .trigger--notificationslist {
-                cursor: pointer;
-                background-color: $white;
-            }
-        }
+
         > turbo-frame {
             height: auto;
         }
@@ -119,9 +113,22 @@
             background-color: transparent;
             transition: background-color $transition-duration-default $transition-ease-default;
 
+            .active,
+            .inactive {
+                position: absolute;
+                left: 50%;
+                right: 50%;
+                transform: translate(-50%, -50%);
+                display: block;
+                width: 16px;
+                height: 16px;
+            }
+
+            .active {
+                opacity: 0;
+                transition: opacity $transition-duration-default $transition-ease-default;
+            }
             svg {
-                flex: 1;
-                vertical-align: middle;
                 path {
                     fill: $black;
                 }
@@ -140,6 +147,21 @@
                 width: 1.5em;
                 height: 1.5em;
                 line-height: 1.5em;
+            }
+        }
+        &:focus,
+        &:hover {
+            .trigger--notificationslist {
+                cursor: pointer;
+                background-color: $white;
+            }
+        }
+        &:focus {
+            outline: none;
+            .trigger--notificationslist {
+                .active {
+                    opacity: 1;
+                }
             }
         }
     }
