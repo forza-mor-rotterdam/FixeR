@@ -18,9 +18,11 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView
@@ -30,6 +32,36 @@ from utils.diversen import absolute
 
 Gebruiker = get_user_model()
 logger = logging.getLogger(__name__)
+
+
+class LoginView(View):
+    def get(self, request, *args, **kwargs):
+        if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
+            return redirect(reverse("taken"), False)
+        if request.user.has_perms(["authorisatie.beheer_bekijken"]):
+            return redirect(reverse("beheer"), False)
+        if request.user.is_authenticated:
+            return redirect(reverse("root"), False)
+
+        if settings.OIDC_ENABLED:
+            return redirect(f"/oidc/authenticate/?next={request.GET.get('next', '/')}")
+        if settings.ENABLE_DJANGO_ADMIN_LOGIN:
+            return redirect(f"/admin/login/?next={request.GET.get('next', '/admin')}")
+
+        return HttpResponse("Er is geen login ingesteld")
+
+
+class LogoutView(View):
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse("login"), False)
+
+        if settings.OIDC_ENABLED:
+            return redirect("/oidc/logout/")
+        if settings.ENABLE_DJANGO_ADMIN_LOGIN:
+            return redirect(f"/admin/logout/?next={request.GET.get('next', '/')}")
+
+        return HttpResponse("Er is geen logout ingesteld")
 
 
 @method_decorator(login_required, name="dispatch")
@@ -81,9 +113,12 @@ class GebruikerAanmakenAanpassenView(GebruikerView):
     permission_required("authorisatie.gebruiker_aanpassen", raise_exception=True),
     name="dispatch",
 )
-class GebruikerAanpassenView(GebruikerAanmakenAanpassenView, UpdateView):
+class GebruikerAanpassenView(
+    SuccessMessageMixin, GebruikerAanmakenAanpassenView, UpdateView
+):
     form_class = GebruikerAanpassenForm
     template_name = "authenticatie/gebruiker_aanpassen.html"
+    success_message = "De gebruiker '%(email)s' is aangepast"
 
     def get_initial(self):
         initial = self.initial.copy()
@@ -93,15 +128,24 @@ class GebruikerAanpassenView(GebruikerAanmakenAanpassenView, UpdateView):
         initial["group"] = obj.groups.all().first()
         return initial
 
+    def get_success_message(self, cleaned_data):
+        return self.success_message % dict(
+            cleaned_data,
+            email=self.object.email,
+        )
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("authorisatie.gebruiker_aanmaken", raise_exception=True),
     name="dispatch",
 )
-class GebruikerAanmakenView(GebruikerAanmakenAanpassenView, CreateView):
+class GebruikerAanmakenView(
+    SuccessMessageMixin, GebruikerAanmakenAanpassenView, CreateView
+):
     template_name = "authenticatie/gebruiker_aanmaken.html"
     form_class = GebruikerAanmakenForm
+    success_message = "De gebruiker '%(email)s' is aangemaakt"
 
 
 @login_required
@@ -117,6 +161,10 @@ def gebruiker_bulk_import(request):
             )
         if request.session.get("valid_rows") and request.POST.get("aanmaken"):
             aangemaakte_gebruikers = form.submit(request.session.get("valid_rows"))
+            messages.success(
+                request,
+                f"Er zijn {len(aangemaakte_gebruikers)} gebruikers met success aangepast of geïmporteerd",
+            )
             del request.session["valid_rows"]
             form = None
     return render(

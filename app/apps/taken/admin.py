@@ -184,6 +184,7 @@ class TaakAdmin(admin.ModelAdmin):
 class TaaktypeAdmin(admin.ModelAdmin):
     list_display = (
         "id",
+        "uuid",
         "omschrijving",
         "aangemaakt_op",
     )

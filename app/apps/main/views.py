@@ -107,14 +107,6 @@ def http_500(request):
     )
 
 
-def informatie(request):
-    return render(
-        request,
-        "auth/informatie.html",
-        {},
-    )
-
-
 def navigeer(request, lat, long):
     ua = request.META.get("HTTP_USER_AGENT", "")
     device = DeviceDetector(ua).parse()
