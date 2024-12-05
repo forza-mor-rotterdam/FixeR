@@ -1,6 +1,9 @@
 from apps.context.forms import ContextAanmakenForm, ContextAanpassenForm
 from apps.context.models import Context
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -38,8 +41,11 @@ class ContextAanmakenAanpassenView(ContextView):
     permission_required("authorisatie.context_aanpassen", raise_exception=True),
     name="dispatch",
 )
-class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
+class ContextAanpassenView(
+    SuccessMessageMixin, ContextAanmakenAanpassenView, UpdateView
+):
     form_class = ContextAanpassenForm
+    success_message = "De rol '%(name)s' is aangepast"
 
     def get_initial(self):
         initial = self.initial.copy()
@@ -53,8 +59,11 @@ class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
     permission_required("authorisatie.context_aanmaken", raise_exception=True),
     name="dispatch",
 )
-class ContextAanmakenView(ContextAanmakenAanpassenView, CreateView):
+class ContextAanmakenView(
+    SuccessMessageMixin, ContextAanmakenAanpassenView, CreateView
+):
     form_class = ContextAanmakenForm
+    success_message = "De rol '%(name)s' is aangemaakt"
 
 
 @method_decorator(login_required, name="dispatch")
@@ -64,4 +73,9 @@ class ContextAanmakenView(ContextAanmakenAanpassenView, CreateView):
 )
 class ContextVerwijderenView(ContextView, DeleteView):
     def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
+        object = self.get_object()
+        if not object.profielen_voor_context.all():
+            response = self.delete(request, *args, **kwargs)
+            messages.success(self.request, f"De rol '{object.naam}' is verwijderd")
+            return response
+        return HttpResponse("Verwijderen is niet mogelijk")

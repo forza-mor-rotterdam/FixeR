@@ -2,7 +2,7 @@
 {% load rotterdam_formulier_html %}
 {% block title %}
     {% if object %}
-        Rechtengroep '{{ object.name }}' aanpassen
+        Rechtengroep '{{ object.name }}' wijzigen
     {% else %}
         Rechtengroep aanmaken
     {% endif %}
@@ -25,7 +25,7 @@
             </a>
         </div>
         {% if object %}
-            <h1>Rechtengroep '{{ object.name }}' aanpassen</h1>
+            <h1>Rechtengroep '{{ object.name }}' wijzigen</h1>
         {% else %}
             <h1>Rechtengroep aanmaken</h1>
         {% endif %}
