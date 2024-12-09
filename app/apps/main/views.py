@@ -707,6 +707,7 @@ def taak_afhandelen(request, id):
                 TaakRService().get_taaktype_by_url(taaktype_url).get("omschrijving"),
             )
             for taaktype_url in taaktypes[0].get("volgende_taaktypes", [])
+            if TaakRService().get_taaktype_by_url(taaktype_url).get("actief")
         ]
         volgende_taaktypes = [
             taaktype
