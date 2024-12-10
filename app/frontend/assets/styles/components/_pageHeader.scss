@@ -5,7 +5,7 @@
     padding: 0 16px;
     margin-bottom: 16px;
     position: relative;
-    z-index: 2000;
+    z-index: 2100;
 
     .container__logo {
         flex: 1;
@@ -36,7 +36,7 @@
     .container__uitklapper {
         position: unset;
         flex: 0 1 auto;
-        margin: 0.8em 0;
+        margin: 20px 0 0;
         flex-direction: column;
         justify-content: center;
 
@@ -71,7 +71,7 @@
             &--large {
                 width: 98vw;
                 max-width: 400px;
-                right: -12vw;
+                right: -13.5vw;
 
                 @media (min-width: map-get($grid-breakpoints, md)) {
                     right: 1vw;
@@ -103,9 +103,13 @@
             }
         }
 
+        &:focus {
+            outline: none !important;
+        }
+
         .trigger--notificationslist {
-            width: 1.8em;
-            height: 1.8em;
+            width: 28px;
+            height: 28px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -117,11 +121,11 @@
             .inactive {
                 position: absolute;
                 left: 50%;
-                right: 50%;
+                top: 50%;
                 transform: translate(-50%, -50%);
                 display: block;
                 width: 16px;
-                height: 16px;
+                height: auto;
             }
 
             .active {

@@ -320,8 +320,6 @@
     }
     span,
     p {
-        font-size: 0.889em;
-
         &.lighter {
             color: $gray-tint08;
         }
@@ -344,7 +342,6 @@
 
     span {
         display: none;
-        font-size: 0.889em;
         color: $gray-tint08;
         padding-right: 16px;
         transform: translateY(-10px);

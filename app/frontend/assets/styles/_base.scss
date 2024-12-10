@@ -8,7 +8,7 @@ html,
 body {
     margin: 0;
     font-family: "Bolder", sans-serif;
-    font-size: 1em;
+    font-size: $font-size-base;
     color: $black;
     background-color: $gray-tint00;
     scroll-behavior: smooth;

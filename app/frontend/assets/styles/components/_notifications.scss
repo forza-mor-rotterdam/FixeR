@@ -1,6 +1,6 @@
 #tf_snack_lijst {
     position: fixed;
-    top: 35px;
+    top: 75px;
     height: 100%;
     width: 100%;
     overflow: hidden;
@@ -22,6 +22,7 @@
     display: block;
     width: 100%;
     pointer-events: none;
+    z-index: 21000;
 }
 
 .container__notification {
@@ -58,12 +59,12 @@
         transition-duration: $transition-duration-default;
         transition-timing-function: $transition-ease-default;
         overflow: hidden;
-        font-size: 0.8em;
         display: flex;
         justify-content: flex-start;
         gap: 10px;
         opacity: 0;
         margin-top: 5px;
+        border: 1px solid $blue-200;
 
         &:not(:nth-child(-n + 10)) {
             display: none !important;
@@ -350,6 +351,7 @@
         display: flex;
         justify-content: space-between;
         border-bottom: 1px solid $blue-200;
+        padding: 0 $input-padding-x;
         h2 {
             flex: 1;
         }
@@ -370,15 +372,11 @@
             @include list-clean();
             margin: 0;
             display: flex;
-            li:not(:last-child) {
-                margin-right: 12px;
-            }
         }
         li {
             a {
                 text-decoration: none;
                 color: inherit;
-                font-size: 0.8em;
                 transition: all $transition-duration-default $transition-ease-default;
                 display: inline-block;
                 padding: 0.2em 0.3em 0.1em;
@@ -389,9 +387,10 @@
                 }
 
                 &.small {
-                    font-size: 0.7em;
+                    font-size: 0.85em;
                     color: $gray-800;
                     text-decoration: underline;
+                    padding: 0.4em 0 0;
                     &:hover {
                         color: $black;
                         text-decoration: none;
@@ -537,18 +536,20 @@
 
         .container__content {
             > * {
-                font-size: 0.7em;
+                font-size: 1em;
             }
             h3 {
                 margin: 0.1em 0 0;
+                font-size: 0.875em;
             }
             p {
+                font-size: 0.875em;
                 margin-top: 0;
                 overflow: hidden;
                 transition: height $transition-duration-default $transition-ease-default;
             }
             small {
-                font-size: 0.6em;
+                font-size: 0.75em;
                 color: $gray-800;
             }
         }
@@ -563,6 +564,19 @@
             background-color: transparent;
             .dot {
                 display: none;
+            }
+        }
+    }
+
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        font-size: 0.889em;
+    }
+
+    .fz-large &,
+    .fz-xlarge & {
+        .container__snack-tabs {
+            ul {
+                flex-wrap: wrap;
             }
         }
     }
