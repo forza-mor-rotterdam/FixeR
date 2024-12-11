@@ -107,14 +107,6 @@ def http_500(request):
     )
 
 
-def informatie(request):
-    return render(
-        request,
-        "auth/informatie.html",
-        {},
-    )
-
-
 def navigeer(request, lat, long):
     ua = request.META.get("HTTP_USER_AGENT", "")
     device = DeviceDetector(ua).parse()
@@ -715,6 +707,7 @@ def taak_afhandelen(request, id):
                 TaakRService().get_taaktype_by_url(taaktype_url).get("omschrijving"),
             )
             for taaktype_url in taaktypes[0].get("volgende_taaktypes", [])
+            if TaakRService().get_taaktype_by_url(taaktype_url).get("actief")
         ]
         volgende_taaktypes = [
             taaktype

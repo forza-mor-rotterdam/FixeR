@@ -1,7 +1,7 @@
 {% extends "base_beheer.html" %}
 {% load taaktype_url from taaktype_tags %}
 {% block title %}
-    Taaktypes | FixeR
+    Taaktypes | Beheer | FixeR
 {% endblock title %}
 {% block body %}
     <div class="page__beheer" data-controller="row-search">
@@ -38,37 +38,61 @@
                 Deze pagina toont de verschillende taaktypes die geselecteerd kunnen worden in FixeR. Ook taaktypes die als vervolgtaak kunnen worden gekozen.
             </p>
         </div>
-        <!-- <form>
-        <div class="form-row">
-            <label class="" for="id_zoeken">Zoeken</label>
-            <div>
-                <input type="text" id="id_zoeken" name="zoeken" class="form-control " data-action="row-search#search">
+        <form>
+            <div class="form-row">
+                <label for="id_zoeken">Zoeken</label>
+                <div>
+                    <input type="text"
+                           id="id_zoeken"
+                           name="zoeken"
+                           class="form-control "
+                           data-action="row-search#search">
+                </div>
             </div>
-        </div>
-</form> -->
+        </form>
+        <h2>Actieve taaktypes</h2>
         <div class="container__table">
             <table>
                 <thead>
                     <tr>
                         <th>omschrijving</th>
-                        <th>Actief</th>
-                        <th>Aantal rollen</th>
                         <th></th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for object in object_list %}
+                    {% for object in active %}
                         <tr data-row-search-target="row">
                             <td data-row-search-target="searchable">{{ object.omschrijving }}</td>
-                            <td data-row-search-target="searchable">
-                                {% if object.actief %}
-                                    {% include "icons/checkmark.svg" %}
-                                {% else %}
-                                    {% include "icons/close.svg" %}
-                                {% endif %}
+                            <td>
+                                <a href="{% url 'taaktype_aanpassen' object.pk %}"
+                                   aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
                             </td>
-                            <td data-row-search-target="searchable">{{ object.contexten_voor_taaktypes.all|length }}</td>
+                            <td>
+                                <a href="{{ TAAKR_URL }}/beheer/taaktype/aanmaken/?taaktype_url={% taaktype_url object %}"
+                                   aria-label="Aanpassen">TaakR
+                                    {% include "icons/edit.svg" %}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <h2>Inactieve taaktypes</h2>
+        <div class="container__table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>omschrijving</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in inactief %}
+                        <tr data-row-search-target="row">
+                            <td data-row-search-target="searchable">{{ object.omschrijving }}</td>
                             <td>
                                 <a href="{% url 'taaktype_aanpassen' object.pk %}"
                                    aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>

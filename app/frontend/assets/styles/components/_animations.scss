@@ -120,3 +120,28 @@
         background-color: $white;
     }
 }
+
+@keyframes highlight-primary {
+    0% {
+        border-color: $black;
+        border-width: 1px;
+        background-color: $white;
+    }
+    100% {
+        border-color: $primary;
+        border-width: 2px;
+        background-color: $white;
+    }
+}
+@keyframes pulse-animation {
+    0% {
+        box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+        //   font-size: 0.875em;
+        transform: scale(1);
+    }
+    100% {
+        box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+        //   font-size: 1.375em;
+        transform: scale(1.1);
+    }
+}

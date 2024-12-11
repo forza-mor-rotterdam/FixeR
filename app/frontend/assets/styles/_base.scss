@@ -1,6 +1,6 @@
 @mixin focus-outline {
     outline-style: solid !important;
-    outline-width: medium !important;
+    outline-width: thin !important;
     outline-color: $gray-tint11 !important;
 }
 
@@ -8,7 +8,7 @@ html,
 body {
     margin: 0;
     font-family: "Bolder", sans-serif;
-    font-size: 1em;
+    font-size: $font-size-base;
     color: $black;
     background-color: $gray-tint00;
     scroll-behavior: smooth;
@@ -237,6 +237,12 @@ table {
     }
 }
 
+* {
+    &:focus {
+        @include focus-outline();
+    }
+}
+
 a,
 .link {
     color: $primary;
@@ -246,10 +252,6 @@ a,
     &:hover,
     &:focus {
         text-decoration: none;
-    }
-
-    &:focus {
-        @include focus-outline();
     }
 
     &.link--location {

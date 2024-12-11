@@ -3,6 +3,8 @@ from apps.main.services import TaakRService
 from apps.taken.forms import TaaktypeAanmakenForm, TaaktypeAanpassenForm
 from apps.taken.models import Taaktype
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models.functions import Lower
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -29,7 +31,18 @@ class TaaktypeView(View):
     name="dispatch",
 )
 class TaaktypeLijstView(TaaktypeView, ListView):
-    ...
+    queryset = Taaktype.objects.order_by(Lower("omschrijving"))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        context.update(
+            {
+                "active": queryset.filter(actief=True),
+                "inactief": queryset.filter(actief=False),
+            }
+        )
+        return context
 
 
 class TaaktypeAanmakenAanpassenView(TaaktypeView):
@@ -42,8 +55,11 @@ class TaaktypeAanmakenAanpassenView(TaaktypeView):
     permission_required("authorisatie.taaktype_aanpassen", raise_exception=True),
     name="dispatch",
 )
-class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
+class TaaktypeAanpassenView(
+    SuccessMessageMixin, TaaktypeAanmakenAanpassenView, UpdateView
+):
     form_class = TaaktypeAanpassenForm
+    success_message = "Het taaktype '%(omschrijving)s' is aangepast"
 
     def get_initial(self):
         instelling = Instelling.actieve_instelling()
@@ -98,8 +114,11 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
     permission_required("authorisatie.taaktype_aanmaken", raise_exception=True),
     name="dispatch",
 )
-class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
+class TaaktypeAanmakenView(
+    SuccessMessageMixin, TaaktypeAanmakenAanpassenView, CreateView
+):
     form_class = TaaktypeAanmakenForm
+    success_message = "Het taaktype '%(omschrijving)s' is aangemaakt"
 
     def get(self, request, *args, **kwargs):
         taaktype_url = request.GET.get("taaktype_url", "")

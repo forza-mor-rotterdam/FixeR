@@ -205,6 +205,36 @@ button {
         &:active {
             opacity: 0.75;
         }
+
+        &--small {
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 8px;
+            margin: 0 0 0 auto;
+            box-shadow: none;
+            box-sizing: content-box;
+            min-width: 13px;
+            min-height: 13px;
+            border: 0;
+            opacity: 1;
+            background-color: transparent;
+            cursor: pointer;
+
+            svg {
+                width: 13px;
+                height: 13px;
+                pointer-events: none;
+                path {
+                    fill: $black;
+                }
+            }
+
+            &:hover,
+            &:active {
+                opacity: 0.75;
+            }
+        }
     }
 
     &-filter {
@@ -269,11 +299,13 @@ button {
     }
 
     &-togglemenu {
+        display: block;
         width: 56px;
-        height: 64px;
+        height: 36px;
+        min-height: 0;
         background: transparent;
-        margin-right: -16px;
-        padding-top: 16px;
+        margin: 16px -16px 0 0;
+        padding: 0;
         position: relative;
 
         .badge-count {

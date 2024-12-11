@@ -96,6 +96,14 @@ fieldset {
         background-position: 8px 50%;
         color: $gray-tint11;
         font-size: 0.875em;
+
+        &.active {
+            animation: highlight-primary 0.5s 1 forwards 0.5s;
+        }
+
+        &::-webkit-search-cancel-button {
+            cursor: pointer;
+        }
     }
 }
 
@@ -149,6 +157,14 @@ $form-search-indicator-position: left 10px center !default;
     margin: 0.25rem 0;
     display: block;
     color: $gray-tint09;
+
+    &.warning {
+        color: $alert-warning-color;
+    }
+
+    &.error {
+        color: $red-tint02;
+    }
 }
 
 .form-control__with-helptext {
@@ -453,6 +469,11 @@ ul.list--form-radio-input {
 
         li {
             border: 0;
+        }
+        input {
+            ~ .form-check-label {
+                padding: 0 0 0 45px;
+            }
         }
     }
     .form--beheer.columns--two & {

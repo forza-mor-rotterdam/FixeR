@@ -44,6 +44,8 @@ USE_I18N = True
 LANGUAGE_CODE = "nl-NL"
 LANGUAGES = [("nl", "Dutch")]
 
+ENABLE_DJANGO_ADMIN_LOGIN = os.getenv("ENABLE_DJANGO_ADMIN_LOGIN", False) in TRUE_VALUES
+
 DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
@@ -99,6 +101,7 @@ INSTALLED_APPS = (
 )
 
 LOGIN_URL = "/login/"
+LOGOUT_URL = "/logout/"
 
 MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",
@@ -501,7 +504,6 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     LOGIN_REDIRECT_URL = "/"
     LOGIN_REDIRECT_URL_FAILURE = "/"
     LOGOUT_REDIRECT_URL = OIDC_OP_LOGOUT_ENDPOINT
-    LOGIN_URL = "/oidc/authenticate/"
 
 
 APP_MERCURE_PUBLIC_URL = os.getenv("APP_MERCURE_PUBLIC_URL")
@@ -513,6 +515,7 @@ MERCURE_SUBSCRIBER_JWT_ALG = os.getenv("MERCURE_SUBSCRIBER_JWT_ALG", "HS256")
 
 MERCURE_PUBLISH_TARGETS = [
     "/melding/{id}/",
+    "/notificaties/snack/",
 ]
 
 CKEDITOR_5_CONFIGS = {

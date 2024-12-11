@@ -5,6 +5,7 @@
     padding: 0 16px;
     margin-bottom: 16px;
     position: relative;
+    z-index: 2100;
 
     .container__logo {
         flex: 1;
@@ -29,6 +30,156 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -40%);
+        }
+    }
+
+    .container__uitklapper {
+        position: unset;
+        flex: 0 1 auto;
+        margin: 20px 0 0;
+        flex-direction: column;
+        justify-content: center;
+
+        > turbo-frame {
+            height: auto;
+        }
+        > span {
+            font-weight: 700;
+            text-decoration: none;
+            color: $black;
+            font-size: 0.8em;
+            padding: 0.7em 0.5em 0 0.5em;
+            cursor: pointer;
+        }
+
+        .content {
+            visibility: hidden;
+            position: absolute;
+            display: block;
+            top: 2em;
+            transform: scale(0.98, 0.98);
+            right: 1vw;
+            padding: 0;
+            box-shadow: 0 4px 14px 7px rgba(0, 0, 0, 0.07);
+            opacity: 0;
+            pointer-events: none;
+            transition: all $transition-duration-default $transition-ease-default;
+            transform-origin: right top;
+            transition-delay: 0.15s;
+            background-color: $white;
+
+            &--large {
+                width: 98vw;
+                max-width: 450px;
+                right: -13.5vw;
+
+                @media (min-width: map-get($grid-breakpoints, md)) {
+                    right: 1vw;
+                }
+            }
+
+            &:not(.container__profiel_notificatie_lijst) {
+                top: 2.2em;
+            }
+
+            ul {
+                margin: 0;
+            }
+            li {
+                margin-bottom: 1px;
+            }
+            span {
+                font-size: 0.87em;
+            }
+        }
+
+        &.show {
+            .content {
+                visibility: visible;
+                opacity: 1;
+                transform: scale(1, 1);
+                pointer-events: all;
+                transition: all $transition-duration-default $transition-ease-default;
+            }
+        }
+
+        &:focus {
+            outline: none !important;
+        }
+
+        .trigger--notificationslist {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            background-color: transparent;
+            transition: background-color $transition-duration-default $transition-ease-default;
+
+            .active,
+            .inactive {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -30%);
+                display: block;
+                width: 16px;
+                height: auto;
+            }
+
+            .active {
+                opacity: 0;
+                transition: opacity $transition-duration-default $transition-ease-default;
+            }
+            svg {
+                path {
+                    fill: $black;
+                }
+            }
+
+            .badge-count {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-10%, -70%);
+                background-color: $primary;
+                span {
+                    display: inline-block;
+                    font-size: 0.8333em;
+                }
+                width: 1.5em;
+                height: 1.5em;
+                line-height: 1.5em;
+            }
+        }
+        &:focus,
+        &:hover {
+            .trigger--notificationslist {
+                cursor: pointer;
+                background-color: $white;
+            }
+        }
+        &:focus {
+            outline: none;
+            .trigger--notificationslist {
+                .active {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        .container__uitklapper {
+            position: relative;
+            &:first-child {
+                padding-right: 1em;
+            }
+
+            .content {
+                right: -1.2em;
+            }
         }
     }
 
@@ -139,5 +290,26 @@
     }
     .modal-content {
         height: 100%;
+    }
+
+    .fz-large & {
+        .container__uitklapper {
+            .trigger--notificationslist {
+                .active,
+                .inactive {
+                    transform: translate(-50%, -44%);
+                }
+            }
+        }
+    }
+    .fz-xlarge & {
+        .container__uitklapper {
+            .trigger--notificationslist {
+                .active,
+                .inactive {
+                    transform: translate(-50%, -54%);
+                }
+            }
+        }
     }
 }

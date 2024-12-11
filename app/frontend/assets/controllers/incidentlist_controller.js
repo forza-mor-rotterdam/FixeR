@@ -243,6 +243,13 @@ export default class extends Controller {
   onToggleSearchContainer() {
     this.searchTarget.classList.toggle('hidden-vertical')
     this.searchTarget.classList.toggle('show-vertical')
+    if (this.searchTarget.classList.contains('hidden-vertical')) {
+      let myEvent = new Event('clearSearchForTasks', {
+        bubbles: true,
+        cancelable: false,
+      })
+      window.dispatchEvent(myEvent)
+    }
     this.constructor.showSearchContainer = !this.constructor.showSearchContainer
   }
 

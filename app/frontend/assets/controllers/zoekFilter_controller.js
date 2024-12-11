@@ -7,15 +7,40 @@ export default class extends Controller {
     this.to = null
     this.csrf_token = this.element.querySelector('input[name="csrfmiddlewaretoken"]').value
     this.isSearching()
+    this.zoekFieldTarget.addEventListener('input', () => {
+      if (this.zoekFieldTarget.value.length === 0) {
+        this.zoekFieldTarget.classList.remove('active')
+      }
+    })
+    window.addEventListener('clearSearchForTasks', () => {
+      if (this.zoekFieldTarget.value.length !== 0) {
+        this.zoekFieldTarget.value = ''
+        this.zoekFieldTarget.classList.remove('active')
+        this.submit(this.zoekFieldTarget.value)
+      }
+    })
+    screen.orientation.addEventListener('change', () => {
+      if (this.zoekFieldTarget.value.length !== 0) {
+        this.zoekFieldTarget.value = ''
+        this.zoekFieldTarget.classList.remove('active')
+        this.submit(this.zoekFieldTarget.value)
+      }
+    })
   }
 
   isSearching() {
-    if (this.zoekFieldTarget.value.length) {
-      const container = this.zoekFieldTarget.closest('.container__search')
+    const input = this.zoekFieldTarget
+    if (this.zoekFieldTarget.value.length !== 0) {
+      input.classList.add('active')
+      const container = input.closest('.container__search')
       if (container) {
         container.classList.remove('hidden-vertical')
         container.classList.add('show-vertical')
       }
+      input.focus()
+      input.setSelectionRange(input.value.length, input.value.length)
+    } else {
+      input.classList.remove('active')
     }
   }
 

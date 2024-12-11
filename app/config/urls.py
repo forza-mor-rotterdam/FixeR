@@ -1,24 +1,9 @@
 from apps.aliassen.views import MeldingNotificatieAPIView
 from apps.authenticatie.views import (
-    GebruikerAanmakenView,
-    GebruikerAanpassenView,
-    GebruikerLijstView,
     GebruikerProfielView,
+    LoginView,
+    LogoutView,
     OnboardingView,
-    gebruiker_bulk_import,
-)
-from apps.authorisatie.views import (
-    RechtengroepAanmakenView,
-    RechtengroepAanpassenView,
-    RechtengroepLijstView,
-    RechtengroepVerwijderenView,
-)
-from apps.beheer.views import beheer
-from apps.context.views import (
-    ContextAanmakenView,
-    ContextAanpassenView,
-    ContextLijstView,
-    ContextVerwijderenView,
 )
 from apps.health.views import healthz
 from apps.main.views import (
@@ -28,7 +13,6 @@ from apps.main.views import (
     http_403,
     http_404,
     http_500,
-    informatie,
     kaart_modus,
     meldingen_bestand,
     meldingen_bestand_protected,
@@ -47,20 +31,14 @@ from apps.main.views import (
     taken_filter,
     taken_lijst,
     ui_settings_handler,
-    wijken_en_buurten,
 )
 from apps.release_notes.views import (
-    ReleaseNoteAanmakenView,
-    ReleaseNoteAanpassenView,
     ReleaseNoteDetailView,
-    ReleaseNoteListView,
     ReleaseNoteListViewPublic,
-    ReleaseNoteVerwijderenView,
-)
-from apps.taken.views import (
-    TaaktypeAanmakenView,
-    TaaktypeAanpassenView,
-    TaaktypeLijstView,
+    SnackOverzichtStreamView,
+    SnackOverzichtView,
+    SnackView,
+    ToastView,
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
 from django.conf import settings
@@ -84,13 +62,21 @@ router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 urlpatterns = [
     path("", root, name="root"),
     # Tijdelijke url voor nieuwe homepage
-    path("wijken-en-buurten/", wijken_en_buurten, name="wijken_en_buurten"),
+    path(
+        "login/",
+        LoginView.as_view(),
+        name="login",
+    ),
+    path(
+        "logout/",
+        LogoutView.as_view(),
+        name="logout",
+    ),
     path(
         "home/",
         HomepageView.as_view(),
         name="home",
     ),
-    path("informatie/", informatie, name="informatie"),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path(
         "api/v1/melding/",
@@ -163,72 +149,7 @@ urlpatterns = [
         name="taak_afhandelen",
     ),
     # END partials
-    # START beheer
-    path("beheer/", beheer, name="beheer"),
-    path("beheer/gebruiker/", GebruikerLijstView.as_view(), name="gebruiker_lijst"),
-    path(
-        "beheer/gebruiker/bulk-import/",
-        gebruiker_bulk_import,
-        name="gebruiker_bulk_import",
-    ),
-    path(
-        "beheer/gebruiker/aanmaken/",
-        GebruikerAanmakenView.as_view(),
-        name="gebruiker_aanmaken",
-    ),
-    path(
-        "beheer/gebruiker/<int:pk>/aanpassen/",
-        GebruikerAanpassenView.as_view(),
-        name="gebruiker_aanpassen",
-    ),
     path("onboarding/", OnboardingView.as_view(), name="onboarding"),
-    path("beheer/context/", ContextLijstView.as_view(), name="context_lijst"),
-    path(
-        "beheer/context/aanmaken/",
-        ContextAanmakenView.as_view(),
-        name="context_aanmaken",
-    ),
-    path(
-        "beheer/context/<int:pk>/aanpassen/",
-        ContextAanpassenView.as_view(),
-        name="context_aanpassen",
-    ),
-    path(
-        "beheer/context/<int:pk>/verwijderen/",
-        ContextVerwijderenView.as_view(),
-        name="context_verwijderen",
-    ),
-    path("beheer/taaktype/", TaaktypeLijstView.as_view(), name="taaktype_lijst"),
-    path(
-        "beheer/taaktype/aanmaken/",
-        TaaktypeAanmakenView.as_view(),
-        name="taaktype_aanmaken",
-    ),
-    path(
-        "beheer/taaktype/<int:pk>/aanpassen/",
-        TaaktypeAanpassenView.as_view(),
-        name="taaktype_aanpassen",
-    ),
-    path(
-        "beheer/rechtengroep/",
-        RechtengroepLijstView.as_view(),
-        name="rechtengroep_lijst",
-    ),
-    path(
-        "beheer/rechtengroep/aanmaken/",
-        RechtengroepAanmakenView.as_view(),
-        name="rechtengroep_aanmaken",
-    ),
-    path(
-        "beheer/rechtengroep/<int:pk>/aanpassen/",
-        RechtengroepAanpassenView.as_view(),
-        name="rechtengroep_aanpassen",
-    ),
-    path(
-        "beheer/rechtengroep/<int:pk>/verwijderen/",
-        RechtengroepVerwijderenView.as_view(),
-        name="rechtengroep_verwijderen",
-    ),
     # Release notes
     path(
         "release-notes/",
@@ -240,27 +161,27 @@ urlpatterns = [
         ReleaseNoteDetailView.as_view(),
         name="release_note_detail",
     ),
+    # Notificaties
     path(
-        "beheer/release-notes/",
-        ReleaseNoteListView.as_view(),
-        name="release_note_lijst",
+        "notificaties/snack/",
+        SnackView.as_view(),
+        name="snack_lijst",
     ),
     path(
-        "beheer/release-notes/aanmaken/",
-        ReleaseNoteAanmakenView.as_view(),
-        name="release_note_aanmaken",
+        "notificaties/toast/",
+        ToastView.as_view(),
+        name="toast_lijst",
     ),
     path(
-        "beheer/release-notes/<int:pk>/aanpassen/",
-        ReleaseNoteAanpassenView.as_view(),
-        name="release_note_aanpassen",
+        "notificaties/snack/overzicht/",
+        SnackOverzichtView.as_view(),
+        name="snack_overzicht",
     ),
     path(
-        "beheer/release-notes/<int:pk>/verwijderen/",
-        ReleaseNoteVerwijderenView.as_view(),
-        name="release_note_verwijderen",
+        "notificaties/snack/overzicht/stream/",
+        SnackOverzichtStreamView.as_view(),
+        name="snack_overzicht_stream",
     ),
-    # END beheer
     path("api/schema/", SpectacularAPIView.as_view(api_version="v1"), name="schema"),
     # Optional UI:
     path(
@@ -280,32 +201,31 @@ urlpatterns = [
         meldingen_bestand_protected,
         name="meldingen_bestand_protected",
     ),
+    path("beheer/", include("apps.beheer.urls")),
     path("ckeditor5/", include("django_ckeditor_5.urls")),
 ]
 
-if settings.OIDC_ENABLED:
+if not settings.ENABLE_DJANGO_ADMIN_LOGIN:
     urlpatterns += [
         path(
             "admin/login/",
-            RedirectView.as_view(
-                url="/oidc/authenticate/?next=/admin/",
-                permanent=False,
-            ),
+            RedirectView.as_view(url="/login/?next=/admin/"),
             name="admin_login",
         ),
         path(
             "admin/logout/",
-            RedirectView.as_view(
-                url="/oidc/logout/?next=/admin/",
-                permanent=False,
-            ),
+            RedirectView.as_view(url="/logout/?next=/"),
             name="admin_logout",
         ),
     ]
 
+if settings.OIDC_ENABLED:
+    urlpatterns += [
+        path("oidc/", include("mozilla_django_oidc.urls")),
+    ]
+
 urlpatterns += [
     path("admin/", admin.site.urls),
-    path("oidc/", include("mozilla_django_oidc.urls")),
 ]
 
 if settings.APP_ENV != "productie":
