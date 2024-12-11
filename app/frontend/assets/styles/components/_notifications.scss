@@ -295,6 +295,16 @@
                 }
             }
         }
+
+        &:not(.expanded) {
+            .notification {
+                @for $i from 2 through 10 {
+                    &:nth-child(#{$i}n) {
+                        overflow: hidden;
+                    }
+                }
+            }
+        }
     }
 
     &--toast {

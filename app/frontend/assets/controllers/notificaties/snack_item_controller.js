@@ -17,8 +17,6 @@ export default class extends Controller {
         event.preventDefault()
         console.log('1, touchstart')
         this.initialTouchX = event.touches[0].clientX
-        const currentWidth = this.element.clientWidth
-        this.element.style.width = `${currentWidth}px`
       })
 
       this.element.addEventListener('touchmove', (event) => {
