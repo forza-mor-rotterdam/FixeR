@@ -18,14 +18,14 @@ export default class extends Controller {
         if (event.target.hasAttribute('href') && event.target.getAttribute('href').length > 0) {
           window.location.href = event.target.getAttribute('href')
         }
-        this.initialTouchX = event.touches[0].clientX
-        const currentWidth = this.element.clientWidth
-        this.element.style.width = `${currentWidth + 2}px`
+        // this.initialTouchX = event.touches[0].clientX
+        // const currentWidth = this.element.clientWidth
+        // this.element.style.width = `${currentWidth + 2}px`
       })
 
       this.element.addEventListener('touchmove', (event) => {
         event.preventDefault()
-        this.deltaX = this.initialTouchX - event.changedTouches[0].clientX
+        // this.deltaX = this.initialTouchX - event.changedTouches[0].clientX
         // console.log(this.deltaX)
         // this.element.style.marginLeft = `-${this.deltaX}px`
         // this.element.style.opacity = 100 / -this.deltaX
@@ -34,11 +34,11 @@ export default class extends Controller {
       this.element.addEventListener('touchend', (event) => {
         event.preventDefault()
         // console.log('touchend', this.deltaX)
-        this.finalTouchX = event.changedTouches[0].clientX
-        if (this.deltaX < SWIPE_TRESHOLD) {
-          // this.element.style.marginLeft = 0
-          //   this.element.style.opacity = 1
-        }
+        // this.finalTouchX = event.changedTouches[0].clientX
+        // if (this.deltaX < SWIPE_TRESHOLD) {
+        // this.element.style.marginLeft = 0
+        //   this.element.style.opacity = 1
+        // }
         if (event.target.classList.contains('btn-close--small')) {
           this.manager.markeerSnackAlsGelezen(this.element.dataset.id)
         } else if (event.target.nodeName.toLowerCase() === 'a') {
