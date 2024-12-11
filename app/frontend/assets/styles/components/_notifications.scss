@@ -248,6 +248,7 @@
             interpolate-size: allow-keywords;
             max-height: calc(100vh - 100px);
             overflow: auto;
+            -webkit-overflow-scrolling: touch;
             &.hide {
                 transform: scale(0.98, 0);
                 transform-origin: top;
