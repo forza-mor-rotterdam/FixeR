@@ -3,7 +3,7 @@ import { Controller } from '@hotwired/stimulus'
 const SWIPE_TRESHOLD = 100
 const MAX_CHARACTERS = 200
 export default class extends Controller {
-  static targets = ['content']
+  static targets = ['content', 'titel']
 
   initialize() {
     this.element.controller = this
@@ -90,8 +90,11 @@ export default class extends Controller {
   }
   readMore(e = null) {
     e?.preventDefault()
+    this.contentTarget.style.height = `${this.contentTarget.clientHeight}px`
+    console.log('before readMore, height: ', this.contentTarget.clientHeight)
     this.contentTarget.innerText = this.contentString
     this.contentTarget.style.height = `${this.contentTarget.scrollHeight}px`
+    console.log('after readMore, height: ', this.contentTarget.style.height)
   }
   markeerAlsGelezen() {
     this.element.classList.add('hide')
