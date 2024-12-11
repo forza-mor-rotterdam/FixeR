@@ -34,7 +34,7 @@ export default class extends Controller {
       this.resetFontSize()
       document.body.classList.add(size)
     }
-    window.location.reload(true)
+    // window.location.reload(true)
   }
 
   show(e) {

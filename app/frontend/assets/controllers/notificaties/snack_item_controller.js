@@ -15,13 +15,15 @@ export default class extends Controller {
     if ('ontouchstart' in window) {
       this.element.addEventListener('touchstart', (event) => {
         event.preventDefault()
-        console.log('1, touchstart')
+        console.log(event.target.getAttribute('href').length > 0)
+        if (event.target.hasAttribute('href') && event.target.getAttribute('href').length > 0) {
+          window.location.href = event.target.getAttribute('href')
+        }
         this.initialTouchX = event.touches[0].clientX
       })
 
       this.element.addEventListener('touchmove', (event) => {
         event.preventDefault()
-        console.log('2, touchmove')
         this.deltaX = this.initialTouchX - event.changedTouches[0].clientX
         this.element.style.marginLeft = `-${this.deltaX}px`
         this.element.style.opacity = 10 / this.deltaX
@@ -29,7 +31,6 @@ export default class extends Controller {
 
       this.element.addEventListener('touchend', (event) => {
         event.preventDefault()
-        console.log('3, touchend')
         this.finalTouchX = event.changedTouches[0].clientX
         if (this.deltaX < SWIPE_TRESHOLD) {
           this.element.style.marginLeft = 0
@@ -48,7 +49,6 @@ export default class extends Controller {
 
       window.addEventListener('click', () => {
         if (this.element.closest('.container__notification')) {
-          console.log('this.element.closest(.container__notification), dus collapse ?')
           this.element.closest('.container__notification').classList.remove('expanded')
           this.element.closest('.container__notification').classList.add('collapsed')
         }
