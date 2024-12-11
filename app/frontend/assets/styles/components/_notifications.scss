@@ -222,7 +222,6 @@
     &--snack {
         max-width: 714px;
         z-index: 2000;
-        // gap: 0;
 
         &:not(.expanded):not(.collapsed) {
             .notification {
@@ -375,11 +374,10 @@
 
         ul {
             @include list-clean();
-            margin: 0;
+            margin: 0 0 0 -0.3em !important;
             display: flex;
         }
         li {
-            padding-right: 8px;
             a {
                 text-decoration: none;
                 color: inherit;
@@ -420,6 +418,11 @@
                 flex: 1 0 auto;
                 text-align: right;
                 padding-right: 0;
+            }
+        }
+        @media (min-width: map-get($grid-breakpoints, sm)) {
+            li {
+                padding-right: 8px;
             }
         }
     }
