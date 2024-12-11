@@ -122,7 +122,7 @@
                 position: absolute;
                 left: 50%;
                 top: 50%;
-                transform: translate(-50%, -50%);
+                transform: translate(-50%, -30%);
                 display: block;
                 width: 16px;
                 height: auto;
@@ -290,5 +290,26 @@
     }
     .modal-content {
         height: 100%;
+    }
+
+    .fz-large & {
+        .container__uitklapper {
+            .trigger--notificationslist {
+                .active,
+                .inactive {
+                    transform: translate(-50%, -44%);
+                }
+            }
+        }
+    }
+    .fz-xlarge & {
+        .container__uitklapper {
+            .trigger--notificationslist {
+                .active,
+                .inactive {
+                    transform: translate(-50%, -54%);
+                }
+            }
+        }
     }
 }
