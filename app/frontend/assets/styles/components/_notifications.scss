@@ -128,6 +128,7 @@
         }
         .container__content {
             flex: 1;
+            pointer-events: none;
             .container__message {
                 display: block;
 
@@ -139,9 +140,6 @@
                     text-align: right;
                     order: 2;
                     flex-basis: 15%;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
                     a {
                         margin-right: 0.5em;
                     }
@@ -154,6 +152,7 @@
                 }
                 a {
                     color: inherit;
+                    pointer-events: all;
                 }
             }
 
@@ -199,6 +198,9 @@
                     justify-content: space-between;
 
                     .container__link {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
                         a {
                             transform: translateY(-0.6em);
                             margin-right: 0;

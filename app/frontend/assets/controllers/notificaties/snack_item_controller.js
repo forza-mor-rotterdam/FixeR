@@ -1,6 +1,6 @@
 import { Controller } from '@hotwired/stimulus'
 
-const SWIPE_TRESHOLD = 100
+const SWIPE_TRESHOLD = 30
 const MAX_CHARACTERS = 200
 export default class extends Controller {
   static targets = ['content', 'titel']
@@ -15,6 +15,7 @@ export default class extends Controller {
     if ('ontouchstart' in window) {
       this.element.addEventListener('touchstart', (event) => {
         event.preventDefault()
+        console.log('1, touchstart')
         this.initialTouchX = event.touches[0].clientX
         const currentWidth = this.element.clientWidth
         this.element.style.width = `${currentWidth}px`
@@ -22,15 +23,19 @@ export default class extends Controller {
 
       this.element.addEventListener('touchmove', (event) => {
         event.preventDefault()
+        console.log('2, touchmove')
         this.deltaX = this.initialTouchX - event.changedTouches[0].clientX
         this.element.style.marginLeft = `-${this.deltaX}px`
+        this.element.style.opacity = 10 / this.deltaX
       })
 
       this.element.addEventListener('touchend', (event) => {
         event.preventDefault()
+        console.log('3, touchend')
         this.finalTouchX = event.changedTouches[0].clientX
         if (this.deltaX < SWIPE_TRESHOLD) {
           this.element.style.marginLeft = 0
+          this.element.style.opacity = 1
         }
         if (event.target.classList.contains('btn-close--small')) {
           this.manager.markeerSnackAlsGelezen(this.element.dataset.id)
@@ -45,6 +50,7 @@ export default class extends Controller {
 
       window.addEventListener('click', () => {
         if (this.element.closest('.container__notification')) {
+          console.log('this.element.closest(.container__notification), dus collapse ?')
           this.element.closest('.container__notification').classList.remove('expanded')
           this.element.closest('.container__notification').classList.add('collapsed')
         }
