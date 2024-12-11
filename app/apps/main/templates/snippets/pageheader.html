@@ -15,15 +15,13 @@
             </a>
             {% if page_title %}<h1 class="pagetitle h2">{{ page_title }}</h1>{% endif %}
         </div>
-        <div class="container__uitklapper"
-             data-action="click->pageHeader#show"
-             tabindex="0">
-            {% if request.user.is_authenticated %}
+        {% if request.user.is_authenticated %}
+            <div class="container__uitklapper"
+                 data-action="click->pageHeader#show"
+                 tabindex="0">
                 <turbo-frame id="tf_snack_overzicht" src="{% url 'snack_overzicht' %}">
                 </turbo-frame>
-            {% endif %}
-        </div>
-        {% if request.user.is_authenticated %}
+            </div>
             <div data-controller="message"
                  data-message-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"></div>
             <button class="btn btn-togglemenu"
@@ -71,10 +69,10 @@
                     <div class="modal-body">
                         <ul class="list-clean list-nav--tertiary">
                             {% comment %}
-                        Disabled until new homepage design has been made
-                        <li class="wrapper-horizontal">
-                            <a href="{% url 'home' %}">Homepagina</a>
-                        </li>
+                            Disabled until new homepage design has been made
+                            <li class="wrapper-horizontal">
+                                <a href="{% url 'home' %}">Homepagina</a>
+                            </li>
                             {% endcomment %}
                             <li class="wrapper-horizontal">
                                 <a href="{% url 'taken' %}">Taken</a>
