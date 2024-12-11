@@ -27,16 +27,16 @@ export default class extends Controller {
         event.preventDefault()
         this.deltaX = this.initialTouchX - event.changedTouches[0].clientX
         // console.log(this.deltaX)
-        this.element.style.marginLeft = `-${this.deltaX}px`
+        // this.element.style.marginLeft = `-${this.deltaX}px`
         // this.element.style.opacity = 100 / -this.deltaX
       })
 
       this.element.addEventListener('touchend', (event) => {
         event.preventDefault()
-        console.log('touchend', this.deltaX)
+        // console.log('touchend', this.deltaX)
         this.finalTouchX = event.changedTouches[0].clientX
         if (this.deltaX < SWIPE_TRESHOLD) {
-          this.element.style.marginLeft = 0
+          // this.element.style.marginLeft = 0
           //   this.element.style.opacity = 1
         }
         if (event.target.classList.contains('btn-close--small')) {
@@ -46,7 +46,10 @@ export default class extends Controller {
             this[`${event.target.getAttribute('data-action').split('#')[1]}`]()
           }
         } else {
-          this.handleSwipe(this.initialTouchX, this.finalTouchX)
+          this.element.closest('.container__notification').classList.remove('collapsed')
+          this.element.closest('.container__notification').classList.add('expanded')
+
+          //   this.handleSwipe(this.initialTouchX, this.finalTouchX)
         }
       })
 
@@ -113,8 +116,6 @@ export default class extends Controller {
     this.manager.markeerSnackAlsGelezen(this.element.dataset.id)
   }
   handleSwipe() {
-    this.element.closest('.container__notification').classList.remove('collapsed')
-    this.element.closest('.container__notification').classList.add('expanded')
     if (this.initialTouchX - this.finalTouchX > SWIPE_TRESHOLD) {
       this.manager.markeerSnackAlsGelezen(this.element.dataset.id)
     }
