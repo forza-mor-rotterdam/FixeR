@@ -15,7 +15,6 @@ export default class extends Controller {
     if ('ontouchstart' in window) {
       this.element.addEventListener('touchstart', (event) => {
         event.preventDefault()
-        console.log(event.target.getAttribute('href').length > 0)
         if (event.target.hasAttribute('href') && event.target.getAttribute('href').length > 0) {
           window.location.href = event.target.getAttribute('href')
         }
