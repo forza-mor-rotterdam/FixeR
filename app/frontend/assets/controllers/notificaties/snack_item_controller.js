@@ -13,18 +13,18 @@ export default class extends Controller {
     this.deltaX = null
 
     if ('ontouchstart' in window) {
-      this.element.addEventListener('touchstart', (event) => {
-        event.preventDefault()
-        if (event.target.hasAttribute('href') && event.target.getAttribute('href').length > 0) {
-          window.location.href = event.target.getAttribute('href')
-        }
+      this.element.addEventListener('touchstart', () => {
+        // event.preventDefault()
+        // if (event.target.hasAttribute('href') && event.target.getAttribute('href').length > 0) {
+        //   window.location.href = event.target.getAttribute('href')
+        // }
         // this.initialTouchX = event.touches[0].clientX
         // const currentWidth = this.element.clientWidth
         // this.element.style.width = `${currentWidth + 2}px`
       })
 
-      this.element.addEventListener('touchmove', (event) => {
-        event.preventDefault()
+      this.element.addEventListener('touchmove', () => {
+        // event.preventDefault()
         // this.deltaX = this.initialTouchX - event.changedTouches[0].clientX
         // console.log(this.deltaX)
         // this.element.style.marginLeft = `-${this.deltaX}px`
@@ -32,7 +32,7 @@ export default class extends Controller {
       })
 
       this.element.addEventListener('touchend', (event) => {
-        event.preventDefault()
+        // event.preventDefault()
         // console.log('touchend', this.deltaX)
         // this.finalTouchX = event.changedTouches[0].clientX
         // if (this.deltaX < SWIPE_TRESHOLD) {
