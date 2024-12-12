@@ -19,7 +19,7 @@
         {% endif %}
     {% endblock messages %}
     <div class="page__beheer">
-        <h1>
+        <h1 data-testid="gebruikersnaam">
             <svg width="26"
                  height="26"
                  viewBox="0 0 26 26"
@@ -31,18 +31,18 @@
             {{ object.email|get_field_from_gebruiker_middels_email }}
         </h1>
         {% if object.profiel or object.groups.exists %}
-            <h3>
+            <h2 class="h3" data-testid="rechtengroep">
                 {% if object.groups.exists %}{{ object.groups.first.name }} |{% endif %}
                 {% if object.profiel.context %}{{ object.profiel.context }}{% endif %}
-            </h3>
+            </h2>
         {% endif %}
         <div class="grid-container">
             <div class="grid-item">
                 <form action="." method="post">
                     {% csrf_token %}
                     <div>
-                        <h2 class="h5 ">E-mailadres</h2>
-                        <p class="no-margin-top">{{ object.email }}</p>
+                        <h2 class="h5">E-mailadres</h2>
+                        <p class="no-margin-top" data-testid="email">{{ object.email }}</p>
                     </div>
                     {% if not form.first_name.field.widget.attrs.readonly or not form.last_name.field.widget.attrs.readonly or not form.telefoonnummer.field.widget.attrs.readonly %}
                         <fieldset class="no-margin-bottom">
@@ -53,7 +53,7 @@
                     {% elif object.telefoonnummer %}
                         <div>
                             <h2 class="h5 ">Telefoonnummer</h2>
-                            <p class="no-margin-top">{{ object.telefoonnummer }}</p>
+                            <p class="no-margin-top" data-testid="telefoon">{{ object.telefoonnummer }}</p>
                         </div>
                     {% endif %}
                     {% include "snippets/alert_onboarding.html" %}
