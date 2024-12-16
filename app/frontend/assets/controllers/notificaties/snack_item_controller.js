@@ -25,6 +25,7 @@ export default class extends Controller {
       })
 
       this.element.addEventListener('touchmove', (e) => {
+        console.log('isSwiping', this.isSwiping)
         if (!this.isSwiping) return
         this.currentX = e.touches[0].clientX
         this.currentY = e.touches[0].clientY
@@ -37,6 +38,7 @@ export default class extends Controller {
           // Horizontale swipe, voorkom scrollen
           e.preventDefault()
           if (deltaX < 0) {
+            // only swipe to left
             this.element.style.transform = `translateX(${deltaX}px)`
           }
         }
@@ -45,7 +47,6 @@ export default class extends Controller {
       this.element.addEventListener('touchend', (e) => {
         if (!this.isSwiping) return
         const swipeDistance = this.startX - this.currentX
-        console.log('touchend, swipeDistance', swipeDistance)
         if (e.target.classList.contains('btn-close--small')) {
           this.manager.markeerSnackAlsGelezen(this.element.dataset.id, true)
         } else if (e.target.nodeName.toLowerCase() === 'a') {
