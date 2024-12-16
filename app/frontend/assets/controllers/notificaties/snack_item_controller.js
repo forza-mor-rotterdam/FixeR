@@ -22,6 +22,8 @@ export default class extends Controller {
         this.currentX = this.startX // in het geval gebruiker alleen mmar tapt ipv swipet
         this.currentY = this.startY
         this.isSwiping = true
+
+        document.body.classList.add('noScroll')
       })
 
       this.element.addEventListener('touchmove', (e) => {
@@ -44,6 +46,7 @@ export default class extends Controller {
       })
 
       this.element.addEventListener('touchend', (e) => {
+        document.body.classList.remove('noScroll')
         if (!this.isSwiping) return
         const swipeDistance = this.startX - this.currentX
         if (e.target.classList.contains('btn-close--small')) {
