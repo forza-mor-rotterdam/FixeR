@@ -25,7 +25,6 @@ export default class extends Controller {
       })
 
       this.element.addEventListener('touchmove', (e) => {
-        console.log('isSwiping', this.isSwiping)
         if (!this.isSwiping) return
         this.currentX = e.touches[0].clientX
         this.currentY = e.touches[0].clientY
@@ -60,7 +59,6 @@ export default class extends Controller {
           } else if (swipeDistance < 10) {
             // Reset positie als swipe te kort is
             this.element.style.transform = `translateX(0)`
-            console.log('swipeDistance < 10')
             this.element.closest('.container__notification').classList.remove('collapsed')
             this.element.closest('.container__notification').classList.add('expanded')
           } else {
