@@ -45,7 +45,7 @@ class ContextAanpassenView(
     SuccessMessageMixin, ContextAanmakenAanpassenView, UpdateView
 ):
     form_class = ContextAanpassenForm
-    success_message = "De rol '%(name)s' is aangepast"
+    success_message = "De rol '%(naam)s' is aangepast"
 
     def get_initial(self):
         initial = self.initial.copy()
@@ -63,7 +63,7 @@ class ContextAanmakenView(
     SuccessMessageMixin, ContextAanmakenAanpassenView, CreateView
 ):
     form_class = ContextAanmakenForm
-    success_message = "De rol '%(name)s' is aangemaakt"
+    success_message = "De rol '%(naam)s' is aangemaakt"
 
 
 @method_decorator(login_required, name="dispatch")
