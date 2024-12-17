@@ -154,8 +154,13 @@
                     color: inherit;
                     pointer-events: all;
                     touch-action: manipulation;
-                    &:hover {
+                    text-decoration: underline;
+
+                    &:hover,
+                    &:focus {
+                        color: $green-tint01;
                         text-decoration: underline;
+                        outline: none !important;
                     }
                 }
             }
@@ -576,10 +581,27 @@
                     background-color: $green-200;
                     text-align: center;
                     border-radius: 100%;
+
+                    svg {
+                        max-width: 18px;
+                        max-height: 18px;
+                    }
                 }
             }
             .container__status {
                 max-width: 8px;
+            }
+
+            &.warning {
+                .initials {
+                    background-color: $yellow-200;
+                }
+            }
+
+            &.error {
+                .initials {
+                    background-color: $red-200;
+                }
             }
         }
 

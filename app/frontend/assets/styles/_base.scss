@@ -186,6 +186,16 @@ p {
     max-width: map-get($container-max-widths, lg);
 }
 
+a {
+    transition: color $transition-duration-default $transition-ease-default;
+
+    svg {
+        path {
+            transition: fill $transition-duration-default $transition-ease-default;
+        }
+    }
+}
+
 h2 + p {
     margin-top: 0;
 }
