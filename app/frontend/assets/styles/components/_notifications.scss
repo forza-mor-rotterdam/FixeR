@@ -178,10 +178,6 @@
             > * {
                 pointer-events: none;
             }
-            &:focus {
-                outline: none !important;
-                background-color: $gray-100;
-            }
         }
 
         &.warning {
@@ -397,6 +393,7 @@
             margin-top: 0.83em;
             margin-right: -8px;
             max-height: 14px;
+            padding: 7px 10px 10px 7px;
 
             &:focus {
                 outline: none !important;
