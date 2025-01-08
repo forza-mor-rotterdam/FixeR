@@ -4,7 +4,7 @@
     height: 100%;
     width: 100%;
     overflow: hidden;
-    z-index: 20000;
+    z-index: 2090;
     pointer-events: none;
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
@@ -57,7 +57,7 @@
         pointer-events: all;
         transition-property: all;
         transition-duration: $transition-duration-default;
-        transition-timing-function: $transition-ease-default;
+        transition-timing-function: ease-out;
         overflow: hidden;
         display: flex;
         justify-content: flex-start;
@@ -154,6 +154,14 @@
                     color: inherit;
                     pointer-events: all;
                     touch-action: manipulation;
+                    text-decoration: underline;
+
+                    &:hover,
+                    &:focus {
+                        color: $green-tint01;
+                        text-decoration: underline;
+                        outline: none !important;
+                    }
                 }
             }
 
@@ -320,6 +328,8 @@
         // opacity: 0;
         overflow: visible;
         pointer-events: none;
+        padding: 0.25em 0;
+        font-size: 1em;
 
         .notification {
             animation: slide-in-from-bottom $transition-duration-default $transition-ease-default
@@ -329,6 +339,11 @@
                 opacity: 0;
                 pointer-events: none;
                 transition: opacity $transition-duration-default $transition-ease-default;
+
+                &:focus {
+                    outline: none !important;
+                    background-color: $gray-100;
+                }
             }
         }
 
@@ -351,8 +366,6 @@
                 forwards 0.5s;
 
             .notification {
-                font-size: 0.75em;
-
                 &.hide {
                     animation: slide-out-to-bottom $transition-duration-default
                         $transition-ease-default;
@@ -379,7 +392,13 @@
             max-width: 1em;
             margin-top: 0.83em;
             margin-right: -8px;
-            max-height: 16px;
+            max-height: 14px;
+            padding: 7px 10px 10px 7px;
+
+            &:focus {
+                outline: none !important;
+                background-color: $gray-100;
+            }
         }
     }
 
@@ -401,7 +420,9 @@
                 padding: 0.2em 0.3em 0.1em;
                 border-radius: 4px;
 
-                &:hover {
+                &:hover,
+                &:focus {
+                    outline: none !important;
                     background-color: $gray-100;
                 }
 
@@ -410,11 +431,13 @@
                     color: $gray-800;
                     text-decoration: underline;
                     padding: 0.4em 0 0;
-                    &:hover {
+                    &:hover,
+                    &:focus {
                         color: $black;
-                        text-decoration: none;
+                        text-decoration: underline;
                         border-color: transparent;
                         background-color: transparent;
+                        outline: none !important;
                     }
                 }
             }
@@ -478,9 +501,11 @@
             color: inherit;
             transition: all $transition-duration-default $transition-ease-default;
 
-            &:hover {
+            &:hover,
+            &:focus {
                 color: $primary;
-                text-decoration: none;
+                text-decoration: underline;
+                outline: none !important;
             }
         }
         li {
@@ -510,16 +535,16 @@
     }
 
     .container__laadmeer {
-        padding: 0.5em $input-padding-x 0.8em;
+        padding: 1em $input-padding-x 1.2em;
         border-top: 1px solid $blue-200;
         text-align: center;
 
-        &:has(a.disabled) {
+        &:has(.disabled) {
             border-top: 0;
         }
 
-        a {
-            font-size: 0.7em;
+        * {
+            font-size: 0.88em;
 
             &.disabled {
                 display: none;
@@ -536,6 +561,7 @@
             justify-content: space-between;
             padding: 0.7em;
             background-color: $green-100;
+            border-bottom: 1px solid $white;
 
             > div {
                 flex: 1;
@@ -548,14 +574,31 @@
                     display: inline-block;
                     width: 36px;
                     height: 36px;
-                    line-height: 40px;
+                    line-height: 44px;
                     background-color: $green-200;
                     text-align: center;
                     border-radius: 100%;
+
+                    svg {
+                        max-width: 18px;
+                        max-height: 18px;
+                    }
                 }
             }
             .container__status {
                 max-width: 8px;
+            }
+
+            &.warning {
+                .initials {
+                    background-color: $yellow-200;
+                }
+            }
+
+            &.error {
+                .initials {
+                    background-color: $red-200;
+                }
             }
         }
 

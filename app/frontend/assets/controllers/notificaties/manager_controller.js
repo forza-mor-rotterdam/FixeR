@@ -30,10 +30,12 @@ export default class extends Controller {
   }
   snackLijstTargetConnected() {
     this.snackLijstTarget.addEventListener('mouseover', () => {
+      console.log('mouseOver lijst')
       this.snackLijstTarget.classList.remove('collapsed')
       this.snackLijstTarget.classList.add('expanded')
     })
     this.snackLijstTarget.addEventListener('mouseleave', () => {
+      console.log('mouseLeave lijst')
       this.snackLijstTarget.classList.remove('expanded')
       this.snackLijstTarget.classList.add('collapsed')
     })
@@ -76,9 +78,10 @@ export default class extends Controller {
     this.verwijderAlleSnackOverzichtItems()
     this.laadSnackOverzicht()
   }
-  async markeerSnackAlsGelezen(notificatieId) {
+  async markeerSnackAlsGelezen(notificatieId, hideByClass = false) {
+    console.log('hideByClass', hideByClass)
     const snackItemController = this.snackItemController(notificatieId)
-    snackItemController.markeerAlsGelezen()
+    snackItemController.markeerAlsGelezen(hideByClass)
     this.verwijderAlleSnackOverzichtItems()
     this.snackOverzichtPagina = 0
     this.laadSnackOverzicht(`markeer-snack-als-gelezen=${notificatieId}`)
