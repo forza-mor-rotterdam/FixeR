@@ -43,7 +43,7 @@ def get_bijlagen(melding):
             **bijlage,
             "meldinggebeurtenis": meldinggebeurtenis,
             "aangemaakt_op": meldinggebeurtenis.get("aangemaakt_op"),
-            "label": "Foto van medewerker",
+            "label": f"Midoffice({meldinggebeurtenis.get('gebruiker')})",
         }
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
         for bijlage in meldinggebeurtenis.get("bijlagen", [])
@@ -55,7 +55,7 @@ def get_bijlagen(melding):
             "aangemaakt_op": meldinggebeurtenis.get("taakgebeurtenis", {}).get(
                 "aangemaakt_op"
             ),
-            "label": "Foto van medewerker",
+            "label": f"Medewerker({meldinggebeurtenis.get('taakgebeurtenis', {}).get('gebruiker')})",
         }
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
         for bijlage in (

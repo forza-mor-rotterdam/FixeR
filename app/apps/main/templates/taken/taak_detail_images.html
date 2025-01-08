@@ -7,6 +7,7 @@
 {% load context_template from context_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
 {% get_bijlagen melding as bijlagen %}
+{# djlint:off #}
 <section class="section--seperated section--imageslider"
          data-testid="detailPhotoviewer"
          {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
@@ -19,9 +20,13 @@
                     style="width: calc(100% * {{ bijlagen|length }})">
                     {% for foto in bijlagen %}
                         <li class="container__image"
+                            style="position: relative"
                             id="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
+                            data-detail-target="image"
                             data-action="click->detail#showImageInModal"
-                            data-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
+                            data-detail-image-index-param="{{ forloop.counter|add:'-1' }}"
+                            data-image-data="{{ foto|json_encode }}">
+                            <span style="position: absolute; left: 0; bottom: 0">{{ foto.label }}</span>
                             <img src="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
                                  class="image"
                                  alt="" />
@@ -54,3 +59,4 @@
         {% include "icons/expand.svg" %}
     {% endif %}
 </section>
+{# djlint:on #}
