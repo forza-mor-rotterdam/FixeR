@@ -43,7 +43,7 @@ def get_bijlagen(melding):
             **bijlage,
             "meldinggebeurtenis": meldinggebeurtenis,
             "aangemaakt_op": meldinggebeurtenis.get("aangemaakt_op"),
-            "label": f"Midoffice({meldinggebeurtenis.get('gebruiker')})",
+            "label": "Foto medewerker",
         }
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
         for bijlage in meldinggebeurtenis.get("bijlagen", [])
