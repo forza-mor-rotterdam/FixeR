@@ -26,7 +26,9 @@
                             data-action="click->detail#showImageInModal"
                             data-detail-image-index-param="{{ forloop.counter|add:'-1' }}"
                             data-image-data="{{ foto|json_encode }}">
-                            <span style="position: absolute; left: 0; bottom: 0">{{ foto.label }}</span>
+                            {% if foto.label %}
+                                <span class="tag--in-image">{{ foto.label }}</span>
+                            {% endif %}
                             <img src="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
                                  class="image"
                                  alt="" />

@@ -437,7 +437,9 @@ export default class extends Controller {
     this.showHideImageNavigation()
     this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
     const selectedImageData = JSON.parse(this.imageTargets[selectedImageIndex].dataset.imageData)
-    this.selectedImageLabelTarget.textContent = selectedImageData.label
+    if (selectedImageData.label) {
+      this.selectedImageLabelTarget.textContent = selectedImageData.label
+    }
     this.imageScrollInView(selectedImageIndex) //image in detailpage
     fullSizeImageContainer = this.selectedImageModalTarget
   }

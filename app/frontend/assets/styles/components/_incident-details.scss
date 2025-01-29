@@ -219,6 +219,7 @@
         background-color: $gray-tint02;
         scroll-snap-align: center;
         cursor: zoom-in;
+        position: relative;
 
         img {
             width: 100%;
@@ -227,6 +228,28 @@
             display: block;
             margin: auto;
             object-fit: contain;
+        }
+    }
+}
+
+.container__image {
+    .tag--in-image {
+        display: inline-block;
+        position: absolute;
+        right: 1.4rem;
+        bottom: 0.667rem;
+        font-size: 0.625rem;
+        padding: 6px 10px;
+        background-color: $blue-100;
+        width: auto;
+        border-radius: 4px;
+    }
+
+    .modal-body & {
+        .tag--in-image {
+            right: 0;
+            bottom: -2.2rem;
+            font-size: inherit;
         }
     }
 }
