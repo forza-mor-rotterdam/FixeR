@@ -356,7 +356,8 @@ p {
     &--warning {
         &:before {
             content: url("../icons/badge-alert.svg");
-            top: -1px;
+            position: relative;
+            top: 7px;
         }
     }
 }
