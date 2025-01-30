@@ -235,6 +235,18 @@ button {
                 background-color: $gray-100;
             }
         }
+
+        &--clean {
+            background-color: transparent;
+            width: 32px;
+            height: 32px;
+
+            svg {
+                path {
+                    fill: $black;
+                }
+            }
+        }
     }
 
     &-filter {
