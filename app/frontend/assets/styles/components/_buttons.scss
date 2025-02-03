@@ -212,6 +212,7 @@ button {
             top: 0;
             padding: 8px;
             margin: 0 0 0 auto;
+            line-height: 0.5;
             box-shadow: none;
             box-sizing: content-box;
             min-width: 13px;
@@ -233,18 +234,6 @@ button {
             &:focus-visible {
                 outline: none !important;
                 background-color: $gray-100;
-            }
-        }
-
-        &--clean {
-            background-color: transparent;
-            width: 32px;
-            height: 32px;
-
-            svg {
-                path {
-                    fill: $black;
-                }
             }
         }
     }
