@@ -11,7 +11,7 @@ dialog {
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     padding: 28px 16px 16px;
     background: #fff;
-    overflow: auto; /* Scrollen als de inhoud te groot is */
+    overflow: hidden;
     margin: 2rem 0 0;
     transform: translateY(100%);
     transition:
@@ -26,7 +26,7 @@ dialog {
         transform: translateY(0);
         visibility: visible;
         transition:
-            transform $transition-duration-default $transition-ease-default,
+            transform $transition-duration-default ease-out,
             visibility 0s linear;
     }
 
@@ -54,6 +54,7 @@ dialog {
 
     .content {
         flex: 1;
+        overflow: auto;
         *:first-child {
             padding-right: 30px;
         }
