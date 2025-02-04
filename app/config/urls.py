@@ -13,6 +13,7 @@ from apps.main.views import (
     http_403,
     http_404,
     http_500,
+    infosheet_mock,
     kaart_modus,
     meldingen_bestand,
     meldingen_bestand_protected,
@@ -140,6 +141,12 @@ urlpatterns = [
         name="gebruiker_profiel",
     ),
     # END taken
+    # sidesheet
+    path(
+        "infosheet-mock/",
+        infosheet_mock,
+        name="infosheet_mock",
+    ),
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
     path("navigeer/<str:lat>/<str:long>/", navigeer, name="navigeer"),

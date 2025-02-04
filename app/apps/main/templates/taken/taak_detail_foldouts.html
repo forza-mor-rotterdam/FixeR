@@ -39,7 +39,8 @@
                 {% endif %}
                 <div>
                     <button class="btn btn-textlink btn-with-icon"
-                            data-action="infosheet#openInfosheet">
+                            data-action="infosheet#openInfosheet"
+                            data-infosheet-action-param="{% url 'infosheet_mock' %}">
                         {% include "icons/info-filled.svg" %}
                         Taak uitleg
                     </button>
@@ -439,10 +440,7 @@
                 data-action="infosheet#closeInfosheet"
                 aria-label="Sluiten">{% include "icons/close.svg" %}</button>
         <div class="content">
-            <h2>Infosheet Content</h2>
-            <p>Dit is een voorbeeld van een infosheet. Voeg hier meer informatie of acties toe!</p>
-            <p>Dit is een voorbeeld van een infosheet. Voeg hier meer informatie of acties toe!</p>
-            <p>Dit is een voorbeeld van een infosheet. Voeg hier meer informatie of acties toe!</p>
+            <turbo-frame id="infosheet" data-infosheet-target="infosheetTurboframe"></turbo-frame>
         </div>
     </dialog>
 </section>

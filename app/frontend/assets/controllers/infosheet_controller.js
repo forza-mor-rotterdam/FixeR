@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus'
 
 const SWIPE_TRESHOLD = 100
 export default class extends Controller {
-  static targets = ['infosheet', 'scrollHandle']
+  static targets = ['infosheet', 'scrollHandle', 'infosheetTurboframe']
 
   scrollHandleTargetConnected(element) {
     this.startX = 0
@@ -66,7 +66,7 @@ export default class extends Controller {
   openInfosheet(e) {
     if (this.hasInfosheetTarget) {
       e.preventDefault()
-      // this.turboframeTarget.setAttribute('src', e.params.action)
+      this.infosheetTurboframeTarget.setAttribute('src', e.params.action)
       this.infosheetTarget.showModal()
       this.infosheetTarget.addEventListener('click', (event) => {
         if (event.target === event.currentTarget) {
