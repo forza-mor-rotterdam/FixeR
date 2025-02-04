@@ -279,8 +279,8 @@ button {
         background-color: transparent;
         border: 0;
         outline: none;
-        padding: 0;
-        margin: 0;
+        padding: 0 0.5rem;
+        margin: 0 -0.5rem;
         text-decoration: underline;
         max-width: none;
         color: $primary;
@@ -289,6 +289,7 @@ button {
 
         &.btn-with-icon {
             display: flex;
+            width: auto;
             align-items: center;
             svg {
                 margin-right: 4px;
