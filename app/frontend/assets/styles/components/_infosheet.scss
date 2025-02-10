@@ -43,7 +43,7 @@ dialog {
     }
 
     .btn-close--small {
-        top: 20px;
+        top: 25px;
         right: 10px;
         padding: 5px;
         &:focus {
@@ -52,6 +52,21 @@ dialog {
         }
     }
 
+    .header,
+    .footer {
+        margin: 0 -16px;
+        padding: 0 16px;
+    }
+    .header {
+        border-bottom: 1px solid $blue-200;
+        h1 {
+            margin-top: 0;
+        }
+    }
+    .footer {
+        padding-top: 20px;
+        border-top: 1px solid $blue-200;
+    }
     .content {
         flex: 1;
         overflow: auto;
