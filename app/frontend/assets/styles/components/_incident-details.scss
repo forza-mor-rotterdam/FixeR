@@ -212,10 +212,6 @@
         scroll-snap-align: center;
         cursor: zoom-in;
 
-        &:focus {
-            border: 3px solid gold;
-        }
-
         img {
             width: 100%;
             height: 100%;

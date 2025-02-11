@@ -86,7 +86,7 @@ button[class="icon"],
 }
 
 button {
-    &:focus {
+    &:focus-visible {
         @include focus-outline();
     }
 }
@@ -125,7 +125,7 @@ button {
         white-space: nowrap;
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             color: $white;
             background-color: $action-active;
             border-color: $action-active;
@@ -142,7 +142,7 @@ button {
             transition: background-color 0.15s ease-in-out;
 
             &:hover,
-            &:focus {
+            &:focus-visible {
                 background-color: darken($blue-900, 10%);
                 border-color: darken($blue-900, 10%);
             }
@@ -161,7 +161,7 @@ button {
         }
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             color: $primary;
             background-color: $white;
             border-color: $primary;
@@ -174,7 +174,7 @@ button {
         color: $white;
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             color: $white;
             background-color: $gray-tint11;
             border-color: $gray-tint11;
@@ -230,7 +230,7 @@ button {
                 }
             }
 
-            &:focus {
+            &:focus-visible {
                 outline: none !important;
                 background-color: $gray-100;
             }
@@ -354,7 +354,7 @@ button {
         }
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             svg {
                 path {
                     fill: $green-tint01;
