@@ -17,6 +17,7 @@
         </div>
         {% if request.user.is_authenticated %}
             <div class="container__uitklapper"
+                 data-pageheader-target="containerUitklapper"
                  data-action="click->pageHeader#show"
                  tabindex="0">
                 <turbo-frame id="tf_snack_overzicht" src="{% url 'snack_overzicht' %}">

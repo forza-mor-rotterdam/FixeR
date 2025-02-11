@@ -1,6 +1,8 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
+  static targets = ['containerUitklapper']
+
   connect() {
     window.addEventListener('click', (e) => {
       if (
@@ -16,9 +18,11 @@ export default class extends Controller {
         this.element.querySelector('.show .container__profiel_notificatie_lijst')
       )
     })
-
-    document.addEventListener('keydown', function (e) {
+  }
+  containerUitklapperTargetConnected(element) {
+    element.addEventListener('keydown', function (e) {
       if (e.code == 'Space' || e.code == 'Enter') {
+        e.preventDefault()
         document.activeElement.click()
       }
     })
