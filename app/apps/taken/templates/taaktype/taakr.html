@@ -1,0 +1,40 @@
+{% extends "infosheet/turbo.html" %}
+{% block content %}
+    <div>
+        <h1>{{ taaktype.omschrijving }}</h1>
+        <p>{{ taaktype.toelichting }}</p>
+        <h2>Waarom wel</h2>
+        <ul>
+            {% for voorbeeldsituatie in taaktype.waarom_wel %}
+                <li>
+                    <span>{{ voorbeeldsituatie.toelichting }}</span>
+                    <ul>
+                        {% for bijlage in voorbeeldsituatie.bijlagen %}
+                            <li>
+                                <img src="{{ bijlage.afbeelding }}" width="200" height="100" />
+                                <img src="{{ bijlage.afbeelding_verkleind }}" width="100" height="50" />
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+        <h2>Waarom niet</h2>
+        <ul>
+            {% for voorbeeldsituatie in taaktype.waarom_niet %}
+                <li>
+                    <span>{{ voorbeeldsituatie.toelichting }}</span>
+                    <ul>
+                        {% for bijlage in voorbeeldsituatie.bijlagen %}
+                            <li>
+                                <img src="{{ bijlage.afbeelding }}" width="200" height="100" />
+                                <img src="{{ bijlage.afbeelding_verkleind }}" width="100" height="50" />
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="{{ taaktype.taakr_url }}" target="_blank">Meer weten over dit taak</a>
+    </div>
+{% endblock content %}

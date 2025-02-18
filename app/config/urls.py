@@ -41,6 +41,7 @@ from apps.release_notes.views import (
     SnackView,
     ToastView,
 )
+from apps.taken.views import TaakRTaaktypeView
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
 from django.conf import settings
 from django.conf.urls.static import static
@@ -146,6 +147,9 @@ urlpatterns = [
         "infosheet-mock/",
         infosheet_mock,
         name="infosheet_mock",
+    ),
+    path(
+        "taaktype/<int:pk>/taakr/", TaakRTaaktypeView.as_view(), name="taaktype_taakr"
     ),
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
