@@ -363,38 +363,40 @@
                     {% for signaal in melding.signalen_voor_melding %}
                         <div class="margin-bottom">
                             {% if signaal.melder.naam %}
-                                <p>{{ signaal.melder.naam }}</p>
+                                <p data-testid="Melder_naam">{{ signaal.melder.naam }}</p>
                             {% else %}
                                 <p>
-                                    <small>Geen naam opgegeven</small>
+                                    <small data-testid="Naam_anon">Geen naam opgegeven</small>
                                 </p>
                             {% endif %}
                             {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
                                 <p>
                                     <a href="tel:{{ signaal.melder.telefoonnummer }}"
                                        target="_blank"
-                                       class="link link--phone">
+                                       class="link link--phone"
+                                       data-testid="Melder_tel">
                                         {% include "icons/phone.svg" %}
                                         {{ signaal.melder.telefoonnummer }}
                                     </a>
                                 </p>
                             {% else %}
                                 <p>
-                                    <small>Geen telefoonnummer opgegeven</small>
+                                    <small data-testid="Tel_anon">Geen telefoonnummer opgegeven</small>
                                 </p>
                             {% endif %}
                             {% if signaal.melder.email %}
                                 <p>
                                     <a href="mailto:{{ signaal.melder.email }}"
                                        target="_blank"
-                                       class="link link--email">
+                                       class="link link--email"
+                                       data-testid="Melder_email">
                                         {% include "icons/email.svg" with width="20" height="16" %}
                                         {{ signaal.melder.email }}
                                     </a>
                                 </p>
                             {% else %}
                                 <p>
-                                    <small>Geen e-mailadres opgegeven</small>
+                                    <small data-testid="Email_anon">Geen e-mailadres opgegeven</small>
                                 </p>
                             {% endif %}
                         </div>
