@@ -9,7 +9,7 @@ dialog {
     border: none;
     border-radius: 12px 12px 0 0;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    padding: 28px 16px 16px;
+    padding: 0;
     background: #fff;
     overflow: hidden;
     margin: 2rem 0 0;
@@ -52,27 +52,21 @@ dialog {
         }
     }
 
-    .header,
-    .footer {
-        margin: 0 -16px;
-        padding: 0 16px;
-    }
     .header {
+        padding: 28px 16px 0;
         border-bottom: 1px solid $blue-200;
         h1 {
             margin-top: 0;
         }
     }
     .footer {
-        padding-top: 20px;
+        padding: 20px 16px;
         border-top: 1px solid $blue-200;
     }
     .content {
         flex: 1;
-        overflow: auto;
-        *:first-child {
-            padding-right: 30px;
-        }
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .scroll-handle {
@@ -85,7 +79,7 @@ dialog {
 
     @media (min-width: map-get($grid-breakpoints, md)) {
         inset: auto 0 0 auto;
-        width: 40%;
+        width: 33%;
         max-height: none;
         border-radius: 12px 0 0 12px;
         transform: translateX(100%);

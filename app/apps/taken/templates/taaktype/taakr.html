@@ -1,40 +1,44 @@
 {% extends "infosheet/turbo.html" %}
 {% block content %}
-    <div>
+    <div class="container__content--taakr">
         <h1>{{ taaktype.omschrijving }}</h1>
         <p>{{ taaktype.toelichting }}</p>
-        <h2>Waarom wel</h2>
-        <ul>
-            {% for voorbeeldsituatie in taaktype.waarom_wel %}
-                <li>
-                    <span>{{ voorbeeldsituatie.toelichting }}</span>
-                    <ul>
-                        {% for bijlage in voorbeeldsituatie.bijlagen %}
-                            <li>
-                                <img src="{{ bijlage.afbeelding }}" width="200" height="100" />
-                                <img src="{{ bijlage.afbeelding_verkleind }}" width="100" height="50" />
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul>
-        <h2>Waarom niet</h2>
-        <ul>
-            {% for voorbeeldsituatie in taaktype.waarom_niet %}
-                <li>
-                    <span>{{ voorbeeldsituatie.toelichting }}</span>
-                    <ul>
-                        {% for bijlage in voorbeeldsituatie.bijlagen %}
-                            <li>
-                                <img src="{{ bijlage.afbeelding }}" width="200" height="100" />
-                                <img src="{{ bijlage.afbeelding_verkleind }}" width="100" height="50" />
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul>
+        <h2 class="label--positive">Wanneer wel</h2>
+        <div class="container__slider-horizontal {% if taaktype.waarom_wel|length < 2 %}single-item{% endif %}">
+            <ul class="list-slider">
+                {% for voorbeeldsituatie in taaktype.waarom_wel %}
+                    <li class="container__explained">
+                        <figure class="container__image">
+                            {% if voorbeeldsituatie.bijlagen|length > 0 %}
+                                <img src="{{ voorbeeldsituatie.bijlagen.0.afbeelding }}" />
+                                <figcaption>
+                                    <div class="icon--positive"></div>
+                                    {{ voorbeeldsituatie.toelichting }}
+                                </figcaption>
+                            {% endif %}
+                        </figure>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <h2 class="label--negative">Wanneer niet</h2>
+        <div class="container__slider-horizontal {% if taaktype.waarom_wel|length < 2 %}single-item{% endif %}">
+            <ul class="list-slider">
+                {% for voorbeeldsituatie in taaktype.waarom_niet %}
+                    <li class="container__explained">
+                        <figure class="container__image">
+                            {% if voorbeeldsituatie.bijlagen|length > 0 %}
+                                <img src="{{ voorbeeldsituatie.bijlagen.0.afbeelding }}" />
+                                <figcaption>
+                                    <div class="icon--negative"></div>
+                                    {{ voorbeeldsituatie.toelichting }}
+                                </figcaption>
+                            {% endif %}
+                        </figure>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
         <a href="{{ taaktype.taakr_url }}" target="_blank">Meer weten over dit taak</a>
     </div>
 {% endblock content %}
