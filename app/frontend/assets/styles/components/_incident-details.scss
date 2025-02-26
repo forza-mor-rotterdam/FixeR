@@ -18,6 +18,14 @@
             margin-left: 0;
         }
     }
+
+    span .btn-inline {
+        svg {
+            path {
+                fill: $green-tint01;
+            }
+        }
+    }
 }
 .container__details {
     &--sticky-bottom {

@@ -52,57 +52,78 @@
 
             .list-slider {
                 padding: 0 16px;
+                margin: 0;
 
                 li {
                     img {
                         height: 132px;
                     }
+                }
+            }
 
-                    &.single-item {
-                        width: 100%;
-                        img {
-                            height: auto;
-                            width: 100%;
-                        }
-                    }
+            &.single-item {
+                li {
+                    width: 100%;
+                }
+                .container__image {
+                    width: 100%;
+                }
+                img {
+                    height: auto;
+                    width: 100%;
                 }
             }
         }
     }
 
+    .label--positive,
+    .label--negative {
+        margin: 0;
+        padding: 0;
+
+        &::before {
+            content: "";
+            margin: 0;
+        }
+    }
+
     .container__slider-horizontal {
         .list-slider {
-            padding: 16px;
+            // padding: 16px;
             list-style: none;
 
             li {
                 .container__image {
                     background: transparent;
                     margin: 0;
+                    display: table;
+                    width: 1px;
 
+                    img,
+                    figcaption {
+                        display: table-row;
+                        vertical-align: bottom;
+                    }
                     img {
                         height: auto;
                         width: auto;
+                        max-width: none;
                         object-fit: cover;
                         border-radius: 8px;
+                        display: block;
                     }
                 }
                 figcaption {
-                    margin-top: 8px;
                     font-size: 0.875rem;
                     position: relative;
-                }
+                    width: 100%;
 
-                .label--positive,
-                .label--negative {
-                    margin: 0;
-                    padding: 0;
-
-                    &::before {
-                        content: "";
-                        margin: 0;
+                    span {
+                        display: block;
+                        padding: 6px 0;
                     }
                 }
+
                 .icon--positive,
                 .icon--negative {
                     transform: translateY(-100%);
@@ -137,7 +158,7 @@
             display: flex;
             overflow-x: auto;
             gap: 30px;
-            padding: 16px;
+            // padding: 16px;
             scroll-snap-type: x mandatory;
             list-style: none;
 
