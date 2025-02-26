@@ -31,7 +31,9 @@ export default class extends Controller {
   }
   static targets = [
     'selectedImageModal',
+    'selectedImageLabel',
     'thumbList',
+    'image',
     'imageSliderContainer',
     'taakAfstand',
     'navigeerLink',
@@ -434,6 +436,10 @@ export default class extends Controller {
     this.selectedImageModalTarget.src = `${this.urlPrefixValue}${imagesList[selectedImageIndex]}${sd}`
     this.showHideImageNavigation()
     this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
+    const selectedImageData = JSON.parse(this.imageTargets[selectedImageIndex].dataset.imageData)
+    if (selectedImageData.label) {
+      this.selectedImageLabelTarget.textContent = selectedImageData.label
+    }
     this.imageScrollInView(selectedImageIndex) //image in detailpage
     fullSizeImageContainer = this.selectedImageModalTarget
   }
