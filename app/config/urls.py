@@ -13,6 +13,7 @@ from apps.main.views import (
     http_403,
     http_404,
     http_500,
+    infosheet_mock,
     kaart_modus,
     meldingen_bestand,
     meldingen_bestand_protected,
@@ -40,6 +41,7 @@ from apps.release_notes.views import (
     SnackView,
     ToastView,
 )
+from apps.taken.views import TaakRTaaktypeView
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
 from django.conf import settings
 from django.conf.urls.static import static
@@ -140,6 +142,15 @@ urlpatterns = [
         name="gebruiker_profiel",
     ),
     # END taken
+    # sidesheet
+    path(
+        "infosheet-mock/",
+        infosheet_mock,
+        name="infosheet_mock",
+    ),
+    path(
+        "taaktype/<int:pk>/taakr/", TaakRTaaktypeView.as_view(), name="taaktype_taakr"
+    ),
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
     path("navigeer/<str:lat>/<str:long>/", navigeer, name="navigeer"),

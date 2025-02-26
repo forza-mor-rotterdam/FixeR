@@ -823,6 +823,15 @@ def meldingen_bestand_protected(request):
     return _meldingen_bestand(request, modified_path)
 
 
+@login_required
+def infosheet_mock(request):
+    return render(
+        request,
+        "infosheet/infosheet_mock.html",
+        {},
+    )
+
+
 class HomepageView(PermissionRequiredMixin, View):
     # Might change to LoginRequiredMixin
     permission_required = "authorisatie.homepage_bekijken"

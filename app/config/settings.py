@@ -306,6 +306,7 @@ CSP_IMG_SRC = (
     "www.gis.rotterdam.nl",
     "forzamor.nl",
     "mor.local",
+    "taakr.mor.local:8009",
 )
 CSP_STYLE_SRC = (
     "'self'",

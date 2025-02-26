@@ -9,6 +9,7 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from rest_framework.reverse import reverse as drf_reverse
@@ -163,3 +164,44 @@ class TaaktypeAanmakenView(
         ):
             return redirect(f"{form.cleaned_data.get('redirect_field')}{taaktype_url}")
         return response
+
+
+class TaakRTaaktypeView(DetailView):
+    template_name = "taaktype/taakr.html"
+    queryset = Taaktype.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        taaktype_url = drf_reverse(
+            "v1:taaktype-detail",
+            kwargs={"uuid": self.object.uuid},
+            request=self.request,
+        )
+        taaktypes = TaakRService().get_taaktypes(
+            params={
+                "taakapplicatie_taaktype_url": taaktype_url,
+            }
+        )
+        instelling = Instelling.actieve_instelling()
+        if taaktypes:
+            taaktype = taaktypes[0]
+            voorbeeldsituaties = {
+                "waarom_wel": [],
+                "waarom_niet": [],
+            }
+            for voorbeeldsituatie_url in taaktype.get(
+                "voorbeeldsituatie_voor_taaktype", []
+            ):
+                voorbeeldsituatie = TaakRService().haal_data(voorbeeldsituatie_url)
+                voorbeeldsituaties[voorbeeldsituatie.get("type")].append(
+                    voorbeeldsituatie
+                )
+            taaktype.update(voorbeeldsituaties)
+            taaktype.update(
+                {
+                    "taakr_url": f"{instelling.taakr_basis_url}?taaktype_url={taaktype_url}"
+                }
+            )
+
+            context.update({"taaktype": taaktype})
+        return context

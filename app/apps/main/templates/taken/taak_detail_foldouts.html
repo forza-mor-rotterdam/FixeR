@@ -35,12 +35,18 @@
                         </p>
                     </div>
                 {% endif %}
-                {% if taak.id %}
-                    <div>
+                <div>
+                    <button class="btn btn-textlink btn-with-icon"
+                            data-action="infosheet#openInfosheet"
+                            data-infosheet-action-param="{% url 'taaktype_taakr' taak.taaktype.id %}">
+                        {% include "icons/info-filled.svg" %}
+                        Taak uitleg
+                    </button>
+                    {% if taak.id %}
                         <h3 class="h5">Taaknummer</h3>
                         <p>{{ taak.id }}</p>
-                    </div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
             {% if taak.titel %}
                 <h3 class="h5">Omschrijving</h3>
@@ -426,4 +432,7 @@
             </turbo-frame>
         </details>
     </div>
+    <dialog class="infosheet" data-infosheet-target="infosheet">
+        <turbo-frame id="infosheet" data-infosheet-target="infosheetTurboframe"></turbo-frame>
+    </dialog>
 </section>

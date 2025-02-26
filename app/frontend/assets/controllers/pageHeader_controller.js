@@ -18,9 +18,8 @@ export default class extends Controller {
         this.element.querySelector('.show .container__profiel_notificatie_lijst')
       )
     })
-  }
-  containerUitklapperTargetConnected(element) {
-    element.addEventListener('keydown', function (e) {
+
+    this.element.addEventListener('keydown', function (e) {
       if (e.code == 'Space' || e.code == 'Enter') {
         e.preventDefault()
         document.activeElement.click()
@@ -38,14 +37,14 @@ export default class extends Controller {
       this.resetFontSize()
       document.body.classList.add(size)
     }
-    // window.location.reload(true)
   }
 
   show(e) {
     if (
-      e.target.tagName.toUpperCase() != 'A' &&
-      e.target.tagName.toUpperCase() != 'BUTTON' &&
-      !e.target.closest('.content--uitklapper')
+      (e.target.tagName.toUpperCase() != 'A' &&
+        e.target.tagName.toUpperCase() != 'BUTTON' &&
+        !e.target.closest('.content--uitklapper')) ||
+      e.target.classList.contains('container__uitklapper')
     ) {
       if (this.element.querySelectorAll('.show').length) {
         this.element.querySelectorAll('.show').forEach((element) => {
