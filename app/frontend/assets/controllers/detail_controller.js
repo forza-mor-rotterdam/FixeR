@@ -14,6 +14,8 @@ let markerIcon,
 let selectedImageIndex,
   sliderContainerWidth = 0
 
+let isZooming = false
+
 let self = null
 export default class extends Controller {
   static outlets = ['kaart']
@@ -93,12 +95,12 @@ export default class extends Controller {
       this.selectedImageModalTarget.addEventListener('touchstart', (e) => {
         e.preventDefault()
         console.log('touchStart')
-        if (e.touches.length === 1) {
+        if (e.touches.length === 1 && !isZooming) {
           startX = e.touches[0].clientX
         }
       })
       this.selectedImageModalTarget.addEventListener('touchend', (e) => {
-        if (e.changedTouches.length === 1) {
+        if (e.changedTouches.length === 1 && !isZooming) {
           let endX = e.changedTouches[0].clientX
           if (startX - endX > 50) this.showNextImageInModal()
           if (endX - startX > 50) this.showPreviousImageInModal()
@@ -113,6 +115,7 @@ export default class extends Controller {
       console.log('touchMove', e.touches.length)
       if (e.touches.length === 2) {
         e.preventDefault()
+        isZooming = true
         let dx = e.touches[0].clientX - e.touches[1].clientX
         let dy = e.touches[0].clientY - e.touches[1].clientY
         let distance = Math.sqrt(dx * dx + dy * dy)
@@ -128,6 +131,7 @@ export default class extends Controller {
     this.selectedImageModalTarget.addEventListener('touchend', (e) => {
       if (e.touches.length < 2) {
         initialDistance = 0
+        setTimeout(() => (isZooming = false), 300)
       }
     })
 
@@ -217,10 +221,6 @@ export default class extends Controller {
         self.positionWatchSuccess(e.detail.position)
       })
     }
-
-    // document.querySelectorAll('.container__image').forEach((element) => {
-    //   self.pinchZoom(element)
-    // })
   }
 
   connect() {
@@ -428,21 +428,26 @@ export default class extends Controller {
   }
 
   showPreviousImageInModal() {
-    selectedImageIndex = (selectedImageIndex - 1 + imagesList.length) % imagesList.length
-    console.log('showPreviousImageInModal', selectedImageIndex)
-    this.showImage()
+    if (!isZooming) {
+      selectedImageIndex = (selectedImageIndex - 1 + imagesList.length) % imagesList.length
+      console.log('showPreviousImageInModal', selectedImageIndex)
+      this.showImage()
+    }
   }
 
   showNextImageInModal() {
-    selectedImageIndex = (selectedImageIndex + 1) % imagesList.length
-    console.log('showNextImageInModal', selectedImageIndex)
-    this.showImage()
+    if (!isZooming) {
+      selectedImageIndex = (selectedImageIndex + 1) % imagesList.length
+      console.log('showNextImageInModal', selectedImageIndex)
+      this.showImage()
+    }
   }
 
   showImage() {
     const img = this.selectedImageModalTarget.querySelector('img')
     const sd = this.signedDataValue ? `?signed-data=${this.signedDataValue}` : ''
     img.src = `${this.urlPrefixValue}${imagesList[selectedImageIndex]}${sd}`
+    isZooming = false
     this.showHideImageNavigation()
     this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
     const selectedImageData = JSON.parse(this.imageTargets[selectedImageIndex].dataset.imageData)
@@ -457,6 +462,7 @@ export default class extends Controller {
     fullSizeImageContainer.classList.remove('fullSize')
     fullSizeImageContainer.style.backgroundPosition = '50% 50%'
     window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
+    isZooming = false
   }
 
   showHideImageNavigation() {
@@ -477,67 +483,7 @@ export default class extends Controller {
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
     document.body.classList.add('show-modal')
-
+    isZooming = false
     this.showImage()
-  }
-
-  pinchZoom(imageElement) {
-    console.log('pinchZoom')
-    let imageElementScale = 1
-    let start = {}
-    // Calculate distance between two fingers
-    const distance = (event) => {
-      const dist = Math.hypot(
-        event.touches[0].pageX - event.touches[1].pageX,
-        event.touches[0].pageY - event.touches[1].pageY
-      )
-      return dist
-    }
-
-    imageElement.addEventListener('touchstart', (event) => {
-      if (event.touches.length === 2) {
-        event.preventDefault() // Prevent page scroll
-        console.log('event.touches.length === 2')
-        // Calculate where the fingers have started on the X and Y axis
-        start.x = (event.touches[0].pageX + event.touches[1].pageX) / 2
-        start.y = (event.touches[0].pageY + event.touches[1].pageY) / 2
-        start.distance = distance(event)
-      }
-    })
-
-    imageElement.addEventListener('touchmove', (event) => {
-      if (event.touches.length === 2) {
-        console.log('event.touches.length === 2')
-        event.preventDefault() // Prevent page scroll
-
-        // Safari provides event.scale as two fingers move on the screen
-        // For other browsers just calculate the scale manually
-        let scale
-        if (event.scale) {
-          scale = event.scale
-        } else {
-          const deltaDistance = distance(event)
-          scale = deltaDistance / start.distance
-        }
-        imageElementScale = Math.min(Math.max(1, scale), 4)
-
-        // Calculate how much the fingers have moved on the X and Y axis
-        const deltaX = ((event.touches[0].pageX + event.touches[1].pageX) / 2 - start.x) * 2 // x2 for accelarated movement
-        const deltaY = ((event.touches[0].pageY + event.touches[1].pageY) / 2 - start.y) * 2 // x2 for accelarated movement
-
-        // Transform the image to make it grow and move with fingers
-        const transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${imageElementScale})`
-        imageElement.style.transform = transform
-        imageElement.style.WebkitTransform = transform
-        imageElement.style.zIndex = '9999'
-      }
-    })
-
-    imageElement.addEventListener('touchend', () => {
-      // Reset image to it's original format
-      imageElement.style.transform = ''
-      imageElement.style.WebkitTransform = ''
-      imageElement.style.zIndex = ''
-    })
   }
 }
