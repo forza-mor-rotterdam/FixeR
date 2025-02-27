@@ -108,48 +108,6 @@ export default class extends Controller {
     }
     // END SWIPE
 
-    // const distance = (event) => {
-    //   const dist = Math.hypot(
-    //     event.touches[0].pageX - event.touches[1].pageX,
-    //     event.touches[0].pageY - event.touches[1].pageY
-    //   )
-    //   return dist
-    // }
-
-    // this.selectedImageModalTarget.addEventListener('touchmove', (event) => {
-    //   if (event.touches.length === 2) {
-    //     event.preventDefault()
-    //     isZooming = true
-    //     let scale
-    //     if (event.scale) {
-    //       scale = event.scale
-    //     } else {
-    //       const deltaDistance = distance(event)
-    //       scale = deltaDistance / start.distance
-    //     }
-    //     imageElementScale = Math.min(Math.max(1, scale), 4)
-
-    //     const deltaX = ((event.touches[0].pageX + event.touches[1].pageX) / 2 - start.x) * 2
-    //     const deltaY = ((event.touches[0].pageY + event.touches[1].pageY) / 2 - start.y) * 2
-
-    //     const transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${imageElementScale})`
-    //     const img = this.selectedImageModalTarget.querySelector('img')
-    //     img.style.transform = transform
-    //     img.style.WebkitTransform = transform
-    //     img.style.zIndex = '9999'
-    //   }
-    // })
-
-    // this.selectedImageModalTarget.addEventListener('touchend', (e) => {
-    //   if (e.touches.length < 2) {
-    //     const img = this.selectedImageModalTarget.querySelector('img')
-    //     img.style.transform = ''
-    //     img.style.WebkitTransform = ''
-    //     img.style.zIndex = ''
-    //     setTimeout(() => (isZooming = false), 300)
-    //   }
-    // })
-
     const mapDiv = document.getElementById('incidentMap')
     this.mapLayers = {
       containers: {
@@ -522,8 +480,6 @@ export default class extends Controller {
     imageElement.addEventListener('touchstart', (event) => {
       if (event.touches.length === 2) {
         event.preventDefault() // Prevent page scroll
-        console.log('event.touches.length === 2')
-        // Calculate where the fingers have started on the X and Y axis
         start.x = (event.touches[0].pageX + event.touches[1].pageX) / 2
         start.y = (event.touches[0].pageY + event.touches[1].pageY) / 2
         start.distance = distance(event)
@@ -535,8 +491,6 @@ export default class extends Controller {
         console.log('event.touches.length === 2')
         event.preventDefault() // Prevent page scroll
         isZooming = true
-        // Safari provides event.scale as two fingers move on the screen
-        // For other browsers just calculate the scale manually
         let scale
         if (event.scale) {
           scale = event.scale
@@ -546,11 +500,8 @@ export default class extends Controller {
         }
         imageElementScale = Math.min(Math.max(1, scale), 4)
 
-        // Calculate how much the fingers have moved on the X and Y axis
-        const deltaX = ((event.touches[0].pageX + event.touches[1].pageX) / 2 - start.x) * 2 // x2 for accelarated movement
-        const deltaY = ((event.touches[0].pageY + event.touches[1].pageY) / 2 - start.y) * 2 // x2 for accelarated movement
-
-        // Transform the image to make it grow and move with fingers
+        const deltaX = ((event.touches[0].pageX + event.touches[1].pageX) / 2 - start.x) * 2
+        const deltaY = ((event.touches[0].pageY + event.touches[1].pageY) / 2 - start.y) * 2
         const transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${imageElementScale})`
         imageElement.style.transform = transform
         imageElement.style.WebkitTransform = transform
