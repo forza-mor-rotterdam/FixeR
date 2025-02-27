@@ -120,8 +120,8 @@ export default class extends Controller {
 
     this.selectedImageModalTarget.addEventListener('touchmove', (event) => {
       if (event.touches.length === 2) {
-        console.log('event.touches.length === 2')
         event.preventDefault()
+        isZooming = true
         let scale
         if (event.scale) {
           scale = event.scale
