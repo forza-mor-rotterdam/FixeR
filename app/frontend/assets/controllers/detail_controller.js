@@ -87,39 +87,49 @@ export default class extends Controller {
 
     //START SWIPE
 
-    let gesture = {
-        x: [],
-      },
-      tolerance = 30
+    let startX = 0
 
     if (this.hasSelectedImageModalTarget) {
-      this.selectedImageModalTarget.addEventListener('touchstart', function (e) {
+      this.selectedImageModalTarget.addEventListener('touchstart', (e) => {
         e.preventDefault()
-        for (let i = 0; i < e.touches.length; i++) {
-          gesture.x.push(e.touches[i].clientX)
+        console.log('touchStart')
+        if (e.touches.length === 1) {
+          startX = e.touches[0].clientX
         }
       })
-      this.selectedImageModalTarget.addEventListener('touchmove', function (e) {
-        e.preventDefault()
-        for (var i = 0; i < e.touches.length; i++) {
-          gesture.x.push(e.touches[i].clientX)
+      this.selectedImageModalTarget.addEventListener('touchend', (e) => {
+        if (e.changedTouches.length === 1) {
+          let endX = e.changedTouches[0].clientX
+          if (startX - endX > 50) this.showNextImageInModal()
+          if (endX - startX > 50) this.showPreviousImageInModal()
         }
       })
-      this.selectedImageModalTarget.addEventListener(
-        'touchend',
-        function () {
-          let xTravel = gesture.x[gesture.x.length - 1] - gesture.x[0]
-          if (xTravel < -tolerance) {
-            this.showNextImageInModal()
-          }
-          if (xTravel > tolerance) {
-            this.showPreviousImageInModal()
-          }
-        }.bind(this)
-      )
     }
-
     // END SWIPE
+
+    let scale = 1,
+      initialDistance = 0
+    this.selectedImageModalTarget.addEventListener('touchmove', (e) => {
+      console.log('touchMove', e.touches.length)
+      if (e.touches.length === 2) {
+        e.preventDefault()
+        let dx = e.touches[0].clientX - e.touches[1].clientX
+        let dy = e.touches[0].clientY - e.touches[1].clientY
+        let distance = Math.sqrt(dx * dx + dy * dy)
+        if (initialDistance === 0) {
+          initialDistance = distance
+        } else {
+          scale = Math.max(1, Math.min(3, scale * (distance / initialDistance)))
+          this.selectedImageModalTarget.querySelector('img').style.transform = `scale(${scale})`
+        }
+      }
+    })
+
+    this.selectedImageModalTarget.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) {
+        initialDistance = 0
+      }
+    })
 
     const mapDiv = document.getElementById('incidentMap')
     this.mapLayers = {
@@ -208,9 +218,9 @@ export default class extends Controller {
       })
     }
 
-    document.querySelectorAll('.container__image').forEach((element) => {
-      self.pinchZoom(element)
-    })
+    // document.querySelectorAll('.container__image').forEach((element) => {
+    //   self.pinchZoom(element)
+    // })
   }
 
   connect() {
@@ -418,22 +428,21 @@ export default class extends Controller {
   }
 
   showPreviousImageInModal() {
-    if (selectedImageIndex > 0) {
-      selectedImageIndex--
-      this.showImage()
-    }
+    selectedImageIndex = (selectedImageIndex - 1 + imagesList.length) % imagesList.length
+    console.log('showPreviousImageInModal', selectedImageIndex)
+    this.showImage()
   }
 
   showNextImageInModal() {
-    if (selectedImageIndex < imagesList.length - 1) {
-      selectedImageIndex++
-      this.showImage()
-    }
+    selectedImageIndex = (selectedImageIndex + 1) % imagesList.length
+    console.log('showNextImageInModal', selectedImageIndex)
+    this.showImage()
   }
 
   showImage() {
+    const img = this.selectedImageModalTarget.querySelector('img')
     const sd = this.signedDataValue ? `?signed-data=${this.signedDataValue}` : ''
-    this.selectedImageModalTarget.src = `${this.urlPrefixValue}${imagesList[selectedImageIndex]}${sd}`
+    img.src = `${this.urlPrefixValue}${imagesList[selectedImageIndex]}${sd}`
     this.showHideImageNavigation()
     this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
     const selectedImageData = JSON.parse(this.imageTargets[selectedImageIndex].dataset.imageData)
@@ -473,6 +482,7 @@ export default class extends Controller {
   }
 
   pinchZoom(imageElement) {
+    console.log('pinchZoom')
     let imageElementScale = 1
     let start = {}
     // Calculate distance between two fingers
