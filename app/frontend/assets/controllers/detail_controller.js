@@ -13,7 +13,8 @@ let markerIcon,
 
 let selectedImageIndex,
   sliderContainerWidth = 0
-
+let imageElementScale = 1
+let start = {}
 let isZooming = false
 
 let self = null
@@ -109,28 +110,44 @@ export default class extends Controller {
     }
     // END SWIPE
 
-    let scale = 1,
-      initialDistance = 0
-    this.selectedImageModalTarget.addEventListener('touchmove', (e) => {
-      console.log('touchMove', e.touches.length)
-      if (e.touches.length === 2) {
-        e.preventDefault()
-        isZooming = true
-        let dx = e.touches[0].clientX - e.touches[1].clientX
-        let dy = e.touches[0].clientY - e.touches[1].clientY
-        let distance = Math.sqrt(dx * dx + dy * dy)
-        if (initialDistance === 0) {
-          initialDistance = distance
+    const distance = (event) => {
+      const dist = Math.hypot(
+        event.touches[0].pageX - event.touches[1].pageX,
+        event.touches[0].pageY - event.touches[1].pageY
+      )
+      return dist
+    }
+
+    this.selectedImageModalTarget.addEventListener('touchmove', (event) => {
+      if (event.touches.length === 2) {
+        console.log('event.touches.length === 2')
+        event.preventDefault()
+        let scale
+        if (event.scale) {
+          scale = event.scale
         } else {
-          scale = Math.max(1, Math.min(3, scale * (distance / initialDistance)))
-          this.selectedImageModalTarget.querySelector('img').style.transform = `scale(${scale})`
+          const deltaDistance = distance(event)
+          scale = deltaDistance / start.distance
         }
+        imageElementScale = Math.min(Math.max(1, scale), 4)
+
+        const deltaX = ((event.touches[0].pageX + event.touches[1].pageX) / 2 - start.x) * 2
+        const deltaY = ((event.touches[0].pageY + event.touches[1].pageY) / 2 - start.y) * 2
+
+        const transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${imageElementScale})`
+        const img = this.selectedImageModalTarget.querySelector('img')
+        img.style.transform = transform
+        img.style.WebkitTransform = transform
+        img.style.zIndex = '9999'
       }
     })
 
     this.selectedImageModalTarget.addEventListener('touchend', (e) => {
       if (e.touches.length < 2) {
-        initialDistance = 0
+        const img = this.selectedImageModalTarget.querySelector('img')
+        img.style.transform = ''
+        img.style.WebkitTransform = ''
+        img.style.zIndex = ''
         setTimeout(() => (isZooming = false), 300)
       }
     })
