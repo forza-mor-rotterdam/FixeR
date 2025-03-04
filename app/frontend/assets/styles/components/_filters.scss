@@ -201,13 +201,6 @@
             }
         }
     }
-
-    .container__skyline-alert--confirmation {
-        margin: 3em auto 0;
-        max-width: map-get($container-max-widths, md);
-        position: relative;
-        z-index: 0;
-    }
 }
 
 .container__list--districts,
