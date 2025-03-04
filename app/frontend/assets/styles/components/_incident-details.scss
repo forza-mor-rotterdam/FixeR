@@ -243,12 +243,22 @@
         background-color: $blue-100;
         width: auto;
         border-radius: 4px;
+
+        .sublabel {
+            display: none;
+        }
     }
 
     .modal-body & {
         .tag--in-image {
             right: 0;
             bottom: -2.2rem;
+            padding-right: 0;
+            text-align: right;
+            .sublabel {
+                display: block;
+                color: $gray-600;
+            }
         }
     }
 }

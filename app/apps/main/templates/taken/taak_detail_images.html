@@ -18,18 +18,25 @@
                  data-action="scroll->detail#onScrollSlider">
                 <ul class="list-clean imageslider"
                     style="width: calc(100% * {{ bijlagen|length }})">
-                    {% for foto in bijlagen %}
+                    {% for bijlage in bijlagen %}
                         <li class="container__image"
                             style="position: relative"
-                            id="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
+                            id="{{ bijlage.afbeelding_relative_url|mor_core_protected_url }}"
                             data-detail-target="image"
                             data-action="click->detail#showImageInModal"
                             data-detail-image-index-param="{{ forloop.counter|add:'-1' }}"
-                            data-image-data="{{ foto|json_encode }}">
-                            {% if foto.label %}
-                                <span class="tag--in-image">{{ foto.label }}</span>
+                            data-image-data="{{ bijlage|json_encode }}">
+                            {% if bijlage.label %}
+                                {% if bijlage.oorsprong != "melder" %}
+                                <span class="tag--in-image">
+                                    <span>{{ bijlage.label }}</span>
+                                    {% if bijlage.bron_signaal_id %}
+                                        <span class="sublabel">{{ bijlage.bron_id }} - {{ bijlage.bron_signaal_id }}</span>
+                                    {% endif %}
+                                </span>
+                                {% endif %}
                             {% endif %}
-                            <img src="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
+                            <img src="{{ bijlage.afbeelding_relative_url|mor_core_protected_url }}"
                                  class="image"
                                  alt="" />
                         </li>
