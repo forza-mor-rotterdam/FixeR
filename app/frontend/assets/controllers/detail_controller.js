@@ -33,6 +33,7 @@ export default class extends Controller {
   static targets = [
     'selectedImageModal',
     'selectedImageLabel',
+    'selectedImageSubLabel',
     'thumbList',
     'image',
     'imageSliderContainer',
@@ -428,8 +429,15 @@ export default class extends Controller {
     this.showHideImageNavigation()
     this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
     const selectedImageData = JSON.parse(this.imageTargets[selectedImageIndex].dataset.imageData)
-    if (selectedImageData.label) {
-      this.selectedImageLabelTarget.textContent = selectedImageData.label
+    console.log('___selectedImageData', selectedImageData)
+
+    if (selectedImageData.oorsprong != 'melder') {
+      if (selectedImageData.label) {
+        this.selectedImageLabelTarget.textContent = selectedImageData.label
+      }
+      if (selectedImageData.bron_signaal_id && selectedImageData.bron_id) {
+        this.selectedImageSubLabelTarget.textContent = `${selectedImageData.bron_id} - ${selectedImageData.bron_signaal_id}`
+      }
     }
     this.imageScrollInView(selectedImageIndex) //image in detailpage
     fullSizeImageContainer = this.selectedImageModalTarget
