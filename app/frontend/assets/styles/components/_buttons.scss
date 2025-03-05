@@ -284,7 +284,7 @@ button {
         text-decoration: underline;
         max-width: none;
         color: $primary;
-        font-weight: 300;
+        font-weight: 400;
         font-size: inherit;
 
         &.btn-with-icon {
@@ -296,6 +296,17 @@ button {
                 path {
                     fill: currentColor;
                 }
+            }
+        }
+    }
+
+    &-info {
+        text-decoration: none;
+        color: $black;
+        svg {
+            margin-right: 4px;
+            path {
+                fill: $green-tint01 !important;
             }
         }
     }
