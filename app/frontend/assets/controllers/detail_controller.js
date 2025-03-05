@@ -409,7 +409,7 @@ export default class extends Controller {
     if (!isZooming) {
       selectedImageIndex = (selectedImageIndex - 1 + imagesList.length) % imagesList.length
       console.log('showPreviousImageInModal', selectedImageIndex)
-      this.showImage()
+      this.showImage(true)
     }
   }
 
@@ -417,11 +417,12 @@ export default class extends Controller {
     if (!isZooming) {
       selectedImageIndex = (selectedImageIndex + 1) % imagesList.length
       console.log('showNextImageInModal', selectedImageIndex)
-      this.showImage()
+      this.showImage(true)
     }
   }
 
-  showImage() {
+  showImage(inModal = false) {
+    console.log('showImage,in modal?', inModal)
     const img = this.selectedImageModalTarget.querySelector('img')
     const sd = this.signedDataValue ? `?signed-data=${this.signedDataValue}` : ''
     img.src = `${this.urlPrefixValue}${imagesList[selectedImageIndex]}${sd}`
@@ -431,12 +432,14 @@ export default class extends Controller {
     const selectedImageData = JSON.parse(this.imageTargets[selectedImageIndex].dataset.imageData)
     console.log('___selectedImageData', selectedImageData)
 
-    if (selectedImageData.oorsprong != 'melder') {
+    if (selectedImageData.oorsprong != 'melder' || inModal) {
       if (selectedImageData.label) {
         this.selectedImageLabelTarget.textContent = selectedImageData.label
       }
       if (selectedImageData.bron_signaal_id && selectedImageData.bron_id) {
         this.selectedImageSubLabelTarget.textContent = `${selectedImageData.bron_id} - ${selectedImageData.bron_signaal_id}`
+      } else {
+        this.selectedImageSubLabelTarget.textContent = ''
       }
     }
     this.imageScrollInView(selectedImageIndex) //image in detailpage
@@ -469,7 +472,7 @@ export default class extends Controller {
     modalBackdrop.classList.add('show')
     document.body.classList.add('show-modal')
     isZooming = false
-    this.showImage()
+    this.showImage(true)
   }
 
   pinchZoom(imageElement) {
