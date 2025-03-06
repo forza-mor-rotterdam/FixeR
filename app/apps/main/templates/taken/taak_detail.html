@@ -45,7 +45,7 @@
                             </a>
                         </div>
                         {% get_bijlagen melding as bijlagen %}
-                        <div data-controller="detail infosheet"
+                        <div data-controller="detail"
                              data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
                              data-detail-url-prefix-value="{{ MOR_CORE_PROTECTED_URL_PREFIX }}"
                              data-detail-taak-object-value="{{ taak }}"
