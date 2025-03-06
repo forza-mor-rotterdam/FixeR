@@ -182,6 +182,10 @@ class TaakRTaaktypeView(DetailView):
                 "taakapplicatie_taaktype_url": taaktype_url,
             }
         )
+        afdelingen = TaakRService().get_afdelingen()
+        afdelingen_middels_url = {
+            afdeling["_links"]["self"]: afdeling["naam"] for afdeling in afdelingen
+        }
         instelling = Instelling.actieve_instelling()
         if taaktypes:
             taaktype = taaktypes[0]
@@ -199,7 +203,12 @@ class TaakRTaaktypeView(DetailView):
             taaktype.update(voorbeeldsituaties)
             taaktype.update(
                 {
-                    "taakr_url": f"{instelling.taakr_basis_url}?taaktype_url={taaktype_url}"
+                    "taakr_url": f"{instelling.taakr_basis_url}?taaktype_url={taaktype_url}",
+                    "verantwoordelijke_afdeling": afdelingen_middels_url[
+                        taaktype["verantwoordelijke_afdeling"]
+                    ]
+                    if taaktype.get("verantwoordelijke_afdeling")
+                    else "",
                 }
             )
 
