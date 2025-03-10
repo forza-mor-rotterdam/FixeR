@@ -202,7 +202,7 @@
 
 .container__imageslider {
     overflow-x: scroll;
-    // scroll-snap-type: x mandatory; // unpredictable behaviour Safari
+    scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     width: 100%;
     -webkit-overflow-scrolling: touch;
@@ -230,6 +230,10 @@
             margin: auto;
             object-fit: contain;
         }
+    }
+
+    .css--safari & {
+        scroll-snap-type: none; // prevent unpredictable behaviour Safari
     }
 }
 
