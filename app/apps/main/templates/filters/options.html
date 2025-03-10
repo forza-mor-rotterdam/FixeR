@@ -31,12 +31,9 @@
                                data-action="filter#onChangeFilter"
                                data-filter-target="filterInput">
                         <label class="form-check-label" for="{{ filter.key }}_{{ option.id }}">{{ option.label }}</label>
-                        {% if option.info_param %}
-                            <button class="btn btn-inline btn-info"
-                                    data-action="infosheet#openInfosheet"
-                                    data-infosheet-action-param="{{ option.info_param }}"
-                                    aria-label="meer info">{% include "icons/info-filled.svg" %}</button>
-                        {% endif %}
+                        {% comment %} {% if option.info_param %}
+                            <button class="btn btn-inline btn-info" data-action="infosheet#openInfosheet" data-infosheet-action-param="{{ option.info_param }}" aria-label="meer info">{% include "icons/info-filled.svg" %}</button>
+                        {% endif %} {% endcomment %}
                     </div>
                 </li>
             {% endfor %}
