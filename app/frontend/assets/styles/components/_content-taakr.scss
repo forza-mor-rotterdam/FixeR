@@ -44,8 +44,13 @@
 }
 
 .container__content--taakr {
+    font-size: 0.889em;
     .infosheet & {
-        padding: 0 16px;
+        padding: 6px 16px 0;
+    }
+
+    h2 {
+        margin-bottom: 0;
     }
 
     .label--positive,
@@ -90,6 +95,7 @@
         .list-slider {
             list-style: none;
             padding: 0;
+            margin-top: 0;
 
             li {
                 .container__image {
