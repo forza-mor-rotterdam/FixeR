@@ -78,7 +78,9 @@ def task_taak_status_voltooid(
             melding_uuid=taak.melding.response_json.get("uuid"),
             taaktype_url=vervolg_taaktype.get("taaktype_url"),
             titel=vervolg_taaktype.get("omschrijving"),
-            bericht=vervolg_taak_bericht,
+            #bericht=vervolg_taak_bericht,
+            # temporary use 'interne opmerkingen' also for all new tasks, after redesign of this modal we will reimplement a message per task
+            bericht=omschrijving_intern,
             gebruiker_email=gebruiker_email,
         )
     return {
