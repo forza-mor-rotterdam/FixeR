@@ -29,7 +29,7 @@
                                         Geen voorbeeldfoto gevonden
                                     {% endif %}
                                     <figcaption>
-                                        <div class="icon--positive"></div>
+                                        {% if voorbeeldsituatie.bijlagen|length > 0 %}<div class="icon--positive"></div>{% endif %}
                                         {% if voorbeeldsituatie.toelichting %}<span>{{ voorbeeldsituatie.toelichting }}</span>{% endif %}
                                     </figcaption>
                                 </figure>
@@ -53,7 +53,7 @@
                                         Geen voorbeeldfoto gevonden
                                     {% endif %}
                                     <figcaption>
-                                        <div class="icon--negative"></div>
+                                        {% if voorbeeldsituatie.bijlagen|length > 0 %}<div class="icon--negative"></div>{% endif %}
                                         {% if voorbeeldsituatie.toelichting %}<span>{{ voorbeeldsituatie.toelichting }}</span>{% endif %}
                                     </figcaption>
                                 </figure>
