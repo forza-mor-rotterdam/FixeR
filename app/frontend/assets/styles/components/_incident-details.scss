@@ -202,7 +202,7 @@
 
 .container__imageslider {
     overflow-x: scroll;
-    scroll-snap-type: x mandatory;
+    // scroll-snap-type: x mandatory; // unpredictable behaviour Safari
     scroll-behavior: smooth;
     width: 100%;
     -webkit-overflow-scrolling: touch;
@@ -217,7 +217,8 @@
         max-height: calc(250px + 10vw);
         width: 100%;
         background-color: $gray-tint02;
-        scroll-snap-align: center;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
         cursor: zoom-in;
         position: relative;
 

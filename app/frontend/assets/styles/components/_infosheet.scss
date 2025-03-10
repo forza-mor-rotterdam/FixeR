@@ -101,7 +101,7 @@ dialog {
         height: 25px;
     }
 
-    @media (min-width: map-get($grid-breakpoints, md)) {
+    @media (min-width: map-get($grid-breakpoints, lg)) {
         inset: auto 0 0 auto;
         width: 33%;
         max-height: none;
