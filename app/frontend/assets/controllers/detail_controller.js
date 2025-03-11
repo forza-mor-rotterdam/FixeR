@@ -218,6 +218,12 @@ export default class extends Controller {
     setTimeout(() => {
       this.scrollToTop()
     }, 100)
+
+    if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
+      setTimeout(() => {
+        this.imageSliderThumbContainerTarget.querySelector('.container__image img').click()
+      }, 500)
+    }
   }
 
   disconnect() {}
@@ -527,5 +533,14 @@ export default class extends Controller {
       imageElement.style.zIndex = ''
       setTimeout(() => (isZooming = false), 300)
     })
+  }
+
+  getBrowser() {
+    let userAgent = navigator.userAgent
+    let browser = 'onbekend'
+    if (/Safari/.test(userAgent)) {
+      browser = 'safari'
+    }
+    return browser
   }
 }

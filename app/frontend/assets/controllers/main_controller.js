@@ -11,9 +11,6 @@ export default class extends Controller {
   kaartStatus = null
 
   initialize() {
-    if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
-      document.body.classList.add('css--safari')
-    }
     const status = {
       zoom: 16,
       center: [this.currentPosition.coords.latitude, this.currentPosition.coords.longitude],
@@ -170,14 +167,5 @@ export default class extends Controller {
   getKaartStatus() {
     const sessionState = JSON.parse(sessionStorage.getItem('kaartStatus')) || {}
     return sessionState[this.kaartModus]
-  }
-
-  getBrowser() {
-    let userAgent = navigator.userAgent
-    let browser = 'onbekend'
-    if (/Safari/.test(userAgent)) {
-      browser = 'safari'
-    }
-    return browser
   }
 }
