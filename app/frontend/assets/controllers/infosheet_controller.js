@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 
 const SWIPE_TRESHOLD = 100
+let scrollPositionForDialog = 0
 export default class extends Controller {
   static targets = ['infosheet', 'scrollHandle', 'infosheetTurboframe']
 
@@ -66,8 +67,11 @@ export default class extends Controller {
   openInfosheet(e) {
     if (this.hasInfosheetTarget) {
       e.preventDefault()
+      scrollPositionForDialog = window.scrollY
       this.infosheetTurboframeTarget.setAttribute('src', e.params.action)
       this.infosheetTarget.showModal()
+      document.body.style.top = `-${scrollPositionForDialog}px`
+      document.body.style.position = 'fixed'
       this.infosheetTarget.addEventListener('click', (event) => {
         if (event.target === event.currentTarget) {
           event.stopPropagation()
@@ -75,7 +79,6 @@ export default class extends Controller {
         }
       })
     }
-    document.body.style.overflow = 'hidden'
   }
 
   closeInfosheet() {
@@ -83,9 +86,11 @@ export default class extends Controller {
       if (this.infosheetTarget.open) {
         setTimeout(() => (this.infosheetTurboframeTarget.innerHTML = ''), 100)
         this.infosheetTarget.close()
+        document.body.style.position = ''
+        document.body.style.top = ''
+        window.scrollTo({ top: scrollPositionForDialog, left: 0, behavior: 'instant' })
       }
     }
-    document.body.style.overflow = ''
     this.infosheetTarget.removeEventListener('click', (event) => {
       if (event.target !== this.infosheetTarget.querySelector('.content')) {
         this.closeInfosheet()
