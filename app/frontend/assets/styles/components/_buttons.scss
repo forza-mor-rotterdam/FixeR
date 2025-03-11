@@ -303,8 +303,10 @@ button {
     &-info {
         text-decoration: none;
         color: $black;
+        text-align: left;
         svg {
-            margin-right: 4px;
+            margin-left: 4px;
+            vertical-align: baseline;
             path {
                 fill: $green-tint01 !important;
             }
