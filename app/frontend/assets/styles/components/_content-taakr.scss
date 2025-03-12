@@ -4,11 +4,11 @@
     .container__image {
         position: relative;
         background-color: $gray-tint01;
-        max-height: 388px;
+        max-height: 225px;
         img {
             display: block;
-            margin: 0 auto;
-            max-height: 388px;
+            margin: 0;
+            max-height: 225px;
         }
     }
 
@@ -104,15 +104,10 @@
                     display: table;
                     width: 1px;
 
-                    // img,
-                    // figcaption {
-                    //     display: table-row;
-                    //     vertical-align: bottom;
-                    // }
                     img {
                         height: auto;
                         width: auto;
-                        max-width: none;
+                        max-width: 35vw;
                         object-fit: cover;
                         border-radius: 8px;
                         display: block;
@@ -170,6 +165,10 @@
                 flex-shrink: 0;
                 scroll-snap-align: start;
                 width: auto;
+
+                .container__image {
+                    margin: 0;
+                }
 
                 img {
                     height: 133px;
