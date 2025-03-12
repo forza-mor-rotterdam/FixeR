@@ -54,6 +54,10 @@ export default class extends Controller {
 
   initialize() {
     self = this
+    if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
+      document.body.classList.add('css--safari')
+    }
+
     let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', {
       bubbles: true,
       cancelable: false,
@@ -221,7 +225,8 @@ export default class extends Controller {
 
     if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
       setTimeout(() => {
-        this.imageSliderThumbContainerTarget.querySelector('.container__image img').click()
+        // this.imageSliderThumbContainerTarget.querySelector('.container__image img').click()
+        this.imageSliderContainerTarget.style.scrollSnapType = 'x mandatory'
       }, 500)
     }
   }
@@ -436,7 +441,7 @@ export default class extends Controller {
     this.showHideImageNavigation()
     this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
     const selectedImageData = JSON.parse(this.imageTargets[selectedImageIndex].dataset.imageData)
-    console.log('___selectedImageData', selectedImageData)
+    // console.log('___selectedImageData', selectedImageData)
 
     if (selectedImageData.oorsprong != 'melder' || inModal) {
       if (selectedImageData.label) {
