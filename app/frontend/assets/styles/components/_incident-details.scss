@@ -231,9 +231,6 @@
             object-fit: contain;
         }
     }
-    .css--safari & {
-        scroll-snap-type: none; // prevent unpredictable behaviour Safari
-    }
 }
 
 .container__image {

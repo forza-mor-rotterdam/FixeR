@@ -54,10 +54,6 @@ export default class extends Controller {
 
   initialize() {
     self = this
-    if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
-      document.body.classList.add('css--safari')
-    }
-
     let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', {
       bubbles: true,
       cancelable: false,
@@ -225,9 +221,8 @@ export default class extends Controller {
 
     if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
       setTimeout(() => {
-        // this.imageSliderThumbContainerTarget.querySelector('.container__image img').click()
-        this.imageSliderContainerTarget.style.scrollSnapType = 'x mandatory'
-      }, 500)
+        this.imageSliderThumbContainerTarget.querySelector('.container__image img').click()
+      }, 600)
     }
   }
 
