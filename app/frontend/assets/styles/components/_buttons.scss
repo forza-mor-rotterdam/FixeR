@@ -306,7 +306,7 @@ button {
         text-align: left;
         svg {
             margin-left: 4px;
-            vertical-align: baseline;
+            transform: translateY(2px);
             path {
                 fill: $green-tint01 !important;
             }

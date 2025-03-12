@@ -107,7 +107,8 @@
                     img {
                         height: auto;
                         width: auto;
-                        max-width: min(400px, 92vw);
+                        max-width: min(500px, 92vw);
+                        max-height: none;
                         object-fit: cover;
                         border-radius: 8px;
                         display: block;
