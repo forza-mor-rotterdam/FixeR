@@ -153,7 +153,7 @@
                 line-height: 1.5em;
             }
         }
-        &:focus,
+        &:focus-visible,
         &:hover {
             .trigger--notificationslist {
                 cursor: pointer;
@@ -254,7 +254,7 @@
 
                         a {
                             &:hover,
-                            &:focus {
+                            &:focus-visible {
                                 color: $primary;
                             }
                         }

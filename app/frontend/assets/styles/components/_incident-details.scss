@@ -18,6 +18,14 @@
             margin-left: 0;
         }
     }
+
+    span .btn-inline {
+        svg {
+            path {
+                fill: $green-tint01;
+            }
+        }
+    }
 }
 .container__details {
     &--sticky-bottom {
@@ -209,12 +217,10 @@
         max-height: calc(250px + 10vw);
         width: 100%;
         background-color: $gray-tint02;
-        scroll-snap-align: center;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
         cursor: zoom-in;
-
-        &:focus {
-            border: 3px solid gold;
-        }
+        position: relative;
 
         img {
             width: 100%;
@@ -223,6 +229,37 @@
             display: block;
             margin: auto;
             object-fit: contain;
+        }
+    }
+}
+
+.container__image {
+    .tag--in-image {
+        display: inline-block;
+        position: absolute;
+        right: 1.4rem;
+        bottom: 0.667rem;
+        font-size: 0.625rem;
+        padding: 6px 10px;
+        background-color: $blue-100;
+        width: auto;
+        border-radius: 4px;
+
+        .sublabel {
+            display: none;
+        }
+    }
+
+    .modal-body & {
+        .tag--in-image {
+            right: 0;
+            bottom: -2.2rem;
+            padding-right: 0;
+            text-align: right;
+            .sublabel {
+                display: block;
+                color: $gray-600;
+            }
         }
     }
 }
@@ -313,7 +350,7 @@
 }
 
 .container__header-taaknavigatie {
-    h1 {
+    > h1 {
         position: relative;
         padding-right: 185px;
         min-height: 1em;

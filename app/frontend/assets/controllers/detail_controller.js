@@ -13,6 +13,7 @@ let markerIcon,
 
 let selectedImageIndex,
   sliderContainerWidth = 0
+let isZooming = false
 
 let self = null
 export default class extends Controller {
@@ -31,7 +32,10 @@ export default class extends Controller {
   }
   static targets = [
     'selectedImageModal',
+    'selectedImageLabel',
+    'selectedImageSubLabel',
     'thumbList',
+    'image',
     'imageSliderContainer',
     'taakAfstand',
     'navigeerLink',
@@ -85,38 +89,24 @@ export default class extends Controller {
 
     //START SWIPE
 
-    let gesture = {
-        x: [],
-      },
-      tolerance = 30
+    let startX = 0
 
     if (this.hasSelectedImageModalTarget) {
-      this.selectedImageModalTarget.addEventListener('touchstart', function (e) {
+      this.selectedImageModalTarget.addEventListener('touchstart', (e) => {
         e.preventDefault()
-        for (let i = 0; i < e.touches.length; i++) {
-          gesture.x.push(e.touches[i].clientX)
+        console.log('touchStart')
+        if (e.touches.length === 1 && !isZooming) {
+          startX = e.touches[0].clientX
         }
       })
-      this.selectedImageModalTarget.addEventListener('touchmove', function (e) {
-        e.preventDefault()
-        for (var i = 0; i < e.touches.length; i++) {
-          gesture.x.push(e.touches[i].clientX)
+      this.selectedImageModalTarget.addEventListener('touchend', (e) => {
+        if (e.changedTouches.length === 1 && !isZooming) {
+          let endX = e.changedTouches[0].clientX
+          if (startX - endX > 50) this.showNextImageInModal()
+          if (endX - startX > 50) this.showPreviousImageInModal()
         }
       })
-      this.selectedImageModalTarget.addEventListener(
-        'touchend',
-        function () {
-          let xTravel = gesture.x[gesture.x.length - 1] - gesture.x[0]
-          if (xTravel < -tolerance) {
-            this.showNextImageInModal()
-          }
-          if (xTravel > tolerance) {
-            this.showPreviousImageInModal()
-          }
-        }.bind(this)
-      )
     }
-
     // END SWIPE
 
     const mapDiv = document.getElementById('incidentMap')
@@ -228,6 +218,12 @@ export default class extends Controller {
     setTimeout(() => {
       this.scrollToTop()
     }, 100)
+
+    if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
+      setTimeout(() => {
+        this.imageSliderThumbContainerTarget.querySelector('.container__image img').click()
+      }, 600)
+    }
   }
 
   disconnect() {}
@@ -416,24 +412,42 @@ export default class extends Controller {
   }
 
   showPreviousImageInModal() {
-    if (selectedImageIndex > 0) {
-      selectedImageIndex--
-      this.showImage()
+    if (!isZooming) {
+      selectedImageIndex = (selectedImageIndex - 1 + imagesList.length) % imagesList.length
+      console.log('showPreviousImageInModal', selectedImageIndex)
+      this.showImage(true)
     }
   }
 
   showNextImageInModal() {
-    if (selectedImageIndex < imagesList.length - 1) {
-      selectedImageIndex++
-      this.showImage()
+    if (!isZooming) {
+      selectedImageIndex = (selectedImageIndex + 1) % imagesList.length
+      console.log('showNextImageInModal', selectedImageIndex)
+      this.showImage(true)
     }
   }
 
-  showImage() {
+  showImage(inModal = false) {
+    console.log('showImage,in modal?', inModal)
+    const img = this.selectedImageModalTarget.querySelector('img')
     const sd = this.signedDataValue ? `?signed-data=${this.signedDataValue}` : ''
-    this.selectedImageModalTarget.src = `${this.urlPrefixValue}${imagesList[selectedImageIndex]}${sd}`
+    img.src = `${this.urlPrefixValue}${imagesList[selectedImageIndex]}${sd}`
+    isZooming = false
     this.showHideImageNavigation()
     this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
+    const selectedImageData = JSON.parse(this.imageTargets[selectedImageIndex].dataset.imageData)
+    // console.log('___selectedImageData', selectedImageData)
+
+    if (selectedImageData.oorsprong != 'melder' || inModal) {
+      if (selectedImageData.label) {
+        this.selectedImageLabelTarget.textContent = selectedImageData.label
+      }
+      if (selectedImageData.bron_signaal_id && selectedImageData.bron_id) {
+        this.selectedImageSubLabelTarget.textContent = `${selectedImageData.bron_id} - ${selectedImageData.bron_signaal_id}`
+      } else {
+        this.selectedImageSubLabelTarget.textContent = ''
+      }
+    }
     this.imageScrollInView(selectedImageIndex) //image in detailpage
     fullSizeImageContainer = this.selectedImageModalTarget
   }
@@ -442,6 +456,7 @@ export default class extends Controller {
     fullSizeImageContainer.classList.remove('fullSize')
     fullSizeImageContainer.style.backgroundPosition = '50% 50%'
     window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
+    isZooming = false
   }
 
   showHideImageNavigation() {
@@ -462,11 +477,12 @@ export default class extends Controller {
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
     document.body.classList.add('show-modal')
-
-    this.showImage()
+    isZooming = false
+    this.showImage(true)
   }
 
   pinchZoom(imageElement) {
+    console.log('pinchZoom')
     let imageElementScale = 1
     let start = {}
     // Calculate distance between two fingers
@@ -481,8 +497,6 @@ export default class extends Controller {
     imageElement.addEventListener('touchstart', (event) => {
       if (event.touches.length === 2) {
         event.preventDefault() // Prevent page scroll
-        console.log('event.touches.length === 2')
-        // Calculate where the fingers have started on the X and Y axis
         start.x = (event.touches[0].pageX + event.touches[1].pageX) / 2
         start.y = (event.touches[0].pageY + event.touches[1].pageY) / 2
         start.distance = distance(event)
@@ -493,9 +507,7 @@ export default class extends Controller {
       if (event.touches.length === 2) {
         console.log('event.touches.length === 2')
         event.preventDefault() // Prevent page scroll
-
-        // Safari provides event.scale as two fingers move on the screen
-        // For other browsers just calculate the scale manually
+        isZooming = true
         let scale
         if (event.scale) {
           scale = event.scale
@@ -505,11 +517,8 @@ export default class extends Controller {
         }
         imageElementScale = Math.min(Math.max(1, scale), 4)
 
-        // Calculate how much the fingers have moved on the X and Y axis
-        const deltaX = ((event.touches[0].pageX + event.touches[1].pageX) / 2 - start.x) * 2 // x2 for accelarated movement
-        const deltaY = ((event.touches[0].pageY + event.touches[1].pageY) / 2 - start.y) * 2 // x2 for accelarated movement
-
-        // Transform the image to make it grow and move with fingers
+        const deltaX = ((event.touches[0].pageX + event.touches[1].pageX) / 2 - start.x) * 2
+        const deltaY = ((event.touches[0].pageY + event.touches[1].pageY) / 2 - start.y) * 2
         const transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${imageElementScale})`
         imageElement.style.transform = transform
         imageElement.style.WebkitTransform = transform
@@ -522,6 +531,16 @@ export default class extends Controller {
       imageElement.style.transform = ''
       imageElement.style.WebkitTransform = ''
       imageElement.style.zIndex = ''
+      setTimeout(() => (isZooming = false), 300)
     })
+  }
+
+  getBrowser() {
+    let userAgent = navigator.userAgent
+    let browser = 'onbekend'
+    if (/Safari/.test(userAgent)) {
+      browser = 'safari'
+    }
+    return browser
   }
 }

@@ -32,7 +32,7 @@ form label {
  */
 .btn.is-invalid {
     border-color: $form-feedback-invalid-color;
-    &:focus {
+    &:focus-visible {
         border-color: $form-feedback-invalid-color;
         box-shadow: 0 0 0 $input-focus-width rgba($form-feedback-invalid-color, 0.25);
     }
@@ -264,7 +264,7 @@ textarea {
         opacity: 1;
     }
     &:hover,
-    &:focus {
+    &:focus-visible {
         border-color: $primary;
         box-shadow: 0 0 0 1px $primary;
         opacity: 1;

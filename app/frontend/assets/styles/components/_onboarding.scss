@@ -229,4 +229,25 @@ turbo-frame {
             }
         }
     }
+
+    .container__takenlijst {
+        ul {
+            > li {
+                .form-check {
+                    position: relative;
+
+                    &:has(.btn-info) {
+                        padding-right: 1rem;
+                    }
+
+                    .btn-info {
+                        position: absolute;
+                        right: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                    }
+                }
+            }
+        }
+    }
 }

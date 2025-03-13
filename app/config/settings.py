@@ -304,8 +304,11 @@ CSP_IMG_SRC = (
     "cdn.jsdelivr.net",
     "ows.gis.rotterdam.nl",
     "www.gis.rotterdam.nl",
-    "forzamor.nl",
+    "taakr.forzamor.nl",
+    "taakr-acc.forzamor.nl",
+    "taakr-test.forzamor.nl",
     "mor.local",
+    "taakr.mor.local:8009",
 )
 CSP_STYLE_SRC = (
     "'self'",

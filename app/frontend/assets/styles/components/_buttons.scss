@@ -86,7 +86,7 @@ button[class="icon"],
 }
 
 button {
-    &:focus {
+    &:focus-visible {
         @include focus-outline();
     }
 }
@@ -125,7 +125,7 @@ button {
         white-space: nowrap;
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             color: $white;
             background-color: $action-active;
             border-color: $action-active;
@@ -142,7 +142,7 @@ button {
             transition: background-color 0.15s ease-in-out;
 
             &:hover,
-            &:focus {
+            &:focus-visible {
                 background-color: darken($blue-900, 10%);
                 border-color: darken($blue-900, 10%);
             }
@@ -161,7 +161,7 @@ button {
         }
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             color: $primary;
             background-color: $white;
             border-color: $primary;
@@ -174,7 +174,7 @@ button {
         color: $white;
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             color: $white;
             background-color: $gray-tint11;
             border-color: $gray-tint11;
@@ -212,6 +212,7 @@ button {
             top: 0;
             padding: 8px;
             margin: 0 0 0 auto;
+            line-height: 0.5;
             box-shadow: none;
             box-sizing: content-box;
             min-width: 13px;
@@ -230,7 +231,7 @@ button {
                 }
             }
 
-            &:focus {
+            &:focus-visible {
                 outline: none !important;
                 background-color: $gray-100;
             }
@@ -278,22 +279,36 @@ button {
         background-color: transparent;
         border: 0;
         outline: none;
-        padding: 0;
-        margin: 0;
+        padding: 0 0.5rem;
+        margin: 0 -0.5rem;
         text-decoration: underline;
         max-width: none;
         color: $primary;
-        font-weight: 300;
+        font-weight: 400;
         font-size: inherit;
 
         &.btn-with-icon {
             display: flex;
+            width: auto;
             align-items: center;
             svg {
                 margin-right: 4px;
                 path {
                     fill: currentColor;
                 }
+            }
+        }
+    }
+
+    &-info {
+        text-decoration: none;
+        color: $black;
+        text-align: left;
+        svg {
+            margin-left: 4px;
+            transform: translateY(2px);
+            path {
+                fill: $green-tint01 !important;
             }
         }
     }
@@ -354,7 +369,7 @@ button {
         }
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             svg {
                 path {
                     fill: $green-tint01;

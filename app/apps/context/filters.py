@@ -2,6 +2,7 @@ from apps.context.models import Context
 from apps.main.services import PDOKService
 from django.db.models import Q
 from django.template.defaultfilters import slugify
+from django.urls import reverse
 
 
 class StandaardFilter:
@@ -246,6 +247,7 @@ class TaaktypeFilter(StandaardFilter):
                 "label": taaktype.omschrijving,
                 "filter_label": taaktype.omschrijving,
                 "checked": str(taaktype.id) in selected_options,
+                "info_param": reverse("taaktype_taakr", args=[taaktype.id]),
             }
             for taaktype in taaktypes
         ]

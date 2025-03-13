@@ -157,7 +157,7 @@
                     text-decoration: underline;
 
                     &:hover,
-                    &:focus {
+                    &:focus-visible {
                         color: $green-tint01;
                         text-decoration: underline;
                         outline: none !important;
@@ -340,7 +340,7 @@
                 pointer-events: none;
                 transition: opacity $transition-duration-default $transition-ease-default;
 
-                &:focus {
+                &:focus-visible {
                     outline: none !important;
                     background-color: $gray-100;
                 }
@@ -395,7 +395,7 @@
             max-height: 14px;
             padding: 7px 10px 10px 7px;
 
-            &:focus {
+            &:focus-visible {
                 outline: none !important;
                 background-color: $gray-100;
             }
@@ -421,7 +421,7 @@
                 border-radius: 4px;
 
                 &:hover,
-                &:focus {
+                &:focus-visible {
                     outline: none !important;
                     background-color: $gray-100;
                 }
@@ -432,7 +432,7 @@
                     text-decoration: underline;
                     padding: 0.4em 0 0;
                     &:hover,
-                    &:focus {
+                    &:focus-visible {
                         color: $black;
                         text-decoration: underline;
                         border-color: transparent;
@@ -502,7 +502,7 @@
             transition: all $transition-duration-default $transition-ease-default;
 
             &:hover,
-            &:focus {
+            &:focus-visible {
                 color: $primary;
                 text-decoration: underline;
                 outline: none !important;
