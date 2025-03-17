@@ -84,7 +84,7 @@ export default class extends Controller {
   closeInfosheet() {
     if (this.hasInfosheetTarget) {
       if (this.infosheetTarget.open) {
-        setTimeout(() => (this.infosheetTurboframeTarget.innerHTML = ''), 100)
+        setTimeout(() => (this.infosheetTurboframeTarget.innerHTML = ''), 400)
         this.infosheetTarget.close()
         document.body.style.position = ''
         document.body.style.top = ''
