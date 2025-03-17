@@ -11,7 +11,7 @@ dialog.infosheet {
     background: #fff;
     overflow: hidden;
     margin: 0;
-    transform: translateY(100%);
+    transform: translate3d(0, 100%, 0);
     transition: transform $transition-duration-default $transition-ease-default;
     display: flex;
     flex-direction: column;
@@ -27,7 +27,7 @@ dialog.infosheet {
     }
 
     &[open] {
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
         transition: transform $transition-duration-default $transition-ease-default;
     }
 
