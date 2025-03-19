@@ -26,6 +26,10 @@ dialog.infosheet {
         }
     }
 
+    &:has(> turbo-frame[busy]) {
+        min-height: 35vh;
+    }
+
     &[open] {
         transform: translate3d(0, 0, 0);
         transition: transform $transition-duration-default $transition-ease-default;
