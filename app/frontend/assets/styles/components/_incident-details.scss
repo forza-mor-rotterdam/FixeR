@@ -231,6 +231,10 @@
             object-fit: contain;
         }
     }
+
+    .css--safari & {
+        scroll-snap-type: none;
+    }
 }
 
 .container__image {

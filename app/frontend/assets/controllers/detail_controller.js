@@ -220,6 +220,7 @@ export default class extends Controller {
     }, 100)
 
     if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
+      document.body.classList.add('css--safari')
       setTimeout(() => {
         this.imageSliderThumbContainerTarget.querySelector('.container__image img').click()
       }, 600)
