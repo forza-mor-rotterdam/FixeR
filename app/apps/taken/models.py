@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework.reverse import reverse as drf_reverse
 from utils.diversen import absolute
+from utils.fields import ListJSONField
 from utils.models import BasisModel
 
 
@@ -35,6 +36,12 @@ class Taakgebeurtenis(BasisModel):
         null=True,
     )
     omschrijving_intern = models.CharField(max_length=5000, null=True, blank=True)
+    bijlage_paden = ArrayField(
+        base_field=models.CharField(max_length=255),
+        default=list,
+        blank=True,
+        null=True,
+    )
     gebruiker = models.CharField(max_length=200, null=True, blank=True)
     taak = models.ForeignKey(
         to="taken.Taak",
@@ -47,6 +54,8 @@ class Taakgebeurtenis(BasisModel):
         blank=True,
         null=True,
     )
+    notificatie_verstuurd = models.BooleanField(default=True)
+    vervolg_taaktypes = ListJSONField(default=list)
 
     class Meta:
         ordering = ("-aangemaakt_op",)
@@ -284,9 +293,6 @@ class Taak(BasisModel):
         blank=True,
         null=True,
     )
-    bezig_met_verwerken = models.BooleanField(
-        default=False,
-    )
 
     objects = TaakQuerySet.as_manager()
     acties = TaakManager()
@@ -333,7 +339,6 @@ class Taak(BasisModel):
             models.Index(fields=["taaktype"]),
             models.Index(fields=["melding"]),
             models.Index(fields=["taak_zoek_data"]),
-            models.Index(fields=["bezig_met_verwerken"]),
         ]
 
 

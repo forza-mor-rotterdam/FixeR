@@ -55,8 +55,17 @@ class TaakManager(models.Manager):
             )
         return taak
 
-    def status_aanpassen(self, serializer, taak, db="default"):
-        from apps.aliassen.tasks import task_maak_bijlagealias
+    def status_aanpassen(
+        self,
+        status,
+        resolutie,
+        omschrijving_intern,
+        gebruiker,
+        bijlage_paden,
+        taak,
+        vervolg_taaktypes,
+        db="default",
+    ):
         from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus
 
         with transaction.atomic():
@@ -72,17 +81,22 @@ class TaakManager(models.Manager):
                 )
 
             vorige_status = locked_taak.taakstatus
-            resolutie = serializer.validated_data.pop("resolutie", None)
-            bijlagen = serializer.validated_data.pop("bijlagen", None)
-            uitvoerder = serializer.validated_data.pop("uitvoerder", None)
-            taakgebeurtenis = serializer.save(
+
+            taakstatus_instance = Taakstatus.objects.create(
                 taak=locked_taak,
+                naam=status,
             )
-            for bijlage in bijlagen:
-                task_maak_bijlagealias.delay(bijlage, taakgebeurtenis.pk)
+            taakgebeurtenis = Taakgebeurtenis.objects.create(
+                taak=locked_taak,
+                taakstatus=taakstatus_instance,
+                omschrijving_intern=omschrijving_intern,
+                gebruiker=gebruiker,
+                bijlage_paden=bijlage_paden,
+                notificatie_verstuurd=False,
+                vervolg_taaktypes=vervolg_taaktypes,
+            )
 
             locked_taak.taakstatus = taakgebeurtenis.taakstatus
-            locked_taak.additionele_informatie["uitvoerder"] = uitvoerder
 
             if (
                 Taakstatus.NaamOpties.VOLTOOID_MET_FEEDBACK
@@ -96,13 +110,13 @@ class TaakManager(models.Manager):
                     locked_taak.resolutie = resolutie
                     taakgebeurtenis.resolutie = resolutie
                     taakgebeurtenis.save()
-            locked_taak.bezig_met_verwerken = False
             locked_taak.save()
 
             transaction.on_commit(
                 lambda: status_aangepast.send_robust(
                     sender=self.__class__,
                     taak=locked_taak,
+                    taakgebeurtenis=taakgebeurtenis,
                     status=taakgebeurtenis.taakstatus,
                     vorige_status=vorige_status,
                 )

@@ -118,11 +118,13 @@ class TaakSerializer(serializers.ModelSerializer):
             "gebruiker",
             "taakopdracht",
             "omschrijving_intern",
+            "aangemaakt_op",
         )
         read_only_fields = (
             "_links",
             "id",
             "uuid",
             "melding",
+            "aangemaakt_op",
         )
         read_only_fields = ("_links",)
