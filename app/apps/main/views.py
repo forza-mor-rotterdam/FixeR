@@ -30,8 +30,7 @@ from apps.main.utils import (
     set_sortering,
 )
 from apps.release_notes.models import ReleaseNote
-from apps.taken.models import Taak, TaakDeellink
-from apps.taken.tasks import task_taak_status_voltooid
+from apps.taken.models import Taak, TaakDeellink, Taakstatus
 from device_detector import DeviceDetector
 from django.conf import settings
 from django.contrib import messages
@@ -740,24 +739,25 @@ def taak_afhandelen(request, id):
                 {
                     "taaktype_url": taaktype_url,
                     "omschrijving": volgende_taaktypes_lookup.get(taaktype_url),
+                    "bericht": form.cleaned_data.get("omschrijving_intern"),
                 }
                 for taaktype_url in form.cleaned_data.get("nieuwe_taak", [])
             ]
 
             bijlagen = request.FILES.getlist("bijlagen", [])
-            bijlage_paded = []
+            bijlage_paden = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
-                bijlage_paded.append(file_name)
+                bijlage_paden.append(file_name)
 
-            task_taak_status_voltooid.delay(
-                taak_id=taak.id,
-                gebruiker_email=request.user.email,
+            taak = Taak.acties.status_aanpassen(
+                status=Taakstatus.NaamOpties.VOLTOOID,
                 resolutie=form.cleaned_data.get("resolutie"),
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                bijlage_paden=bijlage_paded,
+                gebruiker=request.user.email,
+                bijlage_paden=bijlage_paden,
+                taak=taak,
                 vervolg_taaktypes=vervolg_taaktypes,
-                vervolg_taak_bericht=form.cleaned_data.get("omschrijving_nieuwe_taak"),
             )
             return redirect("taken")
         else:
