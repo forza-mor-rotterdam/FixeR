@@ -12,7 +12,7 @@ from apps.authorisatie.views import (
     RechtengroepLijstView,
     RechtengroepVerwijderenView,
 )
-from apps.beheer.views import beheer
+from apps.beheer.views import MORCoreNotificatieStatusOverzicht, beheer
 from apps.context.views import (
     ContextAanmakenView,
     ContextAanpassenView,
@@ -34,6 +34,11 @@ from django.urls import path
 
 urlpatterns = [
     path("", beheer, name="beheer"),
+    path(
+        "notificatie-status-overzicht/",
+        MORCoreNotificatieStatusOverzicht.as_view(),
+        name="notificatie_status_overzicht",
+    ),
     path("gebruiker/", GebruikerLijstView.as_view(), name="gebruiker_lijst"),
     path(
         "gebruiker/bulk-import/",

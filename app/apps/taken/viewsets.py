@@ -1,9 +1,5 @@
 from apps.taken.models import Taak, Taaktype
-from apps.taken.serializers import (
-    TaakgebeurtenisStatusSerializer,
-    TaakSerializer,
-    TaaktypeSerializer,
-)
+from apps.taken.serializers import TaakSerializer, TaaktypeSerializer
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
@@ -77,30 +73,4 @@ class TaakViewSet(
         return Response(
             data={},
             status=status.HTTP_204_NO_CONTENT,
-        )
-
-    @extend_schema(
-        description="Verander de status van een melding",
-        request=TaakgebeurtenisStatusSerializer,
-        responses={status.HTTP_200_OK: TaakSerializer},
-        parameters=None,
-    )
-    @action(detail=True, methods=["patch"], url_path="status-aanpassen")
-    def status_aanpassen(self, request, uuid):
-        taak = self.get_object()
-        data = {}
-        data.update(request.data)
-        data["taakstatus"]["taak"] = taak.id
-        serializer = TaakgebeurtenisStatusSerializer(
-            data=data,
-            context={"request": request},
-        )
-        if serializer.is_valid():
-            Taak.acties.status_aanpassen(serializer, self.get_object())
-
-            serializer = TaakSerializer(self.get_object(), context={"request": request})
-            return Response(serializer.data)
-        return Response(
-            data=serializer.errors,
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
