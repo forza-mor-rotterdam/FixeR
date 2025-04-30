@@ -183,10 +183,6 @@ def task_taakopdracht_notificatie(
     taakgebeurtenis.notificatie_verstuurd = True
     taakgebeurtenis.save(update_fields=["notificatie_verstuurd"])
 
-    import time
-
-    time.sleep(300)
-
     cache.delete(task_lock_key)
     return {
         "taak_id": taak.id,
