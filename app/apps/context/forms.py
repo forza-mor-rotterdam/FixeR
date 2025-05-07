@@ -92,7 +92,7 @@ class TaaktypesForm(forms.ModelForm):
 
 
 class TaaktypeCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
-    option_template_name = "forms/widgets/checkbox_option_taaktype_onboarding.html"
+    option_template_name = "onboarding/checkbox_option_taaktype.html"
 
     def create_option(
         self, name, value, label, selected, index, subindex=None, attrs=None
