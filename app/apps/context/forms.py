@@ -91,6 +91,23 @@ class TaaktypesForm(forms.ModelForm):
         fields = ("taaktypes",)
 
 
+class TaaktypeCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    option_template_name = "forms/widgets/checkbox_option_taaktype_onboarding.html"
+
+    def create_option(
+        self, name, value, label, selected, index, subindex=None, attrs=None
+    ):
+        option = super().create_option(
+            name, value, label, selected, index, subindex, attrs
+        )
+        if value:
+            option["attrs"]["taaktype_id"] = value.instance.id
+        return option
+
+    def __str__(self):
+        super().__str__(self)
+
+
 class TaaktypesFilteredForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         afdelingen_data = kwargs.pop("afdelingen_data", [])
@@ -119,7 +136,7 @@ class TaaktypesFilteredForm(forms.ModelForm):
                 if taaktypes_queryset.exists():
                     field_name = f"taaktypes_{afdeling_detail['naam']}"
                     self.fields[field_name] = forms.ModelMultipleChoiceField(
-                        widget=forms.CheckboxSelectMultiple(
+                        widget=TaaktypeCheckboxSelectMultiple(
                             attrs={
                                 "class": "form-check-input",
                                 # "data-onboarding-target": "taaktypeInput",

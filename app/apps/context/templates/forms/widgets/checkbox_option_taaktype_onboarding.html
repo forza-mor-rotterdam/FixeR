@@ -1,0 +1,13 @@
+{% if widget.wrap_label %}
+    <label {% if widget.attrs.id %}for="{{ widget.attrs.id }}"{% endif %}>
+    {% endif %}
+    {% include "django/forms/widgets/input.html" %}
+    <button class="btn btn-textlink btn-info"
+            data-action="infosheet#openInfosheet"
+            data-infosheet-action-param="{% url 'taaktype_taakr' widget.attrs.taaktype_id %}">
+        {% include "icons/info-filled.svg" %}
+    </button>
+    {% if widget.wrap_label %}
+        {{ widget.label }}
+    </label>
+{% endif %}
