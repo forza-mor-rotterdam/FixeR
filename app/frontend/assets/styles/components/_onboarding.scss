@@ -245,6 +245,43 @@ turbo-frame {
                         right: 0;
                         top: 50%;
                         transform: translateY(-50%);
+                        width: auto;
+                        height: auto;
+
+                        svg {
+                            path {
+                                fill: $green-tint01;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            ul {
+                > li {
+                    .form-check {
+                        display: flex;
+                        &:has(.btn-info) {
+                            padding-right: 0;
+                            label {
+                                padding-right: 0.5em;
+                                width: auto;
+                            }
+                        }
+
+                        .btn-info {
+                            position: relative;
+                            transform: translateY(0);
+                            order: 3;
+
+                            svg {
+                                path {
+                                    fill: $black;
+                                }
+                            }
+                        }
                     }
                 }
             }

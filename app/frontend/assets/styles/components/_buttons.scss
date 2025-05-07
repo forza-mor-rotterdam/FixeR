@@ -307,9 +307,8 @@ button {
         svg {
             margin-left: 4px;
             transform: translateY(2px);
-            path {
-                fill: $green-tint01 !important;
-            }
+            width: 16px;
+            height: 16px;
         }
     }
 
