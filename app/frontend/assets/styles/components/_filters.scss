@@ -153,10 +153,10 @@
             summary {
                 background-color: $gray-tint01;
                 margin: 0 -16px;
-                padding: 24px 32px 24px 80px;
+                padding: 24px 32px 24px 65px;
 
                 &::before {
-                    left: 57px;
+                    left: 42px;
                 }
             }
 
@@ -171,7 +171,7 @@
             &[open] {
                 > summary {
                     &::before {
-                        left: 60px;
+                        left: 45px;
                     }
                 }
             }
