@@ -21,21 +21,23 @@
         <ul class="list-clean" data-test-id="incidentFilter{{ f.naam|capfirst }}">
             {% for option in filter.options %}
                 <li class="container__check-department">
-                    <div class="form-check">
-                        <input class="form-check-input filter--taken"
-                               type="checkbox"
-                               value="{{ option.value }}"
-                               {% if option.checked %}checked{% endif %}
-                               name="{{ filter.key }}"
-                               id="{{ filter.key }}_{{ option.id }}"
-                               data-action="filter#onChangeFilter"
-                               data-filter-target="filterInput">
+                    <div class="form-check container__flex">
+                        <div class="container__input">
+                            <input class="form-check-input filter--taken"
+                                   type="checkbox"
+                                   value="{{ option.value }}"
+                                   {% if option.checked %}checked{% endif %}
+                                   name="{{ filter.key }}"
+                                   id="{{ filter.key }}_{{ option.id }}"
+                                   data-action="filter#onChangeFilter"
+                                   data-filter-target="filterInput">
+                        </div>
                         <label class="form-check-label" for="{{ filter.key }}_{{ option.id }}">{{ option.label }}</label>
                         {% if filter.key == "taken" %}
                             <button class="btn btn-inline btn-info"
                                     data-action="infosheet#openInfosheet"
                                     data-infosheet-action-param="{% url 'taaktype_taakr' option.id %}"
-                                    aria-label="meer info">{% include "icons/info-filled.svg" %}</button>
+                                    aria-label="meer info">{% include "icons/info.svg" %}</button>
                         {% endif %}
                     </div>
                 </li>

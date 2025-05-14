@@ -309,6 +309,9 @@ button {
             transform: translateY(2px);
             width: 16px;
             height: 16px;
+            path {
+                fill: $blue-800;
+            }
         }
     }
 

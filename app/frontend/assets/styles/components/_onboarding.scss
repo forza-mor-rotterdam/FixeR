@@ -247,12 +247,6 @@ turbo-frame {
                         transform: translateY(-50%);
                         width: auto;
                         height: auto;
-
-                        svg {
-                            path {
-                                fill: $blue-800;
-                            }
-                        }
                     }
                 }
             }
@@ -275,12 +269,6 @@ turbo-frame {
                             position: relative;
                             transform: translateY(0);
                             order: 3;
-
-                            svg {
-                                path {
-                                    fill: $blue-800;
-                                }
-                            }
                         }
                     }
                 }

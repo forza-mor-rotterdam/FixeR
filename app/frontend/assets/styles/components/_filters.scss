@@ -212,6 +212,40 @@
     > *:first-child {
         margin-top: 0;
     }
+
+    .list-clean {
+        margin-left: 0;
+    }
+}
+
+.container__check-department {
+    .container__flex {
+        display: flex;
+        justify-content: space-between;
+
+        .container__input {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            input {
+                transform: translateY(-2px);
+            }
+        }
+
+        label {
+            flex: 1 1 auto;
+            text-align: left;
+            font-weight: 400;
+            padding: 0.5rem 0;
+        }
+
+        button {
+            flex: 0 0 auto;
+            min-height: 0;
+        }
+    }
 }
 
 details {
