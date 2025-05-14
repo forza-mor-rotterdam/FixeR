@@ -31,9 +31,12 @@
                                data-action="filter#onChangeFilter"
                                data-filter-target="filterInput">
                         <label class="form-check-label" for="{{ filter.key }}_{{ option.id }}">{{ option.label }}</label>
-                        {% comment %} {% if option.info_param %}
-                            <button class="btn btn-inline btn-info" data-action="infosheet#openInfosheet" data-infosheet-action-param="{{ option.info_param }}" aria-label="meer info">{% include "icons/info-filled.svg" %}</button>
-                        {% endif %} {% endcomment %}
+                        {% if filter.key == "taken" %}
+                            <button class="btn btn-inline btn-info"
+                                    data-action="infosheet#openInfosheet"
+                                    data-infosheet-action-param="{% url 'taaktype_taakr' option.id %}"
+                                    aria-label="meer info">{% include "icons/info-filled.svg" %}</button>
+                        {% endif %}
                     </div>
                 </li>
             {% endfor %}

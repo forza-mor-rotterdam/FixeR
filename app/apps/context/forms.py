@@ -94,19 +94,6 @@ class TaaktypesForm(forms.ModelForm):
 class TaaktypeCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
     option_template_name = "onboarding/checkbox_option_taaktype.html"
 
-    def create_option(
-        self, name, value, label, selected, index, subindex=None, attrs=None
-    ):
-        option = super().create_option(
-            name, value, label, selected, index, subindex, attrs
-        )
-        if value:
-            option["attrs"]["taaktype_id"] = value.instance.id
-        return option
-
-    def __str__(self):
-        super().__str__(self)
-
 
 class TaaktypesFilteredForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

@@ -8,6 +8,4 @@
 {% endif %}
 <button class="btn btn-textlink btn-info"
         data-action="infosheet#openInfosheet"
-        data-infosheet-action-param="{% url 'taaktype_taakr' widget.attrs.taaktype_id %}">
-    {% include "icons/info.svg" %}
-</button>
+        data-infosheet-action-param="{% url 'taaktype_taakr' widget.value %}">{% include "icons/info.svg" %}</button>
