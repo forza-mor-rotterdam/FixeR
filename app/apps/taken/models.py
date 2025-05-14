@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
+from django.contrib.sites.models import Site
 from django.core import signing
 from django.core.exceptions import ValidationError
 from django.urls import reverse
@@ -79,12 +80,20 @@ class Taaktype(BasisModel):
     )
     actief = models.BooleanField(default=True)
 
-    def taaktype_url(self, request):
-        return drf_reverse(
+    def taaktype_url(self, request=None):
+        if request:
+            return drf_reverse(
+                "v1:taaktype-detail",
+                kwargs={"uuid": self.uuid},
+                request=request,
+            )
+        domain = Site.objects.get_current().domain
+        url_basis = f"{settings.PROTOCOL}://{domain}{settings.PORT}"
+        pad = drf_reverse(
             "v1:taaktype-detail",
             kwargs={"uuid": self.uuid},
-            request=request,
         )
+        return f"{url_basis}{pad}"
 
     class Meta:
         ordering = ("-aangemaakt_op",)
