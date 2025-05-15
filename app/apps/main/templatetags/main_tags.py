@@ -144,3 +144,13 @@ def get_last_n_characters(string, n=3):
 @register.filter(name="strip_html")
 def strip_html(value):
     return strip_tags(value)
+
+
+@register.filter
+def laatste_slug_van_url(url):
+    if not url:
+        return url
+    qs_removed_from_url = url.split("?")[0]
+    stripped_url = qs_removed_from_url.strip("/")
+    last_part_from_url = stripped_url.split("/")[-1]
+    return last_part_from_url

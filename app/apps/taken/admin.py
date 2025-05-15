@@ -226,6 +226,8 @@ class TaakZoekDataAdmin(admin.ModelAdmin):
         "display_geometrie",
         "melding_alias",
         "taken_aantal",
+        "straatnaam",
+        "bron_signaal_ids",
     )
     readonly_fields = ("display_geometrie",)
     raw_id_fields = ("melding_alias",)
