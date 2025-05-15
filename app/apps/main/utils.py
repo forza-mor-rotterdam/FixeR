@@ -82,8 +82,8 @@ def melding_naar_tijdlijn(melding: dict):
             taakgebeurtenis
             and taakgebeurtenis.get("taakstatus")
             and taakgebeurtenis.get("taakstatus", {}).get("naam")
-            in ["voltooid", "voltooid_met_feedback"]
-        )
+            in {"voltooid", "voltooid_met_feedback"}
+        ) or taakgebeurtenis.get("verwijderd_op")
         taakstatus_event = (
             taakgebeurtenis
             and taakgebeurtenis.get("taakstatus")

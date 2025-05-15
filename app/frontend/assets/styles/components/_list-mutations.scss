@@ -1,12 +1,12 @@
 .list__mutations {
     @include list-clean;
     > li {
-        margin: 0 calc(-1 * (map-get($container-margin, md)));
-        padding: 0 map-get($container-margin, md);
+        margin: 0;
+        padding: 0;
         position: relative;
 
         p {
-            margin: $input-padding-y 0 0;
+            margin: 8px 0 0;
         }
 
         &:last-child {
@@ -30,12 +30,12 @@
                     &.line-melding {
                         width: 0;
                         background-color: transparent;
-                        border-left: 2px dashed $primary;
+                        border-left: 2px dashed $green-tint01;
                     }
                     &.line-taak {
                         width: 0;
                         background-color: transparent;
-                        border-left: 2px dashed $action;
+                        border-left: 2px dashed $magenta-tint01;
                     }
                 }
             }
@@ -58,36 +58,40 @@
             left: 6px;
             top: 23px;
             background-color: $gray-tint11;
-            transform: translateX(-32px);
             &.line-melding {
-                background-color: $primary;
+                background-color: $green-tint01;
             }
             &.line-taak {
-                background-color: $action;
+                background-color: $magenta-tint01;
             }
         }
 
         .event {
             &.event-melding {
-                background-color: $primary;
+                background-color: $green-tint01;
             }
             &.event-taak {
-                background-color: $action;
+                background-color: $magenta-tint01;
             }
         }
 
         position: relative;
 
         summary {
-            padding: 12px 18px 12px 74px;
+            padding: 12px 18px 12px 110px;
             border: 0;
+            font-size: $small-font-size;
             text-align: right;
 
+            &:focus-visible {
+                outline-width: thin !important;
+                outline-color: $gray-tint02 !important;
+            }
+
             &::before {
-                // display: none;
                 right: 0;
                 left: auto;
-                top: calc(50% - $input-padding-y);
+                top: calc(50% - 8px);
             }
             .line {
                 width: 2px;
@@ -96,7 +100,6 @@
                 left: 6px;
                 top: 23px;
                 background-color: $gray-tint11;
-                transform: translateX(-32px);
             }
             .event {
                 position: absolute;
@@ -107,35 +110,51 @@
                 height: 14px;
                 border-radius: 50%;
                 background-color: $gray-tint11;
-                transform: translateX(-32px);
+            }
+        }
+
+        &.warning {
+            > summary {
+                > strong {
+                    &::before {
+                        content: url("../icons/warning_triangle_open.svg");
+                        position: absolute;
+                        top: 0;
+                        margin-left: -35px;
+                        path {
+                            fill: $red;
+                        }
+                    }
+                }
+            }
+
+            .content {
+                .wrapper {
+                    background-color: rgba(237, 181, 0, 0.1);
+                    border: 1px solid rgba(237, 181, 0, 0.25);
+                }
             }
         }
         .content {
             position: relative;
             margin-bottom: 20px;
-            margin-left: 5px;
+            font-size: 0.875em;
             text-align: right;
             display: flex;
-            align-items: flex-end;
-            flex-direction: column;
+            justify-content: flex-end;
 
             .wrapper {
                 background-color: $gray-tint02;
                 dl {
-                    padding: 12px 12px 12px 20px;
+                    padding: 12px 12px 12px 100px;
                     margin: 0;
                 }
             }
         }
 
+        .link--email,
         .link--phone {
-            line-height: 2rem;
-
-            svg {
-                position: absolute;
-                top: 6px;
-                left: -27px;
-            }
+            justify-content: end;
         }
 
         &[open] {
@@ -149,11 +168,12 @@
     }
 
     dl {
-        margin: 12px;
+        margin-left: 24px;
         dt,
         dd {
             display: block;
             margin: 0;
+            word-break: break-word;
         }
 
         dt {

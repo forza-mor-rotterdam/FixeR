@@ -49,6 +49,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import (
     HttpResponse,
+    HttpResponseGone,
     HttpResponsePermanentRedirect,
     JsonResponse,
     StreamingHttpResponse,
@@ -465,6 +466,8 @@ def kaart_modus(request):
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
+    if taak.verwijderd_op:
+        return HttpResponseGone()
     ua = request.META.get("HTTP_USER_AGENT", "")
     device = DeviceDetector(ua).parse()
     taakdeellinks = TaakDeellink.objects.filter(taak=taak)
@@ -487,6 +490,8 @@ def taak_detail(request, id):
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail_melding_tijdlijn(request, id):
     taak = get_object_or_404(Taak, pk=id)
+    if taak.verwijderd_op:
+        return HttpResponseGone()
     tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
 
     return render(
@@ -496,6 +501,7 @@ def taak_detail_melding_tijdlijn(request, id):
             "id": id,
             "taak": taak,
             "tijdlijn_data": tijdlijn_data,
+            "melding": taak.melding.response_json,
         },
     )
 
@@ -507,6 +513,8 @@ class WhatsappSchemeRedirect(HttpResponsePermanentRedirect):
 @permission_required("authorisatie.taak_delen", raise_exception=True)
 def taak_delen(request, id):
     taak = get_object_or_404(Taak, pk=id)
+    if taak.verwijderd_op:
+        return HttpResponseGone()
     gebruiker_email = request.user.email
     """
     Standaard worden links die gedeeld worden alleen in FixeR opgeslagen
@@ -538,6 +546,8 @@ def taak_delen(request, id):
 
 def taak_detail_preview(request, id, signed_data):
     taak = get_object_or_404(Taak, pk=id)
+    if taak.verwijderd_op:
+        return HttpResponseGone()
     gebruiker_email = None
     link_actief = False
 
@@ -674,6 +684,8 @@ def taak_toewijzing_intrekken(request, id):
 def taak_afhandelen(request, id):
     resolutie = request.GET.get("resolutie", "opgelost")
     taak = get_object_or_404(Taak, pk=id)
+    if taak.verwijderd_op:
+        return HttpResponseGone()
     taaktypes = TaakRService().get_taaktypes(
         params={
             "taakapplicatie_taaktype_url": taak.taaktype.taaktype_url(request),
