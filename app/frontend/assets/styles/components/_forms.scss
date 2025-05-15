@@ -546,6 +546,7 @@ ul.list--form-check-input--tile-image {
             flex-direction: column;
             font-weight: 700;
             cursor: pointer;
+            word-break: break-word;
 
             svg {
                 margin: 0 auto 8px;
