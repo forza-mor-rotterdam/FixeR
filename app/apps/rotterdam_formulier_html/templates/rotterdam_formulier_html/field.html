@@ -54,7 +54,7 @@
                                 {% if field.field.widget.attrs.hasIcon %}
                                     {% with choice.choice_label.icon as icon_url %}
                                         {{ icon_url }}
-                                        {% if icon_url and icon_url|get_last_n_characters == 'svg' %}
+                                        {% if icon_url|get_last_n_characters == 'svg' %}
                                             1{{ icon_url|get_svg_path|safe }}
                                         {% else %}
                                             2
