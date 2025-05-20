@@ -1,7 +1,7 @@
 from apps.aliassen.models import BijlageAlias, MeldingAlias
 from apps.aliassen.tasks import task_update_melding_alias_data
 from django.contrib import admin
-from django.db.models import Count
+from django.db.models import Count, Q
 
 
 @admin.action(description="Update melding alias data")
@@ -52,21 +52,37 @@ class ZoekDataAantalFilter(admin.SimpleListFilter):
         )
 
 
+class GeenTaakZoekDataFilter(admin.SimpleListFilter):
+    title = "Geen taak zoek data"
+    parameter_name = "geen_taak_zoek_data"
+
+    def lookups(self, request, model_admin):
+        return (("geen_taak_zoek_data", "Geen taak zoek data"),)
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value:
+            return queryset.filter(
+                taak_zoek_data__straatnaam__isnull=True,
+                taak_zoek_data__begraafplaats__isnull=True,
+            )
+        return queryset
+
+
 class ResponseDataFilter(admin.SimpleListFilter):
     title = "heeft response data"
     parameter_name = "response_json"
 
     def lookups(self, request, model_admin):
-        return (
-            ("has_not", "Geen response data"),
-            ("has", "Wel response data"),
-        )
+        return (("has_not", "Geen response data"),)
 
     def queryset(self, request, queryset):
         value = self.value()
         if not value:
             return queryset
-        return queryset.filter(response_json__isnull=(value == "has_not"))
+        return queryset.filter(
+            Q(response_json__isnull=(value == "has_not")) | Q(response_json={})
+        )
 
 
 class MeldingAliasAdmin(admin.ModelAdmin):
@@ -84,6 +100,7 @@ class MeldingAliasAdmin(admin.ModelAdmin):
         ResponseDataFilter,
         TakenAantalFilter,
         ZoekDataAantalFilter,
+        GeenTaakZoekDataFilter,
     )
 
     def get_queryset(self, request):
