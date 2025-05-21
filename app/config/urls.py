@@ -12,6 +12,7 @@ from apps.main.views import (
     config,
     http_403,
     http_404,
+    http_410,
     http_500,
     infosheet_mock,
     kaart_modus,
@@ -243,6 +244,7 @@ if settings.APP_ENV != "productie":
     urlpatterns += [
         path("403/", http_403, name="403"),
         path("404/", http_404, name="404"),
+        path("410/", http_410, name="410"),
         path("500/", http_500, name="500"),
     ]
 
