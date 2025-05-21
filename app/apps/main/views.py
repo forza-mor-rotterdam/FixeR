@@ -91,6 +91,13 @@ def http_404(request):
     )
 
 
+def http_410(request):
+    return render(
+        request,
+        "410.html",
+    )
+
+
 def http_500(request):
     current_time = datetime.now()
     server_id = os.getenv("APP_ENV", "Onbekend")
