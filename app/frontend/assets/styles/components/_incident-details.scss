@@ -62,6 +62,8 @@
         > span {
             margin-left: $input-padding-y;
             svg {
+                width: 24px;
+                height: 24px;
                 path {
                     fill: $green-tint01;
                 }

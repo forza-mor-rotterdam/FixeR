@@ -13,6 +13,10 @@
     line-height: 1.9em;
     margin: 0 3px;
 
+    &--filter {
+        margin-right: 1px;
+    }
+
     button & {
         font-size: 10px;
         width: 15px;
@@ -153,10 +157,10 @@
             summary {
                 background-color: $gray-tint01;
                 margin: 0 -16px;
-                padding: 24px 32px 24px 80px;
+                padding: 24px 32px 24px 65px;
 
                 &::before {
-                    left: 57px;
+                    left: 42px;
                 }
             }
 
@@ -171,7 +175,7 @@
             &[open] {
                 > summary {
                     &::before {
-                        left: 60px;
+                        left: 45px;
                     }
                 }
             }
@@ -211,6 +215,42 @@
 
     > *:first-child {
         margin-top: 0;
+    }
+
+    .list-clean {
+        margin-left: 0;
+    }
+}
+
+.container__check-department {
+    .container__flex {
+        display: flex;
+        justify-content: space-between;
+
+        .container__input {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            input {
+                transform: translateY(-2px);
+                margin-left: 3px;
+            }
+        }
+
+        label {
+            flex: 1 1 auto;
+            text-align: left;
+            font-weight: 400;
+            padding: 0.5rem 0;
+            word-break: break-word;
+        }
+
+        button {
+            flex: 0 0 auto;
+            min-height: 0;
+        }
     }
 }
 

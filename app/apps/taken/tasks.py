@@ -1,9 +1,11 @@
 import celery
 from apps.main.services import MORCoreService
+from apps.main.utils import to_base64
 from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus
-from celery import shared_task
+from celery import chord, group, shared_task
 from celery.utils.log import get_task_logger
 from dateutil import parser
+from django.core.cache import cache
 
 logger = get_task_logger(__name__)
 
@@ -15,6 +17,9 @@ DEFAULT_RETRY_DELAY = 2
 MAX_RETRIES = 6
 RETRY_BACKOFF_MAX = 60 * 30
 RETRY_BACKOFF = 120
+
+
+TASK_LOCK_KEY_NOTFICATIES_VOOR_TAKEN = "task_taakopdracht_notificatie_voor_taken_lijst"
 
 
 class BaseTaskWithRetry(celery.Task):
@@ -39,52 +44,148 @@ def move_resolutie_to_taakgebeurtenis(self):
             taakgebeurtenis.save()
 
 
-@shared_task(bind=True, base=BaseTaskWithRetry)
-def task_taak_status_voltooid(
-    self,
-    taak_id,
-    resolutie,
-    gebruiker_email,
-    omschrijving_intern="",
-    bijlage_paden=[],
-    vervolg_taaktypes=[],
-    vervolg_taak_bericht="",
+@shared_task(bind=True)
+def task_taakopdracht_notificatie_voor_taakgebeurtenissen(self, taakgebeurtenis_ids):
+    from apps.taken.models import Taakgebeurtenis
+
+    if not isinstance(taakgebeurtenis_ids, list):
+        return "taakgebeurtenis_ids is geen list"
+
+    task_lock_key = TASK_LOCK_KEY_NOTFICATIES_VOOR_TAKEN
+    if cache.get(task_lock_key):
+        return "task_taakopdracht_notificatie_voor_taken_lijst is nog bezig"
+    else:
+        cache.set(task_lock_key, True, 60)
+
+    taakgebeurtenis_ids = list(
+        Taakgebeurtenis.objects.filter(
+            id__in=taakgebeurtenis_ids,
+            notificatie_verstuurd=False,
+        ).values_list("id", flat=True)
+    )
+
+    taakgebeurtenissen_group = group(
+        task_taakopdracht_notificatie.si(taakgebeurtenis_id)
+        for taakgebeurtenis_id in taakgebeurtenis_ids
+    )
+    taakgebeurtenissen_group()
+    cache.delete(task_lock_key)
+    return f"Bezig met het versturen van notificaties voor taakgebeurtenissen={taakgebeurtenis_ids}"
+
+
+@shared_task(bind=True)
+def task_taakopdracht_notificatie_voor_taakgebeurtenissen_voltooid(
+    self, taakgebeurtenis_ids, task_lock_key
 ):
-    from apps.main.utils import to_base64
+    if not isinstance(taakgebeurtenis_ids, list):
+        return "taakgebeurtenis_ids is geen list"
+    cache.delete(task_lock_key)
+    return f"Klaar met het versturen van notificaties voor taakgebeurtenissen={taakgebeurtenis_ids}"
 
-    taak = Taak.objects.get(id=taak_id)
-    taak.bezig_met_verwerken = True
-    taak.save(update_fields=["bezig_met_verwerken"])
 
-    bijlagen = [{"bestand": to_base64(b)} for b in bijlage_paden]
+@shared_task(bind=True)
+def task_taakopdracht_notificatie_voor_taak(self, taak_id):
+    from apps.taken.models import Taak
 
-    taak_status_aanpassen_response = MORCoreService().taak_status_aanpassen(
+    task_lock_key = (
+        f"task_lock_task_taakopdracht_notificatie_voor_taak_taak_id_{taak_id}"
+    )
+    if cache.get(task_lock_key):
+        return "task_taakopdracht_notificatie_voor_taak is nog bezig"
+    else:
+        cache.set(task_lock_key, True, 60)
+
+    taak = Taak.objects.filter(id=taak_id).first()
+    if not taak:
+        return f"Taak met taak_id {taak_id}, is niet gevonden"
+
+    # selecteer alle taakgebeurtenissen voor deze taak die nog niet gesynced zijn met mor-core en orden deze, zodat de eerst aangemaakte het eerst in de rij staat
+    taakgebeurtenissen_voor_taak = list(
+        taak.taakgebeurtenissen_voor_taak.filter(notificatie_verstuurd=False)
+        .order_by("aangemaakt_op")
+        .values_list("id", flat=True)
+    )
+
+    # happy, deze taak heeft al zijn taakgebeurtenissen gestuurd
+    if not taakgebeurtenissen_voor_taak:
+        return f"Alle notificaties voor taak met taak_id {taak_id}, notificaties zijn al verstuurd"
+
+    # Er moeten nog taakgebeurtenis notifificaties gestuurd worden. In een normale situatie wordt er na een status wijziging in FixeR, 1 notificatie verstuurd.
+    # Als mor-core niet beschikbaar was om notificaties te verwerken stapelen de taakgebeurtenissen zich op, en moeten ze achteraf gestuurd worden, het aantal taakgebeurtenissen hieronder is dan meer dan 1.
+    taakgebeurtenissen_chord = chord(
+        (
+            task_taakopdracht_notificatie.si(taakgebeurtenis_id)
+            for taakgebeurtenis_id in taakgebeurtenissen_voor_taak
+        ),
+        task_taakopdracht_notificatie_voor_taak_voltooid.si(
+            taak_id, len(taakgebeurtenissen_voor_taak), task_lock_key
+        ),
+    )
+    taakgebeurtenissen_chord()
+    return f"Bezig met het verturen van {len(taakgebeurtenissen_voor_taak)} notificaties voor taak met taak_id {taak_id}"
+
+
+@shared_task(bind=True)
+def task_taakopdracht_notificatie_voor_taak_voltooid(
+    self, taak_id, notificatie_aantal, task_lock_key
+):
+    cache.delete(task_lock_key)
+    return f"Klaar met het verturen van {notificatie_aantal} notificaties voor taak met taak_id {taak_id}"
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def task_taakopdracht_notificatie(
+    self,
+    taakgebeurtenis_id,
+):
+    from apps.taken.models import Taakgebeurtenis
+
+    task_lock_key = f"task_lock_task_taakopdracht_notificatie_taakgebeurtenis_id_{taakgebeurtenis_id}"
+    if cache.get(task_lock_key):
+        return "task_taakopdracht_notificatie is nog bezig"
+    else:
+        cache.set(task_lock_key, True, 60)
+
+    taakgebeurtenis = Taakgebeurtenis.objects.get(id=taakgebeurtenis_id)
+    taak = taakgebeurtenis.taak
+
+    if taakgebeurtenis.notificatie_verstuurd:
+        return "De notificatie voor deze taakgebeurtenis is al verstuurd"
+
+    bijlagen = [{"bestand": to_base64(b)} for b in taakgebeurtenis.bijlage_paden]
+
+    taak_status_aanpassen_response = MORCoreService().taakopdracht_notificatie(
+        melding_url=taak.melding.bron_url,
         taakopdracht_url=taak.taakopdracht,
-        status="voltooid",
-        resolutie=resolutie,
-        gebruiker=gebruiker_email,
-        omschrijving_intern=omschrijving_intern,
+        status=taakgebeurtenis.taakstatus.naam if taakgebeurtenis.taakstatus else None,
+        resolutie=taakgebeurtenis.resolutie,
+        gebruiker=taakgebeurtenis.gebruiker,
+        omschrijving_intern=taakgebeurtenis.omschrijving_intern,
+        aangemaakt_op=taakgebeurtenis.aangemaakt_op.isoformat(),
         bijlagen=bijlagen,
     )
     if taak_status_aanpassen_response.get("error"):
-        taak.bezig_met_verwerken = False
-        taak.save(update_fields=["bezig_met_verwerken"])
+        cache.delete(task_lock_key)
         raise Exception(
-            f"task taak_status_aanpassen: fout={taak_status_aanpassen_response.get('error')}, taak_id={taak_id}, taakopdracht_url={taak.taakopdracht}"
+            f"task taakopdracht_notificatie: fout={taak_status_aanpassen_response.get('error')}, taak_id={taak.id}, taakopdracht_url={taak.taakopdracht}"
         )
 
-    for vervolg_taaktype in vervolg_taaktypes:
+    for vervolg_taaktype in taakgebeurtenis.vervolg_taaktypes:
         task_taak_aanmaken.delay(
             melding_uuid=taak.melding.response_json.get("uuid"),
             taaktype_url=vervolg_taaktype.get("taaktype_url"),
             titel=vervolg_taaktype.get("omschrijving"),
+            bericht=vervolg_taaktype.get("bericht"),
             # bericht=vervolg_taak_bericht,
             # temporary use 'interne opmerkingen' also for all new tasks, after redesign of this modal we will reimplement a message per task
-            bericht=omschrijving_intern,
-            gebruiker_email=gebruiker_email,
+            gebruiker_email=taakgebeurtenis.gebruiker,
         )
+    taakgebeurtenis.notificatie_verstuurd = True
+    taakgebeurtenis.save(update_fields=["notificatie_verstuurd"])
+
+    cache.delete(task_lock_key)
     return {
-        "taak_id": taak_id,
+        "taak_id": taak.id,
         "taakopdracht_url": taak.taakopdracht,
         "melding_uuid": taak.melding.response_json.get("uuid"),
     }
@@ -185,7 +286,6 @@ def update_taak_status_met_taakopdracht_status(self, taak_id):
         taak.taakstatus = taakstatus
         taak.resolutie = resolutie
         taak.afgesloten_op = afgesloten_op
-        taak.bezig_met_verwerken = False
         taak.save()
 
     return {

@@ -109,3 +109,20 @@ class AfgeslotenOpFilter(admin.SimpleListFilter):
             return queryset.filter(afgesloten_op__isnull=True)
         else:
             return queryset
+
+
+class ZoekDataFilter(admin.SimpleListFilter):
+    title = "heeft response data"
+    parameter_name = "response_json"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("has_not", "Geen response data"),
+            ("has", "Wel response data"),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            return queryset
+        return queryset.filter(response_json__isnull=(value == "has_not"))

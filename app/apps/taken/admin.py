@@ -20,6 +20,7 @@ from apps.taken.models import (
 )
 from apps.taken.tasks import (
     start_update_taakopdracht_data_for_taak_ids,
+    task_taakopdracht_notificatie_voor_taak,
     update_taak_status_met_taakopdracht_status,
 )
 from django.contrib import admin, messages
@@ -76,7 +77,6 @@ class TaakAdmin(admin.ModelAdmin):
         "verwijderd_op",
         "taakopdracht",
         "taak_zoek_data",
-        "bezig_met_verwerken",
     )
     readonly_fields = (
         "uuid",
@@ -100,7 +100,6 @@ class TaakAdmin(admin.ModelAdmin):
                     "additionele_informatie",
                     "taakopdracht",
                     "taak_zoek_data",
-                    "bezig_met_verwerken",
                 )
             },
         ),
@@ -139,6 +138,7 @@ class TaakAdmin(admin.ModelAdmin):
     actions = [
         "update_taakopdracht_data",
         "update_taak_status_met_taakopdracht_status",
+        "taakopdracht_notificatie",
     ]
 
     def get_queryset(self, request):
@@ -176,6 +176,14 @@ class TaakAdmin(admin.ModelAdmin):
         self.message_user(
             request,
             f"Updating taak status met taakopdracht status for {queryset.count()} taken!",
+        )
+
+    def taakopdracht_notificatie(self, request, queryset):
+        for taak in queryset:
+            task_taakopdracht_notificatie_voor_taak.delay(taak.id)
+        self.message_user(
+            request,
+            f"Taakopdracht notificaties voor {queryset.count()} taken!",
         )
 
     update_taakopdracht_data.short_description = "update_taakopdracht_data"
@@ -218,6 +226,9 @@ class TaakZoekDataAdmin(admin.ModelAdmin):
         "display_geometrie",
         "melding_alias",
         "taken_aantal",
+        "straatnaam",
+        "begraafplaats",
+        "bron_signaal_ids",
     )
     readonly_fields = ("display_geometrie",)
     raw_id_fields = ("melding_alias",)
@@ -247,15 +258,22 @@ class TaakZoekDataAdmin(admin.ModelAdmin):
 class TaakgebeurtenisAdmin(admin.ModelAdmin):
     list_display = (
         "id",
+        "aangemaakt_op",
         "gebruiker",
         "taakstatus",
         "resolutie",
+        "taak",
         "omschrijving_intern",
+        "notificatie_verstuurd",
     )
     raw_id_fields = (
         "taak",
         "taakstatus",
     )
+    search_fields = [
+        "taak__uuid",
+    ]
+    list_filter = ("notificatie_verstuurd",)
 
 
 class TaakDeellinkAdmin(admin.ModelAdmin):

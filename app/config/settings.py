@@ -44,6 +44,9 @@ USE_I18N = True
 LANGUAGE_CODE = "nl-NL"
 LANGUAGES = [("nl", "Dutch")]
 
+PROTOCOL = "https" if not DEBUG else "http"
+PORT = "" if not DEBUG else ":8004"
+
 ENABLE_DJANGO_ADMIN_LOGIN = os.getenv("ENABLE_DJANGO_ADMIN_LOGIN", False) in TRUE_VALUES
 
 DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"

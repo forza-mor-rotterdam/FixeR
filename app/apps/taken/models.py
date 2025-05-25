@@ -7,12 +7,14 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
+from django.contrib.sites.models import Site
 from django.core import signing
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework.reverse import reverse as drf_reverse
 from utils.diversen import absolute
+from utils.fields import ListJSONField
 from utils.models import BasisModel
 
 
@@ -35,6 +37,12 @@ class Taakgebeurtenis(BasisModel):
         null=True,
     )
     omschrijving_intern = models.CharField(max_length=5000, null=True, blank=True)
+    bijlage_paden = ArrayField(
+        base_field=models.CharField(max_length=255),
+        default=list,
+        blank=True,
+        null=True,
+    )
     gebruiker = models.CharField(max_length=200, null=True, blank=True)
     taak = models.ForeignKey(
         to="taken.Taak",
@@ -47,6 +55,8 @@ class Taakgebeurtenis(BasisModel):
         blank=True,
         null=True,
     )
+    notificatie_verstuurd = models.BooleanField(default=True)
+    vervolg_taaktypes = ListJSONField(default=list)
 
     class Meta:
         ordering = ("-aangemaakt_op",)
@@ -70,12 +80,20 @@ class Taaktype(BasisModel):
     )
     actief = models.BooleanField(default=True)
 
-    def taaktype_url(self, request):
-        return drf_reverse(
+    def taaktype_url(self, request=None):
+        if request:
+            return drf_reverse(
+                "v1:taaktype-detail",
+                kwargs={"uuid": self.uuid},
+                request=request,
+            )
+        domain = Site.objects.get_current().domain
+        url_basis = f"{settings.PROTOCOL}://{domain}{settings.PORT}"
+        pad = drf_reverse(
             "v1:taaktype-detail",
             kwargs={"uuid": self.uuid},
-            request=request,
         )
+        return f"{url_basis}{pad}"
 
     class Meta:
         ordering = ("-aangemaakt_op",)
@@ -270,7 +288,7 @@ class Taak(BasisModel):
     )
     titel = models.CharField(max_length=200)
     bericht = models.CharField(
-        max_length=500,
+        max_length=5000,
         blank=True,
         null=True,
     )
@@ -283,9 +301,6 @@ class Taak(BasisModel):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-    )
-    bezig_met_verwerken = models.BooleanField(
-        default=False,
     )
 
     objects = TaakQuerySet.as_manager()
@@ -333,7 +348,6 @@ class Taak(BasisModel):
             models.Index(fields=["taaktype"]),
             models.Index(fields=["melding"]),
             models.Index(fields=["taak_zoek_data"]),
-            models.Index(fields=["bezig_met_verwerken"]),
         ]
 
 

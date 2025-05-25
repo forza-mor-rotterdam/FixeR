@@ -68,7 +68,7 @@
                 data-action="infosheet#openInfosheet"
                 data-infosheet-action-param="{% url 'taaktype_taakr' taak.taaktype.id %}">
             {{ taak.titel }}
-            {% include "icons/info-filled.svg" %}
+            {% include "icons/info.svg" %}
         </button>
         {% if taak.taak_zoek_data.locatie_type == "adres" %}
             <br>
