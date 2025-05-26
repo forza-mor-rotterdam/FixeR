@@ -291,3 +291,22 @@ def update_taak_status_met_taakopdracht_status(self, taak_id):
     return {
         "taak_id": taak_id,
     }
+
+
+@shared_task(bind=True)
+def task_verwijderd_op_voor_afgeronde_taken_voor_taak_ids(self, taak_ids=[]):
+    taken = Taak.objects.filter(
+        id__in=taak_ids,
+        taakstatus__naam__in=[
+            Taakstatus.NaamOpties.VOLTOOID,
+            Taakstatus.NaamOpties.VOLTOOID_MET_FEEDBACK,
+        ],
+        verwijderd_op__isnull=False,
+    )
+    for taak in taken:
+        taak.verwijderd_op = None
+        taak.save()
+
+    return {
+        "taak_ids aantal": len(taak_ids),
+    }

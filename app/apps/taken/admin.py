@@ -21,9 +21,11 @@ from apps.taken.models import (
 from apps.taken.tasks import (
     start_update_taakopdracht_data_for_taak_ids,
     task_taakopdracht_notificatie_voor_taak,
+    task_verwijderd_op_voor_afgeronde_taken_voor_taak_ids,
     update_taak_status_met_taakopdracht_status,
 )
 from django.contrib import admin, messages
+from django.contrib.admin import DateFieldListFilter
 from django.db.models import Count
 from django.utils.safestring import mark_safe
 from django_celery_results.admin import TaskResultAdmin
@@ -78,9 +80,9 @@ class TaakAdmin(admin.ModelAdmin):
         "taakopdracht",
         "taak_zoek_data",
     )
+    list_editable = ("verwijderd_op",)
     readonly_fields = (
         "uuid",
-        "verwijderd_op",
         "aangemaakt_op",
         "aangepast_op",
         "afgesloten_op",
@@ -128,6 +130,9 @@ class TaakAdmin(admin.ModelAdmin):
         ResolutieFilter,
         AfgeslotenOpFilter,
         TitelFilter,
+        ("afgesloten_op", DateFieldListFilter),
+        ("verwijderd_op", DateFieldListFilter),
+        ("aangemaakt_op", DateFieldListFilter),
     )
     raw_id_fields = (
         "melding",
@@ -139,6 +144,7 @@ class TaakAdmin(admin.ModelAdmin):
         "update_taakopdracht_data",
         "update_taak_status_met_taakopdracht_status",
         "taakopdracht_notificatie",
+        "verwijderd_op_voor_afgeronde_taken_voor_taak_ids",
     ]
 
     def get_queryset(self, request):
@@ -187,6 +193,15 @@ class TaakAdmin(admin.ModelAdmin):
         )
 
     update_taakopdracht_data.short_description = "update_taakopdracht_data"
+
+    def verwijderd_op_voor_afgeronde_taken_voor_taak_ids(self, request, queryset):
+        task_verwijderd_op_voor_afgeronde_taken_voor_taak_ids.delay(
+            list(queryset.values_list("id", flat=True))
+        )
+        self.message_user(
+            request,
+            f"verwijderd_op_voor_afgeronde_taken_voor_taak_ids: aantal={queryset.count()}",
+        )
 
 
 class TaaktypeAdmin(admin.ModelAdmin):
