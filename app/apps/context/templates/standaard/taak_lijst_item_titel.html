@@ -8,7 +8,13 @@
         {% endif %}
         {% if hasRemark %}<span class="badge-count badge-count--info">i</span>{% endif %}
     </h2>
-    {% if taak.taak_zoek_data.postcode %}<strong>{{ taak.taak_zoek_data.postcode }}</strong>{% endif %}
+    {% if taak.taak_zoek_data.postcode or taak.taak_zoek_data.plaatsnaam %}
+        <strong>
+            {% if taak.taak_zoek_data.postcode %}{{ taak.taak_zoek_data.postcode }}{% endif %}
+            {% if taak.taak_zoek_data.postcode and taak.taak_zoek_data.plaatsnaam %},{% endif %}
+            {% if taak.taak_zoek_data.plaatsnaam %}{{ taak.taak_zoek_data.plaatsnaam }}{% endif %}
+        </strong>
+    {% endif %}
     <div>
         <span class="incident__category">{{ taak.titel }}</span>
     </div>
