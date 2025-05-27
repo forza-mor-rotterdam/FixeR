@@ -171,12 +171,16 @@
                             </dd>
                         </div>
                     {% endif %}
+                    {% if taak.taak_zoek_data.plaatsnaam %}
+                        <div>
+                            <h3 class="h5">Plaats</h3>
+                            <p>{{ taak.taak_zoek_data.plaatsnaam }}</p>
+                        </div>
+                    {% endif %}
                     {% if taak.taak_zoek_data.plaatsbepaling %}
                         <div>
-                            <dt>Plaatsbepaling:</dt>
-                            <dd>
-                                {{ taak.taak_zoek_data.plaatsbepaling }}
-                            </dd>
+                            <h3 class="h5">Plaatsbepaling</h3>
+                            <p>{{ taak.taak_zoek_data.plaatsbepaling }}</p>
                         </div>
                     {% endif %}
                 </div>
