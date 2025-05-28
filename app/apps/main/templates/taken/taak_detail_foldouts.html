@@ -151,10 +151,12 @@
                     {% endif %}
                 </div>
                 <div>
-                    {% if taak_zoek_data.wijknaam %}
+                    {% if taak.taak_zoek_data.subbuurt %}
                         <div>
-                            <h3 class="h5">Wijk</h3>
-                            <p>{{ taak_zoek_data.wijknaam }}</p>
+                            <dt>Subbuurt:</dt>
+                            <dd>
+                                {{ taak.taak_zoek_data.subbuurt }}
+                            </dd>
                         </div>
                     {% endif %}
                     {% if taak_zoek_data.buurtnaam %}
@@ -163,12 +165,10 @@
                             <p>{{ taak_zoek_data.buurtnaam }}</p>
                         </div>
                     {% endif %}
-                    {% if taak.taak_zoek_data.subbuurt %}
+                    {% if taak_zoek_data.wijknaam %}
                         <div>
-                            <dt>Subbuurt:</dt>
-                            <dd>
-                                {{ taak.taak_zoek_data.subbuurt }}
-                            </dd>
+                            <h3 class="h5">Wijk</h3>
+                            <p>{{ taak_zoek_data.wijknaam }}</p>
                         </div>
                     {% endif %}
                     {% if taak.taak_zoek_data.plaatsnaam %}
