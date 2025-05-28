@@ -68,8 +68,10 @@ class TaakViewSet(
 
     def destroy(self, request, *args, **kwargs):
         taak = self.get_object()
-        taak.verwijderd_op = timezone.now()
-        taak.save()
+        if not taak.verwijderd_op and not taak.afgesloten_op:
+            taak.verwijderd_op = timezone.now()
+            taak.save()
+
         return Response(
             data={},
             status=status.HTTP_204_NO_CONTENT,
