@@ -7,17 +7,10 @@ from datetime import datetime
 from functools import reduce
 
 import requests
-from apps.authenticatie.models import Gebruiker
 from apps.context.filters import FilterManager
 from apps.context.models import Context
 from apps.instellingen.models import Instelling
-from apps.main.forms import (
-    KaartModusForm,
-    SorteerFilterForm,
-    TaakBehandelForm,
-    TaakToewijzenForm,
-    TaakToewijzingIntrekkenForm,
-)
+from apps.main.forms import KaartModusForm, SorteerFilterForm, TaakBehandelForm
 from apps.main.services import MORCoreService, PDOKService, TaakRService
 from apps.main.utils import (
     get_actieve_filters,
@@ -185,7 +178,7 @@ def taken_filter(request):
                 "taak_zoek_data",
             )
             .only(
-                "id",
+                "uuid",
                 "melding__id",
                 "taaktype__id",
                 "taaktype__omschrijving",
@@ -206,7 +199,7 @@ def taken_filter(request):
                 "taak_zoek_data",
             )
             .only(
-                "id",
+                "uuid",
                 "melding__id",
                 "taaktype__id",
                 "taaktype__omschrijving",
@@ -319,7 +312,7 @@ def taken_lijst(request):
                 "taak_zoek_data",
             )
             .only(
-                "id",
+                "uuid",
                 "melding__id",
                 "taaktype__id",
                 "taaktype__omschrijving",
@@ -340,7 +333,7 @@ def taken_lijst(request):
                 "taak_zoek_data",
             )
             .only(
-                "id",
+                "uuid",
                 "melding__id",
                 "taaktype__id",
                 "taaktype__omschrijving",
@@ -477,8 +470,8 @@ def taak_detail_uuid(request, uuid):
 
 @login_required
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
-def taak_detail(request, id):
-    taak = get_object_or_404(Taak, pk=id)
+def taak_detail(request, uuid):
+    taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
     ua = request.META.get("HTTP_USER_AGENT", "")
@@ -501,8 +494,8 @@ def taak_detail(request, id):
 
 @login_required
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
-def taak_detail_melding_tijdlijn(request, id):
-    taak = get_object_or_404(Taak, pk=id)
+def taak_detail_melding_tijdlijn(request, uuid):
+    taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
     tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
@@ -524,8 +517,8 @@ class WhatsappSchemeRedirect(HttpResponsePermanentRedirect):
 
 
 @permission_required("authorisatie.taak_delen", raise_exception=True)
-def taak_delen(request, id):
-    taak = get_object_or_404(Taak, pk=id)
+def taak_delen(request, uuid):
+    taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
     gebruiker_email = request.user.email
@@ -557,8 +550,8 @@ def taak_delen(request, id):
     )
 
 
-def taak_detail_preview(request, id, signed_data):
-    taak = get_object_or_404(Taak, pk=id)
+def taak_detail_preview(request, uuid, signed_data):
+    taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
     gebruiker_email = None
@@ -583,7 +576,7 @@ def taak_detail_preview(request, id, signed_data):
 
     # redirect ingelogde gebruikers
     if request.user.has_perms(["authorisatie.taak_bekijken"]):
-        return redirect(reverse("taak_detail", args=[taak.id]))
+        return redirect(reverse("taak_detail", args=[taak.uuid]))
 
     # sla alle gebruikers op in het taakdeellink object
     if taak_gedeeld and link_actief:
@@ -598,7 +591,6 @@ def taak_detail_preview(request, id, signed_data):
         request,
         "taken/taak_detail_preview.html",
         {
-            "id": id,
             "taak": taak,
             "device_os": device.os_name().lower(),
             "signed_data": signed_data,
@@ -618,85 +610,10 @@ def clear_melding_token_from_cache(request):
 
 
 @login_required
-@permission_required("authorisatie.taak_toewijzen", raise_exception=True)
-def taak_toewijzen(request, id):
-    taak = get_object_or_404(Taak, pk=id)
-    valide_gebruikers = Gebruiker.objects.taak_toewijzen_gebruikers()
-    form = TaakToewijzenForm(gebruikers=valide_gebruikers)
-    if request.POST:
-        form = TaakToewijzenForm(request.POST, gebruikers=valide_gebruikers)
-        if form.is_valid():
-            taak_status_aanpassen_response = MORCoreService().taak_status_aanpassen(
-                taakopdracht_url=taak.taakopdracht,
-                status="toegewezen",
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                gebruiker=request.user.email,
-                uitvoerder=form.cleaned_data.get("uitvoerder"),
-            )
-            if taak_status_aanpassen_response.status_code != 200:
-                logger.error(
-                    f"taak_toewijzen taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
-                )
-            if taak_status_aanpassen_response.status_code == 200:
-                return render(
-                    request,
-                    "taken/taak_toewijzen.html",
-                    {
-                        "taak": taak,
-                    },
-                )
-
-    return render(
-        request,
-        "taken/taak_toewijzen.html",
-        {
-            "form": form,
-            "taak": taak,
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taak_toewijzing_intrekken", raise_exception=True)
-def taak_toewijzing_intrekken(request, id):
-    taak = get_object_or_404(Taak, pk=id)
-    form = TaakToewijzingIntrekkenForm()
-    if request.POST:
-        form = TaakToewijzingIntrekkenForm(request.POST)
-        if form.is_valid():
-            taak_status_aanpassen_response = MORCoreService().taak_status_aanpassen(
-                taakopdracht_url=taak.taakopdracht,
-                status="openstaand",
-                gebruiker=request.user.email,
-            )
-            if taak_status_aanpassen_response.status_code != 200:
-                logger.error(
-                    f"taak_toewijzing_intrekken taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
-                )
-            if taak_status_aanpassen_response.status_code == 200:
-                return render(
-                    request,
-                    "taken/taak_toewijzing_intrekken.html",
-                    {
-                        "taak": taak,
-                    },
-                )
-
-    return render(
-        request,
-        "taken/taak_toewijzing_intrekken.html",
-        {
-            "form": form,
-            "taak": taak,
-        },
-    )
-
-
-@login_required
 @permission_required("authorisatie.taak_afronden", raise_exception=True)
-def taak_afhandelen(request, id):
+def taak_afhandelen(request, uuid):
     resolutie = request.GET.get("resolutie", "opgelost")
-    taak = get_object_or_404(Taak, pk=id)
+    taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
     taaktypes = TaakRService().get_taaktypes(

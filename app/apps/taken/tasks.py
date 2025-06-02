@@ -74,16 +74,6 @@ def task_taakopdracht_notificatie_voor_taakgebeurtenissen(self, taakgebeurtenis_
 
 
 @shared_task(bind=True)
-def task_taakopdracht_notificatie_voor_taakgebeurtenissen_voltooid(
-    self, taakgebeurtenis_ids, task_lock_key
-):
-    if not isinstance(taakgebeurtenis_ids, list):
-        return "taakgebeurtenis_ids is geen list"
-    cache.delete(task_lock_key)
-    return f"Klaar met het versturen van notificaties voor taakgebeurtenissen={taakgebeurtenis_ids}"
-
-
-@shared_task(bind=True)
 def task_taakopdracht_notificatie_voor_taak(self, taak_id):
     from apps.taken.models import Taak
 
@@ -167,7 +157,7 @@ def task_taakopdracht_notificatie(
     if taak_status_aanpassen_response.get("error"):
         cache.delete(task_lock_key)
         raise Exception(
-            f"task taakopdracht_notificatie: fout={taak_status_aanpassen_response.get('error')}, taak_id={taak.id}, taakopdracht_url={taak.taakopdracht}"
+            f"task taakopdracht_notificatie: fout={taak_status_aanpassen_response.get('error')}, taak_uuid={taak.uuid}, taakopdracht_url={taak.taakopdracht}"
         )
 
     for vervolg_taaktype in taakgebeurtenis.vervolg_taaktypes:
@@ -185,7 +175,7 @@ def task_taakopdracht_notificatie(
 
     cache.delete(task_lock_key)
     return {
-        "taak_id": taak.id,
+        "taak_id": taak.uuid,
         "taakopdracht_url": taak.taakopdracht,
         "melding_uuid": taak.melding.response_json.get("uuid"),
     }

@@ -36,9 +36,9 @@
                     </div>
                 {% endif %}
                 <div>
-                    {% if taak.id %}
+                    {% if taak.uuid %}
                         <h3 class="h5">Taaknummer</h3>
-                        <p>{{ taak.id }}</p>
+                        <p>{{ taak.uuid }}</p>
                     {% endif %}
                 </div>
             </div>
@@ -276,8 +276,8 @@
                 <div>
                     <h3 class="h5">Meldingnummer</h3>
                     <p class="no-margin">
-                        {% if melding.id %}
-                            {{ melding.id }}
+                        {% if melding.uuid %}
+                            {{ melding.uuid }}
                         {% else %}
                             Onbekend
                         {% endif %}
@@ -431,7 +431,7 @@
                     Tijdlijn
                 </h2>
             </summary>
-            <turbo-frame id="taak_detail_melding_tijdlijn" src="{% url 'taak_detail_melding_tijdlijn' taak.id %}" loading="lazy">
+            <turbo-frame id="taak_detail_melding_tijdlijn" src="{% url 'taak_detail_melding_tijdlijn' taak.uuid %}" loading="lazy">
             </turbo-frame>
         </details>
     </div>

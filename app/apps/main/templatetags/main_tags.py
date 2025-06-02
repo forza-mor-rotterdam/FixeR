@@ -68,7 +68,7 @@ def vind_in_dict(op_zoek_dict, key):
 
 @register.filter
 def adres_order_nummer(taak, taken_sorted):
-    return taken_sorted.get(taak.id, taak.id)
+    return taken_sorted.get(taak.uuid, taak.uuid)
 
 
 @register.filter

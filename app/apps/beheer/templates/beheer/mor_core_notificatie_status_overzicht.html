@@ -54,7 +54,7 @@
                                            width: 40px"></td>
                                 <td>{{ taak.aangemaakt_op }}</td>
                                 <td>
-                                    <a href="{% url 'taak_detail' taak.id %}">{{ taak.titel }}</a>
+                                    <a href="{% url 'taak_detail' taak.uuid %}">{{ taak.titel }}</a>
                                 </td>
                                 <td>{{ taak.taakgebeurtenis_aantal_notificatie_niet_vertuurd }}/{{ taak.taakgebeurtenis_aantal }}</td>
                                 <td>

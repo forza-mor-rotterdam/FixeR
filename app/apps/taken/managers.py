@@ -77,7 +77,7 @@ class TaakManager(models.Manager):
                 )
             except OperationalError:
                 raise TaakManager.TaakInGebruik(
-                    f"De taak is op dit moment in gebruik, probeer het later nog eens. taak nummer: {taak.id}, taak uuid: {taak.uuid}"
+                    f"De taak is op dit moment in gebruik, probeer het later nog eens. taak uuid: {taak.uuid}"
                 )
 
             vorige_status = locked_taak.taakstatus

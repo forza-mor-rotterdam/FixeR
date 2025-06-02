@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 # @receiver(post_save, sender=Taak)
 # def taak_post_save(sender, instance, created, **kwargs):
-#     taak_url = reverse("taak_detail", args=(instance.id,))
+#     taak_url = reverse("taak_detail", args=(instance.uuid,))
 #     mercure_service = None
 #     try:
 #         mercure_service = MercureService()
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 #         ...
 
 #     if mercure_service:
-#         mercure_service.publish(taak_url, {"url": taak_url, "taak_id": instance.id})
+#         mercure_service.publish(taak_url, {"url": taak_url, "taak_id": instance.uuid})
 
 
 @receiver(status_aangepast, dispatch_uid="taak_status_aangepast")

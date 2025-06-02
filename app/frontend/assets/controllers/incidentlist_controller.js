@@ -63,7 +63,7 @@ export default class extends Controller {
         if (frame.complete) {
           timeoutId = setTimeout(() => {
             const activeItem = this.element.querySelector(
-              `[data-id="${sessionStorage.getItem('selectedTaakId')}"]`
+              `[data-uuid="${sessionStorage.getItem('selectedTaakId')}"]`
             )
             if (activeItem) {
               const topPos = activeItem.offsetTop + activeItem.offsetHeight
@@ -119,8 +119,8 @@ export default class extends Controller {
     // map related
     sessionStorage.setItem('selectedTaakId', taakId)
     this.taakItemTargets.forEach((taakItemTarget) => {
-      taakItemTarget.classList.toggle('highlight-once', taakItemTarget.dataset.id === taakId)
-      if (taakItemTarget.dataset.id === taakId) {
+      taakItemTarget.classList.toggle('highlight-once', taakItemTarget.dataset.uuid === taakId)
+      if (taakItemTarget.dataset.uuid === taakId) {
         //scroll to this element
         const scrollTarget =
           window.innerWidth < 1024 ? document.documentElement : this.incidentlistTarget
@@ -219,7 +219,7 @@ export default class extends Controller {
           geometrie: JSON.parse(taakItem.dataset.geometrie),
           adres: taakItem.dataset.adres,
           afbeeldingUrl: taakItem.dataset.afbeeldingUrl,
-          taakId: taakItem.dataset.id,
+          taakId: taakItem.dataset.uuid,
           titel: taakItem.dataset.titel,
           hasRemark: taakItem.dataset.hasRemark,
         })

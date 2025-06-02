@@ -26,9 +26,6 @@ from apps.main.views import (
     taak_detail,
     taak_detail_melding_tijdlijn,
     taak_detail_preview,
-    taak_detail_uuid,
-    taak_toewijzen,
-    taak_toewijzing_intrekken,
     taak_zoeken,
     taken,
     taken_filter,
@@ -115,28 +112,21 @@ urlpatterns = [
     path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
     path("taak-zoeken/", taak_zoeken, name="taak_zoeken"),
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
-    path("taak/<uuid:uuid>/", taak_detail_uuid, name="taak_detail_uuid"),
-    path("taak/<int:id>/", taak_detail, name="taak_detail"),
+    path("taak/<uuid:uuid>/", taak_detail, name="taak_detail"),
     path(
-        "taak/<int:id>/melding-tijdlijn",
+        "taak/<uuid:uuid>/melding-tijdlijn",
         taak_detail_melding_tijdlijn,
         name="taak_detail_melding_tijdlijn",
     ),
     path(
-        "taak/<int:id>/delen/<str:signed_data>/",
+        "taak/<uuid:uuid>/delen/<str:signed_data>/",
         taak_detail_preview,
         name="taak_detail_preview",
     ),
     path(
-        "taak/<int:id>/delen/",
+        "taak/<uuid:uuid>/delen/",
         taak_delen,
         name="taak_delen",
-    ),
-    path("taak-toewijzen/<int:id>/", taak_toewijzen, name="taak_toewijzen"),
-    path(
-        "taak-toewijzing-intrekken/<int:id>/",
-        taak_toewijzing_intrekken,
-        name="taak_toewijzing_intrekken",
     ),
     # Gebruikers
     path(
@@ -158,7 +148,7 @@ urlpatterns = [
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
     path("navigeer/<str:lat>/<str:long>/", navigeer, name="navigeer"),
     path(
-        "taak/<int:id>/afhandelen/",
+        "taak/<uuid:uuid>/afhandelen/",
         taak_afhandelen,
         name="taak_afhandelen",
     ),
