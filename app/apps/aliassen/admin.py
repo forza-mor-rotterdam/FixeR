@@ -1,13 +1,18 @@
 from apps.aliassen.models import BijlageAlias, MeldingAlias
-from apps.aliassen.tasks import task_update_melding_alias_data
+from apps.aliassen.tasks import task_update_melding_alias_data_voor_reeks
 from django.contrib import admin
 from django.db.models import Count, Q
 
 
-@admin.action(description="Update melding alias data")
+@admin.action(description="Update melding alias data voor reeks")
 def action_update_melding_alias_data(self, request, queryset):
-    for melding_alias in queryset:
-        task_update_melding_alias_data.delay(melding_alias.id)
+    task_update_melding_alias_data_voor_reeks.delay(
+        meldingalias_ids=list(queryset.values_list("id", flat=True))
+    )
+    self.message_user(
+        request,
+        f"Update melding alias data voor reeks: aantal={queryset.count()}",
+    )
 
 
 class TakenAantalFilter(admin.SimpleListFilter):
@@ -91,8 +96,8 @@ class MeldingAliasAdmin(admin.ModelAdmin):
         "bron_url",
         "aangepast_op",
         "taken_aantal",
-        "taak_zoek_data_aantal",
-        "onderwerp_urls",
+        "locatie_type",
+        "zoek_tekst",
     )
     actions = (action_update_melding_alias_data,)
     search_fields = ("bron_url",)
@@ -101,6 +106,7 @@ class MeldingAliasAdmin(admin.ModelAdmin):
         TakenAantalFilter,
         ZoekDataAantalFilter,
         GeenTaakZoekDataFilter,
+        "locatie_type",
     )
 
     def get_queryset(self, request):
@@ -112,15 +118,6 @@ class MeldingAliasAdmin(admin.ModelAdmin):
 
     def taken_aantal(self, obj):
         return str(obj.taken_voor_meldingalias.count())
-
-    def onderwerp_urls(self, obj):
-        return obj.response_json.get("onderwerpen")
-
-    def taak_zoek_data_aantal(self, obj):
-        return str(obj.taak_zoek_data.count())
-
-    def heeft_response_data(self, obj):
-        return bool(obj.response_json)
 
 
 class BijlageAliasAdmin(admin.ModelAdmin):
