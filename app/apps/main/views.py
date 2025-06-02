@@ -470,6 +470,13 @@ def kaart_modus(request):
 
 @login_required
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
+def taak_detail_uuid(request, uuid):
+    taak = get_object_or_404(Taak, uuid=uuid)
+    return redirect(reverse("taak_detail", args=[taak.id]), True)
+
+
+@login_required
+@permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
     if taak.verwijderd_op:
