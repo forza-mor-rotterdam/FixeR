@@ -43,6 +43,23 @@ VERTALINGEN = {
     "melding_heropend": "Heropend",
 }
 
+BEGRAAFPLAATSEN = (
+    ("1", "Begraafplaats Crooswijk"),
+    ("2", "Begraafplaats Hoek van Holland"),
+    ("3", "Begraafplaats en crematorium Hofwijk"),
+    ("4", "Begraafplaats Oudeland, Hoogvliet"),
+    ("5", "Begraafplaats Oud-Hoogvliet"),
+    ("6", "Begraafplaats Oud-Overschie"),
+    ("7", "Begraafplaats Oud-Pernis"),
+    ("8", "Begraafplaats Oud-Schiebroek"),
+    ("9", "Begraafplaats Pernis"),
+    ("10", "Begraafplaats Rozenburg"),
+    ("11", "Zuiderbegraafplaats"),
+)
+BEGRAAFPLAATS_MIDDELS_ID = {
+    begraafplaats[0]: begraafplaats[1] for begraafplaats in BEGRAAFPLAATSEN
+}
+
 MSB_WIJKEN = [
     {
         "code": "26",

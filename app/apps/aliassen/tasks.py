@@ -73,17 +73,34 @@ def _update_melding_alias_data(melding_alias_id):
     return f"MeldingAlias with id={melding_alias_id}, updated"
 
 
-@shared_task(bind=True, base=BaseTaskWithRetryBackoff)
-def task_update_melding_alias_data(self, melding_alias_id):
+@shared_task(bind=True)
+def task_update_melding_alias_data_voor_reeks(
+    self, start_index=None, eind_index=None, order_by="id", meldingalias_ids=[]
+):
     from apps.aliassen.models import MeldingAlias
 
-    melding_alias = MeldingAlias.objects.filter(pk=melding_alias_id).first()
-    if melding_alias:
-        melding_alias.valideer_bron_url()
-        melding_alias.save()
-        melding_alias.update_zoek_data()
+    if not meldingalias_ids:
+        meldingalias_ids = list(
+            MeldingAlias.objects.order_by(order_by).values_list("id", flat=True)
+        )[start_index:eind_index]
+    for meldingalias_id in meldingalias_ids:
+        task_update_melding_alias_data.delay(meldingalias_id)
 
-    return f"MeldingAlias with id={melding_alias_id}, updated"
+    return f"Haal melding data en update melding alias fields voor indexes, start_index={start_index}, eind_index={eind_index}, meldingalias_ids={len(meldingalias_ids)}"
+
+
+@shared_task(bind=True, base=BaseTaskWithRetryBackoff)
+def task_update_melding_alias_data(self, meldingalias_id):
+    from apps.aliassen.models import MeldingAlias
+
+    meldingalias = MeldingAlias.objects.filter(pk=meldingalias_id).first()
+    if meldingalias:
+        meldingalias.valideer_bron_url()
+        meldingalias.save()
+        meldingalias.update_zoek_data()
+    else:
+        return f"Warning: MeldingAlias niet gevonden o.b.v. meldingalias_id '{meldingalias_id}'"
+    return f"MeldingAlias with id={meldingalias_id}, updated"
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)

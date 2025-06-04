@@ -67,18 +67,25 @@
                    data-action="incidentlistItem#saveTaakId"
                    data-incidentlistItem-taakId-param="{{ taak.id }}">
                     <div class="container__image">
-                        {% if bijlagen %}
-                            {% with bijlagen|first as first_foto %}
-                                <div class="background-image"
-                                     data-src="{{ first_foto.afbeelding_verkleind_relative_url|mor_core_protected_url }}">
-                                    <img alt="afbeelding_verkleind" />
-                                </div>
-                            {% endwith %}
-                        {% else %}
+                        {% if taak.melding.thumbnail_afbeelding_relative_url %}
                             <div class="background-image"
-                                 data-src="{% webpack_static 'icons/noimage.svg' %}">
-                                <img class="width60" alt="noimage" />
+                                 data-src="{{ taak.melding.thumbnail_afbeelding_relative_url|mor_core_protected_url }}">
+                                <img alt="afbeelding_verkleind" />
                             </div>
+                        {% else %}
+                            {% if bijlagen %}
+                                {% with bijlagen|first as first_foto %}
+                                    <div class="background-image"
+                                         data-src="{{ first_foto.afbeelding_verkleind_relative_url|mor_core_protected_url }}">
+                                        <img alt="afbeelding_verkleind" />
+                                    </div>
+                                {% endwith %}
+                            {% else %}
+                                <div class="background-image"
+                                     data-src="{% webpack_static 'icons/noimage.svg' %}">
+                                    <img class="width60" alt="noimage" />
+                                </div>
+                            {% endif %}
                         {% endif %}
                     </div>
                     <div class="container__info">
