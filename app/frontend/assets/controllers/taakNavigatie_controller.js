@@ -10,8 +10,8 @@ export default class extends Controller {
 
   initialize() {
     const taakIdList = sessionStorage.getItem('taakIdList').split(',')
-    const taakId = Number(this.taakIdValue)
-    const isCurrentTask = (id) => Number(id) === taakId
+    const taakId = this.taakIdValue
+    const isCurrentTask = (id) => id === taakId
     const index = taakIdList.findIndex(isCurrentTask)
     const url = this.urlValue
     let previousId = 0

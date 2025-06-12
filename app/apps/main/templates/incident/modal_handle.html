@@ -1,11 +1,11 @@
 {% load webpack_static from webpack_loader %}
 {% load json_encode from main_tags %}
 {% load rotterdam_formulier_html %}
-<turbo-frame id="incident_modal_handle_{{ taak.id }}">
+<turbo-frame id="incident_modal_handle_{{ taak.uuid }}">
 <div class="container__form" data-controller="incidentHandleForm">
     {% include "snippets/messages.html" %}
     {% if form %}
-        <form action="{% url 'taak_afhandelen' taak.id %}"
+        <form action="{% url 'taak_afhandelen' taak.uuid %}"
               method="post"
               data-testid="handleIncidentForm"
               class="form--incident-handle"
