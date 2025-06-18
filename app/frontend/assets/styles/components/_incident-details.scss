@@ -143,6 +143,11 @@
     p {
         margin-top: 0;
         line-height: 175%;
+        word-break: break-word;
+    }
+
+    button {
+        word-break: break-word;
     }
 
     > *:last-child {
