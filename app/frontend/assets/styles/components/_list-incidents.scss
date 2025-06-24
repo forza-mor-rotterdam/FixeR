@@ -131,9 +131,18 @@
     .wrapper--search {
         display: none;
 
-        input {
+        input[type="search"] {
             width: 350px;
             margin: 0;
+            -webkit-appearance: searchfield;
+            &::-webkit-search-cancel-button {
+                appearance: searchfield-cancel-button;
+                -webkit-appearance: searchfield-cancel-button;
+            }
+
+            [useragentpart="-webkit-search-cancel-button"] {
+                appearance: searchfield !important;
+            }
         }
 
         @media (min-width: map-get($grid-breakpoints, lg)) {
