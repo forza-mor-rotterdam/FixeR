@@ -130,23 +130,40 @@
 
     .wrapper--search {
         display: none;
+        position: relative;
 
         input[type="search"] {
-            width: 350px;
             margin: 0;
-            -webkit-appearance: searchfield;
-            &::-webkit-search-cancel-button {
-                appearance: searchfield-cancel-button;
-                -webkit-appearance: searchfield-cancel-button;
-            }
 
-            [useragentpart="-webkit-search-cancel-button"] {
-                appearance: searchfield !important;
+            &::-webkit-search-cancel-button {
+                -webkit-appearance: none;
             }
         }
 
+        button {
+            background: transparent;
+            border: none;
+            position: absolute;
+            top: 50%;
+            right: 6px;
+            transform: translateY(calc(-50% + 2px));
+            cursor: pointer;
+
+            svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            &.hide {
+                display: none;
+            }
+        }
         @media (min-width: map-get($grid-breakpoints, lg)) {
             display: block;
+
+            input[type="search"] {
+                width: 350px;
+            }
         }
     }
 
