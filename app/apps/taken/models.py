@@ -393,6 +393,6 @@ class TaakDeellink(BasisModel):
         url_basis = absolute(request).get("ABSOLUTE_ROOT")
         pad = reverse(
             "taak_detail_preview",
-            kwargs={"id": self.taak.id, "signed_data": self.signed_data},
+            kwargs={"uuid": self.taak.uuid, "signed_data": self.signed_data},
         )
         return f"{url_basis}{pad}"

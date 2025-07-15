@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['form', 'zoekField']
+  static targets = ['form', 'zoekField', 'cancelZoek']
 
   connect() {
     this.to = null
@@ -51,10 +51,25 @@ export default class extends Controller {
     })
     this.element.dispatchEvent(orderChangeEvent)
   }
-  onChangeHandler() {
+  onChangeHandler(e) {
     clearTimeout(this.to)
     // used for scrolling to last selected task
     sessionStorage.removeItem('selectedTaakId')
+    this.to = setTimeout(() => {
+      this.submit(this.zoekFieldTarget.value)
+    }, 200)
+
+    if (e.target.value.length > 0) {
+      this.cancelZoekTarget.classList.remove('hide')
+    } else {
+      this.cancelZoekTarget.classList.add('hide')
+    }
+  }
+
+  onCancelSearch() {
+    this.zoekFieldTarget.value = ''
+    this.cancelZoekTarget.classList.add('hide')
+    this.zoekFieldTarget.focus()
     this.to = setTimeout(() => {
       this.submit(this.zoekFieldTarget.value)
     }, 200)

@@ -30,11 +30,16 @@
 .container__details {
     &--sticky-bottom {
         min-height: 150px;
+        pointer-events: none;
 
         .sticky {
             .form-row {
                 gap: 10px;
             }
+        }
+
+        button {
+            pointer-events: all;
         }
     }
 
@@ -143,6 +148,11 @@
     p {
         margin-top: 0;
         line-height: 175%;
+        word-break: break-word;
+    }
+
+    button {
+        word-break: break-word;
     }
 
     > *:last-child {

@@ -13,7 +13,6 @@
     {% context_template "taak_afhandelen_info_extra.html" as info_extra_template %}
     <div data-incidentlist-target="taakItem"
          data-modal-target="taakItem"
-         data-id="{{ taak.id }}"
          data-uuid="{{ taak.uuid }}"
          data-melding-id="{{ taak.melding.response_json.id }}"
          data-melding-uuid="{{ taak.melding.response_json.uuid }}"
@@ -28,12 +27,12 @@
             {% if taak.taak_zoek_data.locatie_type != "graf" and not taak.afgesloten_op %}
                 <button class="container__actions handle--no-success"
                         data-controller="incidentlistItem"
-                        data-id="{{ taak.id }}"
+                        data-uuid="{{ taak.uuid }}"
                         data-taak-target="buttonNietOpgelost"
                         data-modal-title-param="Taak afhandelen"
-                        data-modal-url-param="{% url 'taak_afhandelen' taak.id %}?resolutie=niet_opgelost"
-                        data-modal-id-param="incident_modal_handle_{{ taak.id }}"
-                        data-incidentListItem-taakid-param="{{ taak.id }}"
+                        data-modal-url-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=niet_opgelost"
+                        data-modal-id-param="incident_modal_handle_{{ taak.uuid }}"
+                        data-incidentListItem-taakid-param="{{ taak.uuid }}"
                         data-action="incidentlistItem#saveTaakId modal#openModal"
                         data-modal-sub-title-param="{% include subtitel_template %}"
                         data-modal-info-extra-param="{% include info_extra_template %}">
@@ -43,13 +42,13 @@
                 </button>
                 <button class="container__actions handle--success"
                         data-controller="incidentlistItem"
-                        data-id="{{ taak.id }}"
+                        data-uuid="{{ taak.uuid }}"
                         data-taak-target="buttonOpgelost"
                         data-modal-title-param="Taak afhandelen"
-                        data-modal-url-param="{% url 'taak_afhandelen' taak.id %}?resolutie=opgelost"
-                        data-modal-id-param="incident_modal_handle_{{ taak.id }}"
-                        data-modal-taakid-param="{{ taak.id }}"
-                        data-incidentListItem-taakid-param="{{ taak.id }}"
+                        data-modal-url-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=opgelost"
+                        data-modal-id-param="incident_modal_handle_{{ taak.uuid }}"
+                        data-modal-taakid-param="{{ taak.uuid }}"
+                        data-incidentListItem-taakid-param="{{ taak.uuid }}"
                         data-action="incidentlistItem#saveTaakId modal#openModal"
                         data-modal-sub-title-param="{% include subtitel_template %}"
                         data-modal-info-extra-param="{% include info_extra_template %}">
@@ -59,13 +58,13 @@
                 </button>
             {% endif %}
             <div class="container__flex">
-                <a href="{% url 'taak_detail' taak.id %}"
+                <a href="{% url 'taak_detail' taak.uuid %}"
                    data-controller="incidentlistItem"
                    data-turbo-frame="taak_basis"
                    data-page="{{ page_obj.number }}"
-                   aria-label="Bekijk taak {{ taak.id }}"
+                   aria-label="Bekijk taak {{ taak.uuid }}"
                    data-action="incidentlistItem#saveTaakId"
-                   data-incidentlistItem-taakId-param="{{ taak.id }}">
+                   data-incidentlistItem-taakId-param="{{ taak.uuid }}">
                     <div class="container__image">
                         {% if taak.melding.thumbnail_afbeelding_relative_url %}
                             <div class="background-image"
@@ -105,7 +104,7 @@
         </div>
     {% endblock before_modal_content %}
     {% block turbo_frame_id %}
-        incident_modal_handle_{{ taak.id }}
+        incident_modal_handle_{{ taak.uuid }}
     {% endblock turbo_frame_id %}
     {% block after_modal_content %}
     </div>

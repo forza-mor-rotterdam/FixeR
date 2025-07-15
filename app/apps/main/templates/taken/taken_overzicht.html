@@ -55,6 +55,10 @@
                                data-zoekfilter-target="zoekField"
                                data-action="zoekFilter#onChangeHandler"
                                id="id_q">
+                        <button class="hide"
+                                type="button"
+                                data-zoekfilter-target="cancelZoek"
+                                data-action="zoekFilter#onCancelSearch">{% include "icons/close.svg" %}</button>
                     </form>
                 </div>
                 <button type="button"
@@ -85,7 +89,7 @@
             </div>
             <div class="container__search hidden-vertical"
                  data-incidentlist-target="search">
-                <div class="wrapper" data-controller="zoekFilter">
+                <div class="wrapper wrapper--search" data-controller="zoekFilter">
                     <form data-action="submit->zoekFilter#onSubmit">
                         {% csrf_token %}
                         <input type="search"
@@ -96,6 +100,10 @@
                                data-zoekfilter-target="zoekField"
                                data-action="zoekFilter#onChangeHandler"
                                id="id_q">
+                        <button class="hide"
+                                type="button"
+                                data-zoekfilter-target="cancelZoek"
+                                data-action="zoekFilter#onCancelSearch">{% include "icons/close.svg" %}</button>
                     </form>
                 </div>
             </div>

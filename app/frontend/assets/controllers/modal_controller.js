@@ -14,7 +14,7 @@ export default class extends Controller {
 
     addEventListener('openModalFromMap', (e) => {
       if (this.element.closest('.list-item')) {
-        if (this.element.closest('.list-item').dataset.id === sessionStorage.selectedTaakId) {
+        if (this.element.closest('.list-item').dataset.uuid === sessionStorage.selectedTaakId) {
           this.openModal(e)
         }
       }
