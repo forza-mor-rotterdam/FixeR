@@ -454,6 +454,17 @@ dl {
     }
 }
 
+.list--buttons-horizontal {
+    @include list-clean();
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 100px;
+    li {
+        margin: 0 0 0.5rem 0.25rem;
+        position: relative;
+    }
+}
+
 .dl--horizontal {
     dt,
     dd {
