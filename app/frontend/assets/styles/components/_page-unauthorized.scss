@@ -1,4 +1,8 @@
 .page__unauthorized {
+    .pageheader {
+        display: none;
+    }
+
     main {
         padding: 0;
     }

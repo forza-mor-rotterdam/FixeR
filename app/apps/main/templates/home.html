@@ -51,6 +51,7 @@
                 {% else %}
                     <div class="container__details">
                         <p>Er zijn nog geen rollen en rechten ingesteld voor je. Neem contact op met je teamleider.</p>
+                        <a href="{% url 'logout' %}" target="_top" class="btn btn-action">Uitloggen</a>
                     </div>
                 {% endif %}
             {% endif %}

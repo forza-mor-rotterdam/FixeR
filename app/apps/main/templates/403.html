@@ -22,9 +22,11 @@
                     <h3>Relevante links</h3>
                     Hieronder vind je de belangrijkste links.
                     <ul class="list--blocks-horizontal margin-bottom">
-                        <li>
-                            <a href="{% url 'taken' %}">Taken overzicht</a>
-                        </li>
+                        {% if perms.authorisatie.taken_lijst_bekijken %}
+                            <li>
+                                <a href="{% url 'taken' %}">Taken overzicht</a>
+                            </li>
+                        {% endif %}
                         {% if perms.authorisatie.beheer_bekijken %}
                             <li>
                                 <a href="{% url 'beheer' %}" target="_top">Beheer</a>
