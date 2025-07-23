@@ -35,7 +35,11 @@
                    target="_top"
                    data-turbo="false">Inloggen</a>
             {% else %}
-                <p>Helaas, je hebt niet de juiste rechten om deze pagina te mogen bekijken.</p>
+                <h2>
+                    Helaas, je hebt niet de juiste rechten
+                    <br>
+                    om FixeR te kunnen gebruiken.
+                </h2>
                 {% if perms.authorisatie.beheer_bekijken %}
                     <p>Je hebt wel beheerrechten.</p>
                     <a href="{% url 'beheer' %}"
@@ -50,8 +54,14 @@
                        data-turbo="false">Bekijk je taken</a>
                 {% else %}
                     <div class="container__details">
-                        <p>Er zijn nog geen rollen en rechten ingesteld voor je. Neem contact op met je teamleider.</p>
-                        <a href="{% url 'logout' %}" target="_top" class="btn btn-action">Uitloggen</a>
+                        <p>
+                            Je account heeft nog wat aandacht nodig om gebruik te kunnen maken van Fixer. Hieronder vind je de instellingen die nu bij ons bekend zijn:
+                        </p>
+                        {% include "auth/rollen_rechten.html" %}
+                        <a href="https://rotterdam.topdesk.net/tas/public/ssp/content/serviceflow?unid=d1dbff359d2e4655b3edea6ca1806c4e&openedFromService=true"
+                           class="btn btn-action btn-action--primary"
+                           target="_top"
+                           data-turbo="false">Vraag rechten aan</a>
                     </div>
                 {% endif %}
             {% endif %}

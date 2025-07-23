@@ -98,6 +98,12 @@
             max-width: 355px;
             margin: 0 auto;
         }
+
+        dl {
+            div {
+                justify-content: center;
+            }
+        }
     }
 
     @media (min-width: map-get($grid-breakpoints, md)) {
