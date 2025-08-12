@@ -17,33 +17,12 @@
          data-controller="modal{% if taak.melding.locatie_type != 'graf' and not taak.afgesloten_op %} taak{% endif %}">
         <div class="wrapper__swipe" data-taak-target="swipeContainer">
             {% if taak.melding.locatie_type != "graf" and not taak.afgesloten_op %}
-                <button class="container__actions handle--no-success"
-                        data-controller="incidentlistItem"
-                        data-uuid="{{ taak.uuid }}"
-                        data-taak-target="buttonNietOpgelost"
-                        data-modal-title-param="Taak afhandelen"
-                        data-modal-url-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=niet_opgelost"
-                        data-modal-id-param="incident_modal_handle_{{ taak.uuid }}"
-                        data-incidentListItem-taakid-param="{{ taak.uuid }}"
-                        data-action="incidentlistItem#saveTaakId modal#openModal"
-                        data-modal-sub-title-param='{% include "taken/taak_afhandelen_subtitel.html" %}'
-                        data-modal-info-extra-param='{% include "taken/taak_afhandelen_info_extra.html" %}'>
+                <button class="container__actions handle--no-success" data-controller="incidentlistItem" data-uuid="{{ taak.uuid }}" data-taak-target="buttonNietOpgelost" data-modal-title-param="Taak afhandelen" data-modal-url-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=niet_opgelost" data-modal-id-param="incident_modal_handle_{{ taak.uuid }}" data-incidentListItem-taakid-param="{{ taak.uuid }}" data-action="incidentlistItem#saveTaakId modal#openModal" data-modal-sub-title-param="{% include "taken/taak_afhandelen_subtitel.html" %}" data-modal-info-extra-param="{% include "taken/taak_afhandelen_info_extra.html" %}">
                     <div>
                         <span>Niet opgelost</span>
                     </div>
                 </button>
-                <button class="container__actions handle--success"
-                        data-controller="incidentlistItem"
-                        data-uuid="{{ taak.uuid }}"
-                        data-taak-target="buttonOpgelost"
-                        data-modal-title-param="Taak afhandelen"
-                        data-modal-url-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=opgelost"
-                        data-modal-id-param="incident_modal_handle_{{ taak.uuid }}"
-                        data-modal-taakid-param="{{ taak.uuid }}"
-                        data-incidentListItem-taakid-param="{{ taak.uuid }}"
-                        data-action="incidentlistItem#saveTaakId modal#openModal"
-                        data-modal-sub-title-param='{% include "taken/taak_afhandelen_subtitel.html" %}'
-                        data-modal-info-extra-param='{% include "taken/taak_afhandelen_info_extra.html" %}'>
+                <button class="container__actions handle--success" data-controller="incidentlistItem" data-uuid="{{ taak.uuid }}" data-taak-target="buttonOpgelost" data-modal-title-param="Taak afhandelen" data-modal-url-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=opgelost" data-modal-id-param="incident_modal_handle_{{ taak.uuid }}" data-modal-taakid-param="{{ taak.uuid }}" data-incidentListItem-taakid-param="{{ taak.uuid }}" data-action="incidentlistItem#saveTaakId modal#openModal" data-modal-sub-title-param="{% include "taken/taak_afhandelen_subtitel.html" %}" data-modal-info-extra-param="{% include "taken/taak_afhandelen_info_extra.html" %}">
                     <div>
                         <span>Afhandelen</span>
                     </div>
