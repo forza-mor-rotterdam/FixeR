@@ -1,0 +1,35 @@
+{% with id=widget.attrs.id %}
+    {% for group, options, index in widget.optgroups %}
+        {% if group %}
+            <li>
+                <details class="filter"
+                         data-action="filter#toggleActiveFilter"
+                         id="foldout_{{ group|slugify }}"
+                         {% if filter.folded %}open{% endif %}>
+                    <summary>
+                        <span>{{ group }}</span>
+                        <span>({{ filter.active|length }})</span>
+                    </summary>
+                    <div class="container__list--districts foldout">
+                        <div class="container__list--header">
+                            <h3 class="h5">{{ widget.attrs.sub_label }}</h3>
+                            <div>
+                                <button class="btn btn-textlink"
+                                        data-action="filter#selectAll"
+                                        data-filter-filter-type-param="all">Selecteer alles</button>
+                                <button class="btn btn-textlink" data-action="filter#selectAll">/ niets</button>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <ul class="list-clean" data-test-id="incidentFilter{{ f.naam|capfirst }}">
+                        {% for option in options %}
+                            {% include option.template_name with widget=option %}
+                        {% endfor %}
+                    </ul>
+                    {% if group %}
+                    </div>
+                </details>
+            </li>
+        {% endif %}
+    {% endfor %}
+{% endwith %}

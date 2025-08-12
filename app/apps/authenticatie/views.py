@@ -342,7 +342,6 @@ class OnboardingView(SessionWizardView):
 
         profiel.filters = {
             profiel_filters_base_key: {
-                "q": [""],
                 "buurt": buurtnamen,
                 "taken": selected_taaktypes,
                 "taak_status": ["nieuw"],

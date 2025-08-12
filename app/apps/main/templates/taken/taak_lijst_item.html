@@ -1,30 +1,22 @@
 {% extends "snippets/modal_context.html" %}
+{% load l10n %}
 {% load webpack_static from webpack_loader %}
-{% load vind_in_dict to_timestamp from main_tags %}
 {% load json_encode replace_comma_by_dot adres_order_nummer from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
-{% load context_template from context_tags %}
-{% load get_bijlagen get_taakgebeurtenissen get_omschrijving_intern from melding_tags %}
 {% block before_modal_content %}
-    {% get_bijlagen taak.melding.response_json as bijlagen %}
-    {% get_taakgebeurtenissen taak.melding.response_json taak.taakopdracht as taakgebeurtenissen %}
-    {% get_omschrijving_intern taakgebeurtenissen as omschrijving_intern %}
-    {% context_template "taak_afhandelen_subtitel.html" as subtitel_template %}
-    {% context_template "taak_afhandelen_info_extra.html" as info_extra_template %}
     <div data-incidentlist-target="taakItem"
          data-modal-target="taakItem"
          data-uuid="{{ taak.uuid }}"
-         data-melding-id="{{ taak.melding.response_json.id }}"
-         data-melding-uuid="{{ taak.melding.response_json.uuid }}"
+         data-melding-uuid="{{ taak.melding.melding_uuid }}"
          data-titel="{{ taak.titel }}"
-         data-adres="{{ taak.adres }}"
-         data-geometrie="{% if taak.taak_zoek_data.geometrie %}{{ taak.taak_zoek_data.geometrie|json_encode }}{% else %}{% endif %}"
-         {% if bijlagen %}data-afbeelding-url="{{ bijlagen.0.afbeelding_verkleind_relative_url|mor_core_protected_url }}"{% endif %}
-         {% if omschrijving_intern %}data-has-remark="true"{% endif %}
+         data-adres="{{ taak.melding.locatie_verbose }}"
+         data-geometrie="{% if taak.melding.geometrie %}{{ taak.melding.geometrie|json_encode }}{% else %}{% endif %}"
+         {% if taak.melding.thumbnail_afbeelding_relative_url %}data-afbeelding-url="{{ taak.melding.thumbnail_afbeelding_relative_url|mor_core_protected_url }}"{% endif %}
+         {% if taak.laatste_taakgebeurtenis_omschrijving_intern %}data-has-remark="true"{% endif %}
          class="list-item"
-         data-controller="modal{% if taak.taak_zoek_data.locatie_type != 'graf' and not taak.afgesloten_op %} taak{% endif %}">
+         data-controller="modal{% if taak.melding.locatie_type != 'graf' and not taak.afgesloten_op %} taak{% endif %}">
         <div class="wrapper__swipe" data-taak-target="swipeContainer">
-            {% if taak.taak_zoek_data.locatie_type != "graf" and not taak.afgesloten_op %}
+            {% if taak.melding.locatie_type != "graf" and not taak.afgesloten_op %}
                 <button class="container__actions handle--no-success"
                         data-controller="incidentlistItem"
                         data-uuid="{{ taak.uuid }}"
@@ -34,8 +26,8 @@
                         data-modal-id-param="incident_modal_handle_{{ taak.uuid }}"
                         data-incidentListItem-taakid-param="{{ taak.uuid }}"
                         data-action="incidentlistItem#saveTaakId modal#openModal"
-                        data-modal-sub-title-param="{% include subtitel_template %}"
-                        data-modal-info-extra-param="{% include info_extra_template %}">
+                        data-modal-sub-title-param='{% include "taken/taak_afhandelen_subtitel.html" %}'
+                        data-modal-info-extra-param='{% include "taken/taak_afhandelen_info_extra.html" %}'>
                     <div>
                         <span>Niet opgelost</span>
                     </div>
@@ -50,8 +42,8 @@
                         data-modal-taakid-param="{{ taak.uuid }}"
                         data-incidentListItem-taakid-param="{{ taak.uuid }}"
                         data-action="incidentlistItem#saveTaakId modal#openModal"
-                        data-modal-sub-title-param="{% include subtitel_template %}"
-                        data-modal-info-extra-param="{% include info_extra_template %}">
+                        data-modal-sub-title-param='{% include "taken/taak_afhandelen_subtitel.html" %}'
+                        data-modal-info-extra-param='{% include "taken/taak_afhandelen_info_extra.html" %}'>
                     <div>
                         <span>Afhandelen</span>
                     </div>
@@ -72,40 +64,75 @@
                                 <img alt="afbeelding_verkleind" />
                             </div>
                         {% else %}
-                            {% if bijlagen %}
-                                {% with bijlagen|first as first_foto %}
-                                    <div class="background-image"
-                                         data-src="{{ first_foto.afbeelding_verkleind_relative_url|mor_core_protected_url }}">
-                                        <img alt="afbeelding_verkleind" />
-                                    </div>
-                                {% endwith %}
-                            {% else %}
-                                <div class="background-image"
-                                     data-src="{% webpack_static 'icons/noimage.svg' %}">
-                                    <img class="width60" alt="noimage" />
-                                </div>
-                            {% endif %}
+                            <div class="background-image"
+                                 data-src="{% webpack_static 'icons/noimage.svg' %}">
+                                <img class="width60" alt="noimage" />
+                            </div>
                         {% endif %}
                     </div>
                     <div class="container__info">
-                        {% if taak.taak_zoek_data.straatnaam %}
-                            {% include "standaard/taak_lijst_item_titel.html" with hasRemark=omschrijving_intern %}
-                        {% else %}
-                            {% include "benc/taak_lijst_item_titel.html" with hasRemark=omschrijving_intern %}
-                        {% endif %}
+                        <div>
+                            <h2 class="h5">
+                                {{ taak.melding.locatie_verbose }}
+                                {% if taak.taakstatus.naam %}
+                                    <span class="badge {% if taak.taakstatus.naam == 'nieuw' or taak.taakstatus.naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span>
+                                {% endif %}
+                                {% if taak.laatste_taakgebeurtenis_omschrijving_intern %}
+                                    <span class="badge-count badge-count--info">i</span>
+                                {% endif %}
+                            </h2>
+                            {% if taak.melding.postcode or taak.melding.plaatsnaam %}
+                                <strong>
+                                    {% if taak.melding.postcode %}{{ taak.melding.postcode }}{% endif %}
+                                    {% if taak.melding.postcode and taak.melding.plaatsnaam %},{% endif %}
+                                    {% if taak.melding.plaatsnaam %}{{ taak.melding.plaatsnaam }}{% endif %}
+                                </strong>
+                            {% endif %}
+                            <div>
+                                <span class="incident__category">{{ taak.titel }}</span>
+                            </div>
+                            <div class="incident__moment">
+                                <span data-taak-target="incidentDate">
+                                    {% localize on %}
+                                    {{ taak.taakstatus.aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}
+                                    <br>
+                                {% endlocalize %}
+                            </span>
+                        </div>
+                        {% with taak.melding.geometrie as geo %}
+                            {% if geo %}
+                                <div class="incident__distance">
+                                    <span><span data-incidentlist-target="taakAfstand"
+      data-latitude="{{ geo.1|replace_comma_by_dot }}"
+      data-longitude="{{ geo.0|replace_comma_by_dot }}">{{ taak.afstand }}</span> meter</span>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
                     </div>
-                </a>
-                {% if taak.taak_zoek_data.straatnaam %}
-                    {% include "standaard/taak_lijst_item_map.html" %}
-                {% else %}
-                    {% include "benc/taak_lijst_item_map.html" %}
-                {% endif %}
-            </div>
+                </div>
+            </a>
+            {% if taak.melding.geometrie %}
+                <button class="btn btn-icon--clean"
+                        data-incidentlist-taak-id-param="{{ taak.uuid }}"
+                        data-filter-code-param=""
+                        data-action="incidentlist#selectTaakMarker">
+                    <svg class="map"
+                         width="19"
+                         height="18"
+                         viewBox="0 0 19 18"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.8125 2.65479V13.9394L11.75 15.205L7.25 14.08L2.1875 15.3457V4.06104L7.25 2.79541L11.75 3.92041L16.8125 2.65479ZM11.1875 4.93941L7.8125 4.09566V13.061L11.1875 13.9048V4.93941ZM12.3125 13.9048L15.6875 13.061V4.09566L12.3125 4.93941V13.9048ZM6.6875 13.061V4.09566L3.3125 4.93941V13.9048L6.6875 13.061Z" fill="white">
+                        </path>
+                    </svg>
+                </button>
+            {% endif %}
         </div>
-    {% endblock before_modal_content %}
-    {% block turbo_frame_id %}
-        incident_modal_handle_{{ taak.uuid }}
-    {% endblock turbo_frame_id %}
-    {% block after_modal_content %}
     </div>
+{% endblock before_modal_content %}
+{% block turbo_frame_id %}
+    incident_modal_handle_{{ taak.uuid }}
+{% endblock turbo_frame_id %}
+{% block after_modal_content %}
+</div>
 {% endblock after_modal_content %}

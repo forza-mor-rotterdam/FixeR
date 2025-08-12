@@ -86,6 +86,7 @@ INSTALLED_APPS = (
     "health_check.storage",
     "health_check.db",
     "health_check.contrib.migrations",
+    "health_check.contrib.celery_ping",
     "django_celery_beat",
     "django_celery_results",
     "sorl.thumbnail",

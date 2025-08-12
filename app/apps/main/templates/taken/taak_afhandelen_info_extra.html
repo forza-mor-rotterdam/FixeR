@@ -1,0 +1,28 @@
+{% load get_gebruiker_object_middels_email from gebruikers_tags %}
+{% if taak.laatste_taakgebeurtenis_omschrijving_intern|lower != "taak aangemaakt" %}
+    <div class='alert alert--info margin-vertical'>
+        <div class='wrapper'>
+            <div class='overflow' tabindex='0' data-controller='overflow'>
+                <strong>
+                    <span class='badge-count'>i</span>Interne opmerking
+                </strong>
+                <div class='container__overflow'>
+                    <p class='content__overflow'>{{ taak.laatste_taakgebeurtenis_omschrijving_intern }}</p>
+                </div>
+            </div>
+            {% if taak.laatste_taakgebeurtenis_gebruiker %}
+                <p class='margin-top'>
+                    <a href='mailto:{{ taak.laatste_taakgebeurtenis_gebruiker.email }}'>{{ taak.laatste_taakgebeurtenis_gebruiker.email }}</a>
+                </p>
+                {% comment %} TODO: gebruiker info is alleen nodig als de modal gebruikt word, dus render rol en full_name als deze geopend word! {% endcomment %}
+                {% comment %} {% with gebruiker=taak.laatste_taakgebeurtenis_gebruiker %}
+                <p class='margin-top'>
+                    <b>{{ gebruiker.rol }}</b>
+                    <br />
+                    <a href='mailto:{{ gebruiker.email }}'>{{ gebruiker.full_name }}</a>
+                </p>
+                {% endwith %} {% endcomment %}
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

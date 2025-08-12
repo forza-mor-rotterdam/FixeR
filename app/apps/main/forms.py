@@ -1,5 +1,10 @@
+import logging
+
+from apps.taken.filters import FILTERS
 from apps.taken.models import Taak
 from django import forms
+
+logger = logging.getLogger(__name__)
 
 
 class RadioSelect(forms.RadioSelect):
@@ -118,6 +123,30 @@ class SorteerFilterForm(forms.Form):
         ),
     )
 
+    def __init__(self, *args, **kwargs):
+        gebruiker = kwargs.pop("gebruiker", None)
+        try:
+            is_benc = gebruiker.profiel.context.template == "benc"
+        except Exception:
+            is_benc = False
+
+        super().__init__(*args, **kwargs)
+        benc_sorteer_opties_choices = ("Datum-reverse", "Datum")
+        sorteer_opties_choices = [
+            ("Datum-reverse", "Datum (nieuwste bovenaan)"),
+            ("Datum", "Datum (oudste bovenaan)"),
+            ("Afstand", "Afstand"),
+            ("Adres", "T.h.v. Adres (a-z)"),
+            ("Adres-reverse", "T.h.v. Adres (z-a)"),
+            ("Postcode", "Postcode (1000-9999)"),
+            ("Postcode-reverse", "Postcode (9999-1000)"),
+        ]
+        self.fields["sorteer_opties"].choices = [
+            optie
+            for optie in sorteer_opties_choices
+            if (is_benc and optie[0] in benc_sorteer_opties_choices) or not is_benc
+        ]
+
 
 class KaartModusForm(forms.Form):
     kaart_modus = forms.ChoiceField(
@@ -133,3 +162,42 @@ class KaartModusForm(forms.Form):
             ("toon_alles", "Toon alle taken"),
         ),
     )
+
+
+class TaakFilterCheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
+    template_name = "taken/overzicht/filter_field_widget.html"
+    option_template_name = "taken/overzicht/filter_field_widget_option.html"
+
+
+class TakenLijstFilterForm(forms.Form):
+    filters = [
+        "taken",
+        "buurt",
+        "begraafplaats",
+        "taak_status",
+    ]
+
+    def __init__(self, *args, **kwargs):
+        profiel = kwargs.pop("profiel", None)
+        super().__init__(*args, **kwargs)
+
+        filters = [
+            f(profiel=profiel)
+            for f in FILTERS
+            if f.key() in profiel.context.filters.get("fields", [])
+        ]
+
+        for f in filters:
+            self.fields[f.key()] = forms.MultipleChoiceField(
+                widget=TaakFilterCheckboxSelectMultiple(
+                    attrs={
+                        "class": "form-check-input filter--taken",
+                        "sub_label": f.sub_label(),
+                    }
+                ),
+                template_name=f.field_template(),
+                choices=f.choices(),
+                required=False,
+                label=f.label(),
+            )
+        print(self.fields.keys())
