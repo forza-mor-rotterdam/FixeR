@@ -12,9 +12,13 @@ class Instelling(BasisModel):
     onderwerpen_basis_url = models.URLField(default="http://onderwerpen.mor.local:8006")
     email_beheer = models.EmailField()
 
+    cached_actieve_instelling = None
+
     @classmethod
     def actieve_instelling(cls):
-        return cls.objects.first()
+        if not cls.cached_actieve_instelling:
+            cls.cached_actieve_instelling = cls.objects.first()
+        return cls.cached_actieve_instelling
 
     def valideer_url(self, veld, url):
         if veld not in (

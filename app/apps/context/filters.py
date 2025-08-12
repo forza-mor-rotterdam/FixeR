@@ -192,8 +192,8 @@ class StandaardFilter:
 
 class BegraafplaatsFilter(StandaardFilter):
     _key = "begraafplaats"
-    _option_key_lookup = "taak_zoek_data__begraafplaats"
-    _filter_lookup = "taak_zoek_data__begraafplaats__in"
+    _option_key_lookup = "melding__begraafplaats"
+    _filter_lookup = "melding__begraafplaats__in"
     _label = "Begraafplaats"
     _predefined_options = (
         ("1", "Begraafplaats Crooswijk"),
@@ -267,9 +267,9 @@ class TaakStatusFilter(StandaardFilter):
 
 class WijkBuurtFilter(StandaardFilter):
     _key = "buurt"
-    _option_key_lookup = "taak_zoek_data__buurtnaam"
-    _option_group_lookup = "taak_zoek_data__wijknaam"
-    _filter_lookup = "taak_zoek_data__buurtnaam__in"
+    _option_key_lookup = "melding__buurtnaam"
+    _option_group_lookup = "melding__wijknaam"
+    _filter_lookup = "melding__buurtnaam__in"
     _label = "Buurten"
     _group_key = "wijken"
     _group_label = "Wijken & buurten"
@@ -314,21 +314,6 @@ class WijkBuurtFilter(StandaardFilter):
         ]
 
 
-class ZoekFilter(StandaardFilter):
-    _key = "q"
-    _label = "Zoek"
-
-    @classmethod
-    def get_filter_lookup(cls, search_query):
-        return Q(taak_zoek_data__straatnaam__iregex=search_query) | Q(
-            taak_zoek_data__bron_signaal_ids__icontains=search_query
-        )
-
-    def _set_options(self, selected_options, f_dict):
-        # For search filter, we don't need to set specific options
-        self._options = []
-
-
 class FilterManager:
     _taken = None
     _taken_filtered = None
@@ -360,7 +345,6 @@ class FilterManager:
 
     def _get_filter_class(self, filter_key):
         filter_classes = self._available_filter_classes
-        filter_classes += (ZoekFilter,)
         return {cls.key(): cls for cls in filter_classes}.get(filter_key)
 
     @property
@@ -385,12 +369,7 @@ class FilterManager:
 
     def filter_taken(self):
         queryset = self._taken
-        search_query = self._active_filters.pop("q", [""])
         filters = Q()
-
-        if search_query and search_query[0]:
-            search_conditions = ZoekFilter.get_filter_lookup(search_query[0])
-            filters &= search_conditions
 
         for filter_key, filter_values in self._active_filters.items():
             filter_class = self._get_filter_class(filter_key)

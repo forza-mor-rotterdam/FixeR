@@ -371,6 +371,8 @@ export default class extends Controller {
   }
 
   imageScrollInView(index) {
+    const img = this.imageSliderContainerTarget.querySelector(`ul :nth-child(${index + 1}) img`)
+    !img.src && img.setAttribute('src', img.dataset.src)
     this.imageSliderContainerTarget.scrollTo({
       left: Number(index) * this.imageSliderContainerTarget.offsetWidth,
       top: 0,
@@ -378,13 +380,7 @@ export default class extends Controller {
   }
 
   selectImage(e) {
-    let self = this
-    self.imageSliderContainerTarget.scrollTo({
-      left: (Number(e.params.imageIndex) - 1) * self.imageSliderContainerTarget.offsetWidth,
-      top: 0,
-    })
-    self.deselectThumbs(e.target.closest('ul'))
-    e.target.closest('li').classList.add('selected')
+    this.imageScrollInView(Number(e.params.imageIndex) - 1)
   }
 
   highlightThumb(index) {

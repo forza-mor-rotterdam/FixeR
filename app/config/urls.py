@@ -8,6 +8,7 @@ from apps.authenticatie.views import (
 from apps.health.views import healthz
 from apps.main.views import (
     HomepageView,
+    TakenOverzicht,
     clear_melding_token_from_cache,
     config,
     http_403,
@@ -108,6 +109,11 @@ urlpatterns = [
         "taken/lijst/",
         taken_lijst,
         name="taken_lijst",
+    ),
+    path(
+        "taken/overzicht/",
+        TakenOverzicht.as_view(),
+        name="taken_overzicht",
     ),
     path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
     path("taak-zoeken/", taak_zoeken, name="taak_zoeken"),

@@ -2,13 +2,11 @@
 {% load webpack_static from webpack_loader %}
 {% load json_encode from main_tags %}
 {% load context_template from context_tags %}
-{% comment %} {% block body %} {% endcomment %}
-<turbo-frame id="taken_lijst">
 <div class="list__incidents__scroll-wrapper"
      data-incidentlist-target="taakItemLijst"
      data-taken-count="{{ page_obj.paginator.count }}">
-    {% if taken_gefilterd_total %}
-        {% if taken_gefilterd_total > 100 and not toon_alle_taken %}
+    {% if page_obj.paginator.count %}
+        {% if page_obj.paginator.count > 100 and not request.session.toon_alle_taken %}
             <div class="container__message">
                 <h2>Meer dan 100 taken?!</h2>
                 <div class="alert">
@@ -29,7 +27,7 @@
                 </p>
             </div>
         {% else %}
-            {% for taak in taken %}
+            {% for taak in object_list %}
                 {% include "taken/taak_lijst_item.html" %}
             {% endfor %}
         {% endif %}
@@ -53,8 +51,6 @@
         </div>
     {% endif %}
 </div>
-{% if toon_alle_taken or taken_gefilterd_total <= 100 %}
+{% if request.session.toon_alle_taken or page_obj.paginator.count <= 100 %}
     {% include "snippets/paginator.html" with page_obj=page_obj %}
 {% endif %}
-</turbo-frame>
-{% comment %} {% endblock body %} {% endcomment %}

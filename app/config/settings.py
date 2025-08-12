@@ -86,6 +86,7 @@ INSTALLED_APPS = (
     "health_check.storage",
     "health_check.db",
     "health_check.contrib.migrations",
+    "health_check.contrib.celery_ping",
     "django_celery_beat",
     "django_celery_results",
     "sorl.thumbnail",
@@ -403,6 +404,7 @@ def show_debug_toolbar(request):
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": show_debug_toolbar,
     "INSERT_BEFORE": "</head>",
+    "IS_RUNNING_TESTS": False,
 }
 
 

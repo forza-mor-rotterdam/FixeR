@@ -23,7 +23,7 @@
                 </h2>
             </summary>
             <div class="container__flex">
-                {% if taak.taak_zoek_data.locatie_type == "adres" %}
+                {% if taak.melding.locatie_type == "adres" %}
                     <div>
                         <h3 class="h5">MeldR-nummer</h3>
                         <p class="no-margin">
@@ -60,9 +60,9 @@
                 <p>
                     {{ taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}
                     <br>
-                    {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_taakgebeurtenis_voor_taakstatus:'nieuw' %}
-                        {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
-                    {% endwith %}
+                    {% comment %} {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_taakgebeurtenis_voor_taakstatus:'nieuw' %} {% endcomment %}
+                    {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taak.eerste_taakgebeurtenis_gebruiker %}
+                    {% comment %} {% endwith %} {% endcomment %}
                 </p>
             {% endif %}
             {% if taak.aangepast_op %}
@@ -76,9 +76,9 @@
                 <p>
                     {{ taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' }}
                     <br>
-                    {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_laatste_taakgebeurtenis %}
-                        {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
-                    {% endwith %}
+                    {% comment %} {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_laatste_taakgebeurtenis %} {% endcomment %}
+                    {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taak.laatste_taakgebeurtenis_gebruiker %}
+                    {% comment %} {% endwith %} {% endcomment %}
                 </p>
             {% endif %}
             {% if taak.taakstatus %}
@@ -109,23 +109,47 @@
                     Locatie
                 </h2>
             </summary>
-            {% if taak.taak_zoek_data.locatie_type == "graf" %}
-                <h3 class="h5">Begraafplaats</h3>
-                <p>
-                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats as signaal_begraafplaats_naam %}
-                    {% if signaal_begraafplaats_naam == taak_zoek_data.begraafplaats %}
-                        {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats %}
-                    {% else %}
-                        {{ signaal_begraafplaats_naam }}
+            <div>
+                <h3 class="h5">
+                    {% if taak.melding.locatie_type == "adres" %}
+                        Ter hoogte van
+                    {% elif taak.melding.locatie_type == "graf" %}
+                        Begraafplaats
                     {% endif %}
-                </p>
-                {% if taak_zoek_data.grafnummer %}
-                    <h3 class="h5">Grafnummer</h3>
-                    <p>{{ taak_zoek_data.grafnummer }}</p>
+                </h3>
+                <p>{{ taak.melding.locatie_verbose }}</p>
+                {% if geometrie %}
+                    <a class="link link--navigate"
+                       href="#"
+                       data-modal-title-param="Navigeren"
+                       data-modal-url-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}"
+                       data-modal-id-param="navigeer"
+                       data-action="modal#openModal">
+                        {% include "icons/navigate.svg" %}
+                        Navigeren
+                    </a>
                 {% endif %}
-                {% if taak_zoek_data.vak %}
+            </div>
+            <div>
+                {% if taak.melding.wijknaam %}
+                    <div>
+                        <h3 class="h5">Wijk</h3>
+                        <p>{{ taak.melding.wijknaam }}</p>
+                    </div>
+                {% endif %}
+                {% if taak.melding.buurtnaam %}
+                    <div>
+                        <h3 class="h5">Buurt</h3>
+                        <p>{{ taak.melding.buurtnaam }}</p>
+                    </div>
+                {% endif %}
+                {% if taak.melding.grafnummer %}
+                    <h3 class="h5">Grafnummer</h3>
+                    <p>{{ taak.melding.grafnummer }}</p>
+                {% endif %}
+                {% if taak.melding.vak %}
                     <h3 class="h5">Vak</h3>
-                    <p>{{ taak_zoek_data.vak }}</p>
+                    <p>{{ taak.melding.vak }}</p>
                 {% endif %}
                 {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
                     <h3 class="h5">Naam overledene</h3>
@@ -134,56 +158,8 @@
                     <h3 class="h5">Naam overledene</h3>
                     <p>{{ melding.meta.naam_overledene }}</p>
                 {% endif %}
-            {% else %}
-                <div>
-                    <h3 class="h5">Ter hoogte van</h3>
-                    <p>{{ taak.adres }}</p>
-                    {% if geometrie %}
-                        <a class="link link--navigate"
-                           href="#"
-                           data-modal-title-param="Navigeren"
-                           data-modal-url-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}"
-                           data-modal-id-param="navigeer"
-                           data-action="modal#openModal">
-                            {% include "icons/navigate.svg" %}
-                            Navigeren
-                        </a>
-                    {% endif %}
-                </div>
-                <div>
-                    {% if taak.taak_zoek_data.subbuurt %}
-                        <div>
-                            <dt>Subbuurt:</dt>
-                            <dd>
-                                {{ taak.taak_zoek_data.subbuurt }}
-                            </dd>
-                        </div>
-                    {% endif %}
-                    {% if taak_zoek_data.buurtnaam %}
-                        <div>
-                            <h3 class="h5">Buurt</h3>
-                            <p>{{ taak_zoek_data.buurtnaam }}</p>
-                        </div>
-                    {% endif %}
-                    {% if taak_zoek_data.wijknaam %}
-                        <div>
-                            <h3 class="h5">Wijk</h3>
-                            <p>{{ taak_zoek_data.wijknaam }}</p>
-                        </div>
-                    {% endif %}
-                    {% if taak.taak_zoek_data.plaatsnaam %}
-                        <div>
-                            <h3 class="h5">Plaats</h3>
-                            <p>{{ taak.taak_zoek_data.plaatsnaam }}</p>
-                        </div>
-                    {% endif %}
-                    {% if taak.taak_zoek_data.plaatsbepaling %}
-                        <div>
-                            <h3 class="h5">Plaatsbepaling</h3>
-                            <p>{{ taak.taak_zoek_data.plaatsbepaling }}</p>
-                        </div>
-                    {% endif %}
-                </div>
+            </div>
+            {% if geometrie %}
                 <div class="locatie-container">
                     <label for="egd_id">
                         <input id="egd_id"
@@ -261,7 +237,7 @@
                 </h2>
             </summary>
             <div class="container__flex">
-                {% if taak.taak_zoek_data.locatie_type == "adres" %}
+                {% if taak.melding.locatie_type == "adres" %}
                     <div>
                         <h3 class="h5">MeldR-nummer</h3>
                         <p class="no-margin">
@@ -284,23 +260,21 @@
                     </p>
                 </div>
             </div>
-            {% if taak.taak_zoek_data.locatie_type == "adres" %}
-                <small>
-                    {% if melding.signalen_voor_melding|length > 1 %}
-                        <strong>Bestaand uit de samengevoegde meldingen:</strong>
-                        <br>
-                        {% for signaal in melding.signalen_voor_melding %}
-                            {% if signaal.bron_signaal_id %}
-                                {% if not forloop.last %}
-                                    {{ signaal.bron_signaal_id }},
-                                {% else %}
-                                    {{ signaal.bron_signaal_id }}
-                                {% endif %}
+            <small>
+                {% if melding.signalen_voor_melding|length > 1 %}
+                    <strong>Bestaand uit de samengevoegde meldingen:</strong>
+                    <br>
+                    {% for signaal in melding.signalen_voor_melding %}
+                        {% if signaal.bron_signaal_id %}
+                            {% if not forloop.last %}
+                                {{ signaal.bron_signaal_id }},
+                            {% else %}
+                                {{ signaal.bron_signaal_id }}
                             {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                </small>
-            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </small>
             <h3 class="h5">Ingediend</h3>
             <p>{{ melding.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}</p>
             {% if melding.meta.aannemer %}

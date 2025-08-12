@@ -36,7 +36,7 @@
                                 </span>
                                 {% endif %}
                             {% endif %}
-                            <img src="{{ bijlage.afbeelding_relative_url|mor_core_protected_url }}"
+                            <img {% if forloop.first %}src="{{ bijlage.afbeelding_relative_url|mor_core_protected_url }}"{% endif %} data-src="{{ bijlage.afbeelding_relative_url|mor_core_protected_url }}"
                                  class="image"
                                  alt="" />
                         </li>

@@ -1,14 +1,13 @@
 {% load webpack_static from webpack_loader %}
 {% load multiply previous next from list_tags %}
-{% load taakopdracht render_onderwerp get_bijlagen get_taakgebeurtenissen from melding_tags %}
+{% load render_onderwerp get_bijlagen from melding_tags %}
 {% load replace_comma_by_dot vind_in_dict from main_tags %}
 {% load json_encode from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
 {% load webpack_static from webpack_loader %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
-{% get_taakgebeurtenissen taak.melding.response_json taak.taakopdracht as taakgebeurtenissen %}
-{% if taakgebeurtenissen.0.omschrijving_intern and taakgebeurtenissen.0.omschrijving_intern|lower != "taak aangemaakt" %}
+{% if taak.laatste_taakgebeurtenis_omschrijving_intern and taak.laatste_taakgebeurtenis_omschrijving_intern|lower != "taak aangemaakt" %}
     <div class="alert alert--info margin-vertical">
         <div class="wrapper">
             <div class="overflow" tabindex="0" data-controller="overflow">
@@ -16,11 +15,11 @@
                     <span class="badge-count">i</span>Interne opmerking
                 </strong>
                 <div class="container__overflow">
-                    <p class="content__overflow">{{ taakgebeurtenissen.0.omschrijving_intern }}</p>
+                    <p class="content__overflow">{{ taak.laatste_taakgebeurtenis_omschrijving_intern }}</p>
                 </div>
             </div>
-            {% if taakgebeurtenissen.0.gebruiker %}
-                {% with gebruiker=taakgebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email %}
+            {% if taak.laatste_taakgebeurtenis_gebruiker %}
+                {% with gebruiker=taak.laatste_taakgebeurtenis_gebruiker %}
                     <p class="margin-top">
                         {% comment %} Haal rol en telefoonnummer uit gebruiker-object {% endcomment %}
                         <b>Mid-office</b>
@@ -38,30 +37,12 @@
         </div>
     </div>
 {% endif %}
-{% if taak.taak_zoek_data.locatie_type == "graf" %}
-    <h1 class="h3">
-        {% if taak_zoek_data.grafnummer %}Graf {{ taak_zoek_data.grafnummer }}{% endif %}
-        {% if taak_zoek_data.vak %}, Vak {{ taak_zoek_data.vak }}{% endif %}
-        {% if not taak_zoek_data.grafnummer and not taak_zoek_data.vak and taak_zoek_data.begraafplaats %}
-            {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats as signaal_begraafplaats_naam %}
-            {% if signaal_begraafplaats_naam == taak_zoek_data.begraafplaats %}
-                {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats %}
-            {% else %}
-                {{ signaal_begraafplaats_naam }}
-            {% endif %}
-        {% endif %}
-        <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
-            {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
-        </span>
-    </h1>
-{% else %}
-    <h1 class="h3">
-        {{ taak.adres }}
-        <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
-            {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
-        </span>
-    </h1>
-{% endif %}
+<h1 class="h3">
+    {{ taak.melding.locatie_verbose }}
+    <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
+        {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
+    </span>
+</h1>
 <div class="container__flex">
     <div>
         <button class="btn btn-textlink btn-info"
@@ -70,7 +51,7 @@
             {{ taak.titel }}
             {% include "icons/info.svg" %}
         </button>
-        {% if taak.taak_zoek_data.locatie_type == "adres" %}
+        {% if taak.melding.locatie_type == "adres" %}
             <br>
             <span class="lighter">
                 <span data-detail-target="taakAfstand"
@@ -80,7 +61,7 @@
         {% endif %}
     </div>
     <div class="textalign--right">
-        {% if taak.taak_zoek_data.locatie_type %}
+        {% if taak.melding.locatie_type %}
             {% if geometrie %}
                 <a class="link link--navigate"
                    href="#"

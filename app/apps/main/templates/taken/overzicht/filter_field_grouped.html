@@ -1,0 +1,12 @@
+<details class="filter"
+         data-action="filter#toggleActiveFilter"
+         id="foldout_{{ filter.group_key }}"
+         {% if filter.folded %}open{% endif %}>
+    <summary>
+        <span>{{ field.label }}</span>
+        <span>({{ filter.active|length }})</span>
+    </summary>
+    <ul class="list-clean">
+        {{ field }}
+    </ul>
+</details>

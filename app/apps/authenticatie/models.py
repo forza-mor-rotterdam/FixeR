@@ -21,44 +21,59 @@ class Gebruiker(AbstractUser):
 
     objects = GebruikerManager()
 
+    cached_rechtengroep = None
+    cached_rol = None
+    cached_serialized_instance = None
+    cached_context = None
+
     def __str__(self):
         if self.first_name:
             return f"{self.first_name}{' ' if self.last_name else ''}{self.last_name}"
         return self.email
 
     @property
+    def context(self):
+        if not self.cached_context:
+            self.cached_context = self.profiel.context
+        return self.cached_context
+
+    @property
     def rechtengroep(self):
-        return mark_safe(
-            f"{self.groups.all().first().name if self.groups.all() else ''}"
-        )
+        if not self.cached_rechtengroep:
+            self.cache_rechtengroep = mark_safe(
+                f"{self.groups.all().first().name if self.groups.all() else ''}"
+            )
+        return self.cached_rechtengroep
 
     @property
     def rol(self):
-        return mark_safe(f"{self.profiel.context.naam if self.profiel.context else ''}")
+        if not self.cached_rol:
+            self.cached_rol = mark_safe(f"{self.context.naam if self.context else ''}")
+        return self.cached_rol
 
     def serialized_instance(self):
         if not self.is_authenticated:
             return None
-        dict_instance = model_to_dict(
-            self, fields=["email", "first_name", "last_name", "telefoonnummer"]
-        )
-        dict_instance.update(
-            {
-                "naam": self.__str__(),
-                "rol": (
-                    self.profiel.context.naam
-                    if hasattr(self, "profiel")
-                    and hasattr(self.profiel, "context")
-                    and hasattr(self.profiel.context, "naam")
-                    else None
-                ),
-                "rechten": (
-                    self.groups.all().first().name if self.groups.all() else None
-                ),
-            }
-        )
-
-        return dict_instance
+        if not self.cached_serialized_instance:
+            dict_instance = model_to_dict(
+                self, fields=["email", "first_name", "last_name", "telefoonnummer"]
+            )
+            self.cached_serialized_instance = dict_instance.update(
+                {
+                    "naam": self.__str__(),
+                    "rol": (
+                        self.profiel.context.naam
+                        if hasattr(self, "profiel")
+                        and hasattr(self.profiel, "context")
+                        and hasattr(self.profiel.context, "naam")
+                        else None
+                    ),
+                    "rechten": (
+                        self.groups.all().first().name if self.groups.all() else None
+                    ),
+                }
+            )
+        return self.cached_serialized_instance
 
 
 User = get_user_model()
