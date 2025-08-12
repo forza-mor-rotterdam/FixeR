@@ -8,13 +8,7 @@
                     <button data-detail-target="btnToTop"
                             data-action="detail#scrollToTop"
                             class="btn btn-to-top">{% include "icons/arrow-double.svg" %}</button>
-                    <button class="btn btn-action"
-                            data-modal-title-param="Taak afhandelen"
-                            data-modal-url-param="{% url 'taak_afhandelen' taak.uuid %}"
-                            data-modal-id-param="incident_modal_handle_{{ taak.uuid }}"
-                            data-action="modal#openModal"
-                            data-modal-sub-title-param='{% include "taken/taak_afhandelen_subtitel.html" %}'
-                            data-modal-info-extra-param='{% include "taken/taak_afhandelen_info_extra.html" %}'>
+                    <button class="btn btn-action" data-modal-title-param="Taak afhandelen" data-modal-url-param="{% url 'taak_afhandelen' taak.uuid %}" data-modal-id-param="incident_modal_handle_{{ taak.uuid }}" data-action="modal#openModal" data-modal-sub-title-param="{% include "taken/taak_afhandelen_subtitel.html" %}" data-modal-info-extra-param="{% include "taken/taak_afhandelen_info_extra.html" %}">
                         Taak afhandelen
                     </button>
                 </div>
