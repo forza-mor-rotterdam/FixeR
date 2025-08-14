@@ -1,6 +1,6 @@
 <details class="filter"
          data-action="filter#toggleActiveFilter"
-         id="foldout_{{ filter.group_key }}"
+         id="foldout_{{ field.label|slugify }}"
          {% if filter.folded %}open{% endif %}>
     <summary>
         <span>{{ field.label }}</span>

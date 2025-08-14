@@ -12,7 +12,6 @@ from apps.main.forms import (
     TaakBehandelForm,
     TakenLijstFilterForm,
 )
-from apps.main.mixins import StreamViewMixin
 from apps.main.services import MORCoreService, PDOKService, TaakRService
 from apps.main.utils import (
     get_actieve_filters,
@@ -25,6 +24,7 @@ from apps.main.utils import (
     set_sortering,
 )
 from apps.release_notes.models import ReleaseNote
+from apps.taken.filters import FILTERS, FILTERS_BY_KEY
 from apps.taken.models import Taak, TaakDeellink, Taakstatus
 from device_detector import DeviceDetector
 from django.conf import settings
@@ -162,50 +162,86 @@ def taken(request):
 
 class TakenOverzicht(
     PermissionRequiredMixin,
-    StreamViewMixin,
-    ListView,
+    # StreamViewMixin,
     FormView,
+    ListView,
 ):
     template_name = "taken/overzicht/basis.html"
     permission_required = "authorisatie.taken_lijst_bekijken"
     queryset = Taak.objects.taken_lijst()
     form_class = TakenLijstFilterForm
     paginate_by = 50
+    success_url = "/"
+    filters = None
+    initial_filter_data = None
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
+
         kwargs.update(
             {
-                "profiel": self.profiel,
+                "profiel": self.request.user.profiel,
+                "filters": self.get_filters(),
             }
         )
         return kwargs
 
+    def get_initial_filter_data(self):
+        if self.initial_filter_data is None:
+            profiel_selected_filter_opties = self.request.user.profiel.filters.get(
+                "nieuw", {}
+            )
+            actieve_filters = [
+                f
+                for f in self.request.user.profiel.context.filters.get("fields", [])
+                if f in FILTERS_BY_KEY.keys()
+            ]
+            self.initial_filter_data = {
+                f: profiel_selected_filter_opties[f]
+                for f in actieve_filters
+                if profiel_selected_filter_opties.get(f)
+            }
+        return self.initial_filter_data
+
+    def get_filters(self):
+        if self.filters is None:
+            self.filters = [
+                f(profiel=self.request.user.profiel)
+                for f in FILTERS
+                if f.key()
+                in self.request.user.profiel.context.filters.get("fields", [])
+            ]
+        return self.filters
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        initial_filter_data = self.get_initial_filter_data()
+        filter_query_data = {
+            f.filter_lookup(): initial_filter_data.get(f.key())
+            for f in self.get_filters()
+            if initial_filter_data.get(f.key())
+        }
+        print("filter_query_data")
+        print(filter_query_data)
+
+        queryset = queryset.filter(**filter_query_data)
+        queryset = queryset.taken_zoeken(self.request.session.get("q"))
+        return queryset
+
     def get_context_data(self, **kwargs):
-        profiel_selected_filter_opties = {}
+        print("get_context_data")
 
         if self.request.GET.get("toon_alle_taken"):
             self.request.session["toon_alle_taken"] = True
 
-        try:
-            profiel_selected_filter_opties = self.request.user.profiel.filters.get(
-                "nieuw", {}
-            )
-            self.profiel = self.request.user.profiel
-        except Exception:
-            logger.warning(
-                f"Er ging iets mis met het ophalen van de geselecteerde opties uit het profiel van de gebruiker: gebruiker={self.request.user.email}"
-            )
+        self.initial = self.get_initial_filter_data()
+        self.initial["foldout_states"] = "[]"
+        self.initial["q"] = self.request.session.get("q")
+        self.initial["kaart_modus"] = self.request.user.profiel.ui_instellingen.get(
+            "kaart_modus", "volgen"
+        )
 
-        self.initial = {
-            f: profiel_selected_filter_opties[f]
-            for f in self.actieve_filters
-            if profiel_selected_filter_opties.get(f)
-        }
-
-        kwargs = super().get_context_data(**kwargs)
-
-        return kwargs
+        return super().get_context_data(**kwargs)
 
     def form_invalid(self, form):
         logger.error("TakenLijst: FORM INVALID")
@@ -213,16 +249,24 @@ class TakenOverzicht(
         return super().form_invalid(form)
 
     def form_valid(self, form):
+        form.save()
+
+        print("form.cleaned_data")
         print(form.cleaned_data)
 
-        context = self.get_context_data(kwargs={})
+        self.request.session["q"] = form.cleaned_data.get("q", "")
+        self.kwargs["page"] = form.cleaned_data.get("page", 1)
 
-        context.pop("form", None)
-        return render(
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+
+        response = render(
             self.request,
             "taken/overzicht/basis_stream.html",
             context=context,
         )
+        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
+        return response
 
 
 @login_required

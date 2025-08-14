@@ -27,7 +27,7 @@
                 </p>
             </div>
         {% else %}
-            {% for taak in object_list %}
+            {% for taak in page_obj %}
                 {% include "taken/taak_lijst_item.html" %}
             {% endfor %}
         {% endif %}

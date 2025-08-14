@@ -17,6 +17,10 @@ class StandaardFilter:
         return self._choices
 
     @classmethod
+    def filter_lookup(cls):
+        return cls._filter_lookup
+
+    @classmethod
     def key(cls):
         return cls._key
 

@@ -1,0 +1,7 @@
+{% if page_obj.paginator.count > 1 %}
+    Toon {{ page_obj.paginator.count }} taken
+{% elif page_obj.paginator.count == 1 %}
+    Toon 1 taak
+{% else %}
+    Geen taken
+{% endif %}

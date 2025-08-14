@@ -169,7 +169,84 @@ class TaakFilterCheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
     option_template_name = "taken/overzicht/filter_field_widget_option.html"
 
 
+class KaartModusRadioSelect(forms.RadioSelect):
+    template_name = "taken/overzicht/kaart_modus_widget.html"
+
+
 class TakenLijstFilterForm(forms.Form):
+    page = forms.CharField(
+        widget=forms.HiddenInput(
+            attrs={
+                "data-filter-target": "pageField",
+                "data-action": "filter#onPageChangeHandler",
+            }
+        ),
+        required=False,
+    )
+    q = forms.CharField(
+        widget=forms.SearchInput(
+            attrs={
+                "class": "form-control search",
+                "maxlength": 50,
+                "placeholder": "Zoek op straatnaam of MeldR-nummer",
+                "data-filter-target": "zoekField",
+                "data-action": "filter#onSearchChangeHandler",
+            }
+        ),
+        required=False,
+    )
+    q_mobile = forms.CharField(
+        widget=forms.SearchInput(
+            attrs={
+                "class": "form-control search",
+                "maxlength": 50,
+                "placeholder": "Zoek op straatnaam of MeldR-nummer",
+                "data-zoekfilter-target": "zoekField",
+                "data-action": "filter#onZoekChangeHandler",
+            }
+        ),
+        required=False,
+    )
+    sorteer_opties = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={
+                "data-action": "sorteerFilter#onChangeHandler",
+                "data-sorteerFilter-target": "sorteerField",
+            }
+        ),
+        choices=(
+            ("Datum-reverse", "Datum (nieuwste bovenaan)"),
+            ("Datum", "Datum (oudste bovenaan)"),
+            ("Afstand", "Afstand"),
+            ("Adres", "T.h.v. Adres (a-z)"),
+            ("Adres-reverse", "T.h.v. Adres (z-a)"),
+            ("Postcode", "Postcode (1000-9999)"),
+            ("Postcode-reverse", "Postcode (9999-1000)"),
+        ),
+        required=False,
+    )
+    kaart_modus = forms.ChoiceField(
+        widget=KaartModusRadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-action": "click->filter#kaartModusOptionClickHandler",
+                "hideLabel": True,
+            }
+        ),
+        choices=(
+            ("volgen", "Volg mijn locatie"),
+            ("toon_alles", "Toon alle taken"),
+        ),
+        required=False,
+    )
+    foldout_states = forms.CharField(
+        widget=forms.HiddenInput(
+            attrs={
+                "data-filter-target": "foldoutStatesField",
+            }
+        ),
+        required=False,
+    )
     filters = [
         "taken",
         "buurt",
@@ -178,21 +255,24 @@ class TakenLijstFilterForm(forms.Form):
     ]
 
     def __init__(self, *args, **kwargs):
-        profiel = kwargs.pop("profiel", None)
+        self.profiel = kwargs.pop("profiel", None)
+        self.filters = kwargs.pop("filters", None)
         super().__init__(*args, **kwargs)
 
-        filters = [
-            f(profiel=profiel)
+        self.filters = [
+            f(profiel=self.profiel)
             for f in FILTERS
-            if f.key() in profiel.context.filters.get("fields", [])
+            if f.key() in self.profiel.context.filters.get("fields", [])
         ]
 
-        for f in filters:
+        for f in self.filters:
             self.fields[f.key()] = forms.MultipleChoiceField(
                 widget=TaakFilterCheckboxSelectMultiple(
                     attrs={
                         "class": "form-check-input filter--taken",
                         "sub_label": f.sub_label(),
+                        "data-action": "filter#onChangeFilter",
+                        "data-filter-target": "filterInput",
                     }
                 ),
                 template_name=f.field_template(),
@@ -201,3 +281,24 @@ class TakenLijstFilterForm(forms.Form):
                 label=f.label(),
             )
         print(self.fields.keys())
+
+    def filter_fields(self):
+        return [
+            field for field in self if field.name in [f.key() for f in self.filters]
+        ]
+
+    def save(self):
+        data = self.cleaned_data
+        status = "nieuw"
+        actieve_filters = {f.key(): data.get(f.key()) for f in self.filters}
+        self.profiel.filters.update({status: actieve_filters})
+        self.profiel.ui_instellingen.update(
+            {
+                "kaart_modus": data.get(
+                    "kaart_modus",
+                    self.profiel.ui_instellingen.get("kaart_modus", "volgen"),
+                )
+            }
+        )
+
+        self.profiel.save()

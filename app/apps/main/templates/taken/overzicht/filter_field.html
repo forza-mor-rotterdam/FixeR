@@ -1,23 +1,20 @@
 <details class="filter"
          data-action="filter#toggleActiveFilter"
-         id="foldout_{% if group %}{{ filter.group_key }}{% else %}{{ filter.key }}{% endif %}"
+         id="foldout_{{ field.label|slugify }}"
          {% if filter.folded %}open{% endif %}>
     <summary>
         <span>{{ field.label }}</span>
         <span>({{ filter.active|length }})</span>
     </summary>
     <div class="container__list--districts foldout">
-        {% if group %}
-            <div class="container__list--header">
-                <h3 class="h5">{{ group.label }}</h3>
-                <div>
-                    <button class="btn btn-textlink"
-                            data-action="filter#selectAll"
-                            data-filter-filter-type-param="all">Selecteer alles</button>
-                    <button class="btn btn-textlink" data-action="filter#selectAll">/ niets</button>
-                </div>
+        <div class="container__list--header">
+            <div>
+                <button class="btn btn-textlink"
+                        data-action="filter#selectAll"
+                        data-filter-filter-type-param="all">Selecteer alles</button>
+                <button class="btn btn-textlink" data-action="filter#selectAll">/ niets</button>
             </div>
-        {% endif %}
+        </div>
         {{ field }}
     </div>
 </details>
