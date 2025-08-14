@@ -155,6 +155,7 @@ def taken(request):
         or gebruiker.profiel.wijken_or_taaktypes_empty
     ) and gebruiker.profiel.context.template != "benc":  # Skip onboarding if B&C
         return redirect(reverse("onboarding"), False)
+    MORCoreService().set_gebruiker(gebruiker=gebruiker.serialized_instance())
 
     return render(request, "taken/taken.html", {})
 
