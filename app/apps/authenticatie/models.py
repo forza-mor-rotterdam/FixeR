@@ -58,7 +58,7 @@ class Gebruiker(AbstractUser):
             dict_instance = model_to_dict(
                 self, fields=["email", "first_name", "last_name", "telefoonnummer"]
             )
-            self.cached_serialized_instance = dict_instance.update(
+            dict_instance.update(
                 {
                     "naam": self.__str__(),
                     "rol": (
@@ -73,6 +73,7 @@ class Gebruiker(AbstractUser):
                     ),
                 }
             )
+            self.cached_serialized_instance = dict_instance
         return self.cached_serialized_instance
 
 
