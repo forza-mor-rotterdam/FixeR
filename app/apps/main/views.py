@@ -24,7 +24,7 @@ from apps.main.utils import (
     set_sortering,
 )
 from apps.release_notes.models import ReleaseNote
-from apps.taken.filters import FILTERS, FILTERS_BY_KEY
+from apps.taken.filters import FILTERS_BY_KEY
 from apps.taken.models import Taak, TaakDeellink, Taakstatus
 from device_detector import DeviceDetector
 from django.conf import settings
@@ -120,7 +120,7 @@ def navigeer(request, lat, long):
 # @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
-        return redirect(reverse("taken"), False)
+        return redirect(reverse("taken_overzicht"), False)
     if request.user.has_perms(["authorisatie.beheer_bekijken"]):
         return redirect(reverse("beheer"), False)
     return render(
@@ -174,23 +174,21 @@ class TakenOverzicht(
     success_url = "/"
     filters = None
     initial_filter_data = None
+    form_data = {}
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
 
         kwargs.update(
             {
-                "profiel": self.request.user.profiel,
-                "filters": self.get_filters(),
+                "request": self.request,
             }
         )
         return kwargs
 
     def get_initial_filter_data(self):
         if self.initial_filter_data is None:
-            profiel_selected_filter_opties = self.request.user.profiel.filters.get(
-                "nieuw", {}
-            )
+            profiel_selected_filter_opties = self.request.user.profiel.taken_filter_data
             actieve_filters = [
                 f
                 for f in self.request.user.profiel.context.filters.get("fields", [])
@@ -203,42 +201,45 @@ class TakenOverzicht(
             }
         return self.initial_filter_data
 
-    def get_filters(self):
-        if self.filters is None:
-            self.filters = [
-                f(profiel=self.request.user.profiel)
-                for f in FILTERS
-                if f.key()
-                in self.request.user.profiel.context.filters.get("fields", [])
-            ]
-        return self.filters
+    def get_gps(self):
+        try:
+            gps = self.form_data["gps"].split(",")
+            return Point(
+                float(gps[1]),
+                float(gps[0]),
+                srid=4326,
+            )
+        except Exception:
+            return Point(0, 0, srid=4326)
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        initial_filter_data = self.get_initial_filter_data()
-        filter_query_data = {
-            f.filter_lookup(): initial_filter_data.get(f.key())
-            for f in self.get_filters()
-            if initial_filter_data.get(f.key())
-        }
-        print("filter_query_data")
-        print(filter_query_data)
-
-        queryset = queryset.filter(**filter_query_data)
+        profiel = self.request.user.profiel
+        order_by = profiel.taken_sorting_order_by
+        queryset = queryset.filter(**profiel.taken_filter_query_data)
         queryset = queryset.taken_zoeken(self.request.session.get("q"))
+
+        if order_by == "afstand":
+            print("gps")
+            print(self.get_gps())
+            queryset = queryset.annotate(
+                afstand=Distance("melding__geometrie", self.get_gps())
+            )
+
+        queryset = queryset.order_by(profiel.taken_sorting_order_by)
         return queryset
 
     def get_context_data(self, **kwargs):
-        print("get_context_data")
-
         if self.request.GET.get("toon_alle_taken"):
             self.request.session["toon_alle_taken"] = True
 
-        self.initial = self.get_initial_filter_data()
-        self.initial["foldout_states"] = "[]"
+        self.initial = self.request.user.profiel.taken_filter_validated_data
         self.initial["q"] = self.request.session.get("q")
         self.initial["kaart_modus"] = self.request.user.profiel.ui_instellingen.get(
             "kaart_modus", "volgen"
+        )
+        self.initial["sorteer_opties"] = self.request.user.profiel.ui_instellingen.get(
+            "sortering", "Adres-reverse"
         )
 
         return super().get_context_data(**kwargs)
@@ -253,12 +254,14 @@ class TakenOverzicht(
 
         print("form.cleaned_data")
         print(form.cleaned_data)
+        self.form_data = form.cleaned_data
 
-        self.request.session["q"] = form.cleaned_data.get("q", "")
         self.kwargs["page"] = form.cleaned_data.get("page", 1)
 
         self.object_list = self.get_queryset()
         context = self.get_context_data()
+
+        context.update(form.changed_fields())
 
         response = render(
             self.request,

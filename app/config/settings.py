@@ -408,7 +408,7 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 
-LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
+LOG_LEVEL = "INFO" if DEBUG else "INFO"
 
 LOGGING = {
     "version": 1,

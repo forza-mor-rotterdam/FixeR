@@ -109,7 +109,7 @@ export default class extends Controller {
     }
     // END SWIPE
 
-    const mapDiv = document.getElementById('incidentMap')
+    const mapDiv = document.getElementById('taken_kaart')
     this.mapLayers = {
       containers: {
         layer: L.tileLayer.wms(
@@ -174,7 +174,7 @@ export default class extends Controller {
         parseFloat(self.incidentXValue.replace(/,/g, '.')),
         parseFloat(self.incidentYValue.replace(/,/g, '.')),
       ]
-      map = L.map('incidentMap', {
+      map = L.map('taken_kaart', {
         dragging: !L.Browser.mobile,
         tap: !L.Browser.mobile,
         twoFingerZoom: true,

@@ -5,24 +5,23 @@
         <div class="form__kaart-modus" id="stream_kaart_modus_widget">
             {% include "taken/overzicht/stream_snippets/stream_kaart_modus_widget.html" %}
         </div>
-        {% comment %} <turbo-frame id="kaart_modus" src="{% url 'kaart_modus' %}"  data-spinner="hide">
-        </turbo-frame> {% endcomment %}
     </div>
-    <div data-controller="kaart"
+    <div data-controller="takenKaart"
          class="map"
-         id="incidentMap"
-         data-kaart-main-outlet="main"
-         data-action="touchstart->kaart#onTwoFingerDrag touchend->kaart#onTwoFingerDrag">
+         id="taken_kaart"
+         data-filter-target="takenKaart"
+         data-main-target="takenKaart"
+         data-action="touchstart->takenKaart#onTwoFingerDrag touchend->takenKaart#onTwoFingerDrag">
         <div class="map__overlay">
             <span>Gebruik twee vingers om de kaart te verplaatsen</span>
         </div>
         <button class="btn btn-on-map"
-                data-action="kaart#toggleBuurten"
+                data-action="takenKaart#toggleBuurten"
                 id="buurten-button">
             <input type="checkbox"
                    class="form-check-input"
                    id="buurten-checkbox"
-                   data-action="kaart#toggleBuurten" />
+                   data-action="takenKaart#toggleBuurten" />
             <span>Buurten</span>
         </button>
     </div>

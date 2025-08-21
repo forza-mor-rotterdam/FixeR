@@ -28,7 +28,6 @@ from apps.main.views import (
     taak_detail_melding_tijdlijn,
     taak_detail_preview,
     taak_zoeken,
-    taken,
     taken_filter,
     taken_lijst,
     ui_settings_handler,
@@ -95,10 +94,15 @@ urlpatterns = [
     path("health/", include("health_check.urls")),
     path("healthz/", healthz, name="healthz"),
     # START taken
+    # path(
+    #     "taken/",
+    #     taken,
+    #     name="taken",
+    # ),
     path(
         "taken/",
-        taken,
-        name="taken",
+        TakenOverzicht.as_view(),
+        name="taken_overzicht",
     ),
     path(
         "taken/filter/",
@@ -109,11 +113,6 @@ urlpatterns = [
         "taken/lijst/",
         taken_lijst,
         name="taken_lijst",
-    ),
-    path(
-        "taken/overzicht/",
-        TakenOverzicht.as_view(),
-        name="taken_overzicht",
     ),
     path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
     path("taak-zoeken/", taak_zoeken, name="taak_zoeken"),

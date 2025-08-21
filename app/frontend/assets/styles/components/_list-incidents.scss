@@ -129,8 +129,12 @@
     }
 
     .wrapper--search {
-        display: none;
-        position: relative;
+        // display: none;
+
+        position: absolute;
+        min-width: calc(100% - 32px);
+        left: 16px;
+        top: 64px;
 
         input[type="search"] {
             margin: 0;
@@ -158,8 +162,15 @@
                 display: none;
             }
         }
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            top: 80px;
+        }
         @media (min-width: map-get($grid-breakpoints, lg)) {
-            display: block;
+            position: relative;
+            min-width: auto;
+            top: auto;
+            left: auto;
+            // display: block;
 
             input[type="search"] {
                 width: 350px;

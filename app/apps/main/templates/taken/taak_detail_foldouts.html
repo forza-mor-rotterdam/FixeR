@@ -11,13 +11,7 @@
         <details>
             <summary>
                 <h2>
-                    <svg width="20"
-                         height="17"
-                         viewBox="0 0 55 43"
-                         fill="none"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path d="M49.6439 0.0427246L23.0468 33.2845L4.96397 11.2844L0.317383 15.0798L23.0965 42.8261L54.3288 3.79295L49.6439 0.0427246Z" fill="#00811F" />
-                    </svg>
+                    {% include "icons/checkmark.svg" with svg_fill="#00811F" svg_width="20" svg_height="17" %}
                     Taak
                     {% if taak.spoed %}<span><span class="icon icon--warning">Spoed</span></span>{% endif %}
                 </h2>
@@ -99,13 +93,7 @@
         <details data-action="toggle->detail#toggleDetailLocatie">
             <summary>
                 <h2>
-                    <svg width="20"
-                         height="26"
-                         viewBox="0 0 20 26"
-                         fill="none"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.6349 3.61281C16.709 2.48342 15.544 1.57355 14.224 0.948802C12.9039 0.324055 11.4617 0 10.0013 0C8.54084 0 7.09861 0.324055 5.77856 0.948802C4.4585 1.57355 3.29352 2.48342 2.3676 3.61281C0.837677 5.46838 0.000976563 7.79842 0.000976562 10.2034C0.000976563 12.6083 0.837677 14.9384 2.3676 16.7939L10.0013 26.0002L17.6361 16.7939C19.1652 14.938 20.0013 12.608 20.0011 10.2032C20.0009 7.79839 19.1644 5.46853 17.6349 3.61281ZM10.0001 13.9988C9.11016 13.9988 8.24017 13.7348 7.50017 13.2404C6.76018 12.746 6.18343 12.0432 5.84285 11.2209C5.50227 10.3987 5.41316 9.49394 5.58678 8.62106C5.76041 7.74818 6.18898 6.94639 6.81829 6.31708C7.4476 5.68777 8.24939 5.2592 9.12227 5.08557C9.99515 4.91195 10.8999 5.00106 11.7222 5.34164C12.5444 5.68222 13.2472 6.25897 13.7416 6.99897C14.2361 7.73896 14.5 8.60895 14.5 9.49893C14.5 10.6925 14.0259 11.8371 13.1821 12.6812C12.3382 13.5252 11.1937 13.9996 10.0001 13.9999V13.9988Z" fill="#00811F" />
-                    </svg>
+                    {% include "icons/pin-filled.svg" %}
                     Locatie
                 </h2>
             </summary>
@@ -206,7 +194,7 @@
                 </div>
                 <div class="container__map full-width">
                     <div class="map map--single"
-                         id="incidentMap"
+                         id="taken_kaart"
                          data-action="touchstart->detail#onTwoFingerDrag touchend->detail#onTwoFingerDrag">
                         <div class="map__overlay">
                             <span>Gebruik twee vingers om de kaart te verplaatsen</span>
@@ -218,21 +206,7 @@
         <details>
             <summary>
                 <h2>
-                    <svg width="20"
-                         height="22"
-                         viewBox="0 0 20 22"
-                         fill="none"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 4H7V6H4V4Z" fill="#00811F" />
-                        <path d="M7 8H4V10H7V8Z" fill="#00811F" />
-                        <path d="M4 12H7V14H4V12Z" fill="#00811F" />
-                        <path d="M7 16H4V18H7V16Z" fill="#00811F" />
-                        <path d="M8 4H16V6H8V4Z" fill="#00811F" />
-                        <path d="M16 8H8V10H16V8Z" fill="#00811F" />
-                        <path d="M8 12H16V14H8V12Z" fill="#00811F" />
-                        <path d="M16 16H8V18H16V16Z" fill="#00811F" />
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V22H20V0H0ZM18 2H2V20H18V2Z" fill="#00811F" />
-                    </svg>
+                    {% include "icons/melding.svg" %}
                     Melding
                 </h2>
             </summary>
@@ -394,14 +368,7 @@
         <details>
             <summary>
                 <h2>
-                    <svg width="21"
-                         height="22"
-                         viewBox="0 0 21 22"
-                         fill="none"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path d="M19.0009 11C19.0009 15.9706 14.9715 20 10.0009 20C6.96008 20 4.27145 18.4919 2.64218 16.1829L0.953125 17.2577C2.93876 20.1233 6.25068 22 10.0009 22C16.0761 22 21.0009 17.0751 21.0009 11C21.0009 4.92487 16.0761 0 10.0009 0C6.96339 0 4.21339 1.23121 2.22279 3.22181L1.00098 2V6H5.00098L3.637 4.63602C5.26568 3.00735 7.51567 2 10.0009 2C14.9715 2 19.0009 6.02944 19.0009 11Z" fill="#00811F" />
-                        <path d="M9.00098 5H11.001V11.8573L15.1973 14.28L14.1973 16.0121L9.00098 13V5Z" fill="#00811F" />
-                    </svg>
+                    {% include "icons/history.svg" %}
                     Tijdlijn
                 </h2>
             </summary>

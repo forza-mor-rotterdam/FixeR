@@ -16,6 +16,23 @@ class StandaardFilter:
     def choices(self):
         return self._choices
 
+    def active_choices(self, values):
+        choices = [
+            (
+                v[0],
+                v[1]
+                if not isinstance(v[1], (list, tuple))
+                else [vv for vv in v[1] if vv[0] in values],
+            )
+            for v in self.choices()
+            if v[0] in values
+            or (
+                isinstance(v[1], (list, tuple))
+                and [vv for vv in v[1] if vv[0] in values]
+            )
+        ]
+        return choices
+
     @classmethod
     def filter_lookup(cls):
         return cls._filter_lookup
@@ -63,7 +80,7 @@ class TaaktypeFilter(StandaardFilter):
 
     def choices(self):
         return [
-            (taaktype["id"], taaktype["omschrijving"])
+            (f"{taaktype['id']}", taaktype["omschrijving"])
             for taaktype in self._profiel.taaktypes.values("id", "omschrijving")
         ]
 

@@ -2,27 +2,12 @@ import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
 export default class extends Controller {
+  static targets = ['gpsField', 'takenKaart']
   static outlets = ['taken']
 
-  currentPosition = { coords: { latitude: 51.9247772, longitude: 4.4780972 } }
-  incidentlist = null
-  detail = null
-  kaartModus = null
-  kaartStatus = null
-
   initialize() {
-    const status = {
-      zoom: 16,
-      center: [this.currentPosition.coords.latitude, this.currentPosition.coords.longitude],
-    }
-    this.kaartModus = 'volgen'
-    this.kaartStatus = {
-      volgen: status,
-      toon_alles: status,
-    }
-    if (!sessionStorage.getItem('kaartStatus')) {
-      sessionStorage.setItem('kaartStatus', JSON.stringify(this.kaartStatus))
-    }
+    this.incidentlist = null
+    this.detail = null
 
     navigator.geolocation.getCurrentPosition(
       this.getCurrentPositionSuccess,
@@ -77,7 +62,10 @@ export default class extends Controller {
       }, 200)
     }
   }
-
+  takenKaartTargetConnected(takenKaart) {
+    console.log('takenKaart')
+    console.log(takenKaart)
+  }
   connect() {
     console.log('CONNECT MAIN, removing selectedTaakId from sessionStorage')
     sessionStorage.removeItem('selectedTaakId')
@@ -86,38 +74,49 @@ export default class extends Controller {
   childControllerConnectedEventHandler = (e) => {
     if (e.detail.controller.identifier === 'incidentlist') {
       this.incidentlist = e.detail.controller
-      this.incidentlist.positionWatchSuccess(this.currentPosition)
+      // this.incidentlist.positionWatchSuccess(this.currentPosition)
     }
     if (e.detail.controller.identifier === 'detail') {
       this.detail = e.detail.controller
-      this.detail.positionWatchSuccess(this.currentPosition)
+      // this.detail.positionWatchSuccess(this.currentPosition)
     }
   }
 
   getCurrentPositionSuccess = (position) => {
-    this.positionWatchSuccess(position)
-  }
+    document.body.classList.remove('geolocation-error')
+    console.log('getCurrentPositionSuccess')
 
-  positionWatchSuccess = (position) => {
-    const myLocation = new L.LatLng(
-      this.currentPosition.coords.latitude,
-      this.currentPosition.coords.longitude
-    )
-    const distance = myLocation.distanceTo([position.coords.latitude, position.coords.longitude])
-    if (distance > 5) {
+    let distance = null
+    if (this.currentPosition) {
+      const myLocation = new L.LatLng(
+        this.currentPosition.coords.latitude,
+        this.currentPosition.coords.longitude
+      )
+      distance = myLocation.distanceTo([position.coords.latitude, position.coords.longitude])
+    }
+    if (!distance || distance > 5) {
       this.currentPosition = position
-      if (this.incidentlist) {
-        this.incidentlist.positionWatchSuccess(position)
-      }
-      if (this.detail) {
-        this.detail.positionWatchSuccess(position)
-      }
+      this.gpsFieldTarget.value = `${this.currentPosition.coords.latitude},${this.currentPosition.coords.longitude}`
+      this.positionWatchSuccess()
     }
   }
 
+  positionWatchSuccess = () => {
+    this.takenKaartTarget?.takenKaart?.positionChangeEvent(this.currentPosition)
+    this.detail?.positionWatchSuccess(this.currentPosition)
+  }
   positionWatchError = (error) => {
-    console.log('positionWatchError controller id:', this.identifier)
-    console.log('handleNoCurrentLocation, error: ', error)
+    console.log('positionWatchError: ', error)
+    document.body.classList.remove('geolocation-error')
+
+    const errorCodeExplanation = {
+      1: 'Je hebt locatie bepaling voor FixeR uit staan. Ga naar de locatie instellingen van je browser om deze aan te zetten!',
+      2: 'Zit je soms in de put!',
+      3: 'Het bepalen van je locatie duurt te lang!',
+      4: 'Locatie fout!',
+    }
+    console.log(errorCodeExplanation)
+
     switch (error.code) {
       case error.PERMISSION_DENIED:
         console.log('User denied the request for Geolocation.')
@@ -132,7 +131,6 @@ export default class extends Controller {
         console.log('An unknown error occurred.')
         break
     }
-    this.getCurrentPositionSuccess(this.currentPosition)
   }
 
   showFilters() {
@@ -143,29 +141,5 @@ export default class extends Controller {
 
   hideFilters() {
     document.body.classList.remove('show-filters')
-  }
-
-  setKaartModus(_kaartModus) {
-    this.kaartModus = _kaartModus
-  }
-
-  getCurrentPosition() {
-    return this.currentPosition
-  }
-
-  getKaartModus() {
-    return this.kaartModus
-  }
-
-  setKaartStatus(_kaartStatus) {
-    this.kaartStatus[this.kaartModus] = _kaartStatus
-    const sessionState = JSON.parse(sessionStorage.getItem('kaartStatus')) || {}
-    sessionState[this.kaartModus] = _kaartStatus
-    sessionStorage.setItem('kaartStatus', JSON.stringify(sessionState))
-  }
-
-  getKaartStatus() {
-    const sessionState = JSON.parse(sessionStorage.getItem('kaartStatus')) || {}
-    return sessionState[this.kaartModus]
   }
 }

@@ -1,10 +1,9 @@
 <details class="filter"
-         data-action="filter#toggleActiveFilter"
          id="foldout_{{ field.label|slugify }}"
          {% if filter.folded %}open{% endif %}>
     <summary>
         <span>{{ field.label }}</span>
-        <span>({{ filter.active|length }})</span>
+        <span>(<span data-filter-target="selectedChoicesCount"></span>)</span>
     </summary>
     <div class="container__list--districts foldout">
         <div class="container__list--header">
@@ -15,6 +14,8 @@
                 <button class="btn btn-textlink" data-action="filter#selectAll">/ niets</button>
             </div>
         </div>
-        {{ field }}
+        <ul>
+            {{ field }}
+        </ul>
     </div>
 </details>

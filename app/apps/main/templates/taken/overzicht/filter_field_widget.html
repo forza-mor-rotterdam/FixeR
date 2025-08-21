@@ -3,12 +3,11 @@
         {% if group %}
             <li>
                 <details class="filter"
-                         data-action="filter#toggleActiveFilter"
                          id="foldout_{{ group|slugify }}"
                          {% if filter.folded %}open{% endif %}>
                     <summary>
                         <span>{{ group }}</span>
-                        <span>({{ filter.active|length }})</span>
+                        <span>(<span data-filter-target="selectedChoicesCount"></span>)</span>
                     </summary>
                     <div class="container__list--districts foldout">
                         <div class="container__list--header">
@@ -20,13 +19,13 @@
                                 <button class="btn btn-textlink" data-action="filter#selectAll">/ niets</button>
                             </div>
                         </div>
-                    {% endif %}
-                    <ul class="list-clean" data-test-id="incidentFilter{{ f.naam|capfirst }}">
+                        <ul class="list-clean" data-test-id="incidentFilter{{ f.naam|capfirst }}">
+                        {% endif %}
                         {% for option in options %}
                             {% include option.template_name with widget=option %}
                         {% endfor %}
-                    </ul>
-                    {% if group %}
+                        {% if group %}
+                        </ul>
                     </div>
                 </details>
             </li>

@@ -1,47 +1,59 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['foldoutStatesField', 'filterInput', 'cancelZoek', 'zoekField', 'pageField']
+  static targets = [
+    'foldoutStatesField',
+    'filterInput',
+    'cancelZoek',
+    'zoekField',
+    'pageField',
+    'selectedChoicesCount',
+    'selectedChoicesTotalCount',
+    'takenKaart',
+    'kaartModusOption',
+    'taakPopup',
+  ]
   static values = {
     activeFilterCount: String,
   }
   initialize() {
-    let self = this
-    console.log(self.identifier)
-    self.element[self.identifier] = self
+    this.kaartModus = null
+    console.log(this.identifier)
+    this.element[this.identifier] = this
     let childControllerConnectedEvent = new CustomEvent('childControllerConnectedEvent', {
       bubbles: true,
       cancelable: false,
       detail: {
-        controller: self,
+        controller: this,
       },
     })
     this.cancelZoekTarget.classList[this.zoekFieldTarget.value.length > 0 ? 'remove' : 'add'](
       'hide'
     )
     window.dispatchEvent(childControllerConnectedEvent)
+    this.updateSelectedChoicesCount()
+  }
+  connect() {
+    // console.log('connect: this.takenKaartTarget.takenKaart, ', this.takenKaartTarget.takenKaart)
+  }
+  updateSelectedChoicesCount() {
+    this.selectedChoicesCountTargets.map((elem) => {
+      let container = elem.closest('details.filter')
+      if (!container || container.classList.contains('filter--active')) {
+        container = elem.closest('form')
+      }
+      elem.textContent = `${
+        Array.from(container.querySelectorAll('li.filter-option-container input:checked')).length
+      }`
+    })
   }
   removeFilter(e) {
-    const input = document.querySelector(`[id="${e.params.code}"]`)
+    const input = document.querySelector(`[name="${e.params.name}"][value="${e.params.value}"]`)
     input.checked = false
-    this.element.requestSubmit()
-  }
-  toggleActiveFilter(e) {
-    e.preventDefault()
-    const input = this.foldoutStatesFieldTarget
-    let idArray = JSON.parse(input.value)
-    const idAttr = e.target.getAttribute('id')
-    const isOpen = e.target.hasAttribute('open')
-    let index = idArray.indexOf(idAttr)
-    if (index > -1) {
-      idArray.splice(index, 1)
-    }
-    if (isOpen) {
-      idArray.push(idAttr)
-    }
-    input.value = JSON.stringify(idArray)
+    this.updateSelectedChoicesCount()
   }
   onChangeFilter() {
+    this.updateSelectedChoicesCount()
     this.element.requestSubmit()
   }
   selectAll(e) {
@@ -50,6 +62,7 @@ export default class extends Controller {
     checkList.forEach((element) => {
       element.checked = doCheck
     })
+    this.updateSelectedChoicesCount()
   }
 
   removeAllFilters() {
@@ -57,6 +70,7 @@ export default class extends Controller {
     this.filterInputTargets.forEach((input) => {
       input.checked = false
     })
+    this.updateSelectedChoicesCount()
   }
   onCancelSearch() {
     this.zoekFieldTarget.value = ''
@@ -76,13 +90,32 @@ export default class extends Controller {
 
     this.cancelZoekTarget.classList[e.target.value.length > 0 ? 'remove' : 'add']('hide')
   }
+  onSortingChangeHandler() {
+    this.element.requestSubmit()
+  }
+  onGPSChangeHandler(e) {
+    console.log('onGPSChangeHandler: ', e.target)
+  }
   onPageClickEvent(e) {
-    console.log(e.params.page)
     this.pageFieldTarget.value = e.params.page
     this.element.requestSubmit()
     this.pageFieldTarget.value = 1
   }
-  kaartModusOptionClickHandler() {
+  kaartModusOptionClickHandler(e) {
+    const li = e.target.closest('li')
+    Array.from(e.target.closest('ul').querySelectorAll('li')).map((elem) => {
+      elem.classList[li == elem ? 'add' : 'remove']('active')
+    })
+    this.kaartModus = e.target.value
+    this.takenKaartTarget?.takenKaart?.kaartModusChangeHandler(this.kaartModus)
     this.element.requestSubmit()
+  }
+  takenKaartTargetConnected() {
+    setTimeout(() => {
+      this.takenKaartTarget?.takenKaart?.kaartModusChangeHandler(this.kaartModus)
+    }, 1)
+  }
+  kaartModusOptionTargetConnected(kaartModusOption) {
+    this.kaartModus = kaartModusOption.checked ? kaartModusOption.value : this.kaartModus
   }
 }

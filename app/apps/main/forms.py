@@ -2,6 +2,7 @@ import logging
 
 from apps.taken.filters import FILTERS
 from apps.taken.models import Taak
+from deepdiff import DeepDiff
 from django import forms
 
 logger = logging.getLogger(__name__)
@@ -121,6 +122,7 @@ class SorteerFilterForm(forms.Form):
             ("Postcode", "Postcode (1000-9999)"),
             ("Postcode-reverse", "Postcode (9999-1000)"),
         ),
+        initial="Datum-reverse",
     )
 
     def __init__(self, *args, **kwargs):
@@ -174,6 +176,15 @@ class KaartModusRadioSelect(forms.RadioSelect):
 
 
 class TakenLijstFilterForm(forms.Form):
+    gps = forms.CharField(
+        widget=forms.HiddenInput(
+            attrs={
+                "data-action": "filter#onGPSChangeHandler",
+                "data-main-target": "gpsField",
+            }
+        ),
+        required=False,
+    )
     page = forms.CharField(
         widget=forms.HiddenInput(
             attrs={
@@ -195,22 +206,10 @@ class TakenLijstFilterForm(forms.Form):
         ),
         required=False,
     )
-    q_mobile = forms.CharField(
-        widget=forms.SearchInput(
-            attrs={
-                "class": "form-control search",
-                "maxlength": 50,
-                "placeholder": "Zoek op straatnaam of MeldR-nummer",
-                "data-zoekfilter-target": "zoekField",
-                "data-action": "filter#onZoekChangeHandler",
-            }
-        ),
-        required=False,
-    )
     sorteer_opties = forms.ChoiceField(
         widget=forms.Select(
             attrs={
-                "data-action": "sorteerFilter#onChangeHandler",
+                "data-action": "filter#onSortingChangeHandler",
                 "data-sorteerFilter-target": "sorteerField",
             }
         ),
@@ -229,21 +228,14 @@ class TakenLijstFilterForm(forms.Form):
         widget=KaartModusRadioSelect(
             attrs={
                 "class": "list--form-radio-input",
-                "data-action": "click->filter#kaartModusOptionClickHandler",
+                "data-action": "filter#kaartModusOptionClickHandler",
+                "data-filter-target": "kaartModusOption",
                 "hideLabel": True,
             }
         ),
         choices=(
             ("volgen", "Volg mijn locatie"),
             ("toon_alles", "Toon alle taken"),
-        ),
-        required=False,
-    )
-    foldout_states = forms.CharField(
-        widget=forms.HiddenInput(
-            attrs={
-                "data-filter-target": "foldoutStatesField",
-            }
         ),
         required=False,
     )
@@ -255,17 +247,11 @@ class TakenLijstFilterForm(forms.Form):
     ]
 
     def __init__(self, *args, **kwargs):
-        self.profiel = kwargs.pop("profiel", None)
-        self.filters = kwargs.pop("filters", None)
+        self.request = kwargs.pop("request", None)
+        profiel = self.request.user.profiel
         super().__init__(*args, **kwargs)
 
-        self.filters = [
-            f(profiel=self.profiel)
-            for f in FILTERS
-            if f.key() in self.profiel.context.filters.get("fields", [])
-        ]
-
-        for f in self.filters:
+        for f in profiel.taken_filters:
             self.fields[f.key()] = forms.MultipleChoiceField(
                 widget=TaakFilterCheckboxSelectMultiple(
                     attrs={
@@ -280,25 +266,76 @@ class TakenLijstFilterForm(forms.Form):
                 required=False,
                 label=f.label(),
             )
-        print(self.fields.keys())
+        self.fields["sorteer_opties"].choices = profiel.taken_sorting_choices
 
     def filter_fields(self):
+        profiel = self.request.user.profiel
         return [
-            field for field in self if field.name in [f.key() for f in self.filters]
+            field
+            for field in self
+            if field.name in [f.key() for f in profiel.taken_filters]
         ]
 
+    def active_filter_options(self):
+        profiel = self.request.user.profiel
+        active_profiel_selected_filter_opties = {
+            k: v for k, v in profiel.taken_filter_data.items() if v
+        }
+        return [
+            (
+                f.key(),
+                self.fields[f.key()].label,
+                f(profiel=profiel).active_choices(
+                    active_profiel_selected_filter_opties[f.key()]
+                ),
+            )
+            for f in FILTERS
+            if f.key() in profiel.context.filters.get("fields", [])
+            and f.key() in active_profiel_selected_filter_opties.keys()
+        ]
+
+    def changed_fields(self):
+        return {
+            f"{field}_changed": getattr(self, f"{field}_changed")
+            for field in ["filters", "sorteer_opties", "kaart_modus", "q"]
+            if hasattr(self, f"{field}_changed")
+        }
+
     def save(self):
+        profiel = self.request.user.profiel
         data = self.cleaned_data
         status = "nieuw"
-        actieve_filters = {f.key(): data.get(f.key()) for f in self.filters}
-        self.profiel.filters.update({status: actieve_filters})
-        self.profiel.ui_instellingen.update(
+
+        actieve_filters = {f.key(): data.get(f.key()) for f in profiel.taken_filters}
+
+        # changed fields
+        self.filters_changed = bool(
+            DeepDiff(
+                profiel.taken_filter_validated_data,
+                {k: v for k, v in actieve_filters.items() if v},
+            )
+        )
+        self.sorteer_opties_changed = data.get(
+            "sorteer_opties"
+        ) != profiel.ui_instellingen.get("sortering")
+        self.kaart_modus_changed = data.get(
+            "kaart_modus"
+        ) != profiel.ui_instellingen.get("kaart_modus")
+        self.q_changed = data.get("q") != self.request.session.get("q")
+
+        self.test = "testing"
+
+        # update profiel fields
+        profiel.filters.update({status: actieve_filters})
+        profiel.ui_instellingen.update(
             {
                 "kaart_modus": data.get(
                     "kaart_modus",
-                    self.profiel.ui_instellingen.get("kaart_modus", "volgen"),
-                )
+                    profiel.ui_instellingen.get("kaart_modus", "volgen"),
+                ),
+                "sortering": data.get("sorteer_opties", "Datum-reverse"),
             }
         )
-
-        self.profiel.save()
+        profiel.save()
+        # update session fields
+        self.request.session["q"] = data.get("q", "")

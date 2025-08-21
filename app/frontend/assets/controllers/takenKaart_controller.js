@@ -1,8 +1,14 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
+const KaartModus = Object.freeze({
+  TOON_ALLES: 'toon_alles',
+  VOLGEN: 'volgen',
+})
+const StandaardKaartCenter = { coords: { latitude: 51.9247772, longitude: 4.4780972 } }
+const StandaardKaartZoom = 18
 
 export default class MapController extends Controller {
-  static outlets = ['main']
+  // static outlets = ['main']
   static createMarkerIcons = () => ({
     blue: L.icon({
       iconUrl:
@@ -21,28 +27,43 @@ export default class MapController extends Controller {
   })
   static markerIcons = MapController.createMarkerIcons()
 
-  markerList = []
-  markerMe = null
-  map = null
-  markers = null
-  buurten = null
+  initialize() {
+    this.kaartId = 'taken_kaart'
+    console.log(this.identifier)
+    this.element[this.identifier] = this
+    this.markerList = []
+    this.markerMe = null
+    this.markers = null
+    this.buurten = null
+    this.kaartModus = KaartModus.TOON_ALLES
+    this.map = L.map(this.kaartId, {
+      zoom: this.getZoom(),
+      center: [StandaardKaartCenter.coords.latitude, StandaardKaartCenter.coords.longitude],
+    })
 
-  initialize = () => {
-    this.map = L.map('incidentMap', this.mainOutlet.getKaartStatus())
-
-    if (this.element) {
-      this.drawMap()
-      this.setupEventListeners()
-    }
+    this.drawMap()
+    this.setupEventListeners()
   }
+  connect() {
+    this.element[this.identifier] = this
+  }
+  getZoom() {
+    return sessionStorage.getItem('kaartZoom') || StandaardKaartZoom
+  }
+  setZoom(zoom) {
+    sessionStorage.setItem('kaartZoom', zoom)
+  }
+  // getCenter(){
+  //   return JSON.parse(sessionStorage.getItem('kaartCenter')) || [StandaardKaartCenter.coords.latitude, StandaardKaartCenter.coords.longitude]
+  // }
+  // setCenter(zoom){
+  //   sessionStorage.setItem('kaartCenter', JSON.stringify(zoom))
+  // }
 
   setupEventListeners = () => {
-    this.map.on('moveend zoomend', () => {
-      this.mainOutlet.setKaartStatus({
-        zoom: this.map.getZoom(),
-        center: this.map.getCenter(),
-      })
-    })
+    // this.map.on('moveend zoomend', () => {
+    //   this.setCenter(this.map.getCenter())
+    // })
 
     this.map.on('popupopen popupclose', ({ popup }) => {
       if (popup instanceof L.Popup) {
@@ -103,7 +124,7 @@ export default class MapController extends Controller {
       this.map.closePopup()
     })
 
-    resizeObserver.observe(document.getElementById('incidentMap'))
+    resizeObserver.observe(document.getElementById(this.kaartId))
   }
 
   createMarkersLayer = () => {
@@ -115,23 +136,26 @@ export default class MapController extends Controller {
     const obj = this.markerList.find((obj) => obj.options.taakId == taakId)
     obj.openPopup()
   }
+  toonAlles = () => this.map.fitBounds(this.markers.getBounds())
+  volgen = () => this.map.flyTo(this.markerMe.getLatLng(), this.getZoom())
 
-  kaartModusChangeHandler = (_kaartModus) => {
+  kaartModusChangeHandler = (kaartModus) => {
+    this.kaartModus = kaartModus
     if (!this.markerMe) {
+      this.toonAlles()
       return
     }
-    this.mainOutlet.setKaartModus(_kaartModus)
-    switch (_kaartModus) {
-      case 'volgen':
-        this.map.flyTo(this.markerMe.getLatLng(), this.mainOutlet.getKaartStatus().zoom)
+    switch (this.kaartModus) {
+      case KaartModus.VOLGEN:
+        this.volgen()
         break
 
-      case 'toon_alles':
-        this.map.fitBounds(this.markers.getBounds())
+      case KaartModus.TOON_ALLES:
+        this.setZoom(this.map.getZoom())
+        this.toonAlles()
         break
     }
   }
-
   onTwoFingerDrag(event) {
     if (event.type === 'touchstart' && event.touches.length === 1) {
       event.currentTarget.classList.add('swiping')
@@ -141,6 +165,7 @@ export default class MapController extends Controller {
   }
 
   positionChangeEvent = (position) => {
+    console.log('KAART: positionChangeEvent: ', position)
     if (!this.markerMe) {
       this.markerMe = new L.Marker([position.coords.latitude, position.coords.longitude], {
         icon: MapController.markerIcons.blue,
@@ -149,8 +174,11 @@ export default class MapController extends Controller {
     } else {
       this.markerMe.setLatLng([position.coords.latitude, position.coords.longitude])
     }
-    if (this.mainOutlet.getKaartModus() === 'volgen') {
-      this.map.setView(this.markerMe.getLatLng(), this.mainOutlet.getKaartStatus().zoom)
+    if (this.kaartModus === KaartModus.VOLGEN) {
+      // this.map.setView(this.markerMe.getLatLng(), this.getZoom())
+      this.volgen()
+    } else if (this.kaartModus === KaartModus.TOON_ALLES) {
+      this.toonAlles()
     }
   }
 
@@ -210,7 +238,7 @@ export default class MapController extends Controller {
           ? `<span class="badge-count badge-count--info">i</span>`
           : ''
         const anchorDetail = `<a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">Details ${spanRemark}</a>`
-        const anchorNavigeer = `<a href="#" data-kaart-title-param="Navigeren" data-kaart-url-param="/navigeer/${lat}/${long}" data-kaart-id-param="navigeer" data-action="kaart#makeRoute">Navigeren</a>`
+        const anchorNavigeer = `<a href="#" data-takenKaart-title-param="Navigeren" data-takenKaart-url-param="/navigeer/${lat}/${long}" data-takenKaart-id-param="navigeer" data-action="takenKaart#makeRoute">Navigeren</a>`
         const divDetailNavigeer = `<div class="">${anchorDetail} ${anchorNavigeer}</div>`
 
         const popupContent = afbeelding

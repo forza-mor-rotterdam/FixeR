@@ -28,6 +28,7 @@ django-select2==8.1.2
 Pillow==9.4.0
 pillow-heif==0.13.0
 sorl-thumbnail==12.11.0
+deepdiff==8.6.0
 
 
 redis==4.5.5
