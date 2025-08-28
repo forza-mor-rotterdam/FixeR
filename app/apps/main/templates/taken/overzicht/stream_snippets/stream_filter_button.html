@@ -1,0 +1,18 @@
+{% if page_obj.paginator.count == 0 %}
+    <button type="button"
+            class="btn btn-action"
+            data-action="taken-overzicht#hideFilters"
+            disabled="disabled">Er zijn geen meldingen, pas filter aan</button>
+{% else %}
+    <button type="button"
+            class="btn btn-action"
+            data-action="taken-overzicht#hideFilters">
+        {% if page_obj.paginator.count > 1 %}
+            Toon {{ page_obj.paginator.count }} taken
+        {% elif page_obj.paginator.count == 1 %}
+            Toon 1 taak
+        {% else %}
+            Geen taken
+        {% endif %}
+    </button>
+{% endif %}

@@ -66,107 +66,102 @@
         width: 100%;
     }
 }
-.container__map-tools {
-    height: 76px;
+.kaart-modus-widget {
+    margin: 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    li {
+        flex: 0;
+        align-self: flex-end;
+        border: none;
+        margin-left: 0;
+        &:first-child {
+            margin-right: 1rem;
 
-    .form__kaart-modus {
-        padding: 16px 0;
-        ul {
-            margin: 0;
-            display: flex;
-            justify-content: flex-end;
-            align-items: flex-end;
-        }
-
-        li {
-            flex: 0;
-            align-self: flex-end;
-            border: none;
-            margin-left: 0;
-            &:first-child {
-                margin-right: 1rem;
-
-                label {
-                    &::before {
-                        content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC40MTQzIDMuMjEwNDVMMTIuNjkwNCAyMi41MjAzTDkuNDcyMSAxNC4xNTI3TDEuMTA0NDkgMTAuOTM0NEwyMC40MTQzIDMuMjEwNDVaTTUuMjExODIgMTAuOTA3TDEwLjYzMjggMTIuOTkyTDEyLjcxNzggMTguNDEzTDE3LjcyMTggNS45MDMwM0w1LjIxMTgyIDEwLjkwN1oiIGZpbGw9IiM0MDRCNEYiLz4KPC9zdmc+Cg==");
-                        position: absolute;
-                        top: 50%;
-                        left: 10px;
-                        transform: translateY(-38%);
-                    }
-                }
-            }
-            &:nth-child(2) {
-                label {
-                    &::before {
-                        content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNy44MzM0IDQuNjY2MTRDMTQuNjI0OSAxLjQ1NzY0IDkuMzc0NjQgMS40NTc2NCA2LjE2NjE0IDQuNjY2MTRDMi45NTc2NCA3Ljg3NDY0IDIuOTU3NjQgMTMuMTI0OSA2LjE2NjE0IDE2LjMzMzRMMTEuOTk5OCAyMi4xNjdMMTcuODMwNiAxNi4zMzYyTDE3LjgzMzQgMTYuMzMzNEMyMS4wNDE5IDEzLjEyNDkgMjEuMDQxOSA3Ljg3NDY0IDE3LjgzMzQgNC42NjYxNFpNMTEuOTk5OCAxMy40OTk4QzEzLjY1NjYgMTMuNDk5OCAxNC45OTk4IDEyLjE1NjYgMTQuOTk5OCAxMC40OTk4QzE0Ljk5OTggOC44NDI5MiAxMy42NTY2IDcuNDk5NzcgMTEuOTk5OCA3LjQ5OTc3QzEwLjM0MjkgNy40OTk3NyA4Ljk5OTc2IDguODQyOTIgOC45OTk3NiAxMC40OTk4QzguOTk5NzYgMTIuMTU2NiAxMC4zNDI5IDEzLjQ5OTggMTEuOTk5OCAxMy40OTk4WiIgZmlsbD0iIzQwNEI0RiIvPgo8L3N2Zz4K");
-                        position: absolute;
-                        top: 50%;
-                        left: 10px;
-                        transform: translateY(-38%);
-                    }
+            label {
+                &::before {
+                    content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC40MTQzIDMuMjEwNDVMMTIuNjkwNCAyMi41MjAzTDkuNDcyMSAxNC4xNTI3TDEuMTA0NDkgMTAuOTM0NEwyMC40MTQzIDMuMjEwNDVaTTUuMjExODIgMTAuOTA3TDEwLjYzMjggMTIuOTkyTDEyLjcxNzggMTguNDEzTDE3LjcyMTggNS45MDMwM0w1LjIxMTgyIDEwLjkwN1oiIGZpbGw9IiM0MDRCNEYiLz4KPC9zdmc+Cg==");
+                    position: absolute;
+                    top: 50%;
+                    left: 10px;
+                    transform: translateY(-38%);
                 }
             }
         }
+        &:nth-child(2) {
+            label {
+                &::before {
+                    content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNy44MzM0IDQuNjY2MTRDMTQuNjI0OSAxLjQ1NzY0IDkuMzc0NjQgMS40NTc2NCA2LjE2NjE0IDQuNjY2MTRDMi45NTc2NCA3Ljg3NDY0IDIuOTU3NjQgMTMuMTI0OSA2LjE2NjE0IDE2LjMzMzRMMTEuOTk5OCAyMi4xNjdMMTcuODMwNiAxNi4zMzYyTDE3LjgzMzQgMTYuMzMzNEMyMS4wNDE5IDEzLjEyNDkgMjEuMDQxOSA3Ljg3NDY0IDE3LjgzMzQgNC42NjYxNFpNMTEuOTk5OCAxMy40OTk4QzEzLjY1NjYgMTMuNDk5OCAxNC45OTk4IDEyLjE1NjYgMTQuOTk5OCAxMC40OTk4QzE0Ljk5OTggOC44NDI5MiAxMy42NTY2IDcuNDk5NzcgMTEuOTk5OCA3LjQ5OTc3QzEwLjM0MjkgNy40OTk3NyA4Ljk5OTc2IDguODQyOTIgOC45OTk3NiAxMC40OTk4QzguOTk5NzYgMTIuMTU2NiAxMC4zNDI5IDEzLjQ5OTggMTEuOTk5OCAxMy40OTk4WiIgZmlsbD0iIzQwNEI0RiIvPgo8L3N2Zz4K");
+                    position: absolute;
+                    top: 50%;
+                    left: 10px;
+                    transform: translateY(-38%);
+                }
+            }
+        }
+    }
+    label {
+        @extend .btn;
+        text-align: center;
+        line-height: 2.6em !important;
+        padding: 0 12px 0 39px !important;
+        height: 40px;
+        display: inline-block;
+        background-color: $white;
+        white-space: nowrap;
+        box-sizing: border-box;
+        position: relative;
+        border: 1px solid $gray-tint08;
+        box-sizing: border-box;
+    }
+    .active {
         label {
-            @extend .btn;
-            text-align: center;
-            line-height: 2.6em !important;
-            padding: 0 12px 0 39px !important;
-            height: 40px;
-            display: inline-block;
-            background-color: $white;
-            white-space: nowrap;
-            box-sizing: border-box;
-            position: relative;
-            border: 1px solid $gray-tint08;
-            box-sizing: border-box;
+            height: 38px;
+            line-height: 2.4em !important;
+            border: 3px solid $gray-tint11;
+            padding: 0 10px 0 37px;
+        }
+    }
+    input[type="radio"] {
+        @extend .visually-hidden;
+    }
+    .disabled {
+        pointer-events: none;
+        opacity: 0.3;
+    }
+    @media (min-width: map-get($grid-breakpoints, sm)) {
+        label {
+            font-size: 1em;
+        }
+    }
+    .fz-large & {
+        label {
+            line-height: 1.8em !important;
         }
         .active {
             label {
-                height: 38px;
-                line-height: 2.4em !important;
-                border: 3px solid $gray-tint11;
-                padding: 0 10px 0 37px;
-            }
-        }
-        input[type="radio"] {
-            @extend .visually-hidden;
-        }
-    }
-
-    @media (min-width: map-get($grid-breakpoints, sm)) {
-        .form__kaart-modus {
-            label {
-                font-size: 1em;
-            }
-        }
-    }
-
-    .fz-large & {
-        .form__kaart-modus {
-            label {
-                line-height: 1.8em !important;
-            }
-            .active {
-                label {
-                    line-height: 1.6em !important;
-                }
+                line-height: 1.6em !important;
             }
         }
     }
 
     .fz-xlarge & {
-        .form__kaart-modus {
+        label {
+            line-height: 1.3em !important;
+        }
+        .active {
             label {
-                line-height: 1.3em !important;
-            }
-            .active {
-                label {
-                    line-height: 1.1em !important;
-                }
+                line-height: 1.1em !important;
             }
         }
+    }
+}
+.container__map-tools {
+    height: 76px;
+
+    .form__kaart-modus {
+        padding: 16px 0;
     }
 }
 

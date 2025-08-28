@@ -4,9 +4,9 @@
         {% if optie.checked %}
             <li class="js-filter-active">
                 <button class="btn btn-secondary btn-filter--active"
-                        data-action="filter#removeFilter"
-                        data-filter-code-param="{{ filter.key }}_{{ optie.id }}"
-                        data-filter-description-param="{{ filter.key }}">
+                        data-action="taken-overzicht#removeFilter"
+                        data-taken-overzicht-code-param="{{ filter.key }}_{{ optie.id }}"
+                        data-taken-overzicht-description-param="{{ filter.key }}">
                     <span>{{ optie.filter_label }}</span>
                 </button>
             </li>

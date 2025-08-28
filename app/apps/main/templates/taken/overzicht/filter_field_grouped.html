@@ -1,12 +1,21 @@
 <details class="filter"
-         data-action="filter#toggleActiveFilter"
-         id="foldout_{{ filter.group_key }}"
+         id="foldout_{{ field.label|slugify }}"
          {% if filter.folded %}open{% endif %}>
     <summary>
         <span>{{ field.label }}</span>
-        <span>({{ filter.active|length }})</span>
+        <span>(<span data-taken-overzicht-target="selectedChoicesCount"></span>)</span>
     </summary>
-    <ul class="list-clean">
-        {{ field }}
-    </ul>
+    <div class="container__list--districts foldout">
+        <div class="container__list--header">
+            <div>
+                <button class="btn btn-textlink"
+                        data-action="taken-overzicht#selectAll"
+                        data-taken-overzicht-filter-type-param="all">Selecteer alles</button>
+                <button class="btn btn-textlink" data-action="taken-overzicht#selectAll">/ niets</button>
+            </div>
+        </div>
+        <ul class="list-clean">
+            {{ field }}
+        </ul>
+    </div>
 </details>

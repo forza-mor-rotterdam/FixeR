@@ -1,0 +1,36 @@
+{% load is_list from list_tags %}
+{% for active_filter in form.active_filter_options %}
+    <li>
+        <h3 class="h5">{{ active_filter.1 }}</h3>
+        <ul class="list-filters--active list-clean">
+            {% for active_filter_option in active_filter.2 %}
+                {% if not active_filter_option.1|is_list %}
+                    <li class="js-filter-active">
+                        <button class="btn btn-secondary btn-filter--active"
+                                data-action="taken-overzicht#removeFilter"
+                                data-taken-overzicht-code-param="id_{{ active_filter.0 }}_{{ active_filter_option.0 }}"
+                                data-taken-overzicht-name-param="{{ active_filter.0 }}"
+                                data-taken-overzicht-description-param="{{ active_filter.0 }}"
+                                data-taken-overzicht-value-param="{{ active_filter_option.0 }}">
+                            <span>{{ active_filter_option.1 }}</span>
+                        </button>
+                    </li>
+                {% else %}
+                    <h3 class="h6">{{ active_filter_option.0 }}</h3>
+                    {% for active_filter_option_group in active_filter_option.1 %}
+                        <li class="js-filter-active">
+                            <button class="btn btn-secondary btn-filter--active"
+                                    data-action="taken-overzicht#removeFilter"
+                                    data-taken-overzicht-code-param="id_{{ active_filter.0 }}_{{ active_filter_option_group.0 }}"
+                                    data-taken-overzicht-name-param="{{ active_filter.0 }}"
+                                    data-taken-overzicht-description-param="{{ active_filter.0 }}"
+                                    data-taken-overzicht-value-param="{{ active_filter_option_group.0 }}">
+                                <span>{{ active_filter_option_group.1 }}</span>
+                            </button>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </li>
+{% endfor %}

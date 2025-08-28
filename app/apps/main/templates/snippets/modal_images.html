@@ -1,10 +1,10 @@
 {# djlint:off #}
 <div class="modal modal--images"
-     data-detail-target="modalImages"
+     data-taak-detail-target="modalImages"
      id="imageModal">
     <div class="modal-backdrop modal-exit"
          id="modal-backdrop"
-         data-action="click->detail#closeModal">
+         data-action="click->taak-detail#closeModal">
     </div>
     <div class="modal-dialog">
         <div class="modal-content">
@@ -16,23 +16,23 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="container__image" data-detail-target="selectedImageModal" style="position: relative">
+                <div class="container__image" data-taak-detail-target="selectedImageModal" style="position: relative">
                     <img class="image" src="" alt="" />
                     <span class="tag--in-image">
-                        <span data-detail-target="selectedImageLabel"></span>
-                        <span class="sublabel" data-detail-target="selectedImageSubLabel"></span>
+                        <span data-taak-detail-target="selectedImageLabel"></span>
+                        <span class="sublabel" data-taak-detail-target="selectedImageSubLabel"></span>
                     </span>
                 </div>
-                <div class="image-counter" data-detail-target="imageCounter"></div>
+                <div class="image-counter" data-taak-detail-target="imageCounter"></div>
                 <div class="container__navigate-images">
                     <div class="navigate-images--left inactive"
-                        data-detail-target="navigateImagesLeft"
-                        data-action="click->detail#showPreviousImageInModal">
+                        data-taak-detail-target="navigateImagesLeft"
+                        data-action="click->taak-detail#showPreviousImageInModal">
                         <span aria-label="Bekijk vorige afbeelding">{% include "icons/arrow-right.svg" %}</span>
                     </div>
                     <div class="navigate-images--right inactive"
-                        data-detail-target="navigateImagesRight"
-                        data-action="click->detail#showNextImageInModal">
+                        data-taak-detail-target="navigateImagesRight"
+                        data-action="click->taak-detail#showNextImageInModal">
                         <span aria-label="Bekijk volgende afbeelding">{% include "icons/arrow-right.svg" %}</span>
                     </div>
                 </div>

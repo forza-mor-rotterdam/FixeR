@@ -7,17 +7,10 @@
                         {% if page_obj.has_previous %}
                             <li class="has-text">
                                 <div>
-                                    <a data-action="incidentlist#onPageClickEvent"
-                                       data-incidentlist-page-param="{{ page_obj.previous_page_number }}"
+                                    <a data-action="taken-overzicht#onPageClickEvent:prevent"
+                                       data-taken-overzicht-page-param="{{ page_obj.previous_page_number }}"
                                        class="btn--previous">
-                                        <svg width="9"
-                                             height="14"
-                                             viewBox="0 0 9 14"
-                                             fill="none"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z">
-                                            </path>
-                                        </svg>
+                                        {% include "icons/arrow-right.svg" %}
                                         Vorige
                                     </a>
                                 </div>
@@ -26,8 +19,8 @@
                         {% for p in page_obj.paginator.page_range %}
                             {% if p == 1 and page_obj.number >= 3 %}
                                 <li>
-                                    <a data-action="incidentlist#onPageClickEvent"
-                                       data-incidentlist-page-param="{{ p }}"
+                                    <a data-action="taken-overzicht#onPageClickEvent:prevent"
+                                       data-taken-overzicht-page-param="{{ p }}"
                                        href="#">{{ p }}</a>
                                 </li>
                                 {% if page_obj.number >= 4 %}<li>...</li>{% endif %}
@@ -36,16 +29,16 @@
                                     {% if p == page_obj.number %}
                                         <span>{{ p }}</span>
                                     {% else %}
-                                        <a data-action="incidentlist#onPageClickEvent"
-                                           data-incidentlist-page-param="{{ p }}"
+                                        <a data-action="taken-overzicht#onPageClickEvent:prevent"
+                                           data-taken-overzicht-page-param="{{ p }}"
                                            href="#">{{ p }}</a>
                                     {% endif %}
                                 </li>
                             {% elif p == page_obj.paginator.num_pages %}
                                 {% if page_obj.number <= page_obj.paginator.num_pages|add:"-3" %}<li>...</li>{% endif %}
                                 <li>
-                                    <a data-action="incidentlist#onPageClickEvent"
-                                       data-incidentlist-page-param="{{ p }}"
+                                    <a data-action="taken-overzicht#onPageClickEvent:prevent"
+                                       data-taken-overzicht-page-param="{{ p }}"
                                        href="#">{{ p }}</a>
                                 </li>
                             {% endif %}
@@ -53,19 +46,12 @@
                         {% if page_obj.has_next %}
                             <li class="has-text">
                                 <div>
-                                    <a data-action="incidentlist#onPageClickEvent"
-                                       data-incidentlist-page-param="{{ page_obj.next_page_number }}"
+                                    <a data-action="taken-overzicht#onPageClickEvent:prevent"
+                                       data-taken-overzicht-page-param="{{ page_obj.next_page_number }}"
                                        href="#"
                                        class="btn--next">
                                         Volgende
-                                        <svg width="9"
-                                             height="14"
-                                             viewBox="0 0 9 14"
-                                             fill="none"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z">
-                                            </path>
-                                        </svg>
+                                        {% include "icons/arrow-right.svg" %}
                                     </a>
                                 </div>
                             </li>

@@ -1,8 +1,16 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
+const KaartModus = Object.freeze({
+  TOON_ALLES: 'toon_alles',
+  VOLGEN: 'volgen',
+})
+const StandaardKaartCenter = { coords: { latitude: 51.9247772, longitude: 4.4780972 } }
+const StandaardKaartZoom = 18
 
 export default class MapController extends Controller {
-  static outlets = ['main']
+  static outlets = ['taken-lijst']
+  static targets = ['taakPopup']
+
   static createMarkerIcons = () => ({
     blue: L.icon({
       iconUrl:
@@ -21,43 +29,30 @@ export default class MapController extends Controller {
   })
   static markerIcons = MapController.createMarkerIcons()
 
-  markerList = []
-  markerMe = null
-  map = null
-  markers = null
-  buurten = null
-
-  initialize = () => {
-    this.map = L.map('incidentMap', this.mainOutlet.getKaartStatus())
-
-    if (this.element) {
-      this.drawMap()
-      this.setupEventListeners()
-    }
-  }
-
-  setupEventListeners = () => {
-    this.map.on('moveend zoomend', () => {
-      this.mainOutlet.setKaartStatus({
-        zoom: this.map.getZoom(),
-        center: this.map.getCenter(),
-      })
+  initialize() {
+    this.kaartId = 'taken_kaart'
+    this.preventScroll = false
+    this.element[this.identifier] = this
+    this.markerList = []
+    this.markerMe = null
+    this.markers = null
+    this.buurten = null
+    this.kaartModus = KaartModus.TOON_ALLES
+    this.map = L.map(this.kaartId, {
+      zoom: this.getZoom(),
+      center: [StandaardKaartCenter.coords.latitude, StandaardKaartCenter.coords.longitude],
     })
 
-    this.map.on('popupopen popupclose', ({ popup }) => {
-      if (popup instanceof L.Popup) {
-        const marker = popup._source
-        const eventName = popup.isOpen() ? 'markerSelectedEvent' : 'markerDeselectedEvent'
-        const event = new CustomEvent(eventName, {
-          bubbles: true,
-          cancelable: false,
-          detail: { taakId: marker.options.taakId },
-        })
-        this.element.dispatchEvent(event)
-      }
-    })
+    this.drawMap()
+    this.createMarkersLayer()
   }
-
+  connect() {}
+  getZoom() {
+    return sessionStorage.getItem('kaartZoom') || StandaardKaartZoom
+  }
+  setZoom(zoom) {
+    sessionStorage.setItem('kaartZoom', zoom)
+  }
   drawMap = () => {
     const url =
       'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}'
@@ -78,7 +73,6 @@ export default class MapController extends Controller {
     L.tileLayer(url, config).addTo(this.map)
 
     this.setupResizeObserver()
-    this.createMarkersLayer()
 
     this.buurten = L.tileLayer.wms(
       'https://service.pdok.nl/cbs/wijkenbuurten/2022/wms/v1_0?request=GetCapabilities&service=WMS',
@@ -97,41 +91,43 @@ export default class MapController extends Controller {
   setupResizeObserver = () => {
     const resizeObserver = new ResizeObserver(() => {
       this.map.invalidateSize()
-      this.element.dispatchEvent(
-        new CustomEvent('markerDeselectedEvent', { bubbles: true, cancelable: false })
-      )
       this.map.closePopup()
     })
-
-    resizeObserver.observe(document.getElementById('incidentMap'))
+    resizeObserver.observe(document.getElementById(this.kaartId))
   }
-
   createMarkersLayer = () => {
     this.markers = new L.featureGroup()
     this.map.addLayer(this.markers)
   }
 
-  selectTaakMarker(taakId) {
-    const obj = this.markerList.find((obj) => obj.options.taakId == taakId)
+  selectTaakMarker(taakUuid, preventScroll) {
+    const obj = this.markerList.find((obj) => obj.options.taakUuid == taakUuid)
+    this.preventScroll = preventScroll
     obj.openPopup()
   }
+  toonAlles = () => this.map.fitBounds(this.markers.getBounds())
+  volgen = () => this.map.flyTo(this.markerMe.getLatLng(), this.getZoom())
 
-  kaartModusChangeHandler = (_kaartModus) => {
-    if (!this.markerMe) {
+  kaartModusChangeHandler = (kaartModus) => {
+    this.kaartModus = kaartModus
+    if (!Object.keys(this.markers.getBounds()).length) {
       return
     }
-    this.mainOutlet.setKaartModus(_kaartModus)
-    switch (_kaartModus) {
-      case 'volgen':
-        this.map.flyTo(this.markerMe.getLatLng(), this.mainOutlet.getKaartStatus().zoom)
+    if (!this.markerMe) {
+      this.toonAlles()
+      return
+    }
+    switch (this.kaartModus) {
+      case KaartModus.VOLGEN:
+        this.volgen()
         break
 
-      case 'toon_alles':
-        this.map.fitBounds(this.markers.getBounds())
+      case KaartModus.TOON_ALLES:
+        this.setZoom(this.map.getZoom())
+        this.toonAlles()
         break
     }
   }
-
   onTwoFingerDrag(event) {
     if (event.type === 'touchstart' && event.touches.length === 1) {
       event.currentTarget.classList.add('swiping')
@@ -139,8 +135,8 @@ export default class MapController extends Controller {
       event.currentTarget.classList.remove('swiping')
     }
   }
-
   positionChangeEvent = (position) => {
+    console.log('KAART: positionChangeEvent: ', position)
     if (!this.markerMe) {
       this.markerMe = new L.Marker([position.coords.latitude, position.coords.longitude], {
         icon: MapController.markerIcons.blue,
@@ -149,8 +145,10 @@ export default class MapController extends Controller {
     } else {
       this.markerMe.setLatLng([position.coords.latitude, position.coords.longitude])
     }
-    if (this.mainOutlet.getKaartModus() === 'volgen') {
-      this.map.setView(this.markerMe.getLatLng(), this.mainOutlet.getKaartStatus().zoom)
+    if (this.kaartModus === KaartModus.VOLGEN) {
+      this.volgen()
+    } else if (this.kaartModus === KaartModus.TOON_ALLES) {
+      this.toonAlles()
     }
   }
 
@@ -179,7 +177,12 @@ export default class MapController extends Controller {
     this.map.closePopup()
     this.element.dispatchEvent(event)
   }
-
+  taakPopupTargetConnected(taakPopup) {
+    this.takenLijstOutlet?.selecteerTaakItem(taakPopup.dataset.taakUuid, this.preventScroll)
+  }
+  taakPopupTargetDisconnected(taakPopup) {
+    this.takenLijstOutlet?.deselecteerTaakItem(taakPopup.dataset.taakUuid)
+  }
   clearMarkers = () => {
     this.markerList = []
     this.markers.clearLayers()
@@ -188,39 +191,72 @@ export default class MapController extends Controller {
     }
   }
 
+  addTaakMarker(taakItemElement) {
+    const marker = this.markerList.find(
+      (obj) => obj.options.taakUuid === taakItemElement.dataset.uuid
+    )
+    if (marker) {
+      return
+    }
+    let geometrie = null
+    try {
+      geometrie = JSON.parse(taakItemElement.dataset.geometrie)
+    } catch (err) {
+      return
+    }
+    this.plotTaakMarker({
+      geometrie: geometrie,
+      adres: taakItemElement.dataset.adres,
+      afbeeldingUrl: taakItemElement.dataset.afbeeldingUrl,
+      taakUuid: taakItemElement.dataset.uuid,
+      titel: taakItemElement.dataset.titel,
+      hasRemark: taakItemElement.dataset.hasRemark,
+    })
+  }
+  clearTaakMarker(taakUuid) {
+    const marker = this.markerList.find((obj) => obj.options.taakUuid === taakUuid)
+    this.markerList = this.markerList.filter((obj) => obj.options.taakUuid != taakUuid)
+    marker?.remove()
+  }
+  plotTaakMarker(markerData) {
+    const lat = markerData.geometrie.coordinates ? markerData.geometrie.coordinates[1] : 51.9247772
+    const long = markerData.geometrie.coordinates ? markerData.geometrie.coordinates[0] : 4.4780972
+    const adres = markerData.adres
+    const afbeelding = markerData.afbeeldingUrl
+    const titel = markerData.titel
+    const taakUuid = markerData.taakUuid
+
+    const markerLocation = new L.LatLng(lat, long)
+
+    const marker = new L.Marker(markerLocation, {
+      icon: MapController.markerIcons.magenta,
+      taakUuid: taakUuid,
+    }).on('click', () => {
+      this.preventScroll = false
+    })
+
+    const paragraphDistance = `<p>Afstand: <span data-taken-lijst-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
+    const spanRemark = markerData.hasRemark
+      ? `<span class="badge-count badge-count--info">i</span>`
+      : ''
+    const anchorDetail = `<a href="/taak/${taakUuid}" target="_top" aria-label="Bekijk taak ${taakUuid}">Details ${spanRemark}</a>`
+    const anchorNavigeer = `<a href="#" data-taken-kaart-title-param="Navigeren" data-taken-kaart-url-param="/navigeer/${lat}/${long}" data-taken-kaart-id-param="navigeer" data-action="taken-kaart#makeRoute">Navigeren</a>`
+    const divDetailNavigeer = `<div class="">${anchorDetail} ${anchorNavigeer}</div>`
+
+    const popupContent = afbeelding
+      ? `<div data-taken-kaart-target="taakPopup" data-taak-uuid="${taakUuid}" class="container__image"><img src=${afbeelding}></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
+      : `<div data-taken-kaart-target="taakPopup" data-taak-uuid="${taakUuid}" ></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
+
+    marker.bindPopup(popupContent, { maxWidth: 460 })
+
+    this.markers.addLayer(marker)
+    this.markerList.push(marker)
+  }
+
   plotMarkers = (coordinatenlijst) => {
     if (coordinatenlijst) {
-      for (const coord of coordinatenlijst) {
-        const lat = coord.geometrie.coordinates ? coord.geometrie.coordinates[1] : 51.9247772
-        const long = coord.geometrie.coordinates ? coord.geometrie.coordinates[0] : 4.4780972
-        const adres = coord.adres
-        const afbeelding = coord.afbeeldingUrl
-        const titel = coord.titel
-        const taakId = coord.taakId
-
-        const markerLocation = new L.LatLng(lat, long)
-
-        const marker = new L.Marker(markerLocation, {
-          icon: MapController.markerIcons.magenta,
-          taakId: taakId,
-        })
-
-        const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
-        const spanRemark = coord.hasRemark
-          ? `<span class="badge-count badge-count--info">i</span>`
-          : ''
-        const anchorDetail = `<a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">Details ${spanRemark}</a>`
-        const anchorNavigeer = `<a href="#" data-kaart-title-param="Navigeren" data-kaart-url-param="/navigeer/${lat}/${long}" data-kaart-id-param="navigeer" data-action="kaart#makeRoute">Navigeren</a>`
-        const divDetailNavigeer = `<div class="">${anchorDetail} ${anchorNavigeer}</div>`
-
-        const popupContent = afbeelding
-          ? `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
-          : `<div></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
-
-        marker.bindPopup(popupContent, { maxWidth: 460 })
-
-        this.markers.addLayer(marker)
-        this.markerList.push(marker)
+      for (const markerData of coordinatenlijst) {
+        this.plotTaakMarker(markerData)
       }
     }
   }

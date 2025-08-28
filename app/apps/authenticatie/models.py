@@ -141,3 +141,63 @@ class Profiel(BasisModel):
         buurt_empty = not self.wijken or all(not wijk for wijk in self.wijken)
         taken_empty = not self.taaktypes.exists()
         return buurt_empty or taken_empty
+
+    @property
+    def taken_filters(self):
+        from apps.taken.filters import FILTERS
+
+        return [
+            f(profiel=self)
+            for f in FILTERS
+            if f.key() in self.context.filters.get("fields", [])
+        ]
+
+    @property
+    def taken_filter_data(self):
+        status = "nieuw"
+        return self.filters.get(status, {})
+
+    @property
+    def taken_filter_validated_data(self):
+        taken_filter_validated_data = {
+            f.key(): self.taken_filter_data[f.key()]
+            for f in self.taken_filters
+            if self.taken_filter_data.get(f.key())
+        }
+        return taken_filter_validated_data
+
+    @property
+    def taken_filter_query_data(self):
+        return {
+            f.filter_lookup(): self.taken_filter_validated_data.get(f.key())
+            for f in self.taken_filters
+            if self.taken_filter_validated_data.get(f.key())
+        }
+
+    @property
+    def taken_sorting_choices(self):
+        return (
+            ("Datum-reverse", "Datum (nieuwste bovenaan)"),
+            ("Datum", "Datum (oudste bovenaan)"),
+            ("Afstand", "Afstand"),
+            ("Adres", "T.h.v. Adres (a-z)"),
+            ("Adres-reverse", "T.h.v. Adres (z-a)"),
+            ("Postcode", "Postcode (1000-9999)"),
+            ("Postcode-reverse", "Postcode (9999-1000)"),
+        )
+
+    @property
+    def taken_sorting_order_by(self):
+        mapping = {
+            "Postcode": "melding__postcode",
+            "Adres": "melding__locatie_verbose",
+            "Datum": "taakstatus__aangemaakt_op",
+            "Afstand": "afstand",
+        }
+        sorting_direction = "-" if len(self.taken_sorting.split("-")) > 1 else ""
+        sorting = self.taken_sorting.split("-")[0]
+        return f"{sorting_direction}{mapping.get(sorting, 'melding__locatie_verbose')}"
+
+    @property
+    def taken_sorting(self):
+        return self.ui_instellingen.get("sortering", "Datum-reverse")

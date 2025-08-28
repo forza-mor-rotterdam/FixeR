@@ -30,19 +30,7 @@
                     data-modal-type-param="navigation"
                     aria-expanded="false"
                     aria-label="Open menu">
-                <svg fill="#404B4F"
-                     height="32"
-                     viewBox="0 0 32 32"
-                     width="32"
-                     xmlns="http://www.w3.org/2000/svg"
-                     aria-hidden="true"
-                     aria-label="Open menu">
-                    <g>
-                    <path d="m4 6h24v2h-24z"></path>
-                    <path d="m4 15h24v2h-24z"></path>
-                    <path d="m4 24h24v2h-24z"></path>
-                    </g>
-                </svg>
+                {% include "icons/hamburger.svg" %}
                 {% if UNWATCHED_COUNT > 0 %}
                     <span class="badge-count">
                         {% if UNWATCHED_COUNT < 101 %}
@@ -76,7 +64,7 @@
                             </li>
                             {% endcomment %}
                             <li class="wrapper-horizontal">
-                                <a href="{% url 'taken' %}">Taken</a>
+                                <a href="{% url 'taken_overzicht' %}">Taken</a>
                             </li>
                             <li class="wrapper-horizontal">
                                 <a href="{% url 'release_note_lijst_public' %}">Nieuw in FixeR

@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 class LoginView(View):
     def get(self, request, *args, **kwargs):
         if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
-            return redirect(reverse("taken"), False)
+            return redirect(reverse("taken_overzicht"), False)
         if request.user.has_perms(["authorisatie.beheer_bekijken"]):
             return redirect(reverse("beheer"), False)
         if request.user.is_authenticated:

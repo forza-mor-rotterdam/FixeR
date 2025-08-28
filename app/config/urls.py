@@ -16,21 +16,15 @@ from apps.main.views import (
     http_410,
     http_500,
     infosheet_mock,
-    kaart_modus,
     meldingen_bestand,
     meldingen_bestand_protected,
     navigeer,
     root,
-    sorteer_filter,
     taak_afhandelen,
     taak_delen,
     taak_detail,
     taak_detail_melding_tijdlijn,
     taak_detail_preview,
-    taak_zoeken,
-    taken,
-    taken_filter,
-    taken_lijst,
     ui_settings_handler,
 )
 from apps.release_notes.views import (
@@ -94,30 +88,11 @@ urlpatterns = [
     path("config/", config, name="config"),
     path("health/", include("health_check.urls")),
     path("healthz/", healthz, name="healthz"),
-    # START taken
     path(
         "taken/",
-        taken,
-        name="taken",
-    ),
-    path(
-        "taken/filter/",
-        taken_filter,
-        name="taken_filter",
-    ),
-    path(
-        "taken/lijst/",
-        taken_lijst,
-        name="taken_lijst",
-    ),
-    path(
-        "taken/overzicht/",
         TakenOverzicht.as_view(),
         name="taken_overzicht",
     ),
-    path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
-    path("taak-zoeken/", taak_zoeken, name="taak_zoeken"),
-    path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<uuid:uuid>/", taak_detail, name="taak_detail"),
     path(
         "taak/<uuid:uuid>/melding-tijdlijn",
