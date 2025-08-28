@@ -7,11 +7,11 @@
                 {% if not active_filter_option.1|is_list %}
                     <li class="js-filter-active">
                         <button class="btn btn-secondary btn-filter--active"
-                                data-action="filter#removeFilter"
-                                data-filter-code-param="id_{{ active_filter.0 }}_{{ active_filter_option.0 }}"
-                                data-filter-name-param="{{ active_filter.0 }}"
-                                data-filter-description-param="{{ active_filter.0 }}"
-                                data-filter-value-param="{{ active_filter_option.0 }}">
+                                data-action="taken-overzicht#removeFilter"
+                                data-taken-overzicht-code-param="id_{{ active_filter.0 }}_{{ active_filter_option.0 }}"
+                                data-taken-overzicht-name-param="{{ active_filter.0 }}"
+                                data-taken-overzicht-description-param="{{ active_filter.0 }}"
+                                data-taken-overzicht-value-param="{{ active_filter_option.0 }}">
                             <span>{{ active_filter_option.1 }}</span>
                         </button>
                     </li>
@@ -20,11 +20,11 @@
                     {% for active_filter_option_group in active_filter_option.1 %}
                         <li class="js-filter-active">
                             <button class="btn btn-secondary btn-filter--active"
-                                    data-action="filter#removeFilter"
-                                    data-filter-code-param="id_{{ active_filter.0 }}_{{ active_filter_option_group.0 }}"
-                                    data-filter-name-param="{{ active_filter.0 }}"
-                                    data-filter-description-param="{{ active_filter.0 }}"
-                                    data-filter-value-param="{{ active_filter_option_group.0 }}">
+                                    data-action="taken-overzicht#removeFilter"
+                                    data-taken-overzicht-code-param="id_{{ active_filter.0 }}_{{ active_filter_option_group.0 }}"
+                                    data-taken-overzicht-name-param="{{ active_filter.0 }}"
+                                    data-taken-overzicht-description-param="{{ active_filter.0 }}"
+                                    data-taken-overzicht-value-param="{{ active_filter_option_group.0 }}">
                                 <span>{{ active_filter_option_group.1 }}</span>
                             </button>
                         </li>

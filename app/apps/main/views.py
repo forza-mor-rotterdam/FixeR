@@ -1,28 +1,14 @@
-import json
 import logging
+import math
 import os
+import uuid
 from datetime import datetime
 
 import requests
-from apps.context.filters import FilterManager
 from apps.instellingen.models import Instelling
-from apps.main.forms import (
-    KaartModusForm,
-    SorteerFilterForm,
-    TaakBehandelForm,
-    TakenLijstFilterForm,
-)
+from apps.main.forms import TaakBehandelForm, TakenLijstFilterForm
 from apps.main.services import MORCoreService, PDOKService, TaakRService
-from apps.main.utils import (
-    get_actieve_filters,
-    get_filters,
-    get_kaart_modus,
-    get_sortering,
-    melding_naar_tijdlijn,
-    set_actieve_filters,
-    set_kaart_modus,
-    set_sortering,
-)
+from apps.main.utils import melding_naar_tijdlijn
 from apps.release_notes.models import ReleaseNote
 from apps.taken.filters import FILTERS_BY_KEY
 from apps.taken.models import Taak, TaakDeellink, Taakstatus
@@ -35,12 +21,12 @@ from django.contrib.auth.decorators import (
     user_passes_test,
 )
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.gis.db.models import ExpressionWrapper, FloatField
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.core import signing
 from django.core.cache import cache
 from django.core.files.storage import default_storage
-from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponsePermanentRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -146,23 +132,8 @@ def ui_settings_handler(request):
     )
 
 
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken(request):
-    gebruiker = request.user
-    if (
-        not gebruiker.profiel.onboarding_compleet
-        or gebruiker.profiel.wijken_or_taaktypes_empty
-    ) and gebruiker.profiel.context.template != "benc":  # Skip onboarding if B&C
-        return redirect(reverse("onboarding"), False)
-    MORCoreService().set_gebruiker(gebruiker=gebruiker.serialized_instance())
-
-    return render(request, "taken/taken.html", {})
-
-
 class TakenOverzicht(
     PermissionRequiredMixin,
-    # StreamViewMixin,
     FormView,
     ListView,
 ):
@@ -178,7 +149,6 @@ class TakenOverzicht(
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-
         kwargs.update(
             {
                 "request": self.request,
@@ -210,23 +180,43 @@ class TakenOverzicht(
                 srid=4326,
             )
         except Exception:
-            return Point(0, 0, srid=4326)
+            return
 
     def get_queryset(self):
         queryset = super().get_queryset()
         profiel = self.request.user.profiel
-        order_by = profiel.taken_sorting_order_by
         queryset = queryset.filter(**profiel.taken_filter_query_data)
         queryset = queryset.taken_zoeken(self.request.session.get("q"))
 
-        if order_by == "afstand":
-            print("gps")
-            print(self.get_gps())
+        gps = self.get_gps()
+        if gps:
             queryset = queryset.annotate(
-                afstand=Distance("melding__geometrie", self.get_gps())
+                afstand=ExpressionWrapper(
+                    Distance("melding__geometrie", gps), output_field=FloatField()
+                )
             )
 
         queryset = queryset.order_by(profiel.taken_sorting_order_by)
+
+        selected_taak_uuid = self.request.GET.get(
+            "taakUuid", self.form_data.get("selected_taak_uuid", "")
+        )
+        try:
+            clean_selected_taak_uuid = uuid.UUID(selected_taak_uuid)
+        except Exception:
+            clean_selected_taak_uuid = None
+
+        if clean_selected_taak_uuid and (
+            selectedTaak := queryset.filter(uuid=clean_selected_taak_uuid).first()
+        ):
+            print(selectedTaak)
+            index = list(queryset.values_list("id", flat=True)).index(selectedTaak.id)
+            print(index)
+            page = math.floor(index / self.paginate_by) + 1
+            print(page)
+            self.kwargs["page"] = page
+            self.initial["page"] = page
+
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -235,23 +225,29 @@ class TakenOverzicht(
 
         self.initial = self.request.user.profiel.taken_filter_validated_data
         self.initial["q"] = self.request.session.get("q")
+
+        try:
+            taakUuid = uuid.UUID(self.request.GET.get("taakUuid"))
+        except Exception:
+            taakUuid = None
+        self.initial["selected_taak_uuid"] = taakUuid
+
+        self.initial["page"] = self.request.session.get("q")
         self.initial["kaart_modus"] = self.request.user.profiel.ui_instellingen.get(
             "kaart_modus", "volgen"
         )
         self.initial["sorteer_opties"] = self.request.user.profiel.ui_instellingen.get(
             "sortering", "Adres-reverse"
         )
-
         return super().get_context_data(**kwargs)
 
     def form_invalid(self, form):
-        logger.error("TakenLijst: FORM INVALID")
+        logger.error("TakenOverzicht: FORM INVALID")
         logger.error(form.errors.as_json())
         return super().form_invalid(form)
 
     def form_valid(self, form):
         form.save()
-
         print("form.cleaned_data")
         print(form.cleaned_data)
         self.form_data = form.cleaned_data
@@ -262,6 +258,7 @@ class TakenOverzicht(
         context = self.get_context_data()
 
         context.update(form.changed_fields())
+        print(form.changed_fields())
 
         response = render(
             self.request,
@@ -273,170 +270,16 @@ class TakenOverzicht(
 
 
 @login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken_filter(request):
-    taken = Taak.objects.taken_lijst()
-
-    filters = (
-        get_filters(request.user.profiel.context)
-        if request.user.profiel.context
-        else []
-    )
-    actieve_filters = get_actieve_filters(request.user, filters)
-    foldout_states = []
-
-    if request.POST:
-        request.session["toon_alle_taken"] = True
-        request_filters = {f: request.POST.getlist(f) for f in filters}
-        foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
-        for filter_name, new_value in request_filters.items():
-            if new_value != actieve_filters.get(filter_name):
-                actieve_filters[filter_name] = new_value
-        set_actieve_filters(request.user, actieve_filters)
-
-    filter_manager = FilterManager(
-        taken, actieve_filters, foldout_states, profiel=request.user.profiel
-    )
-    taken_gefilterd = filter_manager.filter_taken()
-    taken_gefilterd = taken_gefilterd.taken_zoeken(request.session.get("q"))
-
-    taken_aantal = taken_gefilterd.count()
-    return render(
-        request,
-        "taken/taken_filter_form.html",
-        {
-            "taken_aantal": taken_aantal,
-            "filter_manager": filter_manager,
-            "foldout_states": json.dumps(foldout_states),
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken_lijst(request):
-    try:
-        pnt = Point(
-            float(request.GET.get("lon", 0)),
-            float(request.GET.get("lat", 0)),
-            srid=4326,
-        )
-    except Exception:
-        pnt = Point(0, 0, srid=4326)
-
-    if request.GET.get("toon_alle_taken"):
-        request.session["toon_alle_taken"] = True
-
-    sortering = get_sortering(request.user)
-    sort_reverse = len(sortering.split("-")) > 1
-    sortering = sortering.split("-")[0]
-    sorting_fields = {
-        "Postcode": "melding__postcode",
-        "Adres": "melding__locatie_verbose",
-        "Datum": "taakstatus__aangemaakt_op",
-        "Afstand": "afstand",
-    }
-    taken = Taak.objects.taken_lijst()
-    filters = (
-        get_filters(request.user.profiel.context)
-        if request.user.profiel.context
-        else []
-    )
-    actieve_filters = get_actieve_filters(request.user, filters)
-    filter_manager = FilterManager(taken, actieve_filters, profiel=request.user.profiel)
-    taken_gefilterd = filter_manager.filter_taken()
-
-    taken_gefilterd = taken_gefilterd.taken_zoeken(request.session.get("q"))
-
-    if sortering == "Afstand":
-        taken_gefilterd = taken_gefilterd.annotate(
-            afstand=Distance("melding__geometrie", pnt)
-        )
-    taken_gefilterd = taken_gefilterd.order_by(
-        f"{'-' if sort_reverse else ''}{sorting_fields.get(sortering)}"
-    )
-
-    # paginate
-    # @Remco @TODO Set to 5 for easier testing
-    paginator = Paginator(taken_gefilterd, 50)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-    taken_paginated = page_obj.object_list
-    taken_gefilterd_total = taken_gefilterd.count()
-    if request.session.get("taken_gefilterd"):
-        del request.session["taken_gefilterd"]
-
-    return render(
-        request,
-        "taken/taken_lijst.html",
-        {
-            "taken_gefilterd_total": taken_gefilterd_total,
-            "taken": taken_paginated,
-            "page_obj": page_obj,
-            "toon_alle_taken": request.session.get("toon_alle_taken", False),
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taak_zoeken(request):
-    body = json.loads(request.body)
-    request.session["q"] = body.get("q", "")
-    return JsonResponse({"q": request.session.get("q", "")})
-
-
-@login_required
-def sorteer_filter(request):
-    sortering = get_sortering(request.user)
-    form = SorteerFilterForm({"sorteer_opties": sortering}, gebruiker=request.user)
-    request_type = "get"
-    if request.POST:
-        request_type = "post"
-        form = SorteerFilterForm(request.POST, gebruiker=request.user)
-        if form.is_valid():
-            sortering = form.cleaned_data.get("sorteer_opties")
-            set_sortering(request.user, sortering)
-    return render(
-        request,
-        "snippets/sorteer_filter_form.html",
-        {
-            "form": form,
-            "request_type": request_type,
-        },
-    )
-
-
-@login_required
-def kaart_modus(request):
-    kaart_modus = get_kaart_modus(request.user)
-    form = KaartModusForm({"kaart_modus": kaart_modus})
-    request_type = "get"
-    if request.POST:
-        request_type = "post"
-        form = KaartModusForm(request.POST, {"kaart_modus": kaart_modus})
-        if form.is_valid():
-            kaart_modus = form.cleaned_data.get("kaart_modus")
-            set_kaart_modus(request.user, kaart_modus)
-    return render(
-        request,
-        "snippets/kaart_modus_form.html",
-        {
-            "form": form,
-            "request_type": request_type,
-        },
-    )
-
-
-@login_required
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, uuid):
+    request.session["selected_taak_uuid"] = str(uuid)
     taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
     ua = request.META.get("HTTP_USER_AGENT", "")
     device = DeviceDetector(ua).parse()
     taakdeellinks = TaakDeellink.objects.filter(taak=taak)
+
     return render(
         request,
         "taken/taak_detail.html",
@@ -661,7 +504,7 @@ def taak_afhandelen(request, uuid):
                 taak=taak,
                 vervolg_taaktypes=vervolg_taaktypes,
             )
-            return redirect("taken")
+            return redirect("taken_overzicht")
         else:
             logger.error(f"taak_afhandelen: for errors: {form.errors}")
 

@@ -7,8 +7,8 @@
                         {% if page_obj.has_previous %}
                             <li class="has-text">
                                 <div>
-                                    <a data-action="filter#onPageClickEvent:prevent"
-                                       data-filter-page-param="{{ page_obj.previous_page_number }}"
+                                    <a data-action="taken-overzicht#onPageClickEvent:prevent"
+                                       data-taken-overzicht-page-param="{{ page_obj.previous_page_number }}"
                                        class="btn--previous">
                                         {% include "icons/arrow-right.svg" %}
                                         Vorige
@@ -19,8 +19,8 @@
                         {% for p in page_obj.paginator.page_range %}
                             {% if p == 1 and page_obj.number >= 3 %}
                                 <li>
-                                    <a data-action="filter#onPageClickEvent:prevent"
-                                       data-filter-page-param="{{ p }}"
+                                    <a data-action="taken-overzicht#onPageClickEvent:prevent"
+                                       data-taken-overzicht-page-param="{{ p }}"
                                        href="#">{{ p }}</a>
                                 </li>
                                 {% if page_obj.number >= 4 %}<li>...</li>{% endif %}
@@ -29,16 +29,16 @@
                                     {% if p == page_obj.number %}
                                         <span>{{ p }}</span>
                                     {% else %}
-                                        <a data-action="filter#onPageClickEvent:prevent"
-                                           data-filter-page-param="{{ p }}"
+                                        <a data-action="taken-overzicht#onPageClickEvent:prevent"
+                                           data-taken-overzicht-page-param="{{ p }}"
                                            href="#">{{ p }}</a>
                                     {% endif %}
                                 </li>
                             {% elif p == page_obj.paginator.num_pages %}
                                 {% if page_obj.number <= page_obj.paginator.num_pages|add:"-3" %}<li>...</li>{% endif %}
                                 <li>
-                                    <a data-action="filter#onPageClickEvent:prevent"
-                                       data-filter-page-param="{{ p }}"
+                                    <a data-action="taken-overzicht#onPageClickEvent:prevent"
+                                       data-taken-overzicht-page-param="{{ p }}"
                                        href="#">{{ p }}</a>
                                 </li>
                             {% endif %}
@@ -46,8 +46,8 @@
                         {% if page_obj.has_next %}
                             <li class="has-text">
                                 <div>
-                                    <a data-action="filter#onPageClickEvent:prevent"
-                                       data-filter-page-param="{{ page_obj.next_page_number }}"
+                                    <a data-action="taken-overzicht#onPageClickEvent:prevent"
+                                       data-taken-overzicht-page-param="{{ page_obj.next_page_number }}"
                                        href="#"
                                        class="btn--next">
                                         Volgende

@@ -126,6 +126,10 @@
     input[type="radio"] {
         @extend .visually-hidden;
     }
+    .disabled {
+        pointer-events: none;
+        opacity: 0.3;
+    }
     @media (min-width: map-get($grid-breakpoints, sm)) {
         label {
             font-size: 1em;

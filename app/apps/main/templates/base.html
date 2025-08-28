@@ -50,24 +50,6 @@
                   rel="stylesheet">
             {% render_bundle 'app' 'css' %}
         {% endblock stylesheets %}
-        {% if DEBUG %}
-            <script>
-            const chatSocket = new WebSocket(
-                "ws://localhost:"
-                + {{DEV_SOCKET_PORT}}
-            );
-
-            chatSocket.onmessage = function(e) {
-                if (e.data === "reload"){
-                    location.reload()
-                }
-            };
-
-            chatSocket.onclose = function(e) {
-                console.error("socket closed unexpectedly");
-            };
-            </script>
-        {% endif %}
         {% block javascripts %}
             <script src=" https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js "></script>
             <script src=" https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js "></script>
@@ -97,10 +79,17 @@
             <turbo-frame src="{% url 'toast_lijst' %}" id="tf_toast_lijst"></turbo-frame>
         {% endif %}
         {% block main %}
-            <main data-controller="main" data-main-taken-outlet="#taken">
+            <main data-controller="main"
+                  data-main-taken-outlet="#taken"
+                  data-main-taken-overzicht-outlet="#taken_overzicht"
+                  data-main-taak-detail-outlet="#taak_detail"
+                  data-main-taken-kaart-outlet="#taken_kaart">
                 <div class="{% block container_class %}container container--unlimited{% endblock container_class %}">
                     {% block body %}
                     {% endblock body %}
+                    <dialog class="infosheet" data-infosheet-target="infosheet">
+                        <turbo-frame id="infosheet" data-infosheet-target="infosheetTurboframe"></turbo-frame>
+                    </dialog>
                 </div>
             </main>
         {% endblock main %}
@@ -116,5 +105,33 @@
         {% endif %}
         {% block javascripts_end %}
         {% endblock javascripts_end %}
+        {% include "snippets/modal_template.html" %}
+        <template id="template_snack_geen_locatie">
+            <div class="notification info"
+                 data-controller="notificaties--snack-item"
+                 data-notificaties--manager-target="snackItem">
+                <div class="container__icon">
+                    {% with "public/notificaties/icons/info.html" as template %}
+                        {% include template %}
+                    {% endwith %}
+                </div>
+                <div class="container__content">
+                    <h3 data-notificaties--snack-item-target="titel">Geen locatie</h3>
+                    <div class="container__message">
+                        <div class="container__link">
+                            <a href="https://support.google.com/android/thread/227586248/my-phone-location-is-not-working?hl=en"
+                               data-turbo="false">Info</a>
+                        </div>
+                        <p data-notificaties--snack-item-target="content">
+                            FixeR heeft heeft nog geen toestemming om je locatie te gebruiken.
+                        </p>
+                    </div>
+                </div>
+                <button type="button"
+                        class="btn-close--small"
+                        aria-label="Sluit"
+                        data-action="notificaties--snack-item#sluitSnack">{% include "icons/close.svg" %}</button>
+            </div>
+        </template>
     </body>
 </html>

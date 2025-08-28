@@ -54,9 +54,7 @@
         {% if taak.melding.locatie_type == "adres" %}
             <br>
             <span class="lighter">
-                <span data-detail-target="taakAfstand"
-                      data-latitude="{{ geometrie.1|replace_comma_by_dot }}"
-                      data-longitude="{{ geometrie.0|replace_comma_by_dot }}"></span> meter afstand
+                <span data-taak-detail-target="taakAfstand"></span>
             </span>
         {% endif %}
     </div>

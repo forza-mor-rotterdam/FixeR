@@ -6,6 +6,8 @@ from django.contrib.gis.db import models
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
+from rest_framework import serializers
+from rest_framework_gis.fields import GeometryField
 from utils.constanten import BEGRAAFPLAATS_MIDDELS_ID
 from utils.models import BasisModel
 
@@ -145,6 +147,14 @@ class MeldingAlias(BasisModel):
     def set_zoek_tekst(self):
         self.zoek_tekst = self.get_zoek_tekst()
 
+    def coordinates(self):
+        melding_serialized = MeldingAliasSerializer(self)
+        return list(
+            reversed(
+                melding_serialized.data.get("geometrie", {}).get("coordinates", [])
+            )
+        )
+
     def update_zoek_data(self):
         melding = self.response_json
         referentie_locatie = melding.get("referentie_locatie") or {}
@@ -184,6 +194,14 @@ class MeldingAlias(BasisModel):
 
     def __str__(self) -> str:
         return self.bron_url
+
+
+class MeldingAliasSerializer(serializers.ModelSerializer):
+    geometrie = GeometryField()
+
+    class Meta:
+        model = MeldingAlias
+        fields = ["geometrie"]
 
 
 class BijlageAlias(BasisModel):

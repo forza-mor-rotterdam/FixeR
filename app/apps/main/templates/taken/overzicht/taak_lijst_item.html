@@ -4,8 +4,9 @@
 {% load json_encode replace_comma_by_dot adres_order_nummer from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% block before_modal_content %}
-    <div data-incidentlist-target="taakItem"
+    <div data-taken-lijst-target="taakItem"
          data-modal-target="taakItem"
+         data-taken-overzicht-target="taakItem"
          data-uuid="{{ taak.uuid }}"
          data-melding-uuid="{{ taak.melding.melding_uuid }}"
          data-titel="{{ taak.titel }}"
@@ -81,9 +82,14 @@
                         {% with taak.melding.geometrie as geo %}
                             {% if geo and taak.afstand %}
                                 <div class="incident__distance">
-                                    <span><span data-incidentlist-target="taakAfstand"
-      data-latitude="{{ geo.1|replace_comma_by_dot }}"
-      data-longitude="{{ geo.0|replace_comma_by_dot }}">{{ taak.afstand }}</span> meter</span>
+                                    <span>
+                                        <span data-taken-lijst-target="taakAfstand"
+                                              data-latitude="{{ geo.1|replace_comma_by_dot }}"
+                                              data-longitude="{{ geo.0|replace_comma_by_dot }}">
+                                            {{ taak.afstand|floatformat:"0" }}&nbsp;
+                                        </span>
+                                        meter
+                                    </span>
                                 </div>
                             {% endif %}
                         {% endwith %}
@@ -92,9 +98,9 @@
             </a>
             {% if taak.melding.geometrie %}
                 <button class="btn btn-icon--clean"
-                        data-incidentlist-taak-id-param="{{ taak.uuid }}"
-                        data-filter-code-param=""
-                        data-action="incidentlist#selectTaakMarker">{% include "icons/kaart.svg" %}</button>
+                        data-taken-lijst-taak-uuid-param="{{ taak.uuid }}"
+                        data-taken-overzicht-code-param=""
+                        data-action="taken-lijst#selectTaakMarker:prevent">{% include "icons/kaart.svg" %}</button>
             {% endif %}
         </div>
     </div>

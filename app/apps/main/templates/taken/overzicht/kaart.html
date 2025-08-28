@@ -6,22 +6,22 @@
             {% include "taken/overzicht/stream_snippets/stream_kaart_modus_widget.html" %}
         </div>
     </div>
-    <div data-controller="takenKaart"
+    <div data-controller="taken-kaart"
          class="map"
          id="taken_kaart"
-         data-filter-target="takenKaart"
-         data-main-target="takenKaart"
-         data-action="touchstart->takenKaart#onTwoFingerDrag touchend->takenKaart#onTwoFingerDrag">
+         data-taken-overzicht-target="takenKaart"
+         data-taken-kaart-taken-lijst-outlet="#taken_lijst"
+         data-action="touchstart->taken-kaart#onTwoFingerDrag touchend->taken-kaart#onTwoFingerDrag">
         <div class="map__overlay">
             <span>Gebruik twee vingers om de kaart te verplaatsen</span>
         </div>
         <button class="btn btn-on-map"
-                data-action="takenKaart#toggleBuurten"
+                data-action="taken-kaart#toggleBuurten"
                 id="buurten-button">
             <input type="checkbox"
                    class="form-check-input"
                    id="buurten-checkbox"
-                   data-action="takenKaart#toggleBuurten" />
+                   data-action="taken-kaart#toggleBuurten" />
             <span>Buurten</span>
         </button>
     </div>

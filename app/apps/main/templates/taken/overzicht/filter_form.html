@@ -1,16 +1,16 @@
 {% load json_encode from main_tags %}
 <details class="filter filter--active" id="foldout_active-filters">
-    {% for field in form.hidden_fields %}{{ field }}{% endfor %}
     <summary>
         <span>Actieve filters</span>
-        <span class="count count--filter" data-filter-target="selectedChoicesCount">{{ filter_manager.active_filter_count }}</span>
+        <span class="count count--filter"
+              data-taken-overzicht-target="selectedChoicesCount">{{ filter_manager.active_filter_count }}</span>
     </summary>
     <fieldset>
         <ul class="list-clean" id="stream_active_filters">
             {% include "taken/overzicht/stream_snippets/stream_active_filters.html" %}
         </ul>
         <button class="btn-textlink btn-with-icon margin-vertical"
-                data-action="filter#removeAllFilters">
+                data-action="taken-overzicht#removeAllFilters">
             {% include "icons/bin.svg" %}
             <span>Verwijder alle filters</span>
         </button>
@@ -18,17 +18,6 @@
 </details>
 {% for field in form.filter_fields %}{{ field.as_field_group }}{% endfor %}
 {% include "snippets/alert_onboarding.html" %}
-<div class="full-page-view__footer">
-    {% if incident_count == 0 %}
-        <button type="button"
-                class="btn btn-action"
-                data-action="main#hideFilters"
-                disabled="disabled">Er zijn geen meldingen, pas filter aan</button>
-    {% else %}
-        <button type="button" class="btn btn-action" data-action="main#hideFilters">
-            <span id="stream_taken_aantal_in_filter_form">
-                {% include "taken/overzicht/stream_snippets/stream_taken_aantal_in_filter_form.html" %}
-            </span>
-        </button>
-    {% endif %}
+<div class="full-page-view__footer" id="stream_filter_button">
+    {% include "taken/overzicht/stream_snippets/stream_filter_button.html" %}
 </div>

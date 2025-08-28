@@ -9,7 +9,6 @@ class ContextAanpassenForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(
             attrs={
                 "class": "form-check-input",
-                "data-action": "change->incidentHandleForm#toggleNewTask",
             }
         ),
         queryset=Taaktype.objects.all(),
@@ -30,7 +29,6 @@ class ContextAanpassenForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(
             attrs={
                 "class": "form-check-input",
-                "data-action": "change->incidentHandleForm#toggleNewTask",
             }
         ),
         label="Filters",
@@ -78,7 +76,6 @@ class TaaktypesForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(
             attrs={
                 "class": "form-check-input",
-                "data-action": "change->incidentHandleForm#toggleNewTask",
             }
         ),
         queryset=Taaktype.objects.all(),

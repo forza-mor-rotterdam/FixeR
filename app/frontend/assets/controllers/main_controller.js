@@ -2,23 +2,17 @@ import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
 export default class extends Controller {
-  static targets = ['gpsField', 'takenKaart']
-  static outlets = ['taken']
+  static targets = ['gpsField', 'kaartModusOption', 'sorteerField']
+  static outlets = ['taken-kaart', 'taken-overzicht', 'taak-detail']
 
   initialize() {
-    this.incidentlist = null
+    this.takenLijst = null
     this.detail = null
 
     navigator.geolocation.getCurrentPosition(
       this.getCurrentPositionSuccess,
       this.positionWatchError
     )
-
-    window.addEventListener(
-      'childControllerConnectedEvent',
-      this.childControllerConnectedEventHandler
-    )
-
     this.toastTurboFrame = document.getElementById('tf_toast_lijst')
     this.sessionTimerTurboFrame = document.getElementById('tf_session_timer')
     this.notificationsTurboFrameReloadTimeout = null
@@ -62,24 +56,8 @@ export default class extends Controller {
       }, 200)
     }
   }
-  takenKaartTargetConnected(takenKaart) {
-    console.log('takenKaart')
-    console.log(takenKaart)
-  }
   connect() {
-    console.log('CONNECT MAIN, removing selectedTaakId from sessionStorage')
     sessionStorage.removeItem('selectedTaakId')
-  }
-
-  childControllerConnectedEventHandler = (e) => {
-    if (e.detail.controller.identifier === 'incidentlist') {
-      this.incidentlist = e.detail.controller
-      // this.incidentlist.positionWatchSuccess(this.currentPosition)
-    }
-    if (e.detail.controller.identifier === 'detail') {
-      this.detail = e.detail.controller
-      // this.detail.positionWatchSuccess(this.currentPosition)
-    }
   }
 
   getCurrentPositionSuccess = (position) => {
@@ -96,18 +74,57 @@ export default class extends Controller {
     }
     if (!distance || distance > 5) {
       this.currentPosition = position
-      this.gpsFieldTarget.value = `${this.currentPosition.coords.latitude},${this.currentPosition.coords.longitude}`
       this.positionWatchSuccess()
     }
   }
-
   positionWatchSuccess = () => {
-    this.takenKaartTarget?.takenKaart?.positionChangeEvent(this.currentPosition)
-    this.detail?.positionWatchSuccess(this.currentPosition)
+    if (this.hasTakenKaartOutlet) {
+      this.takenKaartOutlet.positionChangeEvent(this.currentPosition)
+    }
+    if (this.hasTakenOverzichtOutlet) {
+      this.takenOverzichtOutlet.positionChangeEvent(this.currentPosition)
+    }
+    if (this.hasTaakDetailOutlet) {
+      this.taakDetailOutlet.positionChangeEvent(this.currentPosition)
+    }
+  }
+  takenKaartOutletConnected() {
+    if (this.currentPosition) {
+      this.takenKaartOutlet.positionChangeEvent(this.currentPosition)
+    }
+  }
+  takenOverzichtOutletConnected() {
+    if (this.currentPosition) {
+      this.takenOverzichtOutlet.positionChangeEvent(this.currentPosition)
+    }
+  }
+  taakDetailOutletConnected() {
+    if (this.currentPosition) {
+      this.taakDetailOutlet.positionChangeEvent(this.currentPosition)
+    }
+  }
+  positionPermissionState(permissionEnable) {
+    this.kaartModusOptionTargets
+      .find((elem) => elem.value === 'volgen')
+      ?.closest('li')
+      .classList[permissionEnable ? 'remove' : 'add']('disabled')
+    if (this.hasSorteerFieldTarget) {
+      this.sorteerFieldTarget.querySelector('option[value="Afstand"]').disabled = !permissionEnable
+    }
+    if (!permissionEnable) {
+      if (this.hasKaartModusOptionTarget) {
+        this.element.querySelector(`input[name="${this.kaartModusOptionTarget.name}"]`).value =
+          'toon_alles'
+      }
+      const template = document.getElementById('template_snack_geen_locatie')
+      const clone = template.content.cloneNode(true)
+      const snackContainer = document.getElementById('snack_lijst')
+      snackContainer.appendChild(clone)
+    }
   }
   positionWatchError = (error) => {
     console.log('positionWatchError: ', error)
-    document.body.classList.remove('geolocation-error')
+    document.body.classList.add('geolocation-error')
 
     const errorCodeExplanation = {
       1: 'Je hebt locatie bepaling voor FixeR uit staan. Ga naar de locatie instellingen van je browser om deze aan te zetten!',
@@ -115,10 +132,13 @@ export default class extends Controller {
       3: 'Het bepalen van je locatie duurt te lang!',
       4: 'Locatie fout!',
     }
-    console.log(errorCodeExplanation)
+    console.log(errorCodeExplanation[error.code])
 
     switch (error.code) {
       case error.PERMISSION_DENIED:
+        setTimeout(() => {
+          this.positionPermissionState(false)
+        }, 1000)
         console.log('User denied the request for Geolocation.')
         break
       case error.POSITION_UNAVAILABLE:
@@ -131,15 +151,5 @@ export default class extends Controller {
         console.log('An unknown error occurred.')
         break
     }
-  }
-
-  showFilters() {
-    document.body.classList.add('show-filters')
-    // used for scrolling to last selected task
-    sessionStorage.removeItem('selectedTaakId')
-  }
-
-  hideFilters() {
-    document.body.classList.remove('show-filters')
   }
 }

@@ -179,8 +179,17 @@ class TakenLijstFilterForm(forms.Form):
     gps = forms.CharField(
         widget=forms.HiddenInput(
             attrs={
-                "data-action": "filter#onGPSChangeHandler",
+                "data-action": "taken-overzicht#onGPSChangeHandler",
                 "data-main-target": "gpsField",
+                "data-taken-overzicht-target": "gpsField",
+            }
+        ),
+        required=False,
+    )
+    selected_taak_uuid = forms.CharField(
+        widget=forms.HiddenInput(
+            attrs={
+                "data-taken-overzicht-target": "selectedTaakUuidField",
             }
         ),
         required=False,
@@ -188,8 +197,8 @@ class TakenLijstFilterForm(forms.Form):
     page = forms.CharField(
         widget=forms.HiddenInput(
             attrs={
-                "data-filter-target": "pageField",
-                "data-action": "filter#onPageChangeHandler",
+                "data-taken-overzicht-target": "pageField",
+                "data-action": "taken-overzicht#onPageChangeHandler",
             }
         ),
         required=False,
@@ -200,8 +209,8 @@ class TakenLijstFilterForm(forms.Form):
                 "class": "form-control search",
                 "maxlength": 50,
                 "placeholder": "Zoek op straatnaam of MeldR-nummer",
-                "data-filter-target": "zoekField",
-                "data-action": "filter#onSearchChangeHandler",
+                "data-taken-overzicht-target": "zoekField",
+                "data-action": "taken-overzicht#onSearchChangeHandler",
             }
         ),
         required=False,
@@ -209,8 +218,8 @@ class TakenLijstFilterForm(forms.Form):
     sorteer_opties = forms.ChoiceField(
         widget=forms.Select(
             attrs={
-                "data-action": "filter#onSortingChangeHandler",
-                "data-sorteerFilter-target": "sorteerField",
+                "data-action": "taken-overzicht#onSortingChangeHandler",
+                "data-main-target": "sorteerField",
             }
         ),
         choices=(
@@ -228,8 +237,9 @@ class TakenLijstFilterForm(forms.Form):
         widget=KaartModusRadioSelect(
             attrs={
                 "class": "list--form-radio-input",
-                "data-action": "filter#kaartModusOptionClickHandler",
-                "data-filter-target": "kaartModusOption",
+                "data-action": "click->taken-overzicht#kaartModusOptionClickHandler",
+                "data-taken-overzicht-target": "kaartModusOption",
+                "data-main-target": "kaartModusOption",
                 "hideLabel": True,
             }
         ),
@@ -257,8 +267,8 @@ class TakenLijstFilterForm(forms.Form):
                     attrs={
                         "class": "form-check-input filter--taken",
                         "sub_label": f.sub_label(),
-                        "data-action": "filter#onChangeFilter",
-                        "data-filter-target": "filterInput",
+                        "data-action": "taken-overzicht#onChangeFilter",
+                        "data-taken-overzicht-target": "filterInput",
                     }
                 ),
                 template_name=f.field_template(),
@@ -297,7 +307,15 @@ class TakenLijstFilterForm(forms.Form):
     def changed_fields(self):
         return {
             f"{field}_changed": getattr(self, f"{field}_changed")
-            for field in ["filters", "sorteer_opties", "kaart_modus", "q"]
+            for field in [
+                "filters",
+                "sorteer_opties",
+                "kaart_modus",
+                "q",
+                "q_folded",
+                "page",
+                "gps",
+            ]
             if hasattr(self, f"{field}_changed")
         }
 
@@ -322,8 +340,8 @@ class TakenLijstFilterForm(forms.Form):
             "kaart_modus"
         ) != profiel.ui_instellingen.get("kaart_modus")
         self.q_changed = data.get("q") != self.request.session.get("q")
-
-        self.test = "testing"
+        self.page_changed = data.get("page")
+        self.gps_changed = data.get("gps")
 
         # update profiel fields
         profiel.filters.update({status: actieve_filters})

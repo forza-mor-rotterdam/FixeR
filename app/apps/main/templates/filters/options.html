@@ -11,9 +11,9 @@
                 <h3 class="h5">{{ group.label }}</h3>
                 <div>
                     <button class="btn btn-textlink"
-                            data-action="filter#selectAll"
-                            data-filter-filter-type-param="all">Selecteer alles</button>
-                    <button class="btn btn-textlink" data-action="filter#selectAll">/ niets</button>
+                            data-action="taken-overzicht#selectAll"
+                            data-taken-overzicht-filter-type-param="all">Selecteer alles</button>
+                    <button class="btn btn-textlink" data-action="taken-overzicht#selectAll">/ niets</button>
                 </div>
             </div>
         {% endif %}
@@ -28,8 +28,8 @@
                                    {% if option.checked %}checked{% endif %}
                                    name="{{ filter.key }}"
                                    id="{{ filter.key }}_{{ option.id }}"
-                                   data-action="filter#onChangeFilter"
-                                   data-filter-target="filterInput">
+                                   data-action="taken-overzicht#onChangeFilter"
+                                   data-taken-overzicht-target="filterInput">
                         </div>
                         <label class="form-check-label" for="{{ filter.key }}_{{ option.id }}">{{ option.label }}</label>
                         {% if filter.key == "taken" %}

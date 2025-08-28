@@ -3,14 +3,15 @@
 {% load json_encode from main_tags %}
 {% load context_template from context_tags %}
 <div class="list__incidents__scroll-wrapper"
-     data-incidentlist-target="taakItemLijst"
-     data-taken-count="{{ page_obj.paginator.count }}">
+     id="taken_lijst"
+     data-controller="taken-lijst"
+     data-taken-lijst-taken-kaart-outlet="#taken_kaart">
     {% if page_obj.paginator.count %}
         {% if page_obj.paginator.count > 100 and not request.session.toon_alle_taken %}
             {% include "taken/overzicht/bericht_te_veel_taken.html" %}
         {% else %}
             {% for taak in page_obj %}
-                {% include "taken/taak_lijst_item.html" %}
+                {% include "taken/overzicht/taak_lijst_item.html" %}
             {% endfor %}
         {% endif %}
     {% else %}

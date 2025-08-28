@@ -47,15 +47,14 @@
             {% with geometrie=taak.melding.geometrie %}
                 <div data-controller="modal">
                     {% get_bijlagen melding as bijlagen %}
-                    <div data-controller="detail"
-                         data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
-                         data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
-                         data-detail-signed-data-value="{{ signed_data }}"
-                         data-detail-taak-object-value="{{ taak }}"
-                         data-detail-incident-y-value="{{ geometrie.0|replace_comma_by_dot }}"
-                         data-detail-incident-x-value="{{ geometrie.1|replace_comma_by_dot }}"
-                         data-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
-                         {% if not DEBUG %}data-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
+                    <div data-controller="taak-detail"
+                         data-taak-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
+                         data-taak-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
+                         data-taak-detail-signed-data-value="{{ signed_data }}"
+                         data-taak-detail-taak-object-value="{{ taak }}"
+                         data-taak-detail-taak-coordinates-value="{{ taak.melding.coordinates|json_encode }}"
+                         data-taak-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+                         {% if not DEBUG %}data-taak-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
                          {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
                         <div class="taak-detail taak-detail--preview">
                             <div class="container__header-taaknavigatie">
@@ -71,9 +70,7 @@
                                         <span>{{ taak.titel }}</span>
                                         <br>
                                         <span class="lighter">
-                                            <span data-detail-target="taakAfstand"
-                                                  data-latitude="{{ geometrie.1|replace_comma_by_dot }}"
-                                                  data-longitude="{{ geometrie.0|replace_comma_by_dot }}"></span> meter afstand
+                                            <span data-taak-detail-target="taakAfstand"></span>
                                         </span>
                                     </div>
                                     {% if geometrie %}
@@ -97,15 +94,15 @@
                                 <div class="full-width">
                                     {% if bijlagen %}
                                         <div class="container__imageslider"
-                                             data-detail-target="imageSliderContainer"
+                                             data-taak-detail-target="imageSliderContainer"
                                              data-action="scroll->detail#onScrollSlider">
                                             <ul class="list-clean imageslider"
                                                 style="width: calc(100% * {{ bijlagen|length }})">
                                                 {% for foto in bijlagen %}
                                                     <li class="container__image"
                                                         id="{{ foto.afbeelding_relative_url|mor_core_url:signed_data }}"
-                                                        data-action="click->detail#showImageInModal"
-                                                        data-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
+                                                        data-action="click->taak-detail#showImageInModal"
+                                                        data-taak-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
                                                         <img src="{{ foto.afbeelding_relative_url|mor_core_url:signed_data }}"
                                                              class="image"
                                                              alt="" />
@@ -115,10 +112,10 @@
                                         </div>
                                         {% if bijlagen|length > 1 %}
                                             <div class="container__thumbs">
-                                                <ul data-detail-target="thumbList">
+                                                <ul data-taak-detail-target="thumbList">
                                                     {% for foto in bijlagen %}
-                                                        <li data-action="click->detail#selectImage"
-                                                            data-detail-image-index-param="{{ forloop.counter }}">
+                                                        <li data-action="click->taak-detail#selectImage"
+                                                            data-taak-detail-image-index-param="{{ forloop.counter }}">
                                                             <div class="container__image">
                                                                 <img src="{{ foto.afbeelding_verkleind_relative_url|mor_core_url:signed_data }}"
                                                                      alt="" />

@@ -8,57 +8,60 @@
     <form action="{% url 'taken_overzicht' %}"
           method="post"
           class="filter-form"
-          data-controller="filter"
+          data-controller="taken-overzicht"
+          data-taken-overzicht-taken-kaart-outlet="#taken_kaart"
           data-turbo-frame="false"
-          id="incidentFilterAllForm"
+          id="taken_overzicht"
           data-testid="incidentFilterAllForm">
         {% csrf_token %}
-        <div class="page-incidents"
-             data-incidents-filters-value="{{ filters|json_encode }}"
-             data-controller="incidentlist"
-             data-incidentlist-takenKaart-outlet="#taken_kaart"
-             id="taken">
-            <div class="container__header" data-incidentlist-target="containerHeader">
+        {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+        <div class="page-incidents" id="taken">
+            <div class="container__header"
+                 data-taken-overzicht-target="containerHeader">
                 <div class="row">
                     <h1 class="h3">
-                        Taken (<span data-incidentlist-target="takenCount" id="stream_taken_aantal">{{ page_obj.paginator.count }}</span>)
+                        Taken (<span id="stream_taken_aantal">{{ page_obj.paginator.count }}</span>)
                     </h1>
                     <div class="container__controls">
                         <button type="button"
                                 class="btn btn-secondary btn-sort--small"
-                                data-action="incidentlist#onToggleSearchContainer"
+                                data-action="taken-overzicht#onToggleSearchContainer"
                                 aria-label="Toon zoekveld">
                             <span>{% include "icons/search.svg" %}</span>
                         </button>
                         <button type="button"
                                 class="btn btn-secondary btn-sort--small"
-                                data-action="incidentlist#onToggleSortingContainer"
+                                data-action="taken-overzicht#onToggleSortingContainer"
                                 aria-label="Sorteer de lijst">
                             <span>{% include "icons/sort.svg" %}</span>
                         </button>
                         {% if request.user.profiel.context.template == "standaard" %}
                             <button type="button"
                                     class="btn btn-secondary btn-navigate--small toggle-view"
-                                    data-action="incidentlist#toggleMapView"
-                                    data-incidentlist-target="toggleMapView"
+                                    data-action="taken-overzicht#toggleMapViewHandler"
+                                    data-taken-overzicht-target="toggleMapView"
                                     aria-label="Maak route">
                                 {% include "icons/kaart.svg" %}
                                 {% include "icons/lijst.svg" %}
                             </button>
                         {% endif %}
-                        <div class="wrapper wrapper--search">
+                        <div class="wrapper wrapper--search"
+                             data-taken-overzicht-target="zoekFieldDefaultContainer">
                             {{ form.q }}
                             <button class="hide"
                                     type="button"
-                                    data-filter-target="cancelZoek"
-                                    data-action="filter#onCancelSearch">{% include "icons/close.svg" %}</button>
+                                    data-taken-overzicht-target="cancelZoek"
+                                    data-action="taken-overzicht#onCancelSearch">
+                                {% include "icons/close.svg" %}
+                            </button>
                         </div>
                         <button type="button"
                                 class="btn btn-secondary btn-filter--small"
-                                data-action="main#showFilters">
+                                data-action="taken-overzicht#showFilters">
                             <span>{% include "icons/filter.svg" %}</span>
                             <span>Filter</span>
-                            <span class="count count--filter" data-filter-target="selectedChoicesCount"></span>
+                            <span class="count count--filter"
+                                  data-taken-overzicht-target="selectedChoicesCount"></span>
                         </button>
                     </div>
                 </div>
@@ -66,15 +69,10 @@
             <div class="container__list">
                 <div class="container__flex list--navigation-tools">
                     <div class="container__sorting hidden-vertical"
-                         data-incidentlist-target="sorting">{{ form.sorteer_opties }}</div>
+                         data-taken-overzicht-target="sorteerOptiesFieldContainer">{{ form.sorteer_opties }}</div>
                     <div class="container__search hidden-vertical"
-                         data-incidentlist-target="search"></div>
-                    <div class="list__incidents"
-                         data-testid="incidentsList"
-                         id="taken_lijst"
-                         data-incidentlist-target="incidentlist">
-                        <div id="stream_taken_lijst">{% include "taken/overzicht/lijst.html" %}</div>
-                    </div>
+                         data-taken-overzicht-target="zoekFieldContainer"></div>
+                    <div class="list__incidents" id="stream_taken_lijst">{% include "taken/overzicht/lijst.html" %}</div>
                 </div>
                 {% include "taken/overzicht/kaart.html" %}
             </div>
@@ -87,7 +85,7 @@
                         <button type="button"
                                 class="btn btn-close"
                                 aria-label="Sluit"
-                                data-action="main#hideFilters"></button>
+                                data-action="taken-overzicht#hideFilters"></button>
                     </div>
                 </div>
                 <div class="full-page-view__scroll-pane">
@@ -98,8 +96,5 @@
             </div>
         </div>
     </form>
-    <dialog class="infosheet" data-infosheet-target="infosheet">
-        <turbo-frame id="infosheet" data-infosheet-target="infosheetTurboframe"></turbo-frame>
-    </dialog>
     </turbo-frame>
 {% endblock body %}
