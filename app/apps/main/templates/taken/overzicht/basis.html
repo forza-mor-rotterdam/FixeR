@@ -7,7 +7,7 @@
     <turbo-frame id="taak_basis" data-turbo-action="advance">
     <form action="{% url 'taken_overzicht' %}"
           method="post"
-          class="filter-form"
+          class="taken-overzicht"
           data-controller="taken-overzicht"
           data-taken-overzicht-taken-kaart-outlet="#taken_kaart"
           data-turbo-frame="false"
@@ -15,7 +15,7 @@
           data-testid="incidentFilterAllForm">
         {% csrf_token %}
         {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-        <div class="page-incidents" id="taken">
+        <div class="page-incidents">
             <div class="container__header"
                  data-taken-overzicht-target="containerHeader">
                 <div class="row">

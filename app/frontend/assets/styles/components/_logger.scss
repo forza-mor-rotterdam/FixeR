@@ -1,0 +1,31 @@
+.logger-container {
+    display: none;
+}
+.logger {
+    height: 100%;
+    overflow-y: auto;
+}
+.logger pre {
+    margin: 5px;
+}
+.log {
+    text-wrap: auto;
+    word-break: break-all;
+}
+.log-warn {
+    color: orange;
+}
+.log-error {
+    color: red;
+}
+.log-info {
+    color: skyblue;
+}
+.log-log {
+    color: silver;
+}
+
+.log-warn,
+.log-error {
+    font-weight: bold;
+}
