@@ -14,13 +14,13 @@ export default class extends Controller {
       maximumAge: 0,
     }
 
-    navigator.geolocation.getCurrentPosition(
-      this.getCurrentPositionSuccess,
-      this.positionWatchError,
-      this.positionWatchOptions
-    )
+    // navigator.geolocation.getCurrentPosition(
+    //   this.getCurrentPositionSuccess,
+    //   this.positionWatchError,
+    //   this.positionWatchOptions
+    // )
     navigator.geolocation.watchPosition(
-      this.positionWatchSuccess,
+      this.getCurrentPositionSuccess,
       this.positionWatchError,
       this.positionWatchOptions
     )
