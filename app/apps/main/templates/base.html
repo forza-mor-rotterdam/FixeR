@@ -61,7 +61,7 @@
         <script src="//unpkg.com/leaflet-gesture-handling"></script>
     </head>
     <body class="{% block body_class %}app {% endblock body_class %} {% if user.profiel.ui_instellingen.fontsize %}{{ user.profiel.ui_instellingen.fontsize }}{% endif %}"
-          data-controller="notificaties--manager infosheet{% if APP_ENV == 'test' || APP_ENV == 'development' %} logger{% endif %}"
+          data-controller="notificaties--manager infosheet{% if APP_ENV == 'test' or APP_ENV == 'development' %} logger{% endif %}"
           data-notificaties--manager-snack-overzicht-url-value="{% url 'snack_overzicht_stream' %}"
           data-notificaties--manager-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
           data-notificaties--manager-topic-snack-value="/notificaties/snack/"
@@ -105,7 +105,7 @@
         {% block javascripts_end %}
         {% endblock javascripts_end %}
         {% include "snippets/modal_template.html" %}
-        {% if APP_ENV == "test" || APP_ENV == "development" %}
+        {% if APP_ENV == "test" or APP_ENV == "development" %}
             {% include "snippets/logger.html" %}
         {% endif %}
         <template id="template_snack_geen_locatie">
