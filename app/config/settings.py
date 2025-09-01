@@ -19,6 +19,7 @@ SECRET_KEY = os.environ.get(
 )
 
 # APP_ENV's
+DEVELOPMENT = "development"
 PRODUCTIE = "productie"
 ACCEPTATIE = "acceptatie"
 TEST = "test"

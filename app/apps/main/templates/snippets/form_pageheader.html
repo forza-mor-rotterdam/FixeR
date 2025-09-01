@@ -3,6 +3,16 @@
 <form action="{% url 'pageheader_form_part' %}" method="post">
     {% csrf_token %}
     <ul class="list-clean list-nav--tertiary">
+        {% if APP_ENV == "test" || APP_ENV == "development" %}
+            <li class="wrapper-horizontal">
+                <a href="#"
+                   data-action="infosheet#openInfosheet"
+                   data-infosheet-selector-param="#logger">
+                    {% include "icons/file-list.svg" %}
+                    Debug logs
+                </a>
+            </li>
+        {% endif %}
         <li class="wrapper-horizontal">
             <a href="{% url 'gebruiker_profiel' %}" target="_top">
                 {% include "icons/person.svg" %}

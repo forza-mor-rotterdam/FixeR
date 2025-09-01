@@ -4,7 +4,9 @@ const SWIPE_TRESHOLD = 100
 let scrollPositionForDialog = 0
 export default class extends Controller {
   static targets = ['infosheet', 'scrollHandle', 'infosheetTurboframe']
-
+  initialize() {
+    this.sourceElemParent = null
+  }
   scrollHandleTargetConnected(element) {
     this.startX = 0
     this.startY = 0
@@ -67,21 +69,35 @@ export default class extends Controller {
   openInfosheet(e) {
     if (this.hasInfosheetTarget) {
       e.preventDefault()
-      scrollPositionForDialog = window.scrollY
-      this.infosheetTurboframeTarget.setAttribute('src', e.params.action)
-      this.infosheetTarget.showModal()
-      document.body.style.top = `-${scrollPositionForDialog}px`
-      document.body.style.position = 'fixed'
-      this.infosheetTarget.addEventListener('click', (event) => {
-        if (event.target === event.currentTarget) {
-          event.stopPropagation()
-          this.closeInfosheet()
-        }
-      })
+      if (e.params.action) {
+        scrollPositionForDialog = window.scrollY
+        this.infosheetTurboframeTarget.setAttribute('src', e.params.action)
+        this.infosheetTarget.showModal()
+        document.body.style.top = `-${scrollPositionForDialog}px`
+        document.body.style.position = 'fixed'
+        this.infosheetTarget.addEventListener('click', (event) => {
+          if (event.target === event.currentTarget) {
+            event.stopPropagation()
+            this.closeInfosheet()
+          }
+        })
+      } else if (e.params.selector) {
+        const sourceElem = document.querySelector(e.params.selector)
+        this.sourceElemParent = sourceElem.parentNode
+        this.infosheetTurboframeTarget.insertAdjacentElement('beforeEnd', sourceElem)
+        this.infosheetTarget.showModal()
+      }
     }
   }
 
   closeInfosheet() {
+    if (this.sourceElemParent) {
+      this.sourceElemParent.insertAdjacentElement(
+        'beforeEnd',
+        this.infosheetTurboframeTarget.firstChild
+      )
+      this.sourceElemParent = null
+    }
     if (this.hasInfosheetTarget) {
       if (this.infosheetTarget.open) {
         setTimeout(() => (this.infosheetTurboframeTarget.innerHTML = ''), 400)

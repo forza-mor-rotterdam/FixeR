@@ -1,3 +1,14 @@
+.taken-overzicht {
+    &.showMap {
+        .container__header {
+            .container__controls {
+                .btn-sort--small {
+                    display: none;
+                }
+            }
+        }
+    }
+}
 .page-incidents {
     .container__header {
         margin-bottom: 16px;
@@ -49,17 +60,6 @@
             }
         }
     }
-
-    &.showMap {
-        .container__header {
-            .container__controls {
-                .btn-sort--small {
-                    display: none;
-                }
-            }
-        }
-    }
-
     .container__list {
         display: flex;
         height: 100%;

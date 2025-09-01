@@ -72,7 +72,8 @@ export default class extends Controller {
       )
       distance = myLocation.distanceTo([position.coords.latitude, position.coords.longitude])
     }
-    if (!distance || distance > 5) {
+    if (!distance || distance > 3) {
+      console.log(distance)
       this.currentPosition = position
       this.positionWatchSuccess()
     }
