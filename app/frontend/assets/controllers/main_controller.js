@@ -12,7 +12,7 @@ export default class extends Controller {
     navigator.geolocation.getCurrentPosition(
       this.getCurrentPositionSuccess,
       this.positionWatchError,
-      { maximumAge: 10000, timeout: 5000, enableHighAccuracy: true }
+      { maximumAge: 0, timeout: 5000, enableHighAccuracy: true }
     )
     this.toastTurboFrame = document.getElementById('tf_toast_lijst')
     this.sessionTimerTurboFrame = document.getElementById('tf_session_timer')
