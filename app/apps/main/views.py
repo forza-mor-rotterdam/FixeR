@@ -207,16 +207,13 @@ class TakenOverzicht(
         except Exception:
             clean_selected_taak_uuid = None
 
-        if clean_selected_taak_uuid and (
-            selectedTaak := queryset.filter(uuid=clean_selected_taak_uuid).first()
-        ):
-            print(selectedTaak)
-            index = list(queryset.values_list("id", flat=True)).index(selectedTaak.id)
-            print(index)
+        self.selected_taak = queryset.filter(uuid=clean_selected_taak_uuid).first()
+        if clean_selected_taak_uuid and self.selected_taak:
+            index = list(queryset.values_list("id", flat=True)).index(
+                self.selected_taak.id
+            )
             page = math.floor(index / self.paginate_by) + 1
-            print(page)
             self.kwargs["page"] = page
-            self.initial["page"] = page
 
         return queryset
 
@@ -227,20 +224,15 @@ class TakenOverzicht(
         self.initial = self.request.user.profiel.taken_filter_validated_data
         self.initial["q"] = self.request.session.get("q")
 
-        try:
-            taakUuid = uuid.UUID(self.request.GET.get("taakUuid"))
-        except Exception:
-            taakUuid = None
-        self.initial["selected_taak_uuid"] = taakUuid
-
-        self.initial["page"] = self.request.session.get("q")
         self.initial["kaart_modus"] = self.request.user.profiel.ui_instellingen.get(
             "kaart_modus", "volgen"
         )
         self.initial["sorteer_opties"] = self.request.user.profiel.ui_instellingen.get(
             "sortering", "Adres-reverse"
         )
-        return super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        context.update({"selected_taak": self.selected_taak})
+        return context
 
     def form_invalid(self, form):
         logger.error("TakenOverzicht: FORM INVALID")

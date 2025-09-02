@@ -46,11 +46,7 @@ export default class extends Controller {
     const urlObj = new URL(window.location.href)
     urlObj.search = ''
     const url = urlObj.toString()
-    if (history.pushState) {
-      window.history.pushState({}, '', url)
-    } else {
-      window.history.replaceState({}, '', url)
-    }
+    window.history.replaceState({}, '', url)
   }
   clearSelectedTaakUuidField() {
     this.selectedTaakUuidFieldTarget.value = ''
