@@ -121,7 +121,7 @@
                     <h3 data-notificaties--snack-item-target="titel">Geen locatie</h3>
                     <div class="container__message">
                         <div class="container__link">
-                            <a href="https://support.google.com/android/thread/227586248/my-phone-location-is-not-working?hl=en"
+                            <a href="{% if DEVICE_OS == 'android' %}https://support.google.com/android/thread/227586248/my-phone-location-is-not-working?hl=en{% elif DEVICE_OS == 'ios' %}https://support.apple.com/nl-nl/102647{% else %}https://duckduckgo.com/?q=browser+geen+locatie+service{% endif %}"
                                data-turbo="false">Info</a>
                         </div>
                         <p data-notificaties--snack-item-target="content">
