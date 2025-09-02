@@ -59,12 +59,6 @@
                     {% comment %} {% endwith %} {% endcomment %}
                 </p>
             {% endif %}
-            {% if taak.aangepast_op %}
-                {% if taak.aangepast_op|to_datetime|date:'d-m-Y H:i' != taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' and taak.aangepast_op|to_datetime|date:'d-m-Y H:i' != taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' %}
-                    <h3 class="h5">Aangepast</h3>
-                    <p>{{ taak.aangepast_op|to_datetime|date:'d-m-Y H:i' }}</p>
-                {% endif %}
-            {% endif %}
             {% if taak.afgesloten_op %}
                 <h3 class="h5">Afgesloten</h3>
                 <p>
