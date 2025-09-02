@@ -13,12 +13,6 @@ export default class extends Controller {
       timeout: 5000,
       maximumAge: 0,
     }
-
-    // navigator.geolocation.getCurrentPosition(
-    //   this.getCurrentPositionSuccess,
-    //   this.positionWatchError,
-    //   this.positionWatchOptions
-    // )
     navigator.geolocation.watchPosition(
       this.getCurrentPositionSuccess,
       this.positionWatchError,
@@ -74,7 +68,6 @@ export default class extends Controller {
 
   getCurrentPositionSuccess = (position) => {
     document.body.classList.remove('geolocation-error')
-    console.log('getCurrentPositionSuccess')
 
     let distance = null
     if (this.currentPosition) {
@@ -84,8 +77,8 @@ export default class extends Controller {
       )
       distance = myLocation.distanceTo([position.coords.latitude, position.coords.longitude])
     }
-    if (!distance || distance > 3) {
-      console.log(distance)
+    if (!distance || distance > 5) {
+      console.log(`Afstand tot vorige positie: ${distance}m`)
       this.currentPosition = position
       this.positionWatchSuccess()
     }

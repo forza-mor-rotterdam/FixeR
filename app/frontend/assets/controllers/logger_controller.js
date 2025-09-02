@@ -2,7 +2,8 @@ import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   static targets = ['log']
-  initialize() {
+  connect() {
+    this.originalLogPrefix = 'org'
     this.fixLoggingFunc('log')
     this.fixLoggingFunc('debug')
     this.fixLoggingFunc('warn')
@@ -10,26 +11,36 @@ export default class extends Controller {
     this.fixLoggingFunc('info')
   }
   fixLoggingFunc(name) {
-    console['old' + name] = console[name]
-    console[name] = (...args) => {
-      const output = this.produceOutput(name, args)
-      const eleLog = this.logTarget
-      eleLog.insertBefore(output, eleLog.firstChild)
-      console['old' + name].apply(undefined, args)
+    if (!console[this.originalLogPrefix + name]) {
+      console[this.originalLogPrefix + name] = console[name]
+      if (this.hasLogTarget) {
+        console[name] = (...args) => {
+          const output = this.produceOutput(name, args)
+          this.logTarget.insertBefore(output, this.logTarget.firstChild)
+          if (this.logTarget.children.length > 100) {
+            this.logTarget.removeChild(this.logTarget.lastChild)
+          }
+          console[this.originalLogPrefix + name].apply(undefined, args)
+        }
+      }
     }
   }
   stringify(arg) {
-    if (arg && arg.outerHTML) {
-      return `${arg.outerHTML.replace(arg.innerHTML, '...')}`
+    try {
+      if (arg && arg.outerHTML) {
+        return `${arg.outerHTML.replace(arg.innerHTML, '...')}`
+      }
+      return typeof arg === 'object' && (JSON || {}).stringify ? JSON.stringify(arg) : arg
+    } catch (e) {
+      return `errr: ${e}`
     }
-    return typeof arg === 'object' && (JSON || {}).stringify ? JSON.stringify(arg) : arg
   }
   produceOutput(name, args) {
     const spanContainer = document.createElement('SPAN')
     const hr = document.createElement('HR')
-    args.map((arg) => {
+    args?.map((arg) => {
       const span = document.createElement('SPAN')
-      span.classList.add('log', `log-${typeof arg}-${name}`)
+      span.classList.add('log', `log-${name}`, `log-${typeof arg}`)
       span.textContent = this.stringify(arg)
       spanContainer.appendChild(span)
     })

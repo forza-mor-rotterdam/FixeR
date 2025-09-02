@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime
 
 import requests
+from apps.authenticatie.models import AFSTAND_SORTING_KEY
 from apps.instellingen.models import Instelling
 from apps.main.forms import TaakBehandelForm, TakenLijstFilterForm
 from apps.main.services import MORCoreService, PDOKService, TaakRService
@@ -195,8 +196,8 @@ class TakenOverzicht(
                     Distance("melding__geometrie", gps), output_field=FloatField()
                 )
             )
-
-        queryset = queryset.order_by(profiel.taken_sorting_order_by)
+        if gps or (not gps and profiel.taken_sorting != AFSTAND_SORTING_KEY):
+            queryset = queryset.order_by(profiel.taken_sorting_order_by)
 
         selected_taak_uuid = self.request.GET.get(
             "taakUuid", self.form_data.get("selected_taak_uuid", "")

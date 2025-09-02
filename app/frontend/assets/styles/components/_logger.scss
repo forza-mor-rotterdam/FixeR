@@ -8,7 +8,12 @@
 .logger pre {
     margin: 5px;
 }
+.logger hr {
+    border: none;
+    border-bottom: 1px solid lightgray;
+}
 .log {
+    color: silver;
     text-wrap: auto;
     word-break: break-all;
 }
@@ -20,9 +25,6 @@
 }
 .log-info {
     color: skyblue;
-}
-.log-log {
-    color: silver;
 }
 
 .log-warn,
