@@ -136,7 +136,6 @@ export default class MapController extends Controller {
     }
   }
   positionChangeEvent = (position) => {
-    console.log('KAART: positionChangeEvent: ', position)
     if (!this.markerMe) {
       this.markerMe = new L.Marker([position.coords.latitude, position.coords.longitude], {
         icon: MapController.markerIcons.blue,

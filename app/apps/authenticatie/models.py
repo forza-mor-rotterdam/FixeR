@@ -9,6 +9,14 @@ from utils.fields import DictJSONField
 from utils.images import get_upload_path
 from utils.models import BasisModel
 
+DATUM_SORTING_KEY = "Datum"
+DATUM_REVERSE_SORTING_KEY = "Datum-reverse"
+AFSTAND_SORTING_KEY = "Afstand"
+ADRES_SORTING_KEY = "Adres"
+ADRES_REVERSE_SORTING_KEY = "Adres-reverse"
+POSTCODE_SORTING_KEY = "Postcode"
+POSTCODE_REVERSE_SORTING_KEY = "Postcode-reverse"
+
 
 class Gebruiker(AbstractUser):
     username = None
@@ -177,22 +185,22 @@ class Profiel(BasisModel):
     @property
     def taken_sorting_choices(self):
         return (
-            ("Datum-reverse", "Datum (nieuwste bovenaan)"),
-            ("Datum", "Datum (oudste bovenaan)"),
-            ("Afstand", "Afstand"),
-            ("Adres", "T.h.v. Adres (a-z)"),
-            ("Adres-reverse", "T.h.v. Adres (z-a)"),
-            ("Postcode", "Postcode (1000-9999)"),
-            ("Postcode-reverse", "Postcode (9999-1000)"),
+            (DATUM_REVERSE_SORTING_KEY, "Datum (nieuwste bovenaan)"),
+            (DATUM_SORTING_KEY, "Datum (oudste bovenaan)"),
+            (AFSTAND_SORTING_KEY, "Afstand"),
+            (ADRES_SORTING_KEY, "T.h.v. Adres (a-z)"),
+            (ADRES_REVERSE_SORTING_KEY, "T.h.v. Adres (z-a)"),
+            (POSTCODE_SORTING_KEY, "Postcode (1000-9999)"),
+            (POSTCODE_REVERSE_SORTING_KEY, "Postcode (9999-1000)"),
         )
 
     @property
     def taken_sorting_order_by(self):
         mapping = {
-            "Postcode": "melding__postcode",
-            "Adres": "melding__locatie_verbose",
-            "Datum": "taakstatus__aangemaakt_op",
-            "Afstand": "afstand",
+            POSTCODE_SORTING_KEY: "melding__postcode",
+            ADRES_SORTING_KEY: "melding__locatie_verbose",
+            DATUM_SORTING_KEY: "taakstatus__aangemaakt_op",
+            AFSTAND_SORTING_KEY: "afstand",
         }
         sorting_direction = "-" if len(self.taken_sorting.split("-")) > 1 else ""
         sorting = self.taken_sorting.split("-")[0]
@@ -200,4 +208,4 @@ class Profiel(BasisModel):
 
     @property
     def taken_sorting(self):
-        return self.ui_instellingen.get("sortering", "Datum-reverse")
+        return self.ui_instellingen.get("sortering", DATUM_REVERSE_SORTING_KEY)
