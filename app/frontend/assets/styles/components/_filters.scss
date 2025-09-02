@@ -192,13 +192,22 @@
             > div {
                 flex: 1;
                 text-align: right;
+                padding-right: 1rem;
             }
             .btn {
                 flex: 0 1 25%;
                 white-space: nowrap;
                 display: inline;
                 width: auto;
+                font-size: $fz-14;
+                color: inherit;
             }
+        }
+    }
+
+    .foldout .foldout .container__list--header {
+        > div {
+            padding-right: 0;
         }
     }
 
