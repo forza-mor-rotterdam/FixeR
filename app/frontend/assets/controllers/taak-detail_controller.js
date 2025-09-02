@@ -60,7 +60,6 @@ export default class extends Controller {
     this.selectedImageIndex = null
     this.sliderContainerWidth = 0
     this.isZooming = false
-    console.log('this.taakCoordinatesValue: ', this.taakCoordinatesValue)
     this.taakCoordinates = JSON.parse(this.taakCoordinatesValue)
 
     this.initMessages()

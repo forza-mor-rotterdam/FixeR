@@ -149,10 +149,14 @@ class MeldingAlias(BasisModel):
 
     def coordinates(self):
         melding_serialized = MeldingAliasSerializer(self)
-        return list(
-            reversed(
-                melding_serialized.data.get("geometrie", {}).get("coordinates", [])
+        return (
+            list(
+                reversed(
+                    melding_serialized.data.get("geometrie", {}).get("coordinates", [])
+                )
             )
+            if melding_serialized.data.get("geometrie")
+            else None
         )
 
     def update_zoek_data(self):
