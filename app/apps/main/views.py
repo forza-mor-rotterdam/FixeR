@@ -102,8 +102,6 @@ def navigeer(request, lat, long):
     )
 
 
-# Verander hier de instellingen voor de nieuwe homepagina.
-# @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
         return redirect(reverse("taken_overzicht"), False)
@@ -188,7 +186,11 @@ class TakenOverzicht(
     def get_queryset(self):
         queryset = super().get_queryset()
         profiel = self.request.user.profiel
-        queryset = queryset.filter(**profiel.taken_filter_query_data)
+
+        if not self.request.session.get("filters_active") and self.request.session.get(
+            "q"
+        ):
+            queryset = queryset.filter(**profiel.taken_filter_query_data)
         queryset = queryset.taken_zoeken(self.request.session.get("q"))
 
         gps = self.get_gps()
@@ -226,6 +228,11 @@ class TakenOverzicht(
         self.initial["q"] = self.request.session.get("q")
         if self.request.session.get("gps"):
             del self.request.session["gps"]
+        self.initial["filters_active"] = self.request.session.get("filters_active")
+
+        self.initial["kaart_modus"] = self.request.user.profiel.ui_instellingen.get(
+            "kaart_modus", "toon_alles"
+        )
         self.initial["sorteer_opties"] = self.request.user.profiel.ui_instellingen.get(
             "sortering", "Adres-reverse"
         )

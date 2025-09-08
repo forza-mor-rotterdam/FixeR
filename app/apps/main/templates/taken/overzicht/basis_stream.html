@@ -13,7 +13,7 @@
         </template>
         </turbo-stream>
     {% endif %}
-    {% if filters_changed or q_changed or sorteer_opties_changed or page_changed or gps_changed %}
+    {% if filters_changed or q_changed or sorteer_opties_changed or page_changed or gps_changed or filters_active_changed %}
         <turbo-stream action="update" target="stream_taken_lijst">
         <template>
             {% include "taken/overzicht/lijst.html" %}

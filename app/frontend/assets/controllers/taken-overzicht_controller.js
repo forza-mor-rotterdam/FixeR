@@ -24,6 +24,7 @@ export default class extends Controller {
     'containerHeader',
     'selectedTaakUuidField',
     'taakAfstand',
+    'filtersActiveField',
   ]
 
   initialize() {
@@ -138,6 +139,9 @@ export default class extends Controller {
   }
   onSortingChangeHandler() {
     this.clearSelectedTaakUuidField()
+    this.element.requestSubmit()
+  }
+  onFiltersActiveChangeHandler() {
     this.element.requestSubmit()
   }
   onPageClickEvent(e) {
