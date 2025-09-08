@@ -103,7 +103,7 @@ export default class MapController extends Controller {
   selectTaakMarker(taakUuid, preventScroll) {
     const obj = this.markerList.find((obj) => obj.options.taakUuid == taakUuid)
     this.preventScroll = preventScroll
-    obj.openPopup()
+    obj?.openPopup()
   }
   toonAlles = () => this.map.fitBounds(this.markers.getBounds())
   volgen = () => this.map.flyTo(this.markerMe.getLatLng(), this.getZoom())
