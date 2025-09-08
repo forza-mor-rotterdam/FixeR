@@ -21,11 +21,13 @@ export default class extends Controller {
     this.addEventListeners()
   }
   connect() {
-    setTimeout(() => {
-      this.selectTaakMarker({
-        params: { taakUuid: this.selectedTaakUuidValue, preventScroll: false },
-      })
-    }, 200)
+    if (this.selectedTaakUuidValue) {
+      setTimeout(() => {
+        this.selectTaakMarker({
+          params: { taakUuid: this.selectedTaakUuidValue, preventScroll: false },
+        })
+      }, 200)
+    }
     document.addEventListener('turbo:before-fetch-response', () => {
       this.setScrollPosition()
     })
