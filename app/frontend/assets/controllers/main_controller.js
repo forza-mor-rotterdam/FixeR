@@ -62,10 +62,6 @@ export default class extends Controller {
       }, 200)
     }
   }
-  connect() {
-    sessionStorage.removeItem('selectedTaakId')
-  }
-
   getCurrentPositionSuccess = (position) => {
     document.body.classList.remove('geolocation-error')
 

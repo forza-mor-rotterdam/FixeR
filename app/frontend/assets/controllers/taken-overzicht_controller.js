@@ -104,7 +104,6 @@ export default class extends Controller {
   }
   onSearchChangeHandler(e) {
     clearTimeout(this.to)
-    sessionStorage.removeItem('selectedTaakId')
     this.to = setTimeout(() => {
       this.clearSelectedTaakUuidField()
       this.element.requestSubmit()
@@ -120,7 +119,6 @@ export default class extends Controller {
     this.pageFieldTarget.value = e.params.page
     this.clearSelectedTaakUuidField()
     this.element.requestSubmit()
-    this.pageFieldTarget.value = 1
   }
   kaartModusOptionClickHandler(e) {
     const li = e.target.closest('li')
@@ -149,12 +147,9 @@ export default class extends Controller {
   }
   toggleMapViewHandler() {
     this.element.classList.toggle('showMap')
-    // this.setScrollPosition()
   }
   showFilters() {
     this.element.classList.add('show-filters')
-    // used for scrolling to last selected task
-    sessionStorage.removeItem('selectedTaakId')
   }
 
   hideFilters() {

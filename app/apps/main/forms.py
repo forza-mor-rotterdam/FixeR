@@ -161,15 +161,7 @@ class TakenLijstFilterForm(forms.Form):
                 "data-main-target": "sorteerField",
             }
         ),
-        choices=(
-            ("Datum-reverse", "Datum (nieuwste bovenaan)"),
-            ("Datum", "Datum (oudste bovenaan)"),
-            ("Afstand", "Afstand"),
-            ("Adres", "T.h.v. Adres (a-z)"),
-            ("Adres-reverse", "T.h.v. Adres (z-a)"),
-            ("Postcode", "Postcode (1000-9999)"),
-            ("Postcode-reverse", "Postcode (9999-1000)"),
-        ),
+        choices=(),
         required=False,
     )
     kaart_modus = forms.ChoiceField(
@@ -279,8 +271,8 @@ class TakenLijstFilterForm(forms.Form):
             "kaart_modus"
         ) != profiel.ui_instellingen.get("kaart_modus")
         self.q_changed = data.get("q") != self.request.session.get("q")
-        self.page_changed = data.get("page")
-        self.gps_changed = data.get("gps")
+        self.page_changed = data.get("page", "") != self.request.session.get("page", "")
+        self.gps_changed = data.get("gps", "") != self.request.session.get("gps", "")
 
         # update profiel fields
         profiel.filters.update({status: actieve_filters})
@@ -296,3 +288,5 @@ class TakenLijstFilterForm(forms.Form):
         profiel.save()
         # update session fields
         self.request.session["q"] = data.get("q", "")
+        self.request.session["gps"] = data.get("gps", "")
+        self.request.session["page"] = data.get("page", "")

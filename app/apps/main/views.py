@@ -241,8 +241,6 @@ class TakenOverzicht(
 
     def form_valid(self, form):
         form.save()
-        print("form.cleaned_data")
-        print(form.cleaned_data)
         self.form_data = form.cleaned_data
 
         self.kwargs["page"] = form.cleaned_data.get("page", 1)
@@ -251,7 +249,6 @@ class TakenOverzicht(
         context = self.get_context_data()
 
         context.update(form.changed_fields())
-        print(form.changed_fields())
 
         response = render(
             self.request,
