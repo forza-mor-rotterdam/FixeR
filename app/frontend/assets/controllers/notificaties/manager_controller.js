@@ -148,9 +148,7 @@ export default class extends Controller {
     renderStreamMessage(data)
     this.laadSnackOverzicht()
   }
-  onMessageOpen(e) {
-    console.info('Open mercure connection event', e)
-  }
+  onMessageOpen() {}
   onMessageError(e) {
     console.error(e, 'An error occurred while attempting to connect.')
     this.es.close()

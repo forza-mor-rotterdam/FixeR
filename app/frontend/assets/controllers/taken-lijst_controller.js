@@ -33,6 +33,9 @@ export default class extends Controller {
     })
   }
   disconnect() {
+    if (this.hasTakenKaartOutlet) {
+      this.takenKaartOutlet.clearMarkers()
+    }
     document.removeEventListener('turbo:before-fetch-response', this.setScrollPosition)
     clearTimeout(timeoutId)
   }
