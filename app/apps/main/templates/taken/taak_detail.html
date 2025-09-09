@@ -16,7 +16,7 @@
             <div data-controller="modal">
                 <div>
                     <div>
-                        <a href="{% url 'taken_overzicht' %}"
+                        <a href="{% url 'taken_overzicht' %}?taakUuid={{ taak.uuid }}"
                            data-turbo-action="advance"
                            class="link--back"
                            aria-label="Terug">{% include "icons/arrow-long.svg" %}</a>
@@ -27,7 +27,7 @@
                          data-taak-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
                          data-taak-detail-url-prefix-value="{{ MOR_CORE_PROTECTED_URL_PREFIX }}"
                          data-taak-detail-taak-object-value="{{ taak }}"
-                         data-taak-detail-taak-coordinates-value="{{ taak.melding.coordinates|json_encode }}"
+                         data-taak-detail-taak-coordinates-value="{% if taak.melding.coordinates %}{{ taak.melding.coordinates|json_encode }}{% else %}[]{% endif %}"
                          data-taak-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
                          {% if not DEBUG %}data-taak-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
                          {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>

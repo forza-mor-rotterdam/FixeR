@@ -81,7 +81,7 @@ class TaaktypeFilter(StandaardFilter):
     def choices(self):
         return [
             (f"{taaktype['id']}", taaktype["omschrijving"])
-            for taaktype in self._profiel.taaktypes.values("id", "omschrijving")
+            for taaktype in self._profiel.get_taaktypes().values("id", "omschrijving")
         ]
 
 

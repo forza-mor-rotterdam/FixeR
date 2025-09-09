@@ -74,7 +74,9 @@
                          data-taken-overzicht-target="zoekFieldContainer"></div>
                     <div class="list__incidents" id="stream_taken_lijst">{% include "taken/overzicht/lijst.html" %}</div>
                 </div>
-                {% include "taken/overzicht/kaart.html" %}
+                {% if request.user.profiel.context.template != "benc" %}
+                    {% include "taken/overzicht/kaart.html" %}
+                {% endif %}
             </div>
         </div>
         <div class="full-page-view full-page-view__filters" tabindex="0">

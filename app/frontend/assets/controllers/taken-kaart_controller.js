@@ -39,8 +39,13 @@ export default class MapController extends Controller {
     this.buurten = null
     this.kaartModus = KaartModus.TOON_ALLES
     this.map = L.map(this.kaartId, {
-      zoom: this.getZoom(),
+      zoom: StandaardKaartZoom,
       center: [StandaardKaartCenter.coords.latitude, StandaardKaartCenter.coords.longitude],
+    })
+    this.map.on('zoomend', () => {
+      if (this.kaartModus === KaartModus.VOLGEN) {
+        this.setZoom(this.map.getZoom())
+      }
     })
 
     this.drawMap()
@@ -99,11 +104,10 @@ export default class MapController extends Controller {
     this.markers = new L.featureGroup()
     this.map.addLayer(this.markers)
   }
-
   selectTaakMarker(taakUuid, preventScroll) {
     const obj = this.markerList.find((obj) => obj.options.taakUuid == taakUuid)
     this.preventScroll = preventScroll
-    obj.openPopup()
+    obj?.openPopup()
   }
   toonAlles = () => this.map.fitBounds(this.markers.getBounds())
   volgen = () => this.map.flyTo(this.markerMe.getLatLng(), this.getZoom())
@@ -250,6 +254,9 @@ export default class MapController extends Controller {
 
     this.markers.addLayer(marker)
     this.markerList.push(marker)
+    if (this.kaartModus === KaartModus.TOON_ALLES) {
+      this.toonAlles()
+    }
   }
 
   plotMarkers = (coordinatenlijst) => {

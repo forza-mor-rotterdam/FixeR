@@ -62,10 +62,6 @@ export default class extends Controller {
       }, 200)
     }
   }
-  connect() {
-    sessionStorage.removeItem('selectedTaakId')
-  }
-
   getCurrentPositionSuccess = (position) => {
     document.body.classList.remove('geolocation-error')
 
@@ -110,12 +106,13 @@ export default class extends Controller {
     }
   }
   positionPermissionState(permissionEnable) {
+    const afstandOption = this.sorteerFieldTarget.querySelector('option[value="Afstand"]')
     this.kaartModusOptionTargets
       .find((elem) => elem.value === 'volgen')
       ?.closest('li')
       .classList[permissionEnable ? 'remove' : 'add']('disabled')
-    if (this.hasSorteerFieldTarget) {
-      this.sorteerFieldTarget.querySelector('option[value="Afstand"]').disabled = !permissionEnable
+    if (this.hasSorteerFieldTarget && afstandOption) {
+      afstandOption.disabled = !permissionEnable
     }
     if (!permissionEnable) {
       if (this.hasKaartModusOptionTarget) {

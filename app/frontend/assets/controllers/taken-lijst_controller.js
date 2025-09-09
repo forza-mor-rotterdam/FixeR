@@ -13,16 +13,29 @@ export default class extends Controller {
 
   static outlets = ['taken-kaart']
   static targets = ['taakItem', 'containerHeader']
+  static values = {
+    selectedTaakUuid: String,
+  }
 
   initialize() {
     this.addEventListeners()
   }
   connect() {
+    if (this.selectedTaakUuidValue) {
+      setTimeout(() => {
+        this.selectTaakMarker({
+          params: { taakUuid: this.selectedTaakUuidValue, preventScroll: false },
+        })
+      }, 200)
+    }
     document.addEventListener('turbo:before-fetch-response', () => {
       this.setScrollPosition()
     })
   }
   disconnect() {
+    if (this.hasTakenKaartOutlet) {
+      this.takenKaartOutlet.clearMarkers()
+    }
     document.removeEventListener('turbo:before-fetch-response', this.setScrollPosition)
     clearTimeout(timeoutId)
   }
@@ -58,12 +71,11 @@ export default class extends Controller {
     })
   }
   selecteerTaakItem(taakUuid, preventScroll) {
-    sessionStorage.setItem('selectedTaakId', taakUuid)
     const taakItemTarget = this.taakItemTargets.find((elem) => elem.dataset.uuid === taakUuid)
     taakItemTarget?.classList.toggle('highlight-once', taakItemTarget.dataset.uuid === taakUuid)
     preventScroll || taakItemTarget?.scrollIntoView()
     setTimeout(() => {
-      taakItemTarget.classList.remove('highlight-once')
+      taakItemTarget?.classList.remove('highlight-once')
     }, 2000)
   }
   deselecteerTaakItem(taakUuid) {
@@ -72,7 +84,8 @@ export default class extends Controller {
   }
   selectTaakMarker(e) {
     if (this.hasTakenKaartOutlet) {
-      this.takenKaartOutlet.selectTaakMarker(e.params.taakUuid, true)
+      const preventScroll = e.params['preventScroll'] != false
+      this.takenKaartOutlet.selectTaakMarker(e.params.taakUuid, preventScroll)
     }
   }
   taakItemTargetConnected(taakItem) {

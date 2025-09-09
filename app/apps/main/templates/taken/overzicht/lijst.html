@@ -5,6 +5,7 @@
 <div class="list__incidents__scroll-wrapper"
      id="taken_lijst"
      data-controller="taken-lijst"
+     data-taken-lijst-selected-taak-uuid-value="{{ selected_taak.uuid }}"
      data-taken-lijst-taken-kaart-outlet="#taken_kaart">
     {% if page_obj.paginator.count %}
         {% if page_obj.paginator.count > 100 and not request.session.toon_alle_taken %}
