@@ -144,11 +144,9 @@ class Profiel(BasisModel):
             return f"Profiel voor: {self.gebruiker}"
         return f"Profiel id: {self.pk}"
 
-    @property
-    def wijken_or_taaktypes_empty(self):
-        buurt_empty = not self.wijken or all(not wijk for wijk in self.wijken)
-        taken_empty = not self.taaktypes.exists()
-        return buurt_empty or taken_empty
+    def get_taaktypes(self):
+        taaktypes = self.taaktypes if not self.is_benc else self.context.taaktypes
+        return taaktypes.values("id", "omschrijving")
 
     @property
     def taken_filters(self):
@@ -180,18 +178,33 @@ class Profiel(BasisModel):
             f.filter_lookup(): self.taken_filter_validated_data.get(f.key())
             for f in self.taken_filters
             if self.taken_filter_validated_data.get(f.key())
+        } | {
+            "melding__begraafplaats__isnull": not self.is_benc,
         }
+
+    @property
+    def is_benc(self):
+        from apps.context.models import Context
+
+        return self.context.template == Context.TemplateOpties.BENC
 
     @property
     def taken_sorting_choices(self):
         return (
-            (DATUM_REVERSE_SORTING_KEY, "Datum (nieuwste bovenaan)"),
-            (DATUM_SORTING_KEY, "Datum (oudste bovenaan)"),
-            (AFSTAND_SORTING_KEY, "Afstand"),
-            (ADRES_SORTING_KEY, "T.h.v. Adres (a-z)"),
-            (ADRES_REVERSE_SORTING_KEY, "T.h.v. Adres (z-a)"),
-            (POSTCODE_SORTING_KEY, "Postcode (1000-9999)"),
-            (POSTCODE_REVERSE_SORTING_KEY, "Postcode (9999-1000)"),
+            (
+                (DATUM_REVERSE_SORTING_KEY, "Datum (nieuwste bovenaan)"),
+                (DATUM_SORTING_KEY, "Datum (oudste bovenaan)"),
+                (AFSTAND_SORTING_KEY, "Afstand"),
+                (ADRES_SORTING_KEY, "T.h.v. Adres (a-z)"),
+                (ADRES_REVERSE_SORTING_KEY, "T.h.v. Adres (z-a)"),
+                (POSTCODE_SORTING_KEY, "Postcode (1000-9999)"),
+                (POSTCODE_REVERSE_SORTING_KEY, "Postcode (9999-1000)"),
+            )
+            if not self.is_benc
+            else (
+                (DATUM_REVERSE_SORTING_KEY, "Datum (nieuwste bovenaan)"),
+                (DATUM_SORTING_KEY, "Datum (oudste bovenaan)"),
+            )
         )
 
     @property

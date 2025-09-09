@@ -105,67 +105,6 @@ class TaakBehandelForm(forms.Form):
             )
 
 
-class SorteerFilterForm(forms.Form):
-    sorteer_opties = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={
-                "data-action": "sorteerFilter#onChangeHandler",
-                "data-sorteerFilter-target": "sorteerField",
-            }
-        ),
-        choices=(
-            ("Datum-reverse", "Datum (nieuwste bovenaan)"),
-            ("Datum", "Datum (oudste bovenaan)"),
-            ("Afstand", "Afstand"),
-            ("Adres", "T.h.v. Adres (a-z)"),
-            ("Adres-reverse", "T.h.v. Adres (z-a)"),
-            ("Postcode", "Postcode (1000-9999)"),
-            ("Postcode-reverse", "Postcode (9999-1000)"),
-        ),
-        initial="Datum-reverse",
-    )
-
-    def __init__(self, *args, **kwargs):
-        gebruiker = kwargs.pop("gebruiker", None)
-        try:
-            is_benc = gebruiker.profiel.context.template == "benc"
-        except Exception:
-            is_benc = False
-
-        super().__init__(*args, **kwargs)
-        benc_sorteer_opties_choices = ("Datum-reverse", "Datum")
-        sorteer_opties_choices = [
-            ("Datum-reverse", "Datum (nieuwste bovenaan)"),
-            ("Datum", "Datum (oudste bovenaan)"),
-            ("Afstand", "Afstand"),
-            ("Adres", "T.h.v. Adres (a-z)"),
-            ("Adres-reverse", "T.h.v. Adres (z-a)"),
-            ("Postcode", "Postcode (1000-9999)"),
-            ("Postcode-reverse", "Postcode (9999-1000)"),
-        ]
-        self.fields["sorteer_opties"].choices = [
-            optie
-            for optie in sorteer_opties_choices
-            if (is_benc and optie[0] in benc_sorteer_opties_choices) or not is_benc
-        ]
-
-
-class KaartModusForm(forms.Form):
-    kaart_modus = forms.ChoiceField(
-        widget=forms.RadioSelect(
-            attrs={
-                "class": "list--form-radio-input",
-                "data-action": "click->kaartModus#kaartModusOptionClickHandler",
-                "hideLabel": True,
-            }
-        ),
-        choices=(
-            ("volgen", "Volg mijn locatie"),
-            ("toon_alles", "Toon alle taken"),
-        ),
-    )
-
-
 class TaakFilterCheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
     template_name = "taken/overzicht/filter_field_widget.html"
     option_template_name = "taken/overzicht/filter_field_widget_option.html"
