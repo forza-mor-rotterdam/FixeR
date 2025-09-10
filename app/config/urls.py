@@ -7,7 +7,6 @@ from apps.authenticatie.views import (
 )
 from apps.health.views import healthz
 from apps.main.views import (
-    HomepageView,
     TakenOverzicht,
     clear_melding_token_from_cache,
     config,
@@ -15,7 +14,6 @@ from apps.main.views import (
     http_404,
     http_410,
     http_500,
-    infosheet_mock,
     meldingen_bestand,
     meldingen_bestand_protected,
     navigeer,
@@ -68,11 +66,6 @@ urlpatterns = [
         LogoutView.as_view(),
         name="logout",
     ),
-    path(
-        "home/",
-        HomepageView.as_view(),
-        name="home",
-    ),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path(
         "api/v1/melding/",
@@ -117,11 +110,6 @@ urlpatterns = [
     ),
     # END taken
     # sidesheet
-    path(
-        "infosheet-mock/",
-        infosheet_mock,
-        name="infosheet_mock",
-    ),
     path(
         "taaktype/<int:pk>/taakr/", TaakRTaaktypeView.as_view(), name="taaktype_taakr"
     ),
