@@ -10,7 +10,6 @@ from apps.instellingen.models import Instelling
 from apps.main.forms import TaakBehandelForm, TakenLijstFilterForm
 from apps.main.services import MORCoreService, PDOKService, TaakRService
 from apps.main.utils import melding_naar_tijdlijn
-from apps.release_notes.models import ReleaseNote
 from apps.taken.filters import FILTERS_BY_KEY
 from apps.taken.models import Taak, TaakDeellink, Taakstatus
 from device_detector import DeviceDetector
@@ -31,7 +30,7 @@ from django.core.files.storage import default_storage
 from django.http import HttpResponse, HttpResponsePermanentRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import FormView, ListView, View
+from django.views.generic import FormView, ListView
 
 logger = logging.getLogger(__name__)
 
@@ -225,7 +224,7 @@ class TakenOverzicht(
         self.initial["q"] = self.request.session.get("q")
 
         self.initial["kaart_modus"] = self.request.user.profiel.ui_instellingen.get(
-            "kaart_modus", "volgen"
+            "kaart_modus", "toon_alles"
         )
         self.initial["sorteer_opties"] = self.request.user.profiel.ui_instellingen.get(
             "sortering", "Adres-reverse"
@@ -560,36 +559,3 @@ def meldingen_bestand(request):
 def meldingen_bestand_protected(request):
     modified_path = request.path.replace(settings.MOR_CORE_PROTECTED_URL_PREFIX, "")
     return _meldingen_bestand(request, modified_path)
-
-
-@login_required
-def infosheet_mock(request):
-    return render(
-        request,
-        "infosheet/infosheet_mock.html",
-        {},
-    )
-
-
-class HomepageView(PermissionRequiredMixin, View):
-    # Might change to LoginRequiredMixin
-    permission_required = "authorisatie.homepage_bekijken"
-    template_name = "homepage_nieuw.html"
-
-    def get(self, request, *args, **kwargs):
-        request.session["origine"] = "home"
-        release_notes = self.get_release_notes()
-        context = {
-            "release_notes": release_notes,
-        }
-        return render(request, self.template_name, context)
-
-    # Get release notes published within 5 weeks and not in future
-    def get_release_notes(self):
-        release_notes = [
-            release_note
-            for release_note in ReleaseNote.objects.all().order_by("-publicatie_datum")
-            if release_note.is_published()
-        ][:6]
-
-        return release_notes
