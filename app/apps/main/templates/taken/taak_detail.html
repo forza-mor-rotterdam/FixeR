@@ -13,7 +13,7 @@
     <turbo-frame id="taak_basis">
     {% with melding=taak.melding.response_json %}
         {% with geometrie=taak.melding.geometrie %}
-            <div data-controller="modal">
+            <div>
                 <div>
                     <div>
                         <a href="{% url 'taken_overzicht' %}?taakUuid={{ taak.uuid }}"

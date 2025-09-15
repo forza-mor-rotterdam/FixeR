@@ -45,7 +45,7 @@
     {% else %}
         {% with melding=taak.melding.response_json %}
             {% with geometrie=taak.melding.geometrie %}
-                <div data-controller="modal">
+                <div>
                     {% get_bijlagen melding as bijlagen %}
                     <div data-controller="taak-detail"
                          data-taak-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
@@ -193,7 +193,7 @@
                                 <p>
                                     Deze link is gedeeld door <a href="mailto:{{ gebruiker_email }}">{{ gebruiker_email }}</a>
                                 </p>
-                                {% include "incident/part_gebruiker_telefoon.html" with gebruiker=gebruiker_email|get_gebruiker_object_middels_email %}
+                                {% include "snippets/gebruiker_telefoon.html" with gebruiker=gebruiker_email|get_gebruiker_object_middels_email %}
                                 <p>
                                     <a href="{% url 'taak_detail' taak.uuid %}" target="_top">Naar orginele taak</a>
                                 </p>

@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
 export default class extends Controller {
-  static targets = ['gpsField', 'kaartModusOption', 'sorteerField']
+  static targets = ['gpsField', 'kaartModusOption', 'sorteerField', 'navigation']
   static outlets = ['taken-kaart', 'taken-overzicht', 'taak-detail']
 
   initialize() {
@@ -153,6 +153,18 @@ export default class extends Controller {
       case error.UNKNOWN_ERROR:
         console.log('An unknown error occurred.')
         break
+    }
+  }
+  openNavigation() {
+    if (this.hasNavigationTarget) {
+      document.body.classList.add('show-navigation')
+      this.navigationTarget.classList.add('show')
+    }
+  }
+  closeNavigation() {
+    if (this.hasNavigationTarget) {
+      document.body.classList.remove('show-navigation')
+      this.navigationTarget.classList.remove('show')
     }
   }
 }

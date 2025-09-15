@@ -1,6 +1,6 @@
 <div data-modal-target="modal" data-focus-trap-target="branch">
     <template data-modal-target="template">
-        <dialog data-modal-target="dialog" class="modal">
+        <dialog data-modal-target="dialog">
             <button id="modal_close_button"
                     type="button"
                     class="btn-close"
@@ -15,6 +15,11 @@
                         <span id="modal_header_title">Modal title</span>
                         <small id="modal_header_subtitle">Modal subtitle</small>
                     </h1>
+                    <div id="modal_header_info_extra" class="info__extra"></div>
+                    <button type="button"
+                            class="btn-close"
+                            aria-label="Sluit"
+                            data-action="modal#closeModal"></button>
                 </div>
                 <div class="modal-body" id="modal_body" data-modal-target="body">Modal content</div>
             </div>

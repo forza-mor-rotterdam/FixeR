@@ -21,16 +21,10 @@
             {% if taak.laatste_taakgebeurtenis_gebruiker %}
                 {% with gebruiker=taak.laatste_taakgebeurtenis_gebruiker %}
                     <p class="margin-top">
-                        {% comment %} Haal rol en telefoonnummer uit gebruiker-object {% endcomment %}
-                        <b>Mid-office</b>
+                        <b>Medewerker</b>
                         <br />
                         <a href="mailto:{{ gebruiker.email }}">{{ gebruiker.full_name }}</a>
                         <br />
-                        {% comment %} {% if gebruiker.telefoonnummer %}
-                            <a href="tel:{{ gebruiker.telefoonnummer }}" target="_blank" class="link">
-                                {{ gebruiker.telefoonnummer }}
-                            </a>
-                        {% endif %} {% endcomment %}
                     </p>
                 {% endwith %}
             {% endif %}

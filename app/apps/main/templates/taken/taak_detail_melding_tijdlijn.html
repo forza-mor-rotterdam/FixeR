@@ -86,7 +86,7 @@
                                                 <dd>
                                                     {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
                                                 </dd>
-                                                {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
+                                                {% include "snippets/gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
                                             {% elif row_data.mg.taakgebeurtenis.taakstatus.naam|lower != "nieuw" and not row_data.mg.taakgebeurtenis.verwijderd_op %}
                                                 {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
                                                     <dt>Taak afgehandeld</dt>
@@ -94,7 +94,7 @@
                                                         {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
                                                     </dd>
                                                 {% endif %}
-                                                {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
+                                                {% include "snippets/gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
                                                 <dt>Status</dt>
                                                 <dd>
                                                     {% if row_data.mg.taakgebeurtenis.resolutie %}{{ row_data.mg.taakgebeurtenis.resolutie|vertaal }}{% endif %}
@@ -104,7 +104,7 @@
                                                 <dd>
                                                     {{ row_data.mg.taakgebeurtenis.verwijderd_op|to_datetime }}
                                                 </dd>
-                                                {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
+                                                {% include "snippets/gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
                                             {% elif row_data.mg.taakgebeurtenis.taakstatus.naam|lower == "nieuw" %}
                                                 {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
                                                     <dt>Taak aangemaakt</dt>
@@ -112,7 +112,7 @@
                                                         {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
                                                     </dd>
                                                 {% endif %}
-                                                {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
+                                                {% include "snippets/gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
                                                 <dt>Status</dt>
                                                 <dd>
                                                     {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
@@ -125,7 +125,7 @@
                                                 </dd>
                                             {% endif %}
                                         {% elif row_data.mg.locatie %}
-                                            {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Gewijzigd door" %}
+                                            {% include "snippets/gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Gewijzigd door" %}
                                             {% if row_data.mg.aangemaakt_op %}
                                                 <dt>Locatie aangepast</dt>
                                                 <dd>
@@ -138,7 +138,7 @@
                                                     {{ row_data.mg.omschrijving_intern }}
                                                 </dd>
                                             {% endif %}
-                                            {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|get_gebruiker_object_middels_email tekst="Uitvoerder" %}
+                                            {% include "snippets/gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|get_gebruiker_object_middels_email tekst="Uitvoerder" %}
                                         {% elif row_data.mg.urgentie %}
                                             {% if row_data.mg.aangemaakt_op %}
                                                 <dt>
@@ -158,9 +158,9 @@
                                                     {{ row_data.mg.omschrijving_intern }}
                                                 </dd>
                                             {% endif %}
-                                            {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Veranderd door" %}
+                                            {% include "snippets/gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Veranderd door" %}
                                         {% else %}
-                                            {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Afgehandeld door" %}
+                                            {% include "snippets/gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Afgehandeld door" %}
                                             {% if row_data.mg.aangemaakt_op and row_data.mg.gebeurtenis_type != "status_wijziging" %}
                                                 <dt>Datum</dt>
                                                 <dd>
