@@ -13,11 +13,7 @@ export default class extends Controller {
       timeout: 5000,
       maximumAge: 0,
     }
-    navigator.geolocation.watchPosition(
-      this.getCurrentPositionSuccess,
-      this.positionWatchError,
-      this.positionWatchOptions
-    )
+    this.setNavigatorEventHandlers()
 
     this.toastTurboFrame = document.getElementById('tf_toast_lijst')
     this.sessionTimerTurboFrame = document.getElementById('tf_session_timer')
@@ -49,6 +45,15 @@ export default class extends Controller {
       }
     })
   }
+  setNavigatorEventHandlers() {
+    if (!this.navigatorWatchId) {
+      this.navigatorWatchId = navigator.geolocation.watchPosition(
+        this.getCurrentPositionSuccess,
+        this.positionWatchError,
+        this.positionWatchOptions
+      )
+    }
+  }
   reloadNotificationsTurboFrame() {
     if (!this.notificationsTurboFrameReloadTimeout) {
       this.notificationsTurboFrameReloadTimeout = setTimeout(() => {
@@ -65,7 +70,7 @@ export default class extends Controller {
   getCurrentPositionSuccess = (position) => {
     document.body.classList.remove('geolocation-error')
 
-    let distance = null
+    let distance = 0
     if (this.currentPosition) {
       const myLocation = new L.LatLng(
         this.currentPosition.coords.latitude,
@@ -73,7 +78,7 @@ export default class extends Controller {
       )
       distance = myLocation.distanceTo([position.coords.latitude, position.coords.longitude])
     }
-    if (!distance || distance > 5) {
+    if (!this.currentPosition || distance > 5) {
       console.log(`Afstand tot vorige positie: ${distance}m`)
       this.currentPosition = position
       this.positionWatchSuccess()
@@ -120,9 +125,9 @@ export default class extends Controller {
           'toon_alles'
       }
       const template = document.getElementById('template_snack_geen_locatie')
-      const clone = template.content.cloneNode(true)
+      const clone = template?.content.cloneNode(true)
       const snackContainer = document.getElementById('snack_lijst')
-      snackContainer.appendChild(clone)
+      snackContainer?.appendChild(clone)
     }
   }
   positionWatchError = (error) => {

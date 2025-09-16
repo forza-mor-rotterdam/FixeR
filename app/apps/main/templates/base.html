@@ -61,7 +61,7 @@
         <script src="//unpkg.com/leaflet-gesture-handling"></script>
     </head>
     <body class="{% block body_class %}app {% endblock body_class %} {% if user.profiel.ui_instellingen.fontsize %}{{ user.profiel.ui_instellingen.fontsize }}{% endif %}"
-          data-controller="notificaties--manager main modal infosheet{% if APP_ENV == 'test' or APP_ENV == 'development' %} logger{% endif %}"
+          data-controller="notificaties--manager main modal infosheet"
           data-main-taken-overzicht-outlet="#taken_overzicht"
           data-main-taak-detail-outlet="#taak_detail"
           data-main-taken-kaart-outlet="#taken_kaart"
@@ -76,7 +76,7 @@
                 {% endwith %}
             {% endblock pageheader %}
         {% endif %}
-        {% if request.user.is_authenticated and request.user.has_permission %}
+        {% if request.user.is_authenticated and request.user.user_permissions.all or request.user.is_superuser %}
             <turbo-frame src="{% url 'snack_lijst' %}" id="tf_snack_lijst">
             </turbo-frame>
             <turbo-frame src="{% url 'toast_lijst' %}" id="tf_toast_lijst"></turbo-frame>
@@ -104,9 +104,6 @@
         {% endif %}
         {% block javascripts_end %}
         {% endblock javascripts_end %}
-        {% if APP_ENV == "test" or APP_ENV == "development" %}
-            {% include "snippets/logger.html" %}
-        {% endif %}
         {% include "snippets/modal_template.html" %}
         <template id="template_snack_geen_locatie">
             <div class="notification info"

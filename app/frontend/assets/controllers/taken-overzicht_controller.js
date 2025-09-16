@@ -126,12 +126,16 @@ export default class extends Controller {
       elem.classList[li == elem ? 'add' : 'remove']('active')
     })
     this.kaartModus = e.target.value
-    this.takenKaartOutlet?.kaartModusChangeHandler(this.kaartModus)
+    if (this.hasTakenKaartOutlet) {
+      this.takenKaartOutlet.kaartModusChangeHandler(this.kaartModus)
+    }
     this.element.requestSubmit()
   }
   takenKaartOutletConnected() {
     setTimeout(() => {
-      this.takenKaartOutlet?.kaartModusChangeHandler(this.kaartModus)
+      if (this.hasTakenKaartOutlet) {
+        this.takenKaartOutlet.kaartModusChangeHandler(this.kaartModus)
+      }
     }, 1)
   }
   kaartModusOptionTargetConnected(kaartModusOption) {

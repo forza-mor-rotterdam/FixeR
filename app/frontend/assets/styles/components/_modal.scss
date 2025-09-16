@@ -16,6 +16,10 @@
     }
 }
 
+body.show-dialog {
+    @include bodyModal();
+}
+
 body.show-modal {
     @include bodyModal();
 

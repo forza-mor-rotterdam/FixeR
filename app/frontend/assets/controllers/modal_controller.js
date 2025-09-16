@@ -36,7 +36,7 @@ export default class extends Controller {
       })
   }
   contentTargetConnected() {
-    document.body.classList.add('show-modal')
+    document.body.classList.add('show-dialog')
     console.log('CLONE')
     if (this.params.action) {
       this.fetchModalContent(this.params.action)
@@ -88,7 +88,7 @@ export default class extends Controller {
       this.hideMapLarge()
     }
     setTimeout(() => {
-      document.body.classList.remove('show-modal')
+      document.body.classList.remove('show-dialog')
       if (this.hasDialogTarget) {
         this.dialogTarget.remove()
       }

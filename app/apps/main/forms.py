@@ -272,7 +272,7 @@ class TakenLijstFilterForm(forms.Form):
         ) != profiel.ui_instellingen.get("kaart_modus")
         self.q_changed = data.get("q") != self.request.session.get("q")
         self.page_changed = data.get("page", "") != self.request.session.get("page", "")
-        self.gps_changed = data.get("gps", "") != self.request.session.get("gps", "")
+        self.gps_changed = True
 
         # update profiel fields
         profiel.filters.update({status: actieve_filters})
@@ -288,5 +288,4 @@ class TakenLijstFilterForm(forms.Form):
         profiel.save()
         # update session fields
         self.request.session["q"] = data.get("q", "")
-        self.request.session["gps"] = data.get("gps", "")
         self.request.session["page"] = data.get("page", "")

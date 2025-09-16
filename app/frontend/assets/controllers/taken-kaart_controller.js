@@ -181,10 +181,14 @@ export default class MapController extends Controller {
     this.element.dispatchEvent(event)
   }
   taakPopupTargetConnected(taakPopup) {
-    this.takenLijstOutlet?.selecteerTaakItem(taakPopup.dataset.taakUuid, this.preventScroll)
+    if (this.hasTakenLijstOutlet) {
+      this.takenLijstOutlet.selecteerTaakItem(taakPopup.dataset.taakUuid, this.preventScroll)
+    }
   }
   taakPopupTargetDisconnected(taakPopup) {
-    this.takenLijstOutlet?.deselecteerTaakItem(taakPopup.dataset.taakUuid)
+    if (this.hasTakenLijstOutlet) {
+      this.takenLijstOutlet.deselecteerTaakItem(taakPopup.dataset.taakUuid)
+    }
   }
   clearMarkers = () => {
     this.markerList = []
