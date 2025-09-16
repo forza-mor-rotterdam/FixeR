@@ -26,7 +26,7 @@
             <div data-controller="message"
                  data-message-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"></div>
             <button class="btn btn-togglemenu"
-                    data-action="modal#openModal"
+                    data-action="main#openNavigation"
                     data-modal-type-param="navigation"
                     aria-expanded="false"
                     aria-label="Open menu">
@@ -44,16 +44,16 @@
         {% endif %}
     </div>
     {% if request.user.is_authenticated %}
-        <div class="modal modal-navigation">
+        <div class="modal modal-navigation" data-main-target="navigation">
             <div class="modal-dialog">
                 <div class="modal-backdrop modal-exit"
-                     data-action="click->modal#closeModal"></div>
+                     data-action="click->main#closeNavigation"></div>
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button"
                                 class="btn-close"
                                 aria-label="Sluit"
-                                data-action="modal#closeModal"></button>
+                                data-action="main#closeNavigation"></button>
                     </div>
                     <div class="modal-body">
                         <ul class="list-clean list-nav--tertiary">

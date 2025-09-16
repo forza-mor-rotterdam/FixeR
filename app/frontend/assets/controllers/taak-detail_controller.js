@@ -290,9 +290,7 @@ export default class extends Controller {
     let turboFrame = document.getElementById('taak_basis')
     turboFrame.src = data.url
   }
-  onMessageError(e) {
-    console.log(e)
-    console.log('An error occurred while attempting to connect.')
+  onMessageError() {
     this.eventSource.close()
   }
 
@@ -336,6 +334,7 @@ export default class extends Controller {
 
   selectImage(e) {
     this.imageScrollInView(Number(e.params.imageIndex) - 1)
+    this.highlightThumb(Number(e.params.imageIndex) - 1)
   }
 
   highlightThumb(index) {
@@ -373,13 +372,11 @@ export default class extends Controller {
   showNextImageInModal() {
     if (!this.isZooming) {
       this.selectedImageIndex = (this.selectedImageIndex + 1) % this.imagesList.length
-      console.log('showNextImageInModal', this.selectedImageIndex)
       this.showImage(true)
     }
   }
 
   showImage(inModal = false) {
-    console.log('showImage,in modal?', inModal)
     const img = this.selectedImageModalTarget.querySelector('img')
     const sd = this.signedDataValue ? `?signed-data=${this.signedDataValue}` : ''
     img.src = `${this.urlPrefixValue}${this.imagesList[this.selectedImageIndex]}${sd}`
@@ -391,7 +388,6 @@ export default class extends Controller {
     const selectedImageData = JSON.parse(
       this.imageTargets[this.selectedImageIndex].dataset.imageData
     )
-    // console.log('___selectedImageData', selectedImageData)
 
     if (selectedImageData.oorsprong != 'melder' || inModal) {
       if (selectedImageData.label) {
@@ -404,6 +400,7 @@ export default class extends Controller {
       }
     }
     this.imageScrollInView(this.selectedImageIndex) //image in detailpage
+    this.highlightThumb(this.selectedImageIndex)
     this.fullSizeImageContainer = this.selectedImageModalTarget
   }
 
@@ -437,7 +434,6 @@ export default class extends Controller {
   }
 
   pinchZoom(imageElement) {
-    console.log('pinchZoom')
     let imageElementScale = 1
     let start = {}
     // Calculate distance between two fingers
@@ -460,7 +456,6 @@ export default class extends Controller {
 
     imageElement.addEventListener('touchmove', (event) => {
       if (event.touches.length === 2) {
-        console.log('event.touches.length === 2')
         event.preventDefault() // Prevent page scroll
         this.isZooming = true
         let scale
@@ -497,5 +492,18 @@ export default class extends Controller {
       browser = 'safari'
     }
     return browser
+  }
+  closeModal() {
+    const modalList = this.element.querySelectorAll('.modal')
+    const modalBackdrop = this.element.querySelector('.modal-backdrop')
+    if (this.hasTurboFrameTarget) {
+      this.turboFrameTarget.innerHTML = ''
+    }
+
+    modalList.forEach((modal) => {
+      modal.classList.remove('show')
+    })
+    modalBackdrop.classList.remove('show')
+    document.body.classList.remove('show-modal', 'show-modal--transparent', 'show-navigation')
   }
 }

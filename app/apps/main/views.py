@@ -230,7 +230,14 @@ class TakenOverzicht(
             "sortering", "Adres-reverse"
         )
         context = super().get_context_data(**kwargs)
-        context.update({"selected_taak": self.selected_taak})
+        context.update(
+            {
+                "selected_taak": self.selected_taak,
+                "profiel_taaktype_uuid_list": list(
+                    self.request.user.profiel.taaktypes.values_list("uuid", flat=True)
+                ),
+            }
+        )
         return context
 
     def form_invalid(self, form):
@@ -420,7 +427,7 @@ def taak_afhandelen(request, uuid):
         messages.warning(request, "Deze taak is ondertussen al afgerond.")
         return render(
             request,
-            "incident/modal_handle.html",
+            "taken/taak_afhandelen.html",
             {
                 "taak": taak,
             },
@@ -499,7 +506,7 @@ def taak_afhandelen(request, uuid):
 
     return render(
         request,
-        "incident/modal_handle.html",
+        "taken/taak_afhandelen.html",
         {
             "taak": taak,
             "form": form,

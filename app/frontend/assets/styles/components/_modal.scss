@@ -280,3 +280,105 @@ body.show-modal--first-filter {
         cursor: grab;
     }
 }
+
+dialog {
+    // min-height: calc(100% - 3rem);
+    max-height: calc(100% - 60px);
+    border-style: none;
+    padding: 0;
+    align-items: center;
+    width: 90%;
+    max-width: $modal-md;
+    opacity: 0;
+    box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0);
+    overflow: auto;
+    box-sizing: border-box;
+    transition:
+        box-shadow $transition-duration-default $transition-ease-default,
+        opacity $transition-duration-default $transition-ease-default;
+
+    &.fade-in {
+        opacity: 1;
+        transition:
+            box-shadow $transition-duration-default $transition-ease-default,
+            opacity $transition-duration-default $transition-ease-default;
+        box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-close {
+        z-index: 500;
+        &:focus-visible {
+            outline-width: thin !important;
+        }
+    }
+
+    z-index: 2500;
+
+    &:has(.wrapper-sticky-footer) {
+        height: 100%;
+        overflow-y: hidden;
+        box-sizing: border-box;
+
+        .modal-body {
+            display: flex;
+            flex: 1 0 auto;
+            flex-direction: column;
+            section {
+                display: flex;
+                flex: 1 0 auto;
+                flex-direction: column;
+
+                form {
+                    display: flex;
+                    flex: 1 0 auto;
+                    flex-direction: column;
+
+                    .wrapper-sticky-footer {
+                        flex: 1 0 auto;
+                    }
+                }
+            }
+        }
+    }
+}
+::backdrop {
+    position: relative;
+    background-color: transparent;
+    z-index: 2400;
+}
+
+@mixin bodyModal {
+    overflow: hidden;
+    padding-right: 0;
+}
+
+@mixin modalVisible {
+    opacity: 1;
+    visibility: visible;
+    backdrop-filter: blur(10px);
+
+    &.modal-right {
+        .modal-content {
+            right: 0;
+        }
+    }
+
+    .modal-backdrop {
+        visibility: visible;
+        opacity: 0.5;
+    }
+}
+
+body.show-modal {
+    @include bodyModal();
+
+    .modal.show {
+        @include modalVisible();
+    }
+}
+
+body.show-modal--first-filter {
+    .modal--first-filter {
+        @include modalVisible();
+    }
+}
