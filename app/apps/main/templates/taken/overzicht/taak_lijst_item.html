@@ -11,7 +11,7 @@
      data-geometrie="{% if taak.melding.geometrie %}{{ taak.melding.geometrie|json_encode }}{% else %}{% endif %}"
      {% if taak.melding.thumbnail_afbeelding_relative_url %}data-afbeelding-url="{{ taak.melding.thumbnail_afbeelding_relative_url|mor_core_protected_url }}"{% endif %}
      {% if taak.laatste_taakgebeurtenis_omschrijving_intern %}data-has-remark="true"{% endif %}
-     data-controller="taak"
+     {% if taak.melding.locatie_type != "graf" and not taak.afgesloten_op and taak.taaktype.uuid in profiel_taaktype_uuid_list %} data-controller="taak" {% endif %}
      class="list-item">
     <div class="wrapper__swipe" data-taak-target="swipeContainer">
         {% if taak.melding.locatie_type != "graf" and not taak.afgesloten_op and taak.taaktype.uuid in profiel_taaktype_uuid_list %}
