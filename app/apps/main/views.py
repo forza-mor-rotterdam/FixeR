@@ -187,9 +187,7 @@ class TakenOverzicht(
         queryset = super().get_queryset()
         profiel = self.request.user.profiel
 
-        if not self.request.session.get("filters_active") and self.request.session.get(
-            "q"
-        ):
+        if self.request.session.get("filters_active"):
             queryset = queryset.filter(**profiel.taken_filter_query_data)
         queryset = queryset.taken_zoeken(self.request.session.get("q"))
 

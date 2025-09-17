@@ -96,9 +96,7 @@
     .container__sorting,
     .container__search {
         box-sizing: content-box;
-
         .wrapper {
-            margin: $input-padding-x;
             display: flex;
             justify-content: space-between;
 
@@ -127,10 +125,16 @@
             background-size: 24px 24px;
         }
     }
-
+    .wrapper--search-group {
+        display: flex;
+        align-items: flex-start;
+        & > .btn {
+            flex-basis: content;
+        }
+    }
     .wrapper--search {
-        display: none;
         position: relative;
+        flex-grow: 1;
 
         input[type="search"] {
             margin: 0;

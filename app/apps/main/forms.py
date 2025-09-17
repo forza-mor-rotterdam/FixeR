@@ -1,5 +1,7 @@
 import logging
 
+from apps.frontend.fields import BooleanField
+from apps.frontend.widgets import CheckboxInput
 from apps.taken.filters import FILTERS
 from apps.taken.models import Taak
 from deepdiff import DeepDiff
@@ -154,13 +156,14 @@ class TakenLijstFilterForm(forms.Form):
         ),
         required=False,
     )
-    filters_active = forms.BooleanField(
-        widget=forms.CheckboxInput(
+    filters_active = BooleanField(
+        widget=CheckboxInput(
             attrs={
                 "data-action": "taken-overzicht#onFiltersActiveChangeHandler",
-                "data-main-target": "filtersActiveField",
-            }
+                "data-taken-overzicht-target": "filtersActiveField",
+            },
         ),
+        label="zoeken met filters",
         required=False,
     )
     sorteer_opties = forms.ChoiceField(

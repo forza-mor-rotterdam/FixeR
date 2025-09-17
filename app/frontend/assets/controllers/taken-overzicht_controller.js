@@ -7,9 +7,11 @@ export default class extends Controller {
   static targets = [
     'sorteerOptiesFieldContainer',
     'sorteerField',
+    'zoekFieldset',
     'zoekFieldContainer',
     'zoekFieldDefaultContainer',
     'toggleMapView',
+    'toggleZoeken',
     'filterInput',
     'cancelZoek',
     'zoekField',
@@ -37,15 +39,18 @@ export default class extends Controller {
   onResizeHandler() {
     if (
       window.innerWidth < 1024 &&
-      this.zoekFieldTarget.parentNode != this.zoekFieldContainerTarget
+      this.zoekFieldsetTarget.parentNode != this.zoekFieldContainerTarget
     ) {
-      this.zoekFieldContainerTarget.insertAdjacentElement('beforeEnd', this.zoekFieldTarget)
+      this.zoekFieldContainerTarget.insertAdjacentElement('beforeEnd', this.zoekFieldsetTarget)
     }
     if (
       window.innerWidth >= 1024 &&
-      this.zoekFieldTarget.parentNode != this.zoekFieldDefaultContainerTarget
+      this.zoekFieldsetTarget.parentNode != this.zoekFieldDefaultContainerTarget
     ) {
-      this.zoekFieldDefaultContainerTarget.insertAdjacentElement('beforeEnd', this.zoekFieldTarget)
+      this.zoekFieldDefaultContainerTarget.insertAdjacentElement(
+        'beforeEnd',
+        this.zoekFieldsetTarget
+      )
     }
   }
   connect() {
@@ -88,7 +93,7 @@ export default class extends Controller {
   onChangeFilter() {
     this.updateSelectedChoicesCount()
     this.clearSelectedTaakUuidField()
-    this.element.requestSubmit()
+    this.submit()
   }
   selectAll(e) {
     const checkList = Array.from(e.target.closest('details').querySelectorAll('.form-check-input'))
@@ -108,18 +113,16 @@ export default class extends Controller {
   onCancelSearch() {
     this.zoekFieldTarget.value = ''
     this.cancelZoekTarget.classList.add('hide')
+    this.toggleZoekenTarget.disabled = false
     this.zoekFieldTarget.focus()
     this.clearSelectedTaakUuidField()
-    clearTimeout(this.to)
-    this.to = setTimeout(() => {
-      this.element.requestSubmit()
-    }, 200)
+    this.submit()
   }
   positionChangeEvent(position) {
     this.currentPosition = position
     this.gpsFieldTarget.value = `${position.coords.latitude},${position.coords.longitude}`
     if (this.sorteerFieldTarget.value === 'Afstand') {
-      this.element.requestSubmit()
+      this.submit()
     }
     this.updateTaakAfstandTargets()
   }
@@ -128,26 +131,32 @@ export default class extends Controller {
     this.currentPosition = null
     this.element.requestSubmit()
   }
-  onSearchChangeHandler(e) {
-    this.clearSelectedTaakUuidField()
-    clearTimeout(this.to)
-    this.to = setTimeout(() => {
-      this.element.requestSubmit()
-    }, 200)
 
-    this.cancelZoekTarget.classList[e.target.value.length > 0 ? 'remove' : 'add']('hide')
+  onZoekButtonClick() {
+    this.submit()
+  }
+  onSearchChangeHandler(e) {
+    const zoekHasValue = e.target.value.length > 0
+    console.log('zoekHasValue')
+    console.log(zoekHasValue)
+    this.toggleZoekenTarget.disabled = zoekHasValue
+    this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
+    this.zoekFieldContainerTarget.classList.add('show-vertical')
+    // this.submit()
+    this.cancelZoekTarget.classList[zoekHasValue ? 'remove' : 'add']('hide')
+    this.clearSelectedTaakUuidField()
   }
   onSortingChangeHandler() {
     this.clearSelectedTaakUuidField()
-    this.element.requestSubmit()
+    this.submit()
   }
   onFiltersActiveChangeHandler() {
-    this.element.requestSubmit()
+    this.submit()
   }
   onPageClickEvent(e) {
     this.pageFieldTarget.value = e.params.page
     this.clearSelectedTaakUuidField()
-    this.element.requestSubmit()
+    this.submit()
   }
   kaartModusOptionClickHandler(e) {
     this.setKaartModus(e.target.value)
@@ -160,6 +169,7 @@ export default class extends Controller {
     if (this.hasTakenKaartOutlet) {
       this.takenKaartOutlet.kaartModusChangeHandler(kaartModus)
     }
+    this.submit()
   }
   taakAfstandTargetConnected(taakAfstand) {
     if (this.currentPosition) {
@@ -185,8 +195,17 @@ export default class extends Controller {
     this.sorteerOptiesFieldContainerTarget.classList.toggle('show-vertical')
   }
   onToggleSearchContainer() {
-    this.zoekFieldContainerTarget.classList.toggle('hidden-vertical')
-    this.zoekFieldContainerTarget.classList.toggle('show-vertical')
+    if (!this.zoekFieldTarget.value) {
+      this.zoekFieldContainerTarget.classList.toggle('hidden-vertical')
+      this.zoekFieldContainerTarget.classList.toggle('show-vertical')
+      if (
+        this.zoekFieldContainerTarget.classList.contains('hidden-vertical') &&
+        !this.filtersActiveFieldTarget.checked
+      ) {
+        this.filtersActiveFieldTarget.checked = true
+        this.submit()
+      }
+    }
   }
   toggleMapViewHandler() {
     this.element.classList.toggle('showMap')
@@ -200,5 +219,13 @@ export default class extends Controller {
   }
   takenLijstOutletConnected() {
     this.updateTaakAfstandTargets()
+  }
+
+  submit() {
+    clearTimeout(this.to)
+    this.to = setTimeout(() => {
+      this.clearSelectedTaakUuidField()
+      this.element.requestSubmit()
+    }, 200)
   }
 }
