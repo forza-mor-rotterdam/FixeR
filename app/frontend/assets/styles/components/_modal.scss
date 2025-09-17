@@ -345,11 +345,6 @@ dialog {
         }
     }
 }
-::backdrop {
-    position: relative;
-    background-color: transparent;
-    z-index: 2400;
-}
 
 @mixin bodyModal {
     overflow: hidden;
