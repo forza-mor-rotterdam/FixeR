@@ -10,9 +10,7 @@
                             class="btn btn-to-top">{% include "icons/arrow-double.svg" %}</button>
                     <button class="btn btn-action"
                             data-action="modal#openModal"
-                            data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=niet_opgelost">
-                        Taak afhandelen
-                    </button>
+                            data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}">Taak afhandelen</button>
                 </div>
             </div>
         {% endif %}
