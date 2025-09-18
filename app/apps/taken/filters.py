@@ -13,6 +13,9 @@ class StandaardFilter:
     def __init__(self, *args, **kwargs):
         self._profiel = kwargs.pop("profiel", None)
 
+    def flat_choices(self):
+        return [choice[0] for choice in self._choices]
+
     def choices(self):
         return self._choices
 
@@ -78,6 +81,12 @@ class TaaktypeFilter(StandaardFilter):
     _filter_lookup = "taaktype__id__in"
     _label = "Taak"
 
+    def flat_choices(self):
+        return [
+            f"{taaktype['id']}"
+            for taaktype in self._profiel.get_taaktypes().values("id", "omschrijving")
+        ]
+
     def choices(self):
         return [
             (f"{taaktype['id']}", taaktype["omschrijving"])
@@ -101,6 +110,16 @@ class WijkBuurtFilter(StandaardFilter):
     _label = "Wijken & buurten"
     _sub_label = "Buurten"
     _field_template = "taken/overzicht/filter_field_grouped.html"
+
+    def flat_choices(self):
+        pdok_service = PDOKService()
+        all_data = pdok_service.get_buurten_middels_gemeentecode()
+        return [
+            buurt["buurtnaam"]
+            for wijk in all_data.get("wijken", [])
+            for buurt in wijk.get("buurten", [])
+            if wijk["wijkcode"] in self._profiel.wijken
+        ]
 
     def choices(self):
         pdok_service = PDOKService()

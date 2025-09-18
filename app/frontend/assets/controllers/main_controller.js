@@ -159,6 +159,9 @@ export default class extends Controller {
         console.log('An unknown error occurred.')
         break
     }
+    if (this.hasTakenOverzichtOutlet) {
+      this.takenOverzichtOutlet.positionWatchError(error.code)
+    }
   }
   openNavigation() {
     if (this.hasNavigationTarget) {

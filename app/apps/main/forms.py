@@ -192,6 +192,9 @@ class TakenLijstFilterForm(forms.Form):
         profiel = self.request.user.profiel
         super().__init__(*args, **kwargs)
 
+        if self.request.session.get("q"):
+            del self.request.session["q"]
+
         for f in profiel.taken_filters:
             self.fields[f.key()] = forms.MultipleChoiceField(
                 widget=TaakFilterCheckboxSelectMultiple(
@@ -272,7 +275,7 @@ class TakenLijstFilterForm(forms.Form):
         ) != profiel.ui_instellingen.get("kaart_modus")
         self.q_changed = data.get("q") != self.request.session.get("q")
         self.page_changed = data.get("page", "") != self.request.session.get("page", "")
-        self.gps_changed = True
+        self.gps_changed = data.get("gps", "") != self.request.session.get("gps", "")
 
         # update profiel fields
         profiel.filters.update({status: actieve_filters})
@@ -289,3 +292,4 @@ class TakenLijstFilterForm(forms.Form):
         # update session fields
         self.request.session["q"] = data.get("q", "")
         self.request.session["page"] = data.get("page", "")
+        self.request.session["gps"] = data.get("gps", "")

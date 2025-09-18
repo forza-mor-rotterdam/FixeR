@@ -222,6 +222,7 @@ class TakenOverzicht(
 
         self.initial = self.request.user.profiel.taken_filter_validated_data
         self.initial["q"] = self.request.session.get("q")
+        self.initial["gps"] = self.request.session.get("gps", "")
 
         self.initial["kaart_modus"] = self.request.user.profiel.ui_instellingen.get(
             "kaart_modus", "toon_alles"

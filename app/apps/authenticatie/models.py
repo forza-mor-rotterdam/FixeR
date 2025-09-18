@@ -164,6 +164,10 @@ class Profiel(BasisModel):
         return self.filters.get(status, {})
 
     @property
+    def taken_filter_data_default(self):
+        return {f.key(): f.flat_choices() for f in self.taken_filters}
+
+    @property
     def taken_filter_validated_data(self):
         taken_filter_validated_data = {
             f.key(): self.taken_filter_data[f.key()]
@@ -176,8 +180,9 @@ class Profiel(BasisModel):
     def taken_filter_query_data(self):
         return {
             f.filter_lookup(): self.taken_filter_validated_data.get(f.key())
-            for f in self.taken_filters
             if self.taken_filter_validated_data.get(f.key())
+            else self.taken_filter_data_default.get(f.key())
+            for f in self.taken_filters
         } | {
             "melding__begraafplaats__isnull": not self.is_benc,
         }
