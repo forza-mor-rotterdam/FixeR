@@ -102,6 +102,10 @@ export default class extends Controller {
     this.clearSelectedTaakUuidField()
     this.element.requestSubmit()
   }
+  positionWatchError() {
+    this.gpsFieldTarget.value = ''
+    this.element.requestSubmit()
+  }
   onSearchChangeHandler(e) {
     clearTimeout(this.to)
     this.to = setTimeout(() => {
