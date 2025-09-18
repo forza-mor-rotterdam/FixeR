@@ -351,7 +351,7 @@ class OnboardingView(SessionWizardView):
         profiel.onboarding_compleet = True
         profiel.save()
 
-        return redirect("taken")
+        return redirect("taken_overzicht")
 
     def get_form_kwargs(self, step=None):
         kwargs = super().get_form_kwargs(step)
