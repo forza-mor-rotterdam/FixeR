@@ -17,15 +17,15 @@ export default class extends Controller {
     snackOverzichtAantal: Number,
     snackOverzichtUrl: String,
   }
-
-  connect() {
-    this.element.controller = this
+  initialize() {
     this.snackOverzichtPagina = 0
     this.snackOverzichtFilter = 'alle'
     this.snackOverzichtPaginaItemsGeladen = []
-
-    this.initMessages()
     this.watchedNotificaties = []
+  }
+  connect() {
+    this.element.controller = this
+    this.initMessages()
   }
   snackLijstTargetConnected() {
     this.snackLijstTarget.addEventListener('mouseover', () => {
