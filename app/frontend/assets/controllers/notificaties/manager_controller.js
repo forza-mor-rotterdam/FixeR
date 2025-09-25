@@ -57,8 +57,10 @@ export default class extends Controller {
     toastItem.controller.initializeManager(this)
   }
   snackOverzichtItemTargetConnected(snackOverzichtItem) {
-    snackOverzichtItem.controller?.initializeManager(this)
-    this.snackOverzichtPaginaItemsGeladen.push(snackOverzichtItem)
+    setTimeout(() => {
+      snackOverzichtItem.controller?.initializeManager(this)
+      this.snackOverzichtPaginaItemsGeladen.push(snackOverzichtItem)
+    }, 1)
   }
   snackItemController(notificatieId) {
     return this.snackItemTargets.find((elem) => elem.dataset.id === String(notificatieId))
