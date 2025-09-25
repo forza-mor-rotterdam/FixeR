@@ -1,30 +1,43 @@
-<turbo-frame id="navigeer">
-<ul class="list-clean">
-    {% if device_os == "ios" or device_os == "mac" %}
+{% comment %} <turbo-frame id="navigeer"> {% endcomment %}
+<turbo-stream action="update" target="modal_header_title">
+<template>
+    Navigeer
+</template>
+</turbo-stream>
+<turbo-stream action="update" target="modal_header_subtitle">
+<template>
+    <p>Kies een navigatie dienst</p>
+</template>
+</turbo-stream>
+<turbo-stream action="update" target="modal_body">
+<template>
+    <ul class="list-clean">
+        {% if device_os == "ios" or device_os == "mac" %}
+            <li class="padding-bottom">
+                <a class="link link--navigate"
+                   href="https://maps.apple.com/?daddr={{ lat }},{{ long }}&z=10&"
+                   target="_blank">
+                    {% include "icons/navigate.svg" %}
+                    Open met Apple Maps
+                </a>
+            </li>
+        {% endif %}
         <li class="padding-bottom">
             <a class="link link--navigate"
-               href="https://maps.apple.com/?daddr={{ lat }},{{ long }}&z=10&"
+               href="https://www.google.com/maps/dir/?api=1&destination={{ lat }},{{ long }}&navigate=yes"
                target="_blank">
                 {% include "icons/navigate.svg" %}
-                Open met Apple Maps
+                Open met Google Maps
             </a>
         </li>
-    {% endif %}
-    <li class="padding-bottom">
-        <a class="link link--navigate"
-           href="https://www.google.com/maps/dir/?api=1&destination={{ lat }},{{ long }}&navigate=yes"
-           target="_blank">
-            {% include "icons/navigate.svg" %}
-            Open met Google Maps
-        </a>
-    </li>
-    <li class="padding-bottom">
-        <a class="link link--navigate"
-           href="https://www.waze.com/ul?ll={{ lat }},{{ long }}&navigate=yes"
-           target="_blank">
-            {% include "icons/navigate.svg" %}
-            Open met Waze
-        </a>
-    </li>
-</ul>
-</turbo-frame>
+        <li class="padding-bottom">
+            <a class="link link--navigate"
+               href="https://www.waze.com/ul?ll={{ lat }},{{ long }}&navigate=yes"
+               target="_blank">
+                {% include "icons/navigate.svg" %}
+                Open met Waze
+            </a>
+        </li>
+    </ul>
+</template>
+</turbo-stream>

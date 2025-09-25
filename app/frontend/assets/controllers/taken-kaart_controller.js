@@ -247,7 +247,7 @@ export default class MapController extends Controller {
       ? `<span class="badge-count badge-count--info">i</span>`
       : ''
     const anchorDetail = `<a href="/taak/${taakUuid}" target="_top" aria-label="Bekijk taak ${taakUuid}">Details ${spanRemark}</a>`
-    const anchorNavigeer = `<a href="#" data-taken-kaart-title-param="Navigeren" data-taken-kaart-url-param="/navigeer/${lat}/${long}" data-taken-kaart-id-param="navigeer" data-action="taken-kaart#makeRoute">Navigeren</a>`
+    const anchorNavigeer = `<a href="#" data-action="modal#openModal" data-modal-action-param="/navigeer/${lat}/${long}">Navigeren</a>`
     const divDetailNavigeer = `<div class="">${anchorDetail} ${anchorNavigeer}</div>`
 
     const popupContent = afbeelding
