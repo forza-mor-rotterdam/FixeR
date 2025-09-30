@@ -51,7 +51,21 @@ export default class MapController extends Controller {
     this.drawMap()
     this.createMarkersLayer()
   }
-  connect() {}
+  connect() {
+    this.map.on('dragstart', this.onDragStart.bind(this))
+
+    let self = this
+
+    setInterval(function () {
+      console.log('kaartModus', self.kaartModus)
+    }, 3000)
+  }
+
+  onDragStart(event) {
+    this.kaartModus = ''
+    console.log('Gebruiker verplaatst de kaart', event)
+  }
+
   getZoom() {
     return sessionStorage.getItem('kaartZoom') || StandaardKaartZoom
   }
