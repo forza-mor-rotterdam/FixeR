@@ -125,6 +125,14 @@ class TakenLijstFilterForm(forms.Form):
         ),
         required=False,
     )
+    selected_taak_uuid = forms.CharField(
+        widget=forms.HiddenInput(
+            attrs={
+                "data-taken-overzicht-target": "selectedTaakUuidField",
+            }
+        ),
+        required=False,
+    )
     page = forms.CharField(
         widget=forms.HiddenInput(
             attrs={

@@ -13,21 +13,11 @@ export default class extends Controller {
 
   static outlets = ['taken-kaart']
   static targets = ['taakItem', 'containerHeader']
-  static values = {
-    selectedTaakUuid: String,
-  }
 
   initialize() {
     this.addEventListeners()
   }
   connect() {
-    if (this.selectedTaakUuidValue) {
-      setTimeout(() => {
-        this.selectTaakMarker({
-          params: { taakUuid: this.selectedTaakUuidValue, preventScroll: false },
-        })
-      }, 200)
-    }
     document.addEventListener('turbo:before-fetch-response', () => {
       this.setScrollPosition()
     })

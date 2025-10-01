@@ -22,6 +22,7 @@ export default class extends Controller {
     'taakItem',
     'taakPopup',
     'containerHeader',
+    'selectedTaakUuidField',
     'taakAfstand',
   ]
 
@@ -51,6 +52,20 @@ export default class extends Controller {
     urlObj.search = ''
     const url = urlObj.toString()
     window.history.replaceState({}, '', url)
+    if (
+      this.hasTakenLijstOutlet &&
+      this.hasSelectedTaakUuidFieldTarget &&
+      this.selectedTaakUuidFieldTarget.value
+    ) {
+      setTimeout(() => {
+        this.takenLijstOutlet.selectTaakMarker({
+          params: { taakUuid: this.selectedTaakUuidFieldTarget.value, preventScroll: false },
+        })
+      }, 800)
+    }
+  }
+  clearSelectedTaakUuidField() {
+    this.selectedTaakUuidFieldTarget.value = ''
   }
   updateSelectedChoicesCount() {
     this.selectedChoicesCountTargets.map((elem) => {
@@ -71,6 +86,7 @@ export default class extends Controller {
   }
   onChangeFilter() {
     this.updateSelectedChoicesCount()
+    this.clearSelectedTaakUuidField()
     this.element.requestSubmit()
   }
   selectAll(e) {
@@ -92,6 +108,8 @@ export default class extends Controller {
     this.zoekFieldTarget.value = ''
     this.cancelZoekTarget.classList.add('hide')
     this.zoekFieldTarget.focus()
+    this.clearSelectedTaakUuidField()
+    clearTimeout(this.to)
     this.to = setTimeout(() => {
       this.element.requestSubmit()
     }, 200)
@@ -110,6 +128,7 @@ export default class extends Controller {
     this.element.requestSubmit()
   }
   onSearchChangeHandler(e) {
+    this.clearSelectedTaakUuidField()
     clearTimeout(this.to)
     this.to = setTimeout(() => {
       this.element.requestSubmit()
@@ -118,10 +137,12 @@ export default class extends Controller {
     this.cancelZoekTarget.classList[e.target.value.length > 0 ? 'remove' : 'add']('hide')
   }
   onSortingChangeHandler() {
+    this.clearSelectedTaakUuidField()
     this.element.requestSubmit()
   }
   onPageClickEvent(e) {
     this.pageFieldTarget.value = e.params.page
+    this.clearSelectedTaakUuidField()
     this.element.requestSubmit()
   }
   kaartModusOptionClickHandler(e) {
