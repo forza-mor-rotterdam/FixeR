@@ -8,8 +8,8 @@ const StandaardKaartCenter = { coords: { latitude: 51.9247772, longitude: 4.4780
 const StandaardKaartZoom = 18
 
 export default class MapController extends Controller {
-  static outlets = ['taken-lijst']
-  static targets = ['taakPopup']
+  static outlets = ['taken-lijst', 'taken-overzicht']
+  static targets = ['taakPopup', 'taakAfstand']
 
   static createMarkerIcons = () => ({
     blue: L.icon({
@@ -45,6 +45,12 @@ export default class MapController extends Controller {
     this.map.on('zoomend', () => {
       if (this.kaartModus === KaartModus.VOLGEN) {
         this.setZoom(this.map.getZoom())
+      }
+    })
+    this.map.on('dragstart', () => {
+      this.kaartModus = null
+      if (this.hasTakenOverzichtOutlet) {
+        this.takenOverzichtOutlet.setKaartModus(this.kaartModus)
       }
     })
 
@@ -150,11 +156,8 @@ export default class MapController extends Controller {
     }
     if (this.kaartModus === KaartModus.VOLGEN) {
       this.volgen()
-    } else if (this.kaartModus === KaartModus.TOON_ALLES) {
-      this.toonAlles()
     }
   }
-
   toggleBuurten = () => {
     const checkbox = this.element.querySelector('#buurten-checkbox')
     const button = this.element.querySelector('#buurten-button')
@@ -190,40 +193,10 @@ export default class MapController extends Controller {
       this.takenLijstOutlet.deselecteerTaakItem(taakPopup.dataset.taakUuid)
     }
   }
-  clearMarkers = () => {
-    this.markerList = []
-    this.markers.clearLayers()
-    if (this.markerMe) {
-      this.markers.addLayer(this.markerMe)
-    }
-  }
-
-  addTaakMarker(taakItemElement) {
-    const marker = this.markerList.find(
-      (obj) => obj.options.taakUuid === taakItemElement.dataset.uuid
-    )
-    if (marker) {
-      return
-    }
-    let geometrie = null
-    try {
-      geometrie = JSON.parse(taakItemElement.dataset.geometrie)
-    } catch (err) {
-      return
-    }
-    this.plotTaakMarker({
-      geometrie: geometrie,
-      adres: taakItemElement.dataset.adres,
-      afbeeldingUrl: taakItemElement.dataset.afbeeldingUrl,
-      taakUuid: taakItemElement.dataset.uuid,
-      titel: taakItemElement.dataset.titel,
-      hasRemark: taakItemElement.dataset.hasRemark,
-    })
-  }
   clearTaakMarker(taakUuid) {
     const marker = this.markerList.find((obj) => obj.options.taakUuid === taakUuid)
     this.markerList = this.markerList.filter((obj) => obj.options.taakUuid != taakUuid)
-    marker?.remove()
+    this.markers.removeLayer(marker)
   }
   plotTaakMarker(markerData) {
     const lat = markerData.geometrie.coordinates ? markerData.geometrie.coordinates[1] : 51.9247772
@@ -242,7 +215,7 @@ export default class MapController extends Controller {
       this.preventScroll = false
     })
 
-    const paragraphDistance = `<p>Afstand: <span data-taken-lijst-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
+    const paragraphDistance = `<p>Afstand: <span data-taken-overzicht-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span>&nbsp;meter</p>`
     const spanRemark = markerData.hasRemark
       ? `<span class="badge-count badge-count--info">i</span>`
       : ''
@@ -258,16 +231,23 @@ export default class MapController extends Controller {
 
     this.markers.addLayer(marker)
     this.markerList.push(marker)
-    if (this.kaartModus === KaartModus.TOON_ALLES) {
-      this.toonAlles()
-    }
+    return marker
   }
-
-  plotMarkers = (coordinatenlijst) => {
-    if (coordinatenlijst) {
-      for (const markerData of coordinatenlijst) {
+  takenLijstOutletConnected(takenLijst) {
+    const alleTakenKaartMarkersData = takenLijst.getKaartMarkers()
+    const huidigeTaakUuids = this.markerList.map((obj) => obj.options.taakUuid)
+    huidigeTaakUuids
+      .filter(
+        (taakUuid) =>
+          !alleTakenKaartMarkersData.map((markerData) => markerData.taakUuid).includes(taakUuid)
+      )
+      .map((taakUuid) => {
+        this.clearTaakMarker(taakUuid)
+      })
+    alleTakenKaartMarkersData
+      .filter((markerData) => !huidigeTaakUuids.includes(markerData.taakUuid))
+      .map((markerData) => {
         this.plotTaakMarker(markerData)
-      }
-    }
+      })
   }
 }

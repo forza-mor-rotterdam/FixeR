@@ -198,9 +198,7 @@ class TakenOverzicht(
         if gps or (not gps and profiel.taken_sorting != AFSTAND_SORTING_KEY):
             queryset = queryset.order_by(profiel.taken_sorting_order_by)
 
-        selected_taak_uuid = self.request.GET.get(
-            "taakUuid", self.form_data.get("selected_taak_uuid", "")
-        )
+        selected_taak_uuid = self.request.GET.get("taakUuid", "")
         try:
             clean_selected_taak_uuid = uuid.UUID(selected_taak_uuid)
         except Exception:
@@ -222,11 +220,8 @@ class TakenOverzicht(
 
         self.initial = self.request.user.profiel.taken_filter_validated_data
         self.initial["q"] = self.request.session.get("q")
-        self.initial["gps"] = self.request.session.get("gps", "")
-
-        self.initial["kaart_modus"] = self.request.user.profiel.ui_instellingen.get(
-            "kaart_modus", "toon_alles"
-        )
+        if self.request.session.get("gps"):
+            del self.request.session["gps"]
         self.initial["sorteer_opties"] = self.request.user.profiel.ui_instellingen.get(
             "sortering", "Adres-reverse"
         )
@@ -269,7 +264,6 @@ class TakenOverzicht(
 @login_required
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, uuid):
-    request.session["selected_taak_uuid"] = str(uuid)
     taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)

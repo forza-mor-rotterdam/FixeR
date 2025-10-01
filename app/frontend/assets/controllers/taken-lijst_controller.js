@@ -33,9 +33,6 @@ export default class extends Controller {
     })
   }
   disconnect() {
-    if (this.hasTakenKaartOutlet) {
-      this.takenKaartOutlet.clearMarkers()
-    }
     document.removeEventListener('turbo:before-fetch-response', this.setScrollPosition)
     clearTimeout(timeoutId)
   }
@@ -88,14 +85,25 @@ export default class extends Controller {
       this.takenKaartOutlet.selectTaakMarker(e.params.taakUuid, preventScroll)
     }
   }
-  taakItemTargetConnected(taakItem) {
-    if (this.hasTakenKaartOutlet) {
-      this.takenKaartOutlet.addTaakMarker(taakItem)
-    }
-  }
-  taakItemTargetDisconnected(taakItem) {
-    if (this.hasTakenKaartOutlet) {
-      this.takenKaartOutlet.clearTaakMarker(taakItem.dataset.uuid)
-    }
+  getKaartMarkers() {
+    return this.taakItemTargets
+      .filter((taakItem) => {
+        try {
+          JSON.parse(taakItem.dataset.geometrie)
+          return true
+        } catch (err) {
+          return false
+        }
+      })
+      .map((taakItem) => {
+        return {
+          geometrie: JSON.parse(taakItem.dataset.geometrie),
+          adres: taakItem.dataset.adres,
+          afbeeldingUrl: taakItem.dataset.afbeeldingUrl,
+          taakUuid: taakItem.dataset.uuid,
+          titel: taakItem.dataset.titel,
+          hasRemark: taakItem.dataset.hasRemark,
+        }
+      })
   }
 }

@@ -125,14 +125,6 @@ class TakenLijstFilterForm(forms.Form):
         ),
         required=False,
     )
-    selected_taak_uuid = forms.CharField(
-        widget=forms.HiddenInput(
-            attrs={
-                "data-taken-overzicht-target": "selectedTaakUuidField",
-            }
-        ),
-        required=False,
-    )
     page = forms.CharField(
         widget=forms.HiddenInput(
             attrs={
@@ -159,6 +151,7 @@ class TakenLijstFilterForm(forms.Form):
             attrs={
                 "data-action": "taken-overzicht#onSortingChangeHandler",
                 "data-main-target": "sorteerField",
+                "data-taken-overzicht-target": "sorteerField",
             }
         ),
         choices=(),
@@ -244,9 +237,7 @@ class TakenLijstFilterForm(forms.Form):
             for field in [
                 "filters",
                 "sorteer_opties",
-                "kaart_modus",
                 "q",
-                "q_folded",
                 "page",
                 "gps",
             ]
@@ -270,9 +261,6 @@ class TakenLijstFilterForm(forms.Form):
         self.sorteer_opties_changed = data.get(
             "sorteer_opties"
         ) != profiel.ui_instellingen.get("sortering")
-        self.kaart_modus_changed = data.get(
-            "kaart_modus"
-        ) != profiel.ui_instellingen.get("kaart_modus")
         self.q_changed = data.get("q") != self.request.session.get("q")
         self.page_changed = data.get("page", "") != self.request.session.get("page", "")
         self.gps_changed = data.get("gps", "") != self.request.session.get("gps", "")
@@ -281,10 +269,6 @@ class TakenLijstFilterForm(forms.Form):
         profiel.filters.update({status: actieve_filters})
         profiel.ui_instellingen.update(
             {
-                "kaart_modus": data.get(
-                    "kaart_modus",
-                    profiel.ui_instellingen.get("kaart_modus", "volgen"),
-                ),
                 "sortering": data.get("sorteer_opties", "Datum-reverse"),
             }
         )

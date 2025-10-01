@@ -3,7 +3,7 @@
         {% if widget.attrs.class %}class="kaart-modus-widget {{ widget.attrs.class }}"{% endif %}>
         {% for group, options, index in widget.optgroups %}
             {% for option in options %}
-                <li class="{% if option.attrs.checked %}active{% endif %}">{% include option.template_name with widget=option %}</li>
+                <li>{% include option.template_name with widget=option %}</li>
             {% endfor %}
         {% endfor %}
     </ul>
