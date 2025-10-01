@@ -143,9 +143,12 @@ class TakenOverzicht(
     form_class = TakenLijstFilterForm
     paginate_by = 50
     success_url = "/"
-    filters = None
-    initial_filter_data = None
-    form_data = {}
+
+    def get(self, request, *args, **kwargs):
+        self.initial = {}
+        self.form_data = {}
+        self.initial_filter_data = None
+        return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -198,17 +201,18 @@ class TakenOverzicht(
         if gps or (not gps and profiel.taken_sorting != AFSTAND_SORTING_KEY):
             queryset = queryset.order_by(profiel.taken_sorting_order_by)
 
-        selected_taak_uuid = self.request.GET.get("taakUuid", "")
+        selected_taak_uuid = self.request.GET.get(
+            "taakUuid", self.form_data.get("selected_taak_uuid", "")
+        )
         try:
             clean_selected_taak_uuid = uuid.UUID(selected_taak_uuid)
         except Exception:
             clean_selected_taak_uuid = None
 
-        self.selected_taak = queryset.filter(uuid=clean_selected_taak_uuid).first()
-        if clean_selected_taak_uuid and self.selected_taak:
-            index = list(queryset.values_list("id", flat=True)).index(
-                self.selected_taak.id
-            )
+        selected_taak = queryset.filter(uuid=clean_selected_taak_uuid).first()
+        if clean_selected_taak_uuid and selected_taak:
+            self.initial.update({"selected_taak_uuid": str(selected_taak.uuid)})
+            index = list(queryset.values_list("id", flat=True)).index(selected_taak.id)
             page = math.floor(index / self.paginate_by) + 1
             self.kwargs["page"] = page
 
@@ -218,7 +222,7 @@ class TakenOverzicht(
         if self.request.GET.get("toon_alle_taken"):
             self.request.session["toon_alle_taken"] = True
 
-        self.initial = self.request.user.profiel.taken_filter_validated_data
+        self.initial.update(self.request.user.profiel.taken_filter_validated_data)
         self.initial["q"] = self.request.session.get("q")
         if self.request.session.get("gps"):
             del self.request.session["gps"]
@@ -228,7 +232,6 @@ class TakenOverzicht(
         context = super().get_context_data(**kwargs)
         context.update(
             {
-                "selected_taak": self.selected_taak,
                 "profiel_taaktype_uuid_list": list(
                     self.request.user.profiel.taaktypes.values_list("uuid", flat=True)
                 ),
