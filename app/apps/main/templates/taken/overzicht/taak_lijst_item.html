@@ -78,18 +78,13 @@
                         </span>
                     </div>
                     {% with taak.melding.geometrie as geo %}
-                        {% if geo and taak.afstand %}
-                            <div class="incident__distance">
-                                <span>
-                                    <span data-taken-lijst-target="taakAfstand"
-                                          data-latitude="{{ geo.1|replace_comma_by_dot }}"
-                                          data-longitude="{{ geo.0|replace_comma_by_dot }}">
-                                        {{ taak.afstand|floatformat:"0" }}&nbsp;
-                                    </span>
-                                    meter
-                                </span>
-                            </div>
-                        {% endif %}
+                        <div class="incident__distance">
+                            <span>
+                                <span data-taken-overzicht-target="taakAfstand"
+                                      data-latitude="{{ geo.1|replace_comma_by_dot }}"
+                                      data-longitude="{{ geo.0|replace_comma_by_dot }}"></span>&nbsp;meter
+                            </span>
+                        </div>
                     {% endwith %}
                 </div>
             </div>

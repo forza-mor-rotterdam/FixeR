@@ -1,10 +1,12 @@
 import { Controller } from '@hotwired/stimulus'
+import L from 'leaflet'
 
 export default class extends Controller {
-  static outlets = ['taken-kaart']
+  static outlets = ['taken-kaart', 'taken-lijst']
 
   static targets = [
     'sorteerOptiesFieldContainer',
+    'sorteerField',
     'zoekFieldContainer',
     'zoekFieldDefaultContainer',
     'toggleMapView',
@@ -20,10 +22,12 @@ export default class extends Controller {
     'taakItem',
     'taakPopup',
     'containerHeader',
-    'selectedTaakUuidField',
+    'taakAfstand',
   ]
+
   initialize() {
     this.kaartModus = null
+    this.currentPosition = null
     window.addEventListener('resize', (e) => this.onResizeHandler(e))
     this.onResizeHandler()
     this.updateSelectedChoicesCount()
@@ -48,9 +52,6 @@ export default class extends Controller {
     const url = urlObj.toString()
     window.history.replaceState({}, '', url)
   }
-  clearSelectedTaakUuidField() {
-    this.selectedTaakUuidFieldTarget.value = ''
-  }
   updateSelectedChoicesCount() {
     this.selectedChoicesCountTargets.map((elem) => {
       let container = elem.closest('details.filter')
@@ -70,7 +71,6 @@ export default class extends Controller {
   }
   onChangeFilter() {
     this.updateSelectedChoicesCount()
-    this.clearSelectedTaakUuidField()
     this.element.requestSubmit()
   }
   selectAll(e) {
@@ -93,57 +93,67 @@ export default class extends Controller {
     this.cancelZoekTarget.classList.add('hide')
     this.zoekFieldTarget.focus()
     this.to = setTimeout(() => {
-      this.clearSelectedTaakUuidField()
       this.element.requestSubmit()
     }, 200)
   }
   positionChangeEvent(position) {
+    this.currentPosition = position
     this.gpsFieldTarget.value = `${position.coords.latitude},${position.coords.longitude}`
-    this.clearSelectedTaakUuidField()
-    this.element.requestSubmit()
+    if (this.sorteerFieldTarget.value === 'Afstand') {
+      this.element.requestSubmit()
+    }
+    this.updateTaakAfstandTargets()
   }
   positionWatchError() {
     this.gpsFieldTarget.value = ''
+    this.currentPosition = null
     this.element.requestSubmit()
   }
   onSearchChangeHandler(e) {
     clearTimeout(this.to)
     this.to = setTimeout(() => {
-      this.clearSelectedTaakUuidField()
       this.element.requestSubmit()
     }, 200)
 
     this.cancelZoekTarget.classList[e.target.value.length > 0 ? 'remove' : 'add']('hide')
   }
   onSortingChangeHandler() {
-    this.clearSelectedTaakUuidField()
     this.element.requestSubmit()
   }
   onPageClickEvent(e) {
     this.pageFieldTarget.value = e.params.page
-    this.clearSelectedTaakUuidField()
     this.element.requestSubmit()
   }
   kaartModusOptionClickHandler(e) {
-    const li = e.target.closest('li')
-    Array.from(e.target.closest('ul').querySelectorAll('li')).map((elem) => {
-      elem.classList[li == elem ? 'add' : 'remove']('active')
-    })
-    this.kaartModus = e.target.value
+    this.setKaartModus(e.target.value)
+  }
+  setKaartModus(kaartModus) {
+    this.kaartModusOptionTargets
+      .find((elem) => elem.value === 'volgen')
+      .closest('li')
+      .classList[kaartModus === 'volgen' ? 'add' : 'remove']('active')
     if (this.hasTakenKaartOutlet) {
-      this.takenKaartOutlet.kaartModusChangeHandler(this.kaartModus)
+      this.takenKaartOutlet.kaartModusChangeHandler(kaartModus)
     }
-    this.element.requestSubmit()
   }
-  takenKaartOutletConnected() {
-    setTimeout(() => {
-      if (this.hasTakenKaartOutlet) {
-        this.takenKaartOutlet.kaartModusChangeHandler(this.kaartModus)
-      }
-    }, 1)
+  taakAfstandTargetConnected(taakAfstand) {
+    if (this.currentPosition) {
+      const markerLocation = new L.LatLng(
+        taakAfstand.dataset.latitude,
+        taakAfstand.dataset.longitude
+      )
+      taakAfstand.textContent = Math.round(
+        markerLocation.distanceTo([
+          this.currentPosition.coords.latitude,
+          this.currentPosition.coords.longitude,
+        ])
+      )
+    }
   }
-  kaartModusOptionTargetConnected(kaartModusOption) {
-    this.kaartModus = kaartModusOption.checked ? kaartModusOption.value : this.kaartModus
+  updateTaakAfstandTargets() {
+    this.taakAfstandTargets.forEach((elem) => {
+      this.taakAfstandTargetConnected(elem)
+    })
   }
   onToggleSortingContainer() {
     this.sorteerOptiesFieldContainerTarget.classList.toggle('hidden-vertical')
@@ -162,5 +172,8 @@ export default class extends Controller {
 
   hideFilters() {
     this.element.classList.remove('show-filters')
+  }
+  takenLijstOutletConnected() {
+    this.updateTaakAfstandTargets()
   }
 }

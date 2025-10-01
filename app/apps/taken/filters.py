@@ -112,6 +112,8 @@ class WijkBuurtFilter(StandaardFilter):
     _field_template = "taken/overzicht/filter_field_grouped.html"
 
     def flat_choices(self):
+        if not self._profiel.wijken:
+            return []
         pdok_service = PDOKService()
         all_data = pdok_service.get_buurten_middels_gemeentecode()
         return [
@@ -122,6 +124,8 @@ class WijkBuurtFilter(StandaardFilter):
         ]
 
     def choices(self):
+        if not self._profiel.wijken:
+            return []
         pdok_service = PDOKService()
         all_data = pdok_service.get_buurten_middels_gemeentecode()
         return [
