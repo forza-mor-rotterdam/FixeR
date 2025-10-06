@@ -116,6 +116,7 @@ body {
         height: 100%;
         padding-bottom: 16px;
     }
+    form.taken-overzicht,
     .container__list,
     .page-incidents,
     turbo-frame,
@@ -454,6 +455,17 @@ dl {
     }
 }
 
+.list--buttons-horizontal {
+    @include list-clean();
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 100px;
+    li {
+        margin: 0 0 0.5rem 0.25rem;
+        position: relative;
+    }
+}
+
 .dl--horizontal {
     dt,
     dd {
@@ -503,6 +515,11 @@ body.no-js {
     .no-js {
         display: none;
     }
+}
+
+.help-text {
+    font-size: 0.875em;
+    color: $gray-600;
 }
 
 // HELPER-CLASSES

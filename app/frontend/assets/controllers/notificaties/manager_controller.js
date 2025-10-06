@@ -17,25 +17,22 @@ export default class extends Controller {
     snackOverzichtAantal: Number,
     snackOverzichtUrl: String,
   }
-
-  connect() {
-    this.element.controller = this
+  initialize() {
     this.snackOverzichtPagina = 0
     this.snackOverzichtFilter = 'alle'
     this.snackOverzichtPaginaItemsGeladen = []
-    console.log(`${this.identifier} connected`)
-
-    this.initMessages()
     this.watchedNotificaties = []
+  }
+  connect() {
+    this.element.controller = this
+    this.initMessages()
   }
   snackLijstTargetConnected() {
     this.snackLijstTarget.addEventListener('mouseover', () => {
-      console.log('mouseOver lijst')
       this.snackLijstTarget.classList.remove('collapsed')
       this.snackLijstTarget.classList.add('expanded')
     })
     this.snackLijstTarget.addEventListener('mouseleave', () => {
-      console.log('mouseLeave lijst')
       this.snackLijstTarget.classList.remove('expanded')
       this.snackLijstTarget.classList.add('collapsed')
     })
@@ -60,8 +57,10 @@ export default class extends Controller {
     toastItem.controller.initializeManager(this)
   }
   snackOverzichtItemTargetConnected(snackOverzichtItem) {
-    snackOverzichtItem.controller.initializeManager(this)
-    this.snackOverzichtPaginaItemsGeladen.push(snackOverzichtItem)
+    setTimeout(() => {
+      snackOverzichtItem.controller?.initializeManager(this)
+      this.snackOverzichtPaginaItemsGeladen.push(snackOverzichtItem)
+    }, 1)
   }
   snackItemController(notificatieId) {
     return this.snackItemTargets.find((elem) => elem.dataset.id === String(notificatieId))
@@ -79,7 +78,6 @@ export default class extends Controller {
     this.laadSnackOverzicht()
   }
   async markeerSnackAlsGelezen(notificatieId, hideByClass = false) {
-    console.log('hideByClass', hideByClass)
     const snackItemController = this.snackItemController(notificatieId)
     snackItemController.markeerAlsGelezen(hideByClass)
     this.verwijderAlleSnackOverzichtItems()
@@ -109,14 +107,12 @@ export default class extends Controller {
     const url = `${this.snackOverzichtUrlValue}?p=${this.snackOverzichtPagina}&filter=${
       this.snackOverzichtFilter
     }${paramStr ? '&' + paramStr : ''}`
-    console.log(url)
     try {
       const response = await fetch(`${url}`)
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`)
       }
       const text = await response.text()
-      console.log(text)
       renderStreamMessage(text)
     } catch (error) {
       console.error('Error fetching address details:', error.message)
@@ -151,14 +147,10 @@ export default class extends Controller {
   }
   onMessage(e) {
     let data = JSON.parse(e.data)
-    console.log(e)
-    console.log('onMessage', data)
     renderStreamMessage(data)
     this.laadSnackOverzicht()
   }
-  onMessageOpen(e) {
-    console.info('Open mercure connection event', e)
-  }
+  onMessageOpen() {}
   onMessageError(e) {
     console.error(e, 'An error occurred while attempting to connect.')
     this.es.close()

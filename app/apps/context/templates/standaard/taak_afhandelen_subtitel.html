@@ -1,6 +1,0 @@
-{% load l10n %}
-{% load strip_html from main_tags %}
-<strong>{{ taak.adres }}</strong>
-<br />
-{% comment %} TODO Check B&C, voorheen werd parameter 'subtitel' meegegeven en hier getoond {% endcomment %}
-{% if taak.titel %}{{ taak.titel|strip_html }}{% endif %}

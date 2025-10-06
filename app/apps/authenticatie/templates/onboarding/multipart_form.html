@@ -68,12 +68,9 @@
             </h2>
             <p>
                 Je wordt automatisch doorgestuurd naar de lijst met taken. Als dat niet gebeurt, klik dan
-                <a href="{% url 'taken' %}">hier</a>.
+                <a href="{% url 'taken_overzicht' %}">hier</a>.
             </p>
         </div>
     </div>
-    <dialog class="infosheet" data-infosheet-target="infosheet">
-        <turbo-frame id="infosheet" data-infosheet-target="infosheetTurboframe"></turbo-frame>
-    </dialog>
     </turbo-frame>
 {% endblock body %}

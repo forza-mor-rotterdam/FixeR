@@ -53,7 +53,6 @@ class TaakViewSet(
     queryset = Taak.objects.select_related(
         "melding",
         "taakstatus",
-        "taak_zoek_data",
     ).all()
 
     serializer_class = TaakSerializer

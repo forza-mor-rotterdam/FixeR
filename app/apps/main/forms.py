@@ -1,5 +1,11 @@
+import logging
+
+from apps.taken.filters import FILTERS
 from apps.taken.models import Taak
+from deepdiff import DeepDiff
 from django import forms
+
+logger = logging.getLogger(__name__)
 
 
 class RadioSelect(forms.RadioSelect):
@@ -99,32 +105,73 @@ class TaakBehandelForm(forms.Form):
             )
 
 
-class SorteerFilterForm(forms.Form):
+class TaakFilterCheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
+    template_name = "taken/overzicht/filter_field_widget.html"
+    option_template_name = "taken/overzicht/filter_field_widget_option.html"
+
+
+class KaartModusRadioSelect(forms.RadioSelect):
+    template_name = "taken/overzicht/kaart_modus_widget.html"
+
+
+class TakenLijstFilterForm(forms.Form):
+    gps = forms.CharField(
+        widget=forms.HiddenInput(
+            attrs={
+                "data-action": "taken-overzicht#onGPSChangeHandler",
+                "data-main-target": "gpsField",
+                "data-taken-overzicht-target": "gpsField",
+            }
+        ),
+        required=False,
+    )
+    selected_taak_uuid = forms.CharField(
+        widget=forms.HiddenInput(
+            attrs={
+                "data-taken-overzicht-target": "selectedTaakUuidField",
+            }
+        ),
+        required=False,
+    )
+    page = forms.CharField(
+        widget=forms.HiddenInput(
+            attrs={
+                "data-taken-overzicht-target": "pageField",
+                "data-action": "taken-overzicht#onPageChangeHandler",
+            }
+        ),
+        required=False,
+    )
+    q = forms.CharField(
+        widget=forms.SearchInput(
+            attrs={
+                "class": "form-control search",
+                "maxlength": 50,
+                "placeholder": "Zoek op straatnaam of MeldR-nummer",
+                "data-taken-overzicht-target": "zoekField",
+                "data-action": "taken-overzicht#onSearchChangeHandler",
+            }
+        ),
+        required=False,
+    )
     sorteer_opties = forms.ChoiceField(
         widget=forms.Select(
             attrs={
-                "data-action": "sorteerFilter#onChangeHandler",
-                "data-sorteerFilter-target": "sorteerField",
+                "data-action": "taken-overzicht#onSortingChangeHandler",
+                "data-main-target": "sorteerField",
+                "data-taken-overzicht-target": "sorteerField",
             }
         ),
-        choices=(
-            ("Datum-reverse", "Datum (nieuwste bovenaan)"),
-            ("Datum", "Datum (oudste bovenaan)"),
-            ("Afstand", "Afstand"),
-            ("Adres", "T.h.v. Adres (a-z)"),
-            ("Adres-reverse", "T.h.v. Adres (z-a)"),
-            ("Postcode", "Postcode (1000-9999)"),
-            ("Postcode-reverse", "Postcode (9999-1000)"),
-        ),
+        choices=(),
+        required=False,
     )
-
-
-class KaartModusForm(forms.Form):
     kaart_modus = forms.ChoiceField(
-        widget=forms.RadioSelect(
+        widget=KaartModusRadioSelect(
             attrs={
                 "class": "list--form-radio-input",
-                "data-action": "click->kaartModus#kaartModusOptionClickHandler",
+                "data-action": "click->taken-overzicht#kaartModusOptionClickHandler",
+                "data-taken-overzicht-target": "kaartModusOption",
+                "data-main-target": "kaartModusOption",
                 "hideLabel": True,
             }
         ),
@@ -132,4 +179,109 @@ class KaartModusForm(forms.Form):
             ("volgen", "Volg mijn locatie"),
             ("toon_alles", "Toon alle taken"),
         ),
+        required=False,
     )
+    filters = [
+        "taken",
+        "buurt",
+        "begraafplaats",
+        "taak_status",
+    ]
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request", None)
+        profiel = self.request.user.profiel
+        super().__init__(*args, **kwargs)
+
+        if self.request.session.get("q"):
+            del self.request.session["q"]
+
+        for f in profiel.taken_filters:
+            self.fields[f.key()] = forms.MultipleChoiceField(
+                widget=TaakFilterCheckboxSelectMultiple(
+                    attrs={
+                        "class": "form-check-input filter--taken",
+                        "sub_label": f.sub_label(),
+                        "data-action": "taken-overzicht#onChangeFilter",
+                        "data-taken-overzicht-target": "filterInput",
+                    }
+                ),
+                template_name=f.field_template(),
+                choices=f.choices(),
+                required=False,
+                label=f.label(),
+            )
+        self.fields["sorteer_opties"].choices = profiel.taken_sorting_choices
+
+    def filter_fields(self):
+        profiel = self.request.user.profiel
+        return [
+            field
+            for field in self
+            if field.name in [f.key() for f in profiel.taken_filters]
+        ]
+
+    def active_filter_options(self):
+        profiel = self.request.user.profiel
+        active_profiel_selected_filter_opties = {
+            k: v for k, v in profiel.taken_filter_data.items() if v
+        }
+        return [
+            (
+                f.key(),
+                self.fields[f.key()].label,
+                f(profiel=profiel).active_choices(
+                    active_profiel_selected_filter_opties[f.key()]
+                ),
+            )
+            for f in FILTERS
+            if f.key() in profiel.context.filters.get("fields", [])
+            and f.key() in active_profiel_selected_filter_opties.keys()
+        ]
+
+    def changed_fields(self):
+        return {
+            f"{field}_changed": getattr(self, f"{field}_changed")
+            for field in [
+                "filters",
+                "sorteer_opties",
+                "q",
+                "page",
+                "gps",
+            ]
+            if hasattr(self, f"{field}_changed")
+        }
+
+    def save(self):
+        profiel = self.request.user.profiel
+        data = self.cleaned_data
+        status = "nieuw"
+
+        actieve_filters = {f.key(): data.get(f.key()) for f in profiel.taken_filters}
+
+        # changed fields
+        self.filters_changed = bool(
+            DeepDiff(
+                profiel.taken_filter_validated_data,
+                {k: v for k, v in actieve_filters.items() if v},
+            )
+        )
+        self.sorteer_opties_changed = data.get(
+            "sorteer_opties"
+        ) != profiel.ui_instellingen.get("sortering")
+        self.q_changed = data.get("q") != self.request.session.get("q")
+        self.page_changed = data.get("page", "") != self.request.session.get("page", "")
+        self.gps_changed = data.get("gps", "") != self.request.session.get("gps", "")
+
+        # update profiel fields
+        profiel.filters.update({status: actieve_filters})
+        profiel.ui_instellingen.update(
+            {
+                "sortering": data.get("sorteer_opties", "Datum-reverse"),
+            }
+        )
+        profiel.save()
+        # update session fields
+        self.request.session["q"] = data.get("q", "")
+        self.request.session["page"] = data.get("page", "")
+        self.request.session["gps"] = data.get("gps", "")

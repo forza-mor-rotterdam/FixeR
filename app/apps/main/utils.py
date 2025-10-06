@@ -1,57 +1,7 @@
 import base64
 
 from django.core.files.storage import default_storage
-from django.http import QueryDict
 from utils.constanten import PDOK_WIJKEN
-
-
-def get_filters(context):
-    from apps.context.filters import FilterManager
-
-    filters = context.filters.get("fields", [])
-    filters = [f for f in filters if f in FilterManager.available_filter_names()]
-    return filters
-
-
-def get_actieve_filters(gebruiker, filters, status="nieuw"):
-    actieve_filters = {f: [] for f in filters}
-    profiel_filters = gebruiker.profiel.filters.get(status, {})
-    if isinstance(profiel_filters, dict):
-        actieve_filters.update(
-            {k: v for k, v in profiel_filters.items() if k in filters}
-        )
-    return actieve_filters
-
-
-def set_actieve_filters(gebruiker, actieve_filters, status="nieuw"):
-    gebruiker.profiel.filters.update({status: actieve_filters})
-    return gebruiker.profiel.save()
-
-
-def get_sortering(gebruiker):
-    return gebruiker.profiel.ui_instellingen.get("sortering", "Datum-reverse")
-
-
-def set_sortering(gebruiker, nieuwe_sortering):
-    gebruiker.profiel.ui_instellingen.update({"sortering": nieuwe_sortering})
-    return gebruiker.profiel.save()
-
-
-def get_kaart_modus(gebruiker):
-    return gebruiker.profiel.ui_instellingen.get("kaart_modus", "volgen")
-
-
-def set_kaart_modus(gebruiker, nieuwe_kaart_modus):
-    gebruiker.profiel.ui_instellingen.update({"kaart_modus": nieuwe_kaart_modus})
-    return gebruiker.profiel.save()
-
-
-def dict_to_querystring(d: dict) -> str:
-    return "&".join([f"{p}={v}" for p, l in d.items() for v in l])
-
-
-def querystring_to_dict(s: str) -> dict:
-    return dict(QueryDict(s))
 
 
 def truncate_tekst(text, length=200):

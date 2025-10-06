@@ -19,6 +19,7 @@ SECRET_KEY = os.environ.get(
 )
 
 # APP_ENV's
+DEVELOPMENT = "development"
 PRODUCTIE = "productie"
 ACCEPTATIE = "acceptatie"
 TEST = "test"
@@ -86,6 +87,7 @@ INSTALLED_APPS = (
     "health_check.storage",
     "health_check.db",
     "health_check.contrib.migrations",
+    "health_check.contrib.celery_ping",
     "django_celery_beat",
     "django_celery_results",
     "sorl.thumbnail",
@@ -403,10 +405,11 @@ def show_debug_toolbar(request):
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": show_debug_toolbar,
     "INSERT_BEFORE": "</head>",
+    "IS_RUNNING_TESTS": False,
 }
 
 
-LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
+LOG_LEVEL = "INFO" if DEBUG else "INFO"
 
 LOGGING = {
     "version": 1,
@@ -453,23 +456,29 @@ OIDC_RP_CLIENT_SECRET = os.getenv("OIDC_RP_CLIENT_SECRET")
 
 OIDC_REALM = os.getenv("OIDC_REALM")
 AUTH_BASE_URL = os.getenv("AUTH_BASE_URL")
+OPENID_CONFIG = {}
+OPENID_CONFIG_URI_DEFAULT = (
+    f"{AUTH_BASE_URL}/realms/{OIDC_REALM}/.well-known/openid-configuration"
+    if AUTH_BASE_URL and OIDC_REALM
+    else None
+)
 OPENID_CONFIG_URI = os.getenv(
     "OPENID_CONFIG_URI",
-    f"{AUTH_BASE_URL}/realms/{OIDC_REALM}/.well-known/openid-configuration",
+    OPENID_CONFIG_URI_DEFAULT,
 )
-OPENID_CONFIG = {}
-try:
-    OPENID_CONFIG = requests.get(
-        OPENID_CONFIG_URI,
-        headers={
-            "user-agent": urllib3.util.SKIP_HEADER,
-        },
-    ).json()
-except Exception as e:
-    logger.error(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
-OIDC_ENABLED = False
-if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
-    OIDC_ENABLED = True
+if OPENID_CONFIG_URI:
+    try:
+        OPENID_CONFIG = requests.get(
+            OPENID_CONFIG_URI,
+            headers={
+                "user-agent": urllib3.util.SKIP_HEADER,
+            },
+        ).json()
+    except Exception as e:
+        raise Exception(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
+
+OIDC_ENABLED = OPENID_CONFIG and OIDC_RP_CLIENT_ID
+if OIDC_ENABLED:
     OIDC_VERIFY_SSL = os.getenv("OIDC_VERIFY_SSL", True) in TRUE_VALUES
     OIDC_USE_NONCE = os.getenv("OIDC_USE_NONCE", True) in TRUE_VALUES
 

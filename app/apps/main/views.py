@@ -1,28 +1,16 @@
-import json
 import logging
-import operator
+import math
 import os
-import re
+import uuid
 from datetime import datetime
-from functools import reduce
 
 import requests
-from apps.context.filters import FilterManager
-from apps.context.models import Context
+from apps.authenticatie.models import AFSTAND_SORTING_KEY
 from apps.instellingen.models import Instelling
-from apps.main.forms import KaartModusForm, SorteerFilterForm, TaakBehandelForm
+from apps.main.forms import TaakBehandelForm, TakenLijstFilterForm
 from apps.main.services import MORCoreService, PDOKService, TaakRService
-from apps.main.utils import (
-    get_actieve_filters,
-    get_filters,
-    get_kaart_modus,
-    get_sortering,
-    melding_naar_tijdlijn,
-    set_actieve_filters,
-    set_kaart_modus,
-    set_sortering,
-)
-from apps.release_notes.models import ReleaseNote
+from apps.main.utils import melding_naar_tijdlijn
+from apps.taken.filters import FILTERS_BY_KEY
 from apps.taken.models import Taak, TaakDeellink, Taakstatus
 from device_detector import DeviceDetector
 from django.conf import settings
@@ -33,22 +21,16 @@ from django.contrib.auth.decorators import (
     user_passes_test,
 )
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.gis.db.models import ExpressionWrapper, FloatField
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.core import signing
 from django.core.cache import cache
 from django.core.files.storage import default_storage
-from django.core.paginator import Paginator
-from django.db.models import Q
-from django.http import (
-    HttpResponse,
-    HttpResponsePermanentRedirect,
-    JsonResponse,
-    StreamingHttpResponse,
-)
+from django.http import HttpResponse, HttpResponsePermanentRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import View
+from django.views.generic import FormView, ListView
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +106,7 @@ def navigeer(request, lat, long):
 # @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
-        return redirect(reverse("taken"), False)
+        return redirect(reverse("taken_overzicht"), False)
     if request.user.has_perms(["authorisatie.beheer_bekijken"]):
         return redirect(reverse("beheer"), False)
     return render(
@@ -150,322 +132,136 @@ def ui_settings_handler(request):
     )
 
 
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken(request):
-    gebruiker = request.user
-    MORCoreService().set_gebruiker(gebruiker=gebruiker.serialized_instance())
+class TakenOverzicht(
+    PermissionRequiredMixin,
+    FormView,
+    ListView,
+):
+    template_name = "taken/overzicht/basis.html"
+    permission_required = "authorisatie.taken_lijst_bekijken"
+    queryset = Taak.objects.taken_lijst()
+    form_class = TakenLijstFilterForm
+    paginate_by = 50
+    success_url = "/"
 
-    if (
-        not gebruiker.profiel.onboarding_compleet
-        or gebruiker.profiel.wijken_or_taaktypes_empty
-    ) and gebruiker.profiel.context.template != "benc":  # Skip onboarding if B&C
-        return redirect(reverse("onboarding"), False)
+    def get(self, request, *args, **kwargs):
+        self.initial = {}
+        self.form_data = {}
+        self.initial_filter_data = None
+        return super().get(request, *args, **kwargs)
 
-    return render(request, "taken/taken.html", {})
-
-
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken_filter(request):
-    is_benc = request.user.profiel.context.template == Context.TemplateOpties.BENC
-    if is_benc:
-        taken = (
-            Taak.objects.select_related(
-                "melding",
-                "taaktype",
-                "taakstatus",
-                "taak_zoek_data",
-            )
-            .only(
-                "uuid",
-                "melding__id",
-                "taaktype__id",
-                "taaktype__omschrijving",
-                "taakstatus__id",
-                "taakstatus__naam",
-                "taakstatus__aangemaakt_op",
-                "taak_zoek_data__bron_signaal_ids",
-                "taak_zoek_data__begraafplaats",
-            )
-            .get_taken_recent(request.user)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update(
+            {
+                "request": self.request,
+            }
         )
-    else:
-        taken = (
-            Taak.objects.select_related(
-                "melding",
-                "taaktype",
-                "taakstatus",
-                "taak_zoek_data",
+        return kwargs
+
+    def get_initial_filter_data(self):
+        if self.initial_filter_data is None:
+            profiel_selected_filter_opties = self.request.user.profiel.taken_filter_data
+            actieve_filters = [
+                f
+                for f in self.request.user.profiel.context.filters.get("fields", [])
+                if f in FILTERS_BY_KEY.keys()
+            ]
+            self.initial_filter_data = {
+                f: profiel_selected_filter_opties[f]
+                for f in actieve_filters
+                if profiel_selected_filter_opties.get(f)
+            }
+        return self.initial_filter_data
+
+    def get_gps(self):
+        try:
+            gps = self.form_data["gps"].split(",")
+            return Point(
+                float(gps[1]),
+                float(gps[0]),
+                srid=4326,
             )
-            .only(
-                "uuid",
-                "melding__id",
-                "taaktype__id",
-                "taaktype__omschrijving",
-                "taakstatus__id",
-                "taakstatus__naam",
-                "taakstatus__aangemaakt_op",
-                "taak_zoek_data__bron_signaal_ids",
-                "taak_zoek_data__straatnaam",
-                "taak_zoek_data__huisnummer",
-                "taak_zoek_data__huisletter",
-                "taak_zoek_data__toevoeging",
-                "taak_zoek_data__postcode",
-                "taak_zoek_data__geometrie",
-                "taak_zoek_data__wijknaam",
-                "taak_zoek_data__buurtnaam",
+        except Exception:
+            return
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        profiel = self.request.user.profiel
+        queryset = queryset.filter(**profiel.taken_filter_query_data)
+        queryset = queryset.taken_zoeken(self.request.session.get("q"))
+
+        gps = self.get_gps()
+        if gps:
+            queryset = queryset.annotate(
+                afstand=ExpressionWrapper(
+                    Distance("melding__geometrie", gps), output_field=FloatField()
+                )
             )
-            .get_taken_recent(request.user)
+        if gps or (not gps and profiel.taken_sorting != AFSTAND_SORTING_KEY):
+            queryset = queryset.order_by(profiel.taken_sorting_order_by)
+
+        selected_taak_uuid = self.request.GET.get(
+            "taakUuid", self.form_data.get("selected_taak_uuid", "")
         )
+        try:
+            clean_selected_taak_uuid = uuid.UUID(selected_taak_uuid)
+        except Exception:
+            clean_selected_taak_uuid = None
 
-    filters = (
-        get_filters(request.user.profiel.context)
-        if request.user.profiel.context
-        else []
-    )
-    filters += ["q"]
-    actieve_filters = get_actieve_filters(request.user, filters)
-    actieve_filters["q"] = request.session.get("q", [""])
-    foldout_states = []
+        selected_taak = queryset.filter(uuid=clean_selected_taak_uuid).first()
+        if clean_selected_taak_uuid and selected_taak:
+            self.initial.update({"selected_taak_uuid": str(selected_taak.uuid)})
+            index = list(queryset.values_list("id", flat=True)).index(selected_taak.id)
+            page = math.floor(index / self.paginate_by) + 1
+            self.kwargs["page"] = page
 
-    if request.POST:
-        request.session["toon_alle_taken"] = True
-        request_filters = {f: request.POST.getlist(f) for f in filters}
-        foldout_states = json.loads(request.POST.get("foldout_states", "[]"))
-        for filter_name, new_value in request_filters.items():
-            if filter_name != "q" and new_value != actieve_filters.get(filter_name):
-                actieve_filters[filter_name] = new_value
-        set_actieve_filters(request.user, actieve_filters)
+        return queryset
 
-    filter_manager = FilterManager(
-        taken, actieve_filters, foldout_states, profiel=request.user.profiel
-    )
+    def get_context_data(self, **kwargs):
+        if self.request.GET.get("toon_alle_taken"):
+            self.request.session["toon_alle_taken"] = True
 
-    taken_gefilterd = filter_manager.filter_taken()
-
-    if not is_benc:
-        taken_gefilterd = taken_gefilterd.annotate_adres()
-
-        # Searching not possible for BENC, no bron signaal or adres data.
-        if request.session.get("q"):
-            q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-            if q:
-                q_list = [
-                    (
-                        Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                        | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                        if len(qp) > 3
-                        else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    )
-                    for qp in q
-                ]
-                taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
-
-    taken_aantal = taken_gefilterd.count()
-    return render(
-        request,
-        "taken/taken_filter_form.html",
-        {
-            "taken_aantal": taken_aantal,
-            "filter_manager": filter_manager,
-            "foldout_states": json.dumps(foldout_states),
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taken_lijst(request):
-    try:
-        pnt = Point(
-            float(request.GET.get("lon", 0)),
-            float(request.GET.get("lat", 0)),
-            srid=4326,
+        self.initial.update(self.request.user.profiel.taken_filter_validated_data)
+        self.initial["q"] = self.request.session.get("q")
+        if self.request.session.get("gps"):
+            del self.request.session["gps"]
+        self.initial["sorteer_opties"] = self.request.user.profiel.ui_instellingen.get(
+            "sortering", "Adres-reverse"
         )
-    except Exception:
-        pnt = Point(0, 0, srid=4326)
-
-    is_benc = request.user.profiel.context.template == Context.TemplateOpties.BENC
-
-    if request.GET.get("toon_alle_taken"):
-        request.session["toon_alle_taken"] = True
-
-    sortering = get_sortering(request.user)
-    sort_reverse = len(sortering.split("-")) > 1
-    sortering = sortering.split("-")[0]
-    sorting_fields = {
-        "Postcode": "taak_zoek_data__postcode",
-        "Adres": "adres",
-        "Datum": "taakstatus__aangemaakt_op",
-        "Afstand": "afstand",
-    }
-
-    if is_benc:
-        taken = (
-            Taak.objects.select_related(
-                "melding",
-                "taaktype",
-                "taakstatus",
-                "taak_zoek_data",
-            )
-            .only(
-                "uuid",
-                "melding__id",
-                "taaktype__id",
-                "taaktype__omschrijving",
-                "taakstatus__id",
-                "taakstatus__naam",
-                "taakstatus__aangemaakt_op",
-                "taak_zoek_data__bron_signaal_ids",
-                "taak_zoek_data__begraafplaats",
-            )
-            .get_taken_recent(request.user)
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "profiel_taaktype_uuid_list": list(
+                    self.request.user.profiel.taaktypes.values_list("uuid", flat=True)
+                ),
+            }
         )
-    else:
-        taken = (
-            Taak.objects.select_related(
-                "melding",
-                "taaktype",
-                "taakstatus",
-                "taak_zoek_data",
-            )
-            .only(
-                "uuid",
-                "melding__id",
-                "taaktype__id",
-                "taaktype__omschrijving",
-                "taakstatus__id",
-                "taakstatus__naam",
-                "taakstatus__aangemaakt_op",
-                "taak_zoek_data__bron_signaal_ids",
-                "taak_zoek_data__straatnaam",
-                "taak_zoek_data__huisnummer",
-                "taak_zoek_data__huisletter",
-                "taak_zoek_data__toevoeging",
-                "taak_zoek_data__postcode",
-                "taak_zoek_data__geometrie",
-                "taak_zoek_data__wijknaam",
-                "taak_zoek_data__buurtnaam",
-            )
-            .get_taken_recent(request.user)
+        return context
+
+    def form_invalid(self, form):
+        logger.error("TakenOverzicht: FORM INVALID")
+        logger.error(form.errors.as_json())
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        form.save()
+        self.form_data = form.cleaned_data
+
+        self.kwargs["page"] = form.cleaned_data.get("page", 1)
+
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+
+        context.update(form.changed_fields())
+
+        response = render(
+            self.request,
+            "taken/overzicht/basis_stream.html",
+            context=context,
         )
-    filters = (
-        get_filters(request.user.profiel.context)
-        if request.user.profiel.context
-        else []
-    )
-    actieve_filters = get_actieve_filters(request.user, filters)
-    filter_manager = FilterManager(taken, actieve_filters, profiel=request.user.profiel)
-    taken_gefilterd = filter_manager.filter_taken()
-
-    if not is_benc:
-        taken_gefilterd = taken_gefilterd.annotate_adres()
-
-        # Searching not possible for BENC, no bron signaal or adres data.
-        if request.session.get("q"):
-            q = [qp for qp in request.session.get("q").split(" ") if qp.strip(" ")]
-            if q:
-                q_list = [
-                    (
-                        Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
-                        | Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                        if len(qp) > 3
-                        else Q(taak_zoek_data__straatnaam__iregex=re.escape(qp))
-                        | Q(huisnr_huisltr_toev__iregex=re.escape(qp))
-                    )
-                    for qp in q
-                ]
-                taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
-
-    if sortering == "Afstand":
-        taken_gefilterd = taken_gefilterd.annotate(
-            afstand=Distance("taak_zoek_data__geometrie", pnt)
-        )
-    taken_gefilterd = taken_gefilterd.order_by(
-        f"{'-' if sort_reverse else ''}{sorting_fields.get(sortering)}"
-    )
-
-    # paginate
-    # @Remco @TODO Set to 5 for easier testing
-    paginator = Paginator(taken_gefilterd, 50)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-    taken_paginated = page_obj.object_list
-    taken_gefilterd_total = taken_gefilterd.count()
-    if request.session.get("taken_gefilterd"):
-        del request.session["taken_gefilterd"]
-
-    return render(
-        request,
-        "taken/taken_lijst.html",
-        {
-            "taken_gefilterd_total": taken_gefilterd_total,
-            "taken": taken_paginated,
-            "page_obj": page_obj,
-            "toon_alle_taken": request.session.get("toon_alle_taken", False),
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
-def taak_zoeken(request):
-    body = json.loads(request.body)
-    request.session["q"] = body.get("q", "")
-    return JsonResponse({"q": request.session.get("q", "")})
-
-
-@login_required
-def sorteer_filter(request):
-    sortering = get_sortering(request.user)
-    form = SorteerFilterForm({"sorteer_opties": sortering})
-    request_type = "get"
-    if request.POST:
-        request_type = "post"
-        form = SorteerFilterForm(request.POST)
-        if form.is_valid():
-            sortering = form.cleaned_data.get("sorteer_opties")
-            set_sortering(request.user, sortering)
-    return render(
-        request,
-        "snippets/sorteer_filter_form.html",
-        {
-            "form": form,
-            "request_type": request_type,
-        },
-    )
-
-
-@login_required
-def kaart_modus(request):
-    kaart_modus = get_kaart_modus(request.user)
-    form = KaartModusForm({"kaart_modus": kaart_modus})
-    request_type = "get"
-    if request.POST:
-        request_type = "post"
-        form = KaartModusForm(request.POST, {"kaart_modus": kaart_modus})
-        if form.is_valid():
-            kaart_modus = form.cleaned_data.get("kaart_modus")
-            set_kaart_modus(request.user, kaart_modus)
-    return render(
-        request,
-        "snippets/kaart_modus_form.html",
-        {
-            "form": form,
-            "request_type": request_type,
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taak_bekijken", raise_exception=True)
-def taak_detail_uuid(request, uuid):
-    taak = get_object_or_404(Taak, uuid=uuid)
-    return redirect(reverse("taak_detail", args=[taak.id]), True)
+        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
+        return response
 
 
 @login_required
@@ -477,6 +273,7 @@ def taak_detail(request, uuid):
     ua = request.META.get("HTTP_USER_AGENT", "")
     device = DeviceDetector(ua).parse()
     taakdeellinks = TaakDeellink.objects.filter(taak=taak)
+
     return render(
         request,
         "taken/taak_detail.html",
@@ -628,7 +425,7 @@ def taak_afhandelen(request, uuid):
         messages.warning(request, "Deze taak is ondertussen al afgerond.")
         return render(
             request,
-            "incident/modal_handle.html",
+            "taken/taak_afhandelen.html",
             {
                 "taak": taak,
             },
@@ -701,13 +498,13 @@ def taak_afhandelen(request, uuid):
                 taak=taak,
                 vervolg_taaktypes=vervolg_taaktypes,
             )
-            return redirect("taken")
+            return redirect("taken_overzicht")
         else:
             logger.error(f"taak_afhandelen: for errors: {form.errors}")
 
     return render(
         request,
-        "incident/modal_handle.html",
+        "taken/taak_afhandelen.html",
         {
             "taak": taak,
             "form": form,
@@ -731,9 +528,13 @@ def _meldingen_bestand(request, modified_path):
             "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
         )
     url = f"{instelling.mor_core_basis_url}{modified_path}"
-    response = requests.get(url, stream=True, headers=MORCoreService().get_headers())
-    return StreamingHttpResponse(
-        response.raw,
+    cache_key = f"meldingen_bestand_{url}"
+    response = cache.get(cache_key)
+    if not response:
+        response = requests.get(url, headers=MORCoreService().get_headers())
+        cache.set(cache_key, response, 600)
+    return HttpResponse(
+        response,
         content_type=response.headers.get("content-type"),
         headers={
             "Content-Disposition": "attachment",
@@ -763,36 +564,3 @@ def meldingen_bestand(request):
 def meldingen_bestand_protected(request):
     modified_path = request.path.replace(settings.MOR_CORE_PROTECTED_URL_PREFIX, "")
     return _meldingen_bestand(request, modified_path)
-
-
-@login_required
-def infosheet_mock(request):
-    return render(
-        request,
-        "infosheet/infosheet_mock.html",
-        {},
-    )
-
-
-class HomepageView(PermissionRequiredMixin, View):
-    # Might change to LoginRequiredMixin
-    permission_required = "authorisatie.homepage_bekijken"
-    template_name = "homepage_nieuw.html"
-
-    def get(self, request, *args, **kwargs):
-        request.session["origine"] = "home"
-        release_notes = self.get_release_notes()
-        context = {
-            "release_notes": release_notes,
-        }
-        return render(request, self.template_name, context)
-
-    # Get release notes published within 5 weeks and not in future
-    def get_release_notes(self):
-        release_notes = [
-            release_note
-            for release_note in ReleaseNote.objects.all().order_by("-publicatie_datum")
-            if release_note.is_published()
-        ][:6]
-
-        return release_notes

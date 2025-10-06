@@ -14,6 +14,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db.models.query import QuerySet
 from utils.constanten import PDOK_WIJKEN
+from utils.widgets import ChoiceWidgetOptionDataMixin
 
 Gebruiker = get_user_model()
 logger = logging.getLogger(__name__)
@@ -231,15 +232,22 @@ class ProfielfotoForm(forms.ModelForm):
         fields = ["profielfoto"]
 
 
+class AfdelingCheckboxSelectMultiple(
+    ChoiceWidgetOptionDataMixin, forms.CheckboxSelectMultiple
+):
+    ...
+
+
 class AfdelingForm(forms.Form):
     afdelingen = forms.MultipleChoiceField(
         choices=[],
-        widget=forms.CheckboxSelectMultiple(
+        widget=AfdelingCheckboxSelectMultiple(
             attrs={
                 "hasIcon": True,
                 "classList": "list--form-check-input--tile-image",
             }
         ),
+        # template_name="onboarding/afdeling_field.html",
         required=True,
     )
 
@@ -249,11 +257,19 @@ class AfdelingForm(forms.Form):
         afdelingen = [
             (
                 afdeling["uuid"],
-                {"naam": afdeling["naam"], "icon": afdeling.get("icoon", None)},
+                afdeling["naam"],
             )
             for afdeling in afdelingen_data
         ]
+        option_data = {
+            afdeling["uuid"]: {
+                "naam": afdeling["naam"],
+                "icon": afdeling.get("icoon", None),
+            }
+            for afdeling in afdelingen_data
+        }
         self.fields["afdelingen"].choices = afdelingen
+        self.fields["afdelingen"].widget.option_data = option_data
 
 
 class WerklocatieForm(forms.ModelForm):
@@ -319,10 +335,7 @@ class BevestigenForm(forms.Form):
                                 val,
                                 next(
                                     (
-                                        {
-                                            "naam": afdeling["naam"],
-                                            "icon": afdeling.get("icoon", None),
-                                        }
+                                        afdeling["naam"]
                                         for afdeling in afdelingen_data
                                         if afdeling["uuid"] == val
                                     ),
@@ -331,14 +344,28 @@ class BevestigenForm(forms.Form):
                             )
                             for val in field_value
                         ],
-                        widget=forms.CheckboxSelectMultiple(
+                        widget=AfdelingCheckboxSelectMultiple(
                             attrs={
                                 "readonly": "readonly",
                                 "disabled": "disabled",
                                 "hideLabel": True,
                                 "hasIcon": True,
                                 "classList": "list--form-check-input--tile-image",
-                            }
+                            },
+                            option_data={
+                                val: next(
+                                    (
+                                        {
+                                            "naam": afdeling["naam"],
+                                            "icon": afdeling.get("icoon", None),
+                                        }
+                                        for afdeling in afdelingen_data
+                                        if afdeling["uuid"] == val
+                                    ),
+                                    val,
+                                )
+                                for val in field_value
+                            },
                         ),
                         required=False,
                     )

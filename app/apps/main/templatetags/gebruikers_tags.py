@@ -24,8 +24,7 @@ def get_field_from_gebruiker_middels_email(value, field_name=None):
     return gebruiker.get("full_name", "")
 
 
-@register.filter
-def get_gebruiker_object_middels_email(value):
+def _get_gebruiker_object_middels_email(value):
     if not value:
         return None
     gebruiker_response = MORCoreService().get_gebruiker(
@@ -62,6 +61,11 @@ def get_gebruiker_object_middels_email(value):
             gebruiker["full_name"] = full_name or gebruiker["email"]
 
     return gebruiker
+
+
+@register.filter
+def get_gebruiker_object_middels_email(value):
+    return _get_gebruiker_object_middels_email(value)
 
 
 @register.filter

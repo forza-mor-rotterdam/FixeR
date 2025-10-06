@@ -7,29 +7,22 @@ from apps.authenticatie.views import (
 )
 from apps.health.views import healthz
 from apps.main.views import (
-    HomepageView,
+    TakenOverzicht,
     clear_melding_token_from_cache,
     config,
     http_403,
     http_404,
     http_410,
     http_500,
-    infosheet_mock,
-    kaart_modus,
     meldingen_bestand,
     meldingen_bestand_protected,
     navigeer,
     root,
-    sorteer_filter,
     taak_afhandelen,
     taak_delen,
     taak_detail,
     taak_detail_melding_tijdlijn,
     taak_detail_preview,
-    taak_zoeken,
-    taken,
-    taken_filter,
-    taken_lijst,
     ui_settings_handler,
 )
 from apps.release_notes.views import (
@@ -73,11 +66,6 @@ urlpatterns = [
         LogoutView.as_view(),
         name="logout",
     ),
-    path(
-        "home/",
-        HomepageView.as_view(),
-        name="home",
-    ),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path(
         "api/v1/melding/",
@@ -93,25 +81,11 @@ urlpatterns = [
     path("config/", config, name="config"),
     path("health/", include("health_check.urls")),
     path("healthz/", healthz, name="healthz"),
-    # START taken
     path(
         "taken/",
-        taken,
-        name="taken",
+        TakenOverzicht.as_view(),
+        name="taken_overzicht",
     ),
-    path(
-        "taken/filter/",
-        taken_filter,
-        name="taken_filter",
-    ),
-    path(
-        "taken/lijst/",
-        taken_lijst,
-        name="taken_lijst",
-    ),
-    path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
-    path("taak-zoeken/", taak_zoeken, name="taak_zoeken"),
-    path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<uuid:uuid>/", taak_detail, name="taak_detail"),
     path(
         "taak/<uuid:uuid>/melding-tijdlijn",
@@ -136,11 +110,6 @@ urlpatterns = [
     ),
     # END taken
     # sidesheet
-    path(
-        "infosheet-mock/",
-        infosheet_mock,
-        name="infosheet_mock",
-    ),
     path(
         "taaktype/<int:pk>/taakr/", TaakRTaaktypeView.as_view(), name="taaktype_taakr"
     ),

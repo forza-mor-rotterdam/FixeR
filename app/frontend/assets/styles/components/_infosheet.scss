@@ -30,6 +30,7 @@ dialog.infosheet {
 
     &[open] {
         height: 90vh;
+        opacity: 1;
         transform: translate3d(0, 0, 0);
         transition:
             transform $transition-duration-default $transition-ease-default,

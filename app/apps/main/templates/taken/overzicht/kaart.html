@@ -1,0 +1,29 @@
+{% load json_encode from main_tags %}
+{% load rotterdam_formulier_html %}
+<div class="container__map full-width">
+    <div class="container__map-tools">
+        <div class="form__kaart-modus" id="stream_kaart_modus_widget">
+            {% include "taken/overzicht/stream_snippets/stream_kaart_modus_widget.html" %}
+        </div>
+    </div>
+    <div data-controller="taken-kaart"
+         class="map"
+         id="taken_kaart"
+         data-taken-overzicht-target="takenKaart"
+         data-taken-kaart-taken-lijst-outlet="#taken_lijst"
+         data-taken-kaart-taken-overzicht-outlet="#taken_overzicht"
+         data-action="touchstart->taken-kaart#onTwoFingerDrag touchend->taken-kaart#onTwoFingerDrag">
+        <div class="map__overlay">
+            <span>Gebruik twee vingers om de kaart te verplaatsen</span>
+        </div>
+        <button class="btn btn-on-map"
+                data-action="taken-kaart#toggleBuurten"
+                id="buurten-button">
+            <input type="checkbox"
+                   class="form-check-input"
+                   id="buurten-checkbox"
+                   data-action="taken-kaart#toggleBuurten" />
+            <span>Buurten</span>
+        </button>
+    </div>
+</div>

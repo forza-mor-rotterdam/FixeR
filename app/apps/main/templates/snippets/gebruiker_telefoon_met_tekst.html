@@ -1,0 +1,18 @@
+{% if gebruiker %}
+    {% if gebruiker.telefoonnummer %}
+        <dt>{{ tekst }}</dt>
+        <dd>
+            <a href="tel:{{ gebruiker.telefoonnummer }}"
+               target="_blank"
+               class="link link--phone">
+                {% include "icons/phone.svg" %}
+                {{ gebruiker.full_name }}
+            </a>
+        </dd>
+    {% else %}
+        <dt>{{ tekst }}</dt>
+        <dd>
+            {{ gebruiker.full_name }}
+        </dd>
+    {% endif %}
+{% endif %}

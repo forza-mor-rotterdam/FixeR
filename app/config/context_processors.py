@@ -3,6 +3,7 @@ import logging
 from apps.instellingen.models import Instelling
 from apps.main.services import MercureService
 from apps.release_notes.models import ReleaseNote
+from device_detector import DeviceDetector
 from django.conf import settings
 from django.utils import timezone
 from utils.diversen import absolute
@@ -51,7 +52,11 @@ def general_settings(context):
             "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
         )
 
+    ua = context.META.get("HTTP_USER_AGENT", "")
+    device = DeviceDetector(ua).parse()
+
     return {
+        "DEVICE_OS": device.os_name().lower(),
         "UI_SETTINGS": settings.UI_SETTINGS,
         "DEBUG": settings.DEBUG,
         "DEV_SOCKET_PORT": settings.DEV_SOCKET_PORT,

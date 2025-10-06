@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from apps.aliassen.models import MeldingAlias
+from apps.main.templatetags.gebruikers_tags import _get_gebruiker_object_middels_email
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
 from django.conf import settings
@@ -306,8 +307,57 @@ class Taak(BasisModel):
     objects = TaakQuerySet.as_manager()
     acties = TaakManager()
 
+    cached_laatste_taakgebeurtenis = None
+    cached_eerste_taakgebeurtenis = None
+    cached_laatste_taakgebeurtenis_gebruiker = None
+    cached_eerste_taakgebeurtenis_gebruiker = None
+
     def __str__(self) -> str:
         return f"{self.taaktype.omschrijving} - {self.titel}({self.pk})"
+
+    @property
+    def laatste_taakgebeurtenis(self):
+        if not self.cached_laatste_taakgebeurtenis:
+            self.cached_laatste_taakgebeurtenis = (
+                self.taakgebeurtenissen_voor_taak.order_by("-aangemaakt_op").first()
+            )
+        if self.cached_laatste_taakgebeurtenis:
+            return self.cached_laatste_taakgebeurtenis
+
+    @property
+    def eerste_taakgebeurtenis(self):
+        if not self.cached_eerste_taakgebeurtenis:
+            self.cached_eerste_taakgebeurtenis = (
+                self.taakgebeurtenissen_voor_taak.order_by("aangemaakt_op").first()
+            )
+        if self.cached_eerste_taakgebeurtenis:
+            return self.cached_eerste_taakgebeurtenis
+
+    def laatste_taakgebeurtenis_omschrijving_intern(self):
+        if self.laatste_taakgebeurtenis:
+            return self.laatste_taakgebeurtenis.omschrijving_intern
+
+    def laatste_taakgebeurtenis_gebruiker(self):
+        if not self.laatste_taakgebeurtenis:
+            return {}
+        if not self.cached_laatste_taakgebeurtenis_gebruiker:
+            self.cached_laatste_taakgebeurtenis_gebruiker = (
+                _get_gebruiker_object_middels_email(
+                    self.laatste_taakgebeurtenis.gebruiker
+                )
+            )
+        return self.cached_laatste_taakgebeurtenis_gebruiker
+
+    def eerste_taakgebeurtenis_gebruiker(self):
+        if not self.eerste_taakgebeurtenis:
+            return {}
+        if not self.cached_eerste_taakgebeurtenis_gebruiker:
+            self.cached_eerste_taakgebeurtenis_gebruiker = (
+                _get_gebruiker_object_middels_email(
+                    self.eerste_taakgebeurtenis.gebruiker
+                )
+            )
+        return self.cached_eerste_taakgebeurtenis_gebruiker
 
     def get_melding_alias(self):
         self.melding.save()
@@ -330,15 +380,6 @@ class Taak(BasisModel):
             ),
         )
 
-    def adres(self):
-        if not self.taak_zoek_data:
-            return ""
-        if not self.taak_zoek_data.straatnaam:
-            return ""
-        if self.taak_zoek_data.straatnaam and not self.taak_zoek_data.huisnummer:
-            return self.taak_zoek_data.straatnaam
-        return f"{self.taak_zoek_data.straatnaam} {self.taak_zoek_data.huisnummer}{self.taak_zoek_data.huisletter if self.taak_zoek_data.huisletter else ''} {self.taak_zoek_data.toevoeging if self.taak_zoek_data.toevoeging else ''}".strip()
-
     class Meta:
         ordering = ("-aangemaakt_op",)
         verbose_name = "Taak"
@@ -347,7 +388,6 @@ class Taak(BasisModel):
             models.Index(fields=["taakstatus"]),
             models.Index(fields=["taaktype"]),
             models.Index(fields=["melding"]),
-            models.Index(fields=["taak_zoek_data"]),
         ]
 
 

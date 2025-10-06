@@ -1,0 +1,12 @@
+{% if gebruiker %}
+    {% if gebruiker.telefoonnummer %}
+        <a href="tel:{{ gebruiker.telefoonnummer }}"
+           target="_blank"
+           class="link link--phone">
+            {% include "icons/phone.svg" %}
+            {{ gebruiker.full_name }}
+        </a>
+    {% else %}
+        {{ gebruiker.full_name }}
+    {% endif %}
+{% endif %}

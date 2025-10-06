@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load json_encode from main_tags %}
+{% block title %}
+    Taken | FixeR
+{% endblock title %}
+{% block body %}
+    <turbo-frame id="taak_basis" data-turbo-action="advance">
+    <form action="{% url 'taken_overzicht' %}"
+          method="post"
+          class="taken-overzicht"
+          data-controller="taken-overzicht"
+          data-taken-overzicht-taken-kaart-outlet="#taken_kaart"
+          data-taken-overzicht-taken-lijst-outlet="#taken_lijst"
+          data-turbo-frame="false"
+          id="taken_overzicht"
+          data-testid="incidentFilterAllForm">
+        {% csrf_token %}
+        {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+        <div class="page-incidents">
+            <div class="container__header"
+                 data-taken-overzicht-target="containerHeader">
+                <div class="row">
+                    <h1 class="h3">
+                        Taken (<span id="stream_taken_aantal">{{ page_obj.paginator.count }}</span>)
+                    </h1>
+                    <div class="container__controls">
+                        <button type="button"
+                                class="btn btn-secondary btn-sort--small"
+                                data-action="taken-overzicht#onToggleSearchContainer"
+                                aria-label="Toon zoekveld">
+                            <span>{% include "icons/search.svg" %}</span>
+                        </button>
+                        <button type="button"
+                                class="btn btn-secondary btn-sort--small"
+                                data-action="taken-overzicht#onToggleSortingContainer"
+                                aria-label="Sorteer de lijst">
+                            <span>{% include "icons/sort.svg" %}</span>
+                        </button>
+                        {% if request.user.profiel.context.template == "standaard" %}
+                            <button type="button"
+                                    class="btn btn-secondary btn-navigate--small toggle-view"
+                                    data-action="taken-overzicht#toggleMapViewHandler"
+                                    data-taken-overzicht-target="toggleMapView"
+                                    aria-label="Maak route">
+                                {% include "icons/kaart.svg" %}
+                                {% include "icons/lijst.svg" %}
+                            </button>
+                        {% endif %}
+                        <div class="wrapper wrapper--search"
+                             data-taken-overzicht-target="zoekFieldDefaultContainer">
+                            {{ form.q }}
+                            <button class="hide"
+                                    type="button"
+                                    data-taken-overzicht-target="cancelZoek"
+                                    data-action="taken-overzicht#onCancelSearch">
+                                {% include "icons/close.svg" %}
+                            </button>
+                        </div>
+                        <button type="button"
+                                class="btn btn-secondary btn-filter--small"
+                                data-action="taken-overzicht#showFilters">
+                            <span>{% include "icons/filter.svg" %}</span>
+                            <span>Filter</span>
+                            <span class="count count--filter"
+                                  data-taken-overzicht-target="selectedChoicesCount"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="container__list">
+                <div class="container__flex list--navigation-tools">
+                    <div class="container__sorting hidden-vertical"
+                         data-taken-overzicht-target="sorteerOptiesFieldContainer">{{ form.sorteer_opties }}</div>
+                    <div class="container__search hidden-vertical"
+                         data-taken-overzicht-target="zoekFieldContainer"></div>
+                    <div class="list__incidents" id="stream_taken_lijst">{% include "taken/overzicht/lijst.html" %}</div>
+                </div>
+                {% if request.user.profiel.context.template != "benc" %}
+                    {% include "taken/overzicht/kaart.html" %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="full-page-view full-page-view__filters" tabindex="0">
+            <div class="full-page-view__main">
+                <div class="full-page-view__header">
+                    <div class="full-page-view__action_container">
+                        <h2 class="full-page-view__title">Filters</h2>
+                        <button type="button"
+                                class="btn btn-close"
+                                aria-label="Sluit"
+                                data-action="taken-overzicht#hideFilters"></button>
+                    </div>
+                </div>
+                <div class="full-page-view__scroll-pane">
+                    <div class="full-page-view__content">
+                        <div>{% include "taken/overzicht/filter_form.html" %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    </turbo-frame>
+{% endblock body %}

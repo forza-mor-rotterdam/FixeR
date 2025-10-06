@@ -18,18 +18,13 @@ class TaakManager(models.Manager):
 
     def aanmaken(self, serializer, db="default"):
         from apps.aliassen.models import MeldingAlias
-        from apps.taken.models import Taakgebeurtenis, Taakstatus, TaakZoekData
+        from apps.taken.models import Taakgebeurtenis, Taakstatus
 
         with transaction.atomic():
             meldingalias, meldingalias_aangemaakt = MeldingAlias.objects.get_or_create(
                 bron_url=serializer.validated_data.get("melding")
             )
-            taak_zoek_data_instance, _ = TaakZoekData.objects.get_or_create(
-                melding_alias=meldingalias,
-            )
-
             serializer.validated_data["melding"] = meldingalias
-            serializer.validated_data["taak_zoek_data"] = taak_zoek_data_instance
             gebruiker = serializer.validated_data.pop("gebruiker", None)
             omschrijving_intern = serializer.validated_data.pop(
                 "omschrijving_intern", None

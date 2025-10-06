@@ -1,0 +1,100 @@
+{% load l10n %}
+{% load webpack_static from webpack_loader %}
+{% load json_encode replace_comma_by_dot adres_order_nummer from main_tags %}
+{% load mor_core_url mor_core_protected_url from main_tags %}
+<div data-taken-lijst-target="taakItem"
+     data-taken-overzicht-target="taakItem"
+     data-uuid="{{ taak.uuid }}"
+     data-melding-uuid="{{ taak.melding.melding_uuid }}"
+     data-titel="{{ taak.titel }}"
+     data-adres="{{ taak.melding.locatie_verbose }}"
+     data-geometrie="{% if taak.melding.geometrie %}{{ taak.melding.geometrie|json_encode }}{% else %}{% endif %}"
+     {% if taak.melding.thumbnail_afbeelding_relative_url %}data-afbeelding-url="{{ taak.melding.thumbnail_afbeelding_relative_url|mor_core_protected_url }}"{% endif %}
+     {% if taak.laatste_taakgebeurtenis_omschrijving_intern %}data-has-remark="true"{% endif %}
+     {% if taak.melding.locatie_type != "graf" and not taak.afgesloten_op and taak.taaktype.uuid in profiel_taaktype_uuid_list %} data-controller="taak" {% endif %}
+     class="list-item">
+    <div class="wrapper__swipe" data-taak-target="swipeContainer">
+        {% if taak.melding.locatie_type != "graf" and not taak.afgesloten_op and taak.taaktype.uuid in profiel_taaktype_uuid_list %}
+            <button class="container__actions handle--no-success"
+                    data-taak-target="buttonNietOpgelost"
+                    data-action="modal#openModal"
+                    data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=niet_opgelost">
+                <div>
+                    <span>Niet opgelost</span>
+                </div>
+            </button>
+            <button class="container__actions handle--success"
+                    data-taak-target="buttonOpgelost"
+                    data-action="modal#openModal"
+                    data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=opgelost">
+                <div>
+                    <span>Afhandelen</span>
+                </div>
+            </button>
+        {% endif %}
+        <div class="container__flex">
+            <a href="{% url 'taak_detail' taak.uuid %}"
+               aria-label="Bekijk taak {{ taak.uuid }}">
+                <div class="container__image">
+                    <div class="background-image">
+                        {% if taak.melding.thumbnail_afbeelding_relative_url %}
+                            <img data-controller="lazyloader"
+                                 data-src="{{ taak.melding.thumbnail_afbeelding_relative_url|mor_core_protected_url }}"
+                                 alt="afbeelding_verkleind" />
+                        {% else %}
+                            <img class="width60"
+                                 alt="noimage"
+                                 src="{% webpack_static 'icons/noimage.svg' %}" />
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="container__info">
+                    <div>
+                        <h2 class="h5">
+                            {{ taak.melding.locatie_verbose }}
+                            {% if taak.taakstatus.naam %}
+                                <span class="badge {% if taak.taakstatus.naam == 'nieuw' or taak.taakstatus.naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span>
+                            {% endif %}
+                            {% if taak.laatste_taakgebeurtenis_omschrijving_intern %}
+                                <span class="badge-count badge-count--info">i</span>
+                            {% endif %}
+                        </h2>
+                        {% if taak.melding.postcode or taak.melding.plaatsnaam %}
+                            <strong>
+                                {% if taak.melding.postcode %}{{ taak.melding.postcode }}{% endif %}
+                                {% if taak.melding.postcode and taak.melding.plaatsnaam %},{% endif %}
+                                {% if taak.melding.plaatsnaam %}{{ taak.melding.plaatsnaam }}{% endif %}
+                            </strong>
+                        {% endif %}
+                        <div>
+                            <span class="incident__category">{{ taak.titel }}</span>
+                        </div>
+                        <div class="incident__moment">
+                            <span data-taak-target="incidentDate">
+                                {% localize on %}
+                                {{ taak.taakstatus.aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}
+                                <br>
+                            {% endlocalize %}
+                        </span>
+                    </div>
+                    {% with taak.melding.geometrie as geo %}
+                        <div class="incident__distance">
+                            <span>
+                                <span data-taken-overzicht-target="taakAfstand"
+                                      data-latitude="{{ geo.1|replace_comma_by_dot }}"
+                                      data-longitude="{{ geo.0|replace_comma_by_dot }}"></span>&nbsp;meter
+                            </span>
+                        </div>
+                    {% endwith %}
+                </div>
+            </div>
+        </a>
+        {% if taak.melding.geometrie %}
+            <button class="btn btn-icon--clean"
+                    data-taken-lijst-taak-uuid-param="{{ taak.uuid }}"
+                    data-taken-overzicht-code-param=""
+                    data-action="taken-lijst#selectTaakMarker:prevent">{% include "icons/kaart.svg" %}</button>
+        {% endif %}
+    </div>
+</div>
+</div>

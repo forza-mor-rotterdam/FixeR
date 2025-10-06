@@ -6,5 +6,6 @@
 {% block step_content %}
     <h1>Waar ben je van?</h1>
     <p class="text-wrap--balance">Selecteer jouw afdeling(en). Je kunt dit later aanpassen in je filters.</p>
+    {% comment %} {{ wizard.form.afdelingen.as_field_group }} {% endcomment %}
     {{ wizard.form.afdelingen|render_rotterdam_formulier }}
 {% endblock step_content %}

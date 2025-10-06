@@ -1,0 +1,94 @@
+{% load webpack_static from webpack_loader %}
+{% load json_encode strip_html from main_tags %}
+{% load rotterdam_formulier_html %}
+<turbo-stream action="update" target="modal_header_title">
+<template>
+    Taak afhandelen
+</template>
+</turbo-stream>
+<turbo-stream action="update" target="modal_header_subtitle">
+<template>
+    <strong>{{ taak.melding.locatie_verbose }}</strong>
+    <br />
+    {% if taak.titel %}{{ taak.titel|strip_html }}{% endif %}
+</template>
+</turbo-stream>
+{% if taak.laatste_taakgebeurtenis_omschrijving_intern|lower != "taak aangemaakt" and taak.laatste_taakgebeurtenis_omschrijving_intern %}
+    <turbo-stream action="update" target="modal_header_info_extra">
+    <template>
+        <div class='alert alert--info margin-vertical'>
+            <div class='wrapper'>
+                <div class='overflow' tabindex='0' data-controller='overflow'>
+                    <strong>
+                        <span class='badge-count'>i</span>Interne opmerking
+                    </strong>
+                    <div class='container__overflow'>
+                        <p class='content__overflow'>{{ taak.laatste_taakgebeurtenis_omschrijving_intern }}</p>
+                    </div>
+                </div>
+                {% if taak.laatste_taakgebeurtenis_gebruiker %}
+                    <p class='margin-top'>
+                        <a href='mailto:{{ taak.laatste_taakgebeurtenis_gebruiker.email }}'>{{ taak.laatste_taakgebeurtenis_gebruiker.email }}</a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </template>
+    </turbo-stream>
+{% endif %}
+<turbo-stream action="update" target="modal_body">
+<template>
+    <div class="container__form" data-controller="incidentHandleForm">
+        {% include "snippets/messages.html" %}
+        {% if form %}
+            <form action="{% url 'taak_afhandelen' taak.uuid %}"
+                  method="post"
+                  data-testid="handleIncidentForm"
+                  class="form--incident-handle"
+                  data-incidentHandleForm-target="form"
+                  data-turbo-frame="_top"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.errors }}
+                {{ form.bijlagen }}
+                {{ form.resolutie|render_rotterdam_formulier }}
+                <div class="wrapper--flex-order">
+                    <div>
+                        {% if form.nieuwe_taak %}
+                            <h3 class="h5">Moet er nog iets gebeuren?</h3>
+                            <div data-incidentHandleForm-target="newTask">
+                                <div class="list-horizontal">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
+                            </div>
+                        {% endif %}
+                        {% if actieve_vervolg_taken %}
+                            <div class="form-row">
+                                <div class="form-row">
+                                    <h3 class="h5">Reeds openstaande taken voor deze melding</h3>
+                                    <ul>
+                                        {% for vervolg_taak in actieve_vervolg_taken %}<li>{{ vervolg_taak.1 }}</li>{% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="form-control__with-helptext label-strong"
+                         data-incidentHandleForm-target="internalText">
+                        {{ form.omschrijving_intern|render_rotterdam_formulier }}
+                    </div>
+                </div>
+                <div class="form-row" data-incidentHandleForm-target="submitContainer">
+                    <button type="submit"
+                            class="btn btn-action"
+                            data-action="incidentHandleForm#onSubmit"
+                            data-action="modal#closeModal">
+                        <span>Taak afhandelen</span>
+                    </button>
+                    <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
+                        <span>Annuleren</span>
+                    </button>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+</template>
+</turbo-stream>

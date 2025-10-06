@@ -14,7 +14,7 @@
     <div class="full-width">
         {% if bijlagen %}
             <div class="container__imageslider"
-                 data-detail-target="imageSliderContainer"
+                 data-taak-detail-target="imageSliderContainer"
                  data-action="scroll->detail#onScrollSlider">
                 <ul class="list-clean imageslider"
                     style="width: calc(100% * {{ bijlagen|length }})">
@@ -22,9 +22,9 @@
                         <li class="container__image"
                             style="position: relative"
                             id="{{ bijlage.afbeelding_relative_url|mor_core_protected_url }}"
-                            data-detail-target="image"
-                            data-action="click->detail#showImageInModal"
-                            data-detail-image-index-param="{{ forloop.counter|add:'-1' }}"
+                            data-taak-detail-target="image"
+                            data-action="click->taak-detail#showImageInModal"
+                            data-taak-detail-image-index-param="{{ forloop.counter|add:'-1' }}"
                             data-image-data="{{ bijlage|json_encode }}">
                             {% if bijlage.label %}
                                 {% if bijlage.oorsprong != "melder" %}
@@ -36,7 +36,7 @@
                                 </span>
                                 {% endif %}
                             {% endif %}
-                            <img src="{{ bijlage.afbeelding_relative_url|mor_core_protected_url }}"
+                            <img {% if forloop.first %}src="{{ bijlage.afbeelding_relative_url|mor_core_protected_url }}"{% endif %} data-src="{{ bijlage.afbeelding_relative_url|mor_core_protected_url }}"
                                  class="image"
                                  alt="" />
                         </li>
@@ -45,11 +45,11 @@
             </div>
             {% if bijlagen|length > 1 %}
                 <div class="container__thumbs"
-                     data-detail-target="imageSliderThumbContainer">
-                    <ul data-detail-target="thumbList">
+                     data-taak-detail-target="imageSliderThumbContainer">
+                    <ul data-taak-detail-target="thumbList">
                         {% for foto in bijlagen %}
-                            <li data-action="click->detail#selectImage"
-                                data-detail-image-index-param="{{ forloop.counter }}">
+                            <li data-action="click->taak-detail#selectImage"
+                                data-taak-detail-image-index-param="{{ forloop.counter }}">
                                 <div class="container__image">
                                     <img src="{{ foto.afbeelding_verkleind_relative_url|mor_core_protected_url }}"
                                          alt="" />

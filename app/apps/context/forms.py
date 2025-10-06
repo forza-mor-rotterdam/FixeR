@@ -1,5 +1,5 @@
-from apps.context.filters import FilterManager
 from apps.context.models import Context
+from apps.taken.filters import FILTERS_BY_KEY
 from apps.taken.models import Taaktype
 from django import forms
 
@@ -9,7 +9,6 @@ class ContextAanpassenForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(
             attrs={
                 "class": "form-check-input",
-                "data-action": "change->incidentHandleForm#toggleNewTask",
             }
         ),
         queryset=Taaktype.objects.all(),
@@ -30,12 +29,11 @@ class ContextAanpassenForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(
             attrs={
                 "class": "form-check-input",
-                "data-action": "change->incidentHandleForm#toggleNewTask",
             }
         ),
         label="Filters",
         required=False,
-        choices=[(f, f) for f in FilterManager.available_filter_names()],
+        choices=[(f, f) for f in FILTERS_BY_KEY.keys()],
     )
 
     class Meta:
@@ -78,7 +76,6 @@ class TaaktypesForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(
             attrs={
                 "class": "form-check-input",
-                "data-action": "change->incidentHandleForm#toggleNewTask",
             }
         ),
         queryset=Taaktype.objects.all(),

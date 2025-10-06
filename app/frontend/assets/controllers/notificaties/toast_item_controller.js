@@ -6,7 +6,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log(`Connect: ${this.identifier}`)
     this.element.controller = this
     this.manager = null
     if (this.hasNiveauValue) {

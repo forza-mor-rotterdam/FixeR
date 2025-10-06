@@ -6,6 +6,8 @@ from django.contrib.gis.db import models
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
+from rest_framework import serializers
+from rest_framework_gis.fields import GeometryField
 from utils.constanten import BEGRAAFPLAATS_MIDDELS_ID
 from utils.models import BasisModel
 
@@ -44,6 +46,12 @@ class MeldingAlias(BasisModel):
         models.CharField(max_length=500, blank=True), blank=True, null=True
     )
     zoek_tekst = models.TextField(
+        default="",
+        blank=True,
+        null=True,
+    )
+    locatie_verbose = models.CharField(
+        max_length=200,
         default="",
         blank=True,
         null=True,
@@ -114,7 +122,10 @@ class MeldingAlias(BasisModel):
             )
         return locatie_verbose
 
-    def set_zoek_tekst(self):
+    def set_locatie_verbose(self):
+        self.locatie_verbose = self.get_locatie_verbose()
+
+    def get_zoek_tekst(self):
         locatie_zoek_tekst = []
         huisletter = self.huisletter or ""
         huisnummer = self.huisnummer or ""
@@ -131,11 +142,24 @@ class MeldingAlias(BasisModel):
             )
         elif self.locatie_type == "graf":
             locatie_zoek_tekst.append(f"{vak} {grafnummer}".strip())
-        self.zoek_tekst = ",".join(self.bron_signaal_ids + locatie_zoek_tekst)
+        return ",".join(self.bron_signaal_ids + locatie_zoek_tekst)
+
+    def set_zoek_tekst(self):
+        self.zoek_tekst = self.get_zoek_tekst()
+
+    def coordinates(self):
+        melding_serialized = MeldingAliasSerializer(self)
+        return (
+            list(
+                reversed(
+                    melding_serialized.data.get("geometrie", {}).get("coordinates", [])
+                )
+            )
+            if melding_serialized.data.get("geometrie")
+            else None
+        )
 
     def update_zoek_data(self):
-        from apps.taken.models import TaakZoekData
-
         melding = self.response_json
         referentie_locatie = melding.get("referentie_locatie") or {}
         thumbnail_afbeelding = melding.get("thumbnail_afbeelding") or {}
@@ -169,41 +193,19 @@ class MeldingAlias(BasisModel):
         self.lichtmast_id = referentie_locatie.get("lichtmast_id")
 
         self.set_zoek_tekst()
+        self.set_locatie_verbose()
         self.melding_uuid = melding.get("uuid")
-        self.save()
-
-        # Retrieve or create TaakZoekData instance based on the unique identifier
-        taak_zoek_data_instance, _ = TaakZoekData.objects.update_or_create(
-            melding_alias=self,
-            defaults={
-                "geometrie": (
-                    GEOSGeometry(json.dumps(referentie_locatie.get("geometrie")))
-                    if referentie_locatie.get("geometrie")
-                    else None
-                ),
-                "locatie_type": referentie_locatie.get("locatie_type", "adres"),
-                "plaatsnaam": referentie_locatie.get("plaatsnaam"),
-                "straatnaam": referentie_locatie.get("straatnaam"),
-                "huisnummer": referentie_locatie.get("huisnummer"),
-                "huisletter": referentie_locatie.get("huisletter"),
-                "toevoeging": referentie_locatie.get("toevoeging"),
-                "postcode": referentie_locatie.get("postcode"),
-                "wijknaam": referentie_locatie.get("wijknaam"),
-                "buurtnaam": referentie_locatie.get("buurtnaam"),
-                "begraafplaats": referentie_locatie.get("begraafplaats"),
-                "grafnummer": referentie_locatie.get("grafnummer"),
-                "vak": referentie_locatie.get("vak"),
-                "lichtmast_id": referentie_locatie.get("lichtmast_id"),
-                "bron_signaal_ids": bron_signaal_ids,
-            },
-        )
-        # Associate the retrieved TaakZoekData instance with all Taak instances associated with the melding_alias only if the instance is not already set on de taak
-        for taak in self.taken_voor_meldingalias.filter(taak_zoek_data__isnull=True):
-            taak.taak_zoek_data = taak_zoek_data_instance
-            taak.save()
 
     def __str__(self) -> str:
         return self.bron_url
+
+
+class MeldingAliasSerializer(serializers.ModelSerializer):
+    geometrie = GeometryField()
+
+    class Meta:
+        model = MeldingAlias
+        fields = ["geometrie"]
 
 
 class BijlageAlias(BasisModel):

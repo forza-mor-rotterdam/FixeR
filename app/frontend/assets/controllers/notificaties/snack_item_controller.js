@@ -119,6 +119,10 @@ export default class extends Controller {
     })
   }
   sluitSnack() {
-    this.manager.markeerSnackAlsGelezen(this.element.dataset.id, true)
+    if (this.element.dataset.id) {
+      this.manager.markeerSnackAlsGelezen(this.element.dataset.id, true)
+    } else {
+      this.markeerAlsGelezen()
+    }
   }
 }

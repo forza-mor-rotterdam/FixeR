@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 class LoginView(View):
     def get(self, request, *args, **kwargs):
         if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
-            return redirect(reverse("taken"), False)
+            return redirect(reverse("taken_overzicht"), False)
         if request.user.has_perms(["authorisatie.beheer_bekijken"]):
             return redirect(reverse("beheer"), False)
         if request.user.is_authenticated:
@@ -342,7 +342,6 @@ class OnboardingView(SessionWizardView):
 
         profiel.filters = {
             profiel_filters_base_key: {
-                "q": [""],
                 "buurt": buurtnamen,
                 "taken": selected_taaktypes,
                 "taak_status": ["nieuw"],
@@ -352,7 +351,7 @@ class OnboardingView(SessionWizardView):
         profiel.onboarding_compleet = True
         profiel.save()
 
-        return redirect("taken")
+        return redirect("taken_overzicht")
 
     def get_form_kwargs(self, step=None):
         kwargs = super().get_form_kwargs(step)

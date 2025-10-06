@@ -10,14 +10,7 @@ from apps.taken.admin_filters import (
     TaakstatusFilter,
     TitelFilter,
 )
-from apps.taken.models import (
-    Taak,
-    TaakDeellink,
-    Taakgebeurtenis,
-    Taakstatus,
-    Taaktype,
-    TaakZoekData,
-)
+from apps.taken.models import Taak, TaakDeellink, Taakgebeurtenis, Taakstatus, Taaktype
 from apps.taken.tasks import (
     start_update_taakopdracht_data_for_taak_ids,
     task_taakopdracht_notificatie_voor_taak,
@@ -78,7 +71,6 @@ class TaakAdmin(admin.ModelAdmin):
         "aangepast_op",
         "verwijderd_op",
         "taakopdracht",
-        "taak_zoek_data",
     )
     list_editable = ("verwijderd_op",)
     readonly_fields = (
@@ -101,7 +93,6 @@ class TaakAdmin(admin.ModelAdmin):
                     "bericht",
                     "additionele_informatie",
                     "taakopdracht",
-                    "taak_zoek_data",
                 )
             },
         ),
@@ -138,7 +129,6 @@ class TaakAdmin(admin.ModelAdmin):
         "melding",
         "taaktype",
         "taakstatus",
-        "taak_zoek_data",
     )
     actions = [
         "update_taakopdracht_data",
@@ -153,7 +143,6 @@ class TaakAdmin(admin.ModelAdmin):
             "melding",
             "taaktype",
             "taakstatus",
-            "taak_zoek_data",
         )
 
     def taakopdracht_status(self, obj):
@@ -234,42 +223,6 @@ class TakenAantalFilter(admin.SimpleListFilter):
         )
 
 
-class TaakZoekDataAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "aangemaakt_op",
-        "display_geometrie",
-        "melding_alias",
-        "taken_aantal",
-        "straatnaam",
-        "begraafplaats",
-        "bron_signaal_ids",
-    )
-    readonly_fields = ("display_geometrie",)
-    raw_id_fields = ("melding_alias",)
-    list_filter = (TakenAantalFilter,)
-    search_fields = [
-        "melding_alias__bron_url",
-    ]
-
-    def taken_aantal(self, obj):
-        return str(obj.taak.count())
-
-    def display_geometrie(self, obj):
-        # Convert GEOSGeometry to JSON string representation
-        return str(obj.geometrie.geojson) if obj.geometrie else None
-
-    display_geometrie.short_description = "Geometrie (JSON)"  # Customize column header
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.select_related(
-            "melding_alias",
-        ).prefetch_related(
-            "taak",
-        )
-
-
 class TaakgebeurtenisAdmin(admin.ModelAdmin):
     list_display = (
         "id",
@@ -329,7 +282,6 @@ class CustomTaskResultAdmin(TaskResultAdmin):
 admin.site.unregister(TaskResult)
 admin.site.register(TaskResult, CustomTaskResultAdmin)
 
-admin.site.register(TaakZoekData, TaakZoekDataAdmin)
 admin.site.register(Taak, TaakAdmin)
 admin.site.register(Taaktype, TaaktypeAdmin)
 admin.site.register(Taakgebeurtenis, TaakgebeurtenisAdmin)

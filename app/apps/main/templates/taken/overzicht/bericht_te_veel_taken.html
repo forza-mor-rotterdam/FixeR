@@ -1,0 +1,19 @@
+<div class="container__message">
+    <h2>Meer dan 100 taken?!</h2>
+    <div class="alert">
+        <strong>
+            <span class="badge-count">!</span>Let op
+        </strong>
+        <div>
+            Je filter-instellingen zorgen voor meer dan 100 resultaten. Wil je alleen taken zien die voor jou interessant zijn?
+        </div>
+    </div>
+    <button class="btn btn-action" data-action="taken-overzicht#showFilters">Pas je filters aan</button>
+    <a class="btn btn-tertiary"
+       href="{% url 'taken_overzicht' %}?toon_alle_taken=true">Toon toch de hele lijst</a>
+    <p class="center">
+        Heb je FixeR nog niet ingesteld?
+        <br>
+        <a href="{% url 'onboarding' %}" class="" data-turbo-frame="taak_basis">Stel hier je profiel in</a>
+    </p>
+</div>

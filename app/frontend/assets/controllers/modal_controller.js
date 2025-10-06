@@ -1,106 +1,115 @@
 import { Controller } from '@hotwired/stimulus'
+import { renderStreamMessage } from '@hotwired/turbo'
 
 export default class extends Controller {
-  static targets = ['title', 'subTitle', 'infoExtra', 'turboFrame', 'closeModalElement', 'taakItem']
+  static targets = [
+    'modal',
+    'modalSluiten',
+    'template',
+    'dialog',
+    'content',
+    'header',
+    'body',
+    'footer',
+    'kaartLarge',
+    'toplevelContainer',
+  ]
 
-  initialize() {
-    document.body.classList.remove('show-modal')
+  connect() {}
 
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
+  openModal(e) {
+    e.preventDefault()
+    this.abortController = new AbortController()
+    this.params = e.params
+    if (!this.hasTemplateTarget || !this.hasModalTarget) {
+      return
+    }
+    const templateClone = this.getCloneModalTemplate()
+    this.modalTarget.appendChild(templateClone)
+  }
+  fetchModalContent(action) {
+    fetch(action, { signal: this.abortController.signal })
+      .then((response) => response.text())
+      .then((text) => renderStreamMessage(text))
+      .catch(function (err) {
+        console.error(` Err: ${err}`)
+      })
+  }
+  contentTargetConnected() {
+    document.body.classList.add('show-dialog')
+    console.log('CLONE')
+    if (this.params.action) {
+      this.fetchModalContent(this.params.action)
+    } else if (this.params.content) {
+      this.contentTarget.innerHTML = ''
+      this.contentTarget.insertAdjacentHTML('beforeend', this.params.content)
+    }
+
+    this.dialogTarget.showModal()
+    if (this.params.showMap) {
+      document.querySelector('#modal_close_button').blur()
+    }
+
+    this.dialogTarget.addEventListener('cancel', (e) => {
+      e.preventDefault()
+      this.closeModal()
+    })
+    requestAnimationFrame(() => {
+      if (this.params.cssClass) {
+        this.dialogTarget.classList.add(...this.params.cssClass.split(' '))
+      }
+      this.dialogTarget.classList.add('fade-in')
+    })
+
+    this.dialogTarget.addEventListener('click', (event) => {
+      var rect = this.dialogTarget.getBoundingClientRect()
+      var isInDialog =
+        rect.top <= event.clientY &&
+        event.clientY <= rect.top + rect.height &&
+        rect.left <= event.clientX &&
+        event.clientX <= rect.left + rect.width
+
+      if (event.screenX != 0 && event.screenY != 0 && !isInDialog) {
         this.closeModal()
       }
     })
-
-    addEventListener('openModalFromMap', (e) => {
-      if (this.element.closest('.list-item')) {
-        if (this.element.closest('.list-item').dataset.uuid === sessionStorage.selectedTaakId) {
-          this.openModal(e)
-        }
-      }
-    })
+  }
+  getCloneModalTemplate() {
+    return this.templateTarget.content.cloneNode(true)
   }
 
-  closeModalElementTargetConnected(element) {
-    let self = this
-    if (element.dataset.turboFrameId) {
-      let turboElement = document.getElementById(element.dataset.turboFrameId)
-      turboElement.src = element.dataset.turboFrameSrc
-      self.closeModal()
-      turboElement.reload()
-    }
+  turboActionModalTargetConnected(target) {
+    this.turboActionModalTargetClone = target.cloneNode(true)
   }
   closeModal() {
-    let self = this
-    if (self.hasTaakItemTarget) {
-      self.taakItemTarget.classList.remove('active', 'selected')
-      self.taakItemTarget.classList.add('highlight-once')
-      setTimeout(() => {
-        self.taakItemTarget.classList.remove('highlight-once')
-      }, 2000)
+    this.abortController.abort()
+    this.dialogTarget.classList.remove('fade-in')
+    if (this.params.showMap) {
+      this.hideMapLarge()
     }
-    const modalList = self.element.querySelectorAll('.modal')
-    const modalBackdrop = self.element.querySelector('.modal-backdrop')
-    if (self.hasTurboFrameTarget) {
-      self.turboFrameTarget.innerHTML = ''
-    }
-
-    modalList.forEach((modal) => {
-      modal.classList.remove('show')
-    })
-    modalBackdrop.classList.remove('show')
-    document.body.classList.remove('show-modal', 'show-modal--transparent', 'show-navigation')
-
-    window.dispatchEvent(
-      new CustomEvent('closeModal', {
-        bubbles: true,
-        cancelable: false,
-      })
-    )
+    setTimeout(() => {
+      document.body.classList.remove('show-dialog')
+      if (this.hasDialogTarget) {
+        this.dialogTarget.remove()
+      }
+    }, 300)
   }
-  openModal(event) {
-    event.preventDefault()
-    const params = event.params || event.detail.e.params
-    let self = this
+  modalSluitenTargetConnected() {
+    this.closeModal()
+  }
 
-    if (params.taakid) {
-      sessionStorage.setItem('selectedTaakId', params.taakid)
-    }
+  elementContentHeight(elem) {
+    return Array.from(elem.children).reduce((total, elem) => {
+      const style = window.getComputedStyle(elem)
+      const height = ['top', 'bottom']
+        .map(function (side) {
+          return parseInt(style['margin-' + side], 10)
+        })
+        .reduce(function (t, side) {
+          return t + side
+        }, elem.getBoundingClientRect().height)
 
-    if (self.hasTitleTarget) {
-      self.titleTarget.innerHTML = params.title
-    }
-    if (self.hasSubTitleTarget) {
-      if (params.subTitle) {
-        self.subTitleTarget.innerHTML = params.subTitle
-      } else {
-        self.subTitleTarget.style.display = 'none'
-      }
-    }
-    if (self.hasInfoExtraTarget) {
-      if (params.infoExtra) {
-        self.infoExtraTarget.innerHTML = params.infoExtra
-      } else {
-        self.infoExtraTarget.style.display = 'none'
-      }
-    }
-    let modal = this.element.querySelector('.modal')
-    if (self.hasTurboFrameTarget) {
-      self.turboFrameTarget.id = params.id
-      self.turboFrameTarget.src = params.url
-      modal = self.turboFrameTarget.closest('.modal')
-    }
-    const modalBackdrop = modal.querySelector('.modal-backdrop')
-    modal.classList.add('show')
-    modalBackdrop.classList.add('show')
-    let classes = ''
-    if (params && params.type === 'navigation') {
-      classes = 'show-navigation'
-      // used for scrolling to last selected task
-      sessionStorage.removeItem('selectedTaakId')
-    } else {
-      classes = 'show-modal'
-    }
-    document.body.classList.add(classes)
+      return (total += height)
+    }, 0)
   }
 }

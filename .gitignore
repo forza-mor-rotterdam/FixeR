@@ -20,3 +20,5 @@ yarn-error.log
 media/**/*
 bijlagen/**/*
 app/*.log
+**/.bash_history
+**/.python_history

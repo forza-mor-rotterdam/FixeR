@@ -1,9 +1,6 @@
-from datetime import timedelta
-
 import celery
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from django.utils import timezone
 
 logger = get_task_logger(__name__)
 
@@ -41,38 +38,6 @@ def task_maak_bijlagealias(self, bijlage_url, taakgebeurtenis_id):
     return f"BijlageAlias id: {bijlage_instance.pk}"
 
 
-@shared_task(bind=True, base=BaseTaskWithRetry)
-def task_update_melding_alias_data_for_all_meldingen(self, cache_timeout=0):
-    from apps.aliassen.models import MeldingAlias
-
-    if not isinstance(cache_timeout, int):
-        cache_timeout = 0
-
-    datetime_to_update = timezone.now() - timedelta(seconds=cache_timeout)
-    all_melding_alias_items = MeldingAlias.objects.all()
-    melding_alias_items_for_update = all_melding_alias_items.filter(
-        aangepast_op__lte=datetime_to_update
-    )
-    for melding_alias in melding_alias_items_for_update:
-        melding_alias.valideer_bron_url()
-        melding_alias.save()
-        melding_alias.update_zoek_data()
-
-    return f"updated/totaal={melding_alias_items_for_update.count()}/{all_melding_alias_items.count()}"
-
-
-def _update_melding_alias_data(melding_alias_id):
-    from apps.aliassen.models import MeldingAlias
-
-    melding_alias = MeldingAlias.objects.filter(pk=melding_alias_id).first()
-    if melding_alias:
-        melding_alias.valideer_bron_url()
-        melding_alias.save()
-        melding_alias.update_zoek_data()
-
-    return f"MeldingAlias with id={melding_alias_id}, updated"
-
-
 @shared_task(bind=True)
 def task_update_melding_alias_data_voor_reeks(
     self, start_index=None, eind_index=None, order_by="id", meldingalias_ids=[]
@@ -89,6 +54,22 @@ def task_update_melding_alias_data_voor_reeks(
     return f"Haal melding data en update melding alias fields voor indexes, start_index={start_index}, eind_index={eind_index}, meldingalias_ids={len(meldingalias_ids)}"
 
 
+@shared_task(bind=True)
+def task_update_melding_zoek_data_voor_reeks(
+    self, start_index=None, eind_index=None, order_by="id", meldingalias_ids=[]
+):
+    from apps.aliassen.models import MeldingAlias
+
+    if not meldingalias_ids:
+        meldingalias_ids = list(
+            MeldingAlias.objects.order_by(order_by).values_list("id", flat=True)
+        )[start_index:eind_index]
+    for meldingalias_id in meldingalias_ids:
+        task_update_melding_zoek_data.delay(meldingalias_id)
+
+    return f"Update melding zoek & filter data voor indexes, start_index={start_index}, eind_index={eind_index}, meldingalias_ids={len(meldingalias_ids)}"
+
+
 @shared_task(bind=True, base=BaseTaskWithRetryBackoff)
 def task_update_melding_alias_data(self, meldingalias_id):
     from apps.aliassen.models import MeldingAlias
@@ -98,9 +79,23 @@ def task_update_melding_alias_data(self, meldingalias_id):
         meldingalias.valideer_bron_url()
         meldingalias.save()
         meldingalias.update_zoek_data()
+        meldingalias.save()
     else:
         return f"Warning: MeldingAlias niet gevonden o.b.v. meldingalias_id '{meldingalias_id}'"
-    return f"MeldingAlias with id={meldingalias_id}, updated"
+    return f"MeldingAlias data with id={meldingalias_id}, updated"
+
+
+@shared_task(bind=True, base=BaseTaskWithRetryBackoff)
+def task_update_melding_zoek_data(self, meldingalias_id):
+    from apps.aliassen.models import MeldingAlias
+
+    meldingalias = MeldingAlias.objects.filter(pk=meldingalias_id).first()
+    if meldingalias:
+        meldingalias.update_zoek_data()
+        meldingalias.save()
+    else:
+        return f"Warning: MeldingAlias niet gevonden o.b.v. meldingalias_id '{meldingalias_id}'"
+    return f"MeldingAlias zoek data with id={meldingalias_id}, updated"
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)

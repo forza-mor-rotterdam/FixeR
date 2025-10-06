@@ -1,0 +1,13 @@
+{# djlint:off #}
+{% if enable_stream %}
+    <turbo-stream action="{% block action %}{{ action }}{% endblock action %}" target="{% block target %}{{ target }}{% endblock target %}">
+    <template>
+{% endif %}
+
+{% block content %}{% endblock content %}
+
+{% if enable_stream %}
+    </template>
+    </turbo-stream>
+{% endif %}
+{# djlint:on #}

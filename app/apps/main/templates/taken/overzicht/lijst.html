@@ -1,0 +1,24 @@
+{% comment %} {% extends "base.html" %} {% endcomment %}
+{% load webpack_static from webpack_loader %}
+{% load json_encode from main_tags %}
+{% load context_template from context_tags %}
+<div class="list__incidents__scroll-wrapper"
+     id="taken_lijst"
+     data-controller="taken-lijst"
+     data-taken-lijst-selected-taak-uuid-value="{{ selected_taak.uuid }}"
+     data-taken-lijst-taken-kaart-outlet="#taken_kaart">
+    {% if page_obj.paginator.count %}
+        {% if page_obj.paginator.count > 100 and not request.session.toon_alle_taken %}
+            {% include "taken/overzicht/bericht_te_veel_taken.html" %}
+        {% else %}
+            {% for taak in page_obj %}
+                {% include "taken/overzicht/taak_lijst_item.html" %}
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        {% include "taken/overzicht/bericht_te_weinig_taken.html" %}
+    {% endif %}
+</div>
+{% if request.session.toon_alle_taken or page_obj.paginator.count <= 100 %}
+    {% include "snippets/paginator.html" with page_obj=page_obj %}
+{% endif %}
