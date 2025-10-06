@@ -50,22 +50,24 @@
                         <div data-taken-overzicht-target="zoekFieldDefaultContainer">
                             <div class="wrapper wrapper--search-group"
                                  data-taken-overzicht-target="zoekFieldset">
-                                {{ form.filters_active.as_field_group }}
                                 <div class="wrapper wrapper--search">
-                                    {{ form.q }}
-                                    <button class="hide"
+                                    <div class="wrapper--close">
+                                        {{ form.q }}
+                                        <button class="hide btn--close"
+                                                type="button"
+                                                data-taken-overzicht-target="cancelZoek"
+                                                data-action="taken-overzicht#onCancelSearch">
+                                            {% include "icons/close.svg" %}
+                                        </button>
+                                    </div>
+                                    <button class="btn btn-secondary btn--search"
                                             type="button"
-                                            data-taken-overzicht-target="cancelZoek"
-                                            data-action="taken-overzicht#onCancelSearch">
-                                        {% include "icons/close.svg" %}
+                                            data-taken-overzicht-target="zoekButton"
+                                            data-action="taken-overzicht#onZoekButtonClick">
+                                        <span>Zoek</span>
                                     </button>
                                 </div>
-                                <button class="btn btn-secondary btn-filter--small"
-                                        type="button"
-                                        data-taken-overzicht-target="zoekButton"
-                                        data-action="taken-overzicht#onZoekButtonClick">
-                                    <span>Zoek</span>
-                                </button>
+                                {{ form.filters_active.as_field_group }}
                             </div>
                         </div>
                         <button type="button"
