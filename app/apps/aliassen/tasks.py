@@ -40,13 +40,22 @@ def task_maak_bijlagealias(self, bijlage_url, taakgebeurtenis_id):
 
 @shared_task(bind=True)
 def task_update_melding_alias_data_voor_reeks(
-    self, start_index=None, eind_index=None, order_by="id", meldingalias_ids=[]
+    self,
+    start_index=None,
+    eind_index=None,
+    order_by="id",
+    filters={},
+    meldingalias_ids=[],
 ):
     from apps.aliassen.models import MeldingAlias
 
     if not meldingalias_ids:
         meldingalias_ids = list(
-            MeldingAlias.objects.order_by(order_by).values_list("id", flat=True)
+            MeldingAlias.objects.order_by(
+                *[order_key.strip(" ") for order_key in order_by.split(",")]
+            )
+            .filter(**filters)
+            .values_list("id", flat=True)
         )[start_index:eind_index]
     for meldingalias_id in meldingalias_ids:
         task_update_melding_alias_data.delay(meldingalias_id)
@@ -56,13 +65,22 @@ def task_update_melding_alias_data_voor_reeks(
 
 @shared_task(bind=True)
 def task_update_melding_zoek_data_voor_reeks(
-    self, start_index=None, eind_index=None, order_by="id", meldingalias_ids=[]
+    self,
+    start_index=None,
+    eind_index=None,
+    order_by="id",
+    filters={},
+    meldingalias_ids=[],
 ):
     from apps.aliassen.models import MeldingAlias
 
     if not meldingalias_ids:
         meldingalias_ids = list(
-            MeldingAlias.objects.order_by(order_by).values_list("id", flat=True)
+            MeldingAlias.objects.order_by(
+                *[order_key.strip(" ") for order_key in order_by.split(",")]
+            )
+            .filter(**filters)
+            .values_list("id", flat=True)
         )[start_index:eind_index]
     for meldingalias_id in meldingalias_ids:
         task_update_melding_zoek_data.delay(meldingalias_id)
