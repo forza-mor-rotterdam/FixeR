@@ -187,7 +187,7 @@ class TakenOverzicht(
         queryset = super().get_queryset()
         profiel = self.request.user.profiel
 
-        if self.request.session.get("filters_active"):
+        if not self.request.session.get("deactivate_filters"):
             queryset = queryset.filter(**profiel.taken_filter_query_data)
         queryset = queryset.taken_zoeken(self.request.session.get("q"))
 
@@ -226,7 +226,9 @@ class TakenOverzicht(
         self.initial["q"] = self.request.session.get("q")
         if self.request.session.get("gps"):
             del self.request.session["gps"]
-        self.initial["filters_active"] = self.request.session.get("filters_active")
+        self.initial["deactivate_filters"] = self.request.session.get(
+            "deactivate_filters"
+        )
 
         self.initial["kaart_modus"] = self.request.user.profiel.ui_instellingen.get(
             "kaart_modus", "toon_alles"
@@ -290,6 +292,9 @@ def taak_detail(request, uuid):
             "taakdeellinks_bezoekers": [
                 b for link in taakdeellinks for b in link.bezoekers
             ],
+            "profiel_taaktype_uuid_list": list(
+                request.user.profiel.taaktypes.values_list("uuid", flat=True)
+            ),
         },
     )
 

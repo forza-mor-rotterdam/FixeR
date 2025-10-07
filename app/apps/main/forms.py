@@ -156,14 +156,14 @@ class TakenLijstFilterForm(forms.Form):
         ),
         required=False,
     )
-    filters_active = BooleanField(
+    deactivate_filters = BooleanField(
         widget=CheckboxInput(
             attrs={
                 "data-action": "taken-overzicht#onFiltersActiveChangeHandler",
                 "data-taken-overzicht-target": "filtersActiveField",
             },
         ),
-        label="zoeken met filters",
+        label="Zoeken in alle taken",
         required=False,
     )
     sorteer_opties = forms.ChoiceField(
@@ -260,7 +260,7 @@ class TakenLijstFilterForm(forms.Form):
                 "q",
                 "page",
                 "gps",
-                "filters_active",
+                "deactivate_filters",
             ]
             if hasattr(self, f"{field}_changed")
         }
@@ -285,9 +285,9 @@ class TakenLijstFilterForm(forms.Form):
         self.q_changed = data.get("q") != self.request.session.get("q")
         self.page_changed = data.get("page", "") != self.request.session.get("page", "")
         self.gps_changed = data.get("gps", "") != self.request.session.get("gps", "")
-        self.filters_active_changed = data.get(
-            "filters_active"
-        ) != self.request.session.get("filters_active")
+        self.deactivate_filters_changed = data.get(
+            "deactivate_filters"
+        ) != self.request.session.get("deactivate_filters")
 
         # update profiel fields
         profiel.filters.update({status: actieve_filters})
@@ -301,4 +301,4 @@ class TakenLijstFilterForm(forms.Form):
         self.request.session["q"] = data.get("q", "")
         self.request.session["page"] = data.get("page", "")
         self.request.session["gps"] = data.get("gps", "")
-        self.request.session["filters_active"] = data.get("filters_active", "")
+        self.request.session["deactivate_filters"] = data.get("deactivate_filters", "")

@@ -34,9 +34,20 @@
                         <div class="taak-detail">
                             <div class="container__header-taaknavigatie">
                                 {% include "taken/taak_detail_header.html" %}
+                                {% if not taak.taaktype.uuid in profiel_taaktype_uuid_list %}
+                                    <div class="cover-header read-only">
+                                        <h3>
+                                            {% include "icons/eye.svg" %}
+                                            Read only weergave
+                                        </h3>
+                                        <p>Deze taak valt buiten je profiel en kun je om die reden alleen inzien maar niet afronden.</p>
+                                    </div>
+                                {% endif %}
                                 {% include "taken/taak_detail_images.html" %}
                                 {% include "taken/taak_detail_foldouts.html" %}
-                                {% include "taken/taak_detail_buttons.html" %}
+                                {% if taak.taaktype.uuid in profiel_taaktype_uuid_list %}
+                                    {% include "taken/taak_detail_buttons.html" %}
+                                {% endif %}
                             </div>
                         </div>
                         {% include "snippets/modal_images.html" %}

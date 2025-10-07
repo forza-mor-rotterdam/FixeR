@@ -42,6 +42,9 @@
                 margin-left: $input-padding-y;
                 max-width: 37px;
 
+                &--search {
+                    font-weight: 700;
+                }
                 span {
                     display: inline-block;
                 }
@@ -187,10 +190,15 @@
             }
         }
         @media (min-width: map-get($grid-breakpoints, lg)) {
-            display: block;
-
+            gap: 0;
+            margin-right: 20px;
+            margin-bottom: 10px;
             input[type="search"] {
                 width: 350px;
+            }
+
+            .btn--search {
+                min-width: 70px;
             }
         }
     }

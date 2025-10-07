@@ -69,6 +69,11 @@ export default class extends Controller {
         })
       }, 800)
     }
+
+    if (this.filtersActiveFieldTarget.checked) {
+      this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
+      this.zoekFieldContainerTarget.classList.add('show-vertical')
+    }
   }
   clearSelectedTaakUuidField() {
     this.selectedTaakUuidFieldTarget.value = ''
@@ -200,9 +205,9 @@ export default class extends Controller {
       this.zoekFieldContainerTarget.classList.toggle('show-vertical')
       if (
         this.zoekFieldContainerTarget.classList.contains('hidden-vertical') &&
-        !this.filtersActiveFieldTarget.checked
+        this.filtersActiveFieldTarget.checked
       ) {
-        this.filtersActiveFieldTarget.checked = true
+        this.filtersActiveFieldTarget.checked = false
         this.submit()
       }
     }

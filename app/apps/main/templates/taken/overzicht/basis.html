@@ -67,7 +67,7 @@
                                         <span>Zoek</span>
                                     </button>
                                 </div>
-                                {{ form.filters_active.as_field_group }}
+                                {{ form.deactivate_filters.as_field_group }}
                             </div>
                         </div>
                         <button type="button"
@@ -83,7 +83,7 @@
             </div>
             <div class="container__list">
                 <div class="container__flex list--navigation-tools">
-                    <div class="container__sorting hidden-vertical"
+                    <div class="container__sorting {% if form.deactivate_filters %}hidden-vertical{% else %}show-vertical{% endif %}"
                          data-taken-overzicht-target="sorteerOptiesFieldContainer">{{ form.sorteer_opties }}</div>
                     <div class="container__search hidden-vertical"
                          data-taken-overzicht-target="zoekFieldContainer"></div>
