@@ -271,7 +271,6 @@ class CustomTaskResultAdmin(TaskResultAdmin):
         "status",
         "date_created",
         "date_done",
-        "periodic_task_name",
         "task_name",
     )
     actions = [

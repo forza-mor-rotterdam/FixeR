@@ -4,6 +4,7 @@ export default class extends Controller {
   static values = {
     disableSumbitOnInvalid: String,
   }
+  static targets = ['uploadMaxMessage']
   connect() {
     //clear the filelist
     this.temp_files = {}
@@ -11,6 +12,7 @@ export default class extends Controller {
     this.fileInput = this.element.querySelector("input[type='file']")
     this.multiple = this.fileInput.hasAttribute('multiple')
     this.accept = this.fileInput.getAttribute('accept')
+    this.maxBitSize = 31457280
   }
 
   removeDuplicates(arr) {
@@ -28,11 +30,16 @@ export default class extends Controller {
     inputContainer.classList.toggle('hidden')
   }
 
-  removeFile(e) {
-    const index = e.params.index
+  removeFileHandler(e) {
+    this.removeFile(e.params.index)
+    this.updateImageDisplay(false)
+  }
+  removeFile(index) {
     const input = this.fileInput
-    this.temp_filesArr = [...this.temp_files]
-    this.temp_filesArr.splice(index, 1)
+
+    this.temp_filesArr = [...this.temp_files].filter((v, i) =>
+      Array.isArray(index) ? !index.includes(i) : i != index
+    )
 
     /** Code from: https://stackoverflow.com/a/47172409/8145428 */
     const dT =
@@ -44,8 +51,6 @@ export default class extends Controller {
     }
     this.temp_files = dT.files
     input.files = dT.files
-
-    this.updateImageDisplay(false)
   }
 
   addFiles(newFiles) {
@@ -117,7 +122,10 @@ export default class extends Controller {
       const list = document.createElement('ul')
       list.classList.add('list-clean')
       preview.appendChild(list)
-
+      let totalSize = 0
+      let validFilesCount = 0
+      let totalCount = 0
+      let removeIndexes = []
       for (const [index, file] of [...this.temp_files].entries()) {
         const listItem = document.createElement('li')
         const content = document.createElement('span')
@@ -126,11 +134,14 @@ export default class extends Controller {
         span.classList.add('container__image')
 
         remove.setAttribute('type', 'button')
-        remove.setAttribute('data-action', 'bijlagen#removeFile')
+        remove.setAttribute('data-action', 'bijlagen#removeFileHandler')
         remove.setAttribute('data-bijlagen-index-param', index)
         remove.classList.add('btn-close')
 
-        if (validFileType(file)) {
+        totalSize += file.size
+        totalCount++
+        if (validFileType(file) && totalSize <= this.maxBitSize) {
+          validFilesCount++
           content.innerHTML = `${file.name} <small>${returnFileSize(file.size)}</small>`
           if (file.type === 'image/heic') {
             const placeholder = document.createElement('div')
@@ -153,14 +164,32 @@ export default class extends Controller {
             submitButton.disabled = false
           }
         } else {
-          content.textContent = `Het bestand "${file.name}" is geen geldig bestandstype."`
-          listItem.appendChild(content)
+          removeIndexes.push(index)
+          if (!validFileType(file)) {
+            content.textContent = `Het bestand "${file.name}" is geen geldig bestandstype."`
+            listItem.appendChild(content)
+            totalSize -= file.size
+          }
           if (submitButton && this.disableSumbitOnInvalidValue) {
             submitButton.disabled = true
           }
         }
-        list.appendChild(listItem)
+        if (totalSize <= this.maxBitSize) {
+          list.appendChild(listItem)
+        }
       }
+      console.log('')
+      console.log(totalSize, this.maxBitSize, totalSize <= this.maxBitSize)
+      this.removeFile(removeIndexes)
+      const countDiff = totalCount - validFilesCount
+      this.uploadMaxMessageTarget.textContent =
+        totalSize > this.maxBitSize
+          ? `${countDiff} van de ${totalCount} foto's ${
+              countDiff > 1 ? 'kunnen' : 'kan'
+            } niet worden verstuurd. Je kan maximaal 30MB aan foto's verzenden! Verminder het aantal foto's of verklein ze. Het totaal van 6 foto's was, ${returnFileSize(
+              totalSize
+            )}.`
+          : ''
     }
   }
 }
