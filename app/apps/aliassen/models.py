@@ -77,6 +77,7 @@ class MeldingAlias(BasisModel):
             models.Index(fields=["wijknaam"]),
             models.Index(fields=["buurtnaam"]),
             models.Index(fields=["begraafplaats"]),
+            models.Index(fields=["locatie_verbose"]),
             GinIndex(fields=["bron_signaal_ids"]),
         ]
 
