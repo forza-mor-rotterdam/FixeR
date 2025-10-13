@@ -64,6 +64,10 @@ class Taakgebeurtenis(BasisModel):
         verbose_name = "Taakgebeurtenis"
         verbose_name_plural = "Taakgebeurtenissen"
 
+        indexes = [
+            models.Index(fields=["aangemaakt_op"]),
+        ]
+
 
 class Taaktype(BasisModel):
     omschrijving = models.CharField(max_length=200)
@@ -191,6 +195,11 @@ class Taakstatus(BasisModel):
         ordering = ("-aangemaakt_op",)
         verbose_name = "Taakstatus"
         verbose_name_plural = "Taakstatussen"
+
+        indexes = [
+            models.Index(fields=["naam"]),
+            models.Index(fields=["aangemaakt_op"]),
+        ]
 
 
 LOCATIE_TYPE_CHOICES = (
@@ -385,6 +394,8 @@ class Taak(BasisModel):
         verbose_name = "Taak"
         verbose_name_plural = "Taken"
         indexes = [
+            models.Index(fields=["aangemaakt_op"]),
+            models.Index(fields=["verwijderd_op"]),
             models.Index(fields=["taakstatus"]),
             models.Index(fields=["taaktype"]),
             models.Index(fields=["melding"]),
