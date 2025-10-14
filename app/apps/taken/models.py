@@ -199,6 +199,12 @@ class Taakstatus(BasisModel):
         indexes = [
             models.Index(fields=["naam"]),
             models.Index(fields=["aangemaakt_op"]),
+            models.Index(
+                fields=["aangemaakt_op", "naam"], name="aangemaakt_op__naam_idx"
+            ),
+            models.Index(
+                fields=["naam", "aangemaakt_op"], name="naam__aangemaakt_op_idx"
+            ),
         ]
 
 
