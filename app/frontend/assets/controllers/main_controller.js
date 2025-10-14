@@ -8,6 +8,7 @@ export default class extends Controller {
   initialize() {
     this.takenLijst = null
     this.detail = null
+    this.lastPositionTimestamp = Date.now()
     this.positionWatchOptions = {
       enableHighAccuracy: true,
       timeout: 5000,
@@ -78,9 +79,11 @@ export default class extends Controller {
       )
       distance = myLocation.distanceTo([position.coords.latitude, position.coords.longitude])
     }
-    if (!this.currentPosition || distance > 5) {
-      console.log(`Afstand tot vorige positie: ${distance}m`)
+    const elapsedSeconds = Math.floor((Date.now() - this.lastPositionTimestamp) / 1000)
+    if (!this.currentPosition || (distance > 5 && elapsedSeconds > 10)) {
+      console.log(`Afstand tot vorige positie: ${distance}m, na ${elapsedSeconds} seconden`)
       this.currentPosition = position
+      this.lastPositionTimestamp = Date.now()
       this.positionWatchSuccess()
     }
   }
