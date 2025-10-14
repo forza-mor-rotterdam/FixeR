@@ -1,5 +1,7 @@
 import logging
 
+from apps.frontend.fields import BooleanField
+from apps.frontend.widgets import CheckboxInput
 from apps.taken.filters import FILTERS
 from apps.taken.models import Taak
 from deepdiff import DeepDiff
@@ -154,6 +156,16 @@ class TakenLijstFilterForm(forms.Form):
         ),
         required=False,
     )
+    deactivate_filters = BooleanField(
+        widget=CheckboxInput(
+            attrs={
+                "data-action": "taken-overzicht#onFiltersActiveChangeHandler",
+                "data-taken-overzicht-target": "filtersActiveField",
+            },
+        ),
+        label="Zoeken in alle taken",
+        required=False,
+    )
     sorteer_opties = forms.ChoiceField(
         widget=forms.Select(
             attrs={
@@ -248,6 +260,7 @@ class TakenLijstFilterForm(forms.Form):
                 "q",
                 "page",
                 "gps",
+                "deactivate_filters",
             ]
             if hasattr(self, f"{field}_changed")
         }
@@ -272,6 +285,9 @@ class TakenLijstFilterForm(forms.Form):
         self.q_changed = data.get("q") != self.request.session.get("q")
         self.page_changed = data.get("page", "") != self.request.session.get("page", "")
         self.gps_changed = data.get("gps", "") != self.request.session.get("gps", "")
+        self.deactivate_filters_changed = data.get(
+            "deactivate_filters"
+        ) != self.request.session.get("deactivate_filters")
 
         # update profiel fields
         profiel.filters.update({status: actieve_filters})
@@ -285,3 +301,4 @@ class TakenLijstFilterForm(forms.Form):
         self.request.session["q"] = data.get("q", "")
         self.request.session["page"] = data.get("page", "")
         self.request.session["gps"] = data.get("gps", "")
+        self.request.session["deactivate_filters"] = data.get("deactivate_filters", "")
