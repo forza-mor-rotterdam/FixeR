@@ -75,6 +75,20 @@ export default class extends Controller {
       this.zoekFieldContainerTarget.classList.add('show-vertical')
     }
   }
+  keydownHandler(e) {
+    // Check if Enter was pressed without Shift, Ctrl, Alt, Caps
+    if (
+      e.key === 'Enter' &&
+      !e.shiftKey &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      !e.capsLockKey &&
+      document.activeElement === this.zoekFieldTarget
+    ) {
+      e.preventDefault()
+      this.submit()
+    }
+  }
   clearSelectedTaakUuidField() {
     this.selectedTaakUuidFieldTarget.value = ''
   }

@@ -146,6 +146,8 @@ class TakenOverzicht(
         self.initial = {}
         self.form_data = {}
         self.initial_filter_data = None
+        if self.request.session.get("gps"):
+            del self.request.session["gps"]
         return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -224,14 +226,8 @@ class TakenOverzicht(
 
         self.initial.update(self.request.user.profiel.taken_filter_validated_data)
         self.initial["q"] = self.request.session.get("q")
-        if self.request.session.get("gps"):
-            del self.request.session["gps"]
         self.initial["deactivate_filters"] = self.request.session.get(
             "deactivate_filters"
-        )
-
-        self.initial["kaart_modus"] = self.request.user.profiel.ui_instellingen.get(
-            "kaart_modus", "toon_alles"
         )
         self.initial["sorteer_opties"] = self.request.user.profiel.ui_instellingen.get(
             "sortering", "Adres-reverse"

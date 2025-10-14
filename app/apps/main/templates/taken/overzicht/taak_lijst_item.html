@@ -18,6 +18,7 @@
             <button class="container__actions handle--no-success"
                     data-taak-target="buttonNietOpgelost"
                     data-action="modal#openModal"
+                    disabled="true"
                     data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=niet_opgelost">
                 <div>
                     <span>Niet opgelost</span>
@@ -26,6 +27,7 @@
             <button class="container__actions handle--success"
                     data-taak-target="buttonOpgelost"
                     data-action="modal#openModal"
+                    disabled="true"
                     data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=opgelost">
                 <div>
                     <span>Afhandelen</span>
