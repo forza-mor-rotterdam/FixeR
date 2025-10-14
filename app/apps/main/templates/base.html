@@ -76,7 +76,7 @@
                 {% endwith %}
             {% endblock pageheader %}
         {% endif %}
-        {% if request.user.is_authenticated and request.user.user_permissions.all or request.user.is_superuser %}
+        {% if request.user.is_authenticated and request.user.groups.count or request.user.is_superuser %}
             <turbo-frame src="{% url 'snack_lijst' %}" id="tf_snack_lijst">
             </turbo-frame>
             <turbo-frame src="{% url 'toast_lijst' %}" id="tf_toast_lijst"></turbo-frame>
