@@ -80,7 +80,7 @@ export default class extends Controller {
       distance = myLocation.distanceTo([position.coords.latitude, position.coords.longitude])
     }
     const elapsedSeconds = Math.floor((Date.now() - this.lastPositionTimestamp) / 1000)
-    if (!this.currentPosition || (distance > 5 && elapsedSeconds > 10)) {
+    if (!this.currentPosition || (distance > 5 && elapsedSeconds > 15)) {
       console.log(`Afstand tot vorige positie: ${distance}m, na ${elapsedSeconds} seconden`)
       this.currentPosition = position
       this.lastPositionTimestamp = Date.now()
