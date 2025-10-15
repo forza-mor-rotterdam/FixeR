@@ -227,3 +227,9 @@ class Profiel(BasisModel):
     @property
     def taken_sorting(self):
         return self.ui_instellingen.get("sortering", DATUM_REVERSE_SORTING_KEY)
+
+    @property
+    def wijken_or_taaktypes_empty(self):
+        buurt_empty = not self.wijken or all(not wijk for wijk in self.wijken)
+        taken_empty = not self.taaktypes.exists()
+        return buurt_empty or taken_empty
