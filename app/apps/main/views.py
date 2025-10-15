@@ -148,6 +148,13 @@ class TakenOverzicht(
         self.initial_filter_data = None
         if self.request.session.get("gps"):
             del self.request.session["gps"]
+
+        if (
+            not request.user.profiel.onboarding_compleet
+            or request.user.profiel.wijken_or_taaktypes_empty
+        ) and request.user.profiel.context.template != "benc":  # Skip onboarding if B&C
+            return redirect(reverse("onboarding"), False)
+
         return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
