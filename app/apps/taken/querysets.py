@@ -51,6 +51,7 @@ class TaakQuerySet(QuerySet):
                 "melding__buurtnaam",
                 "melding__begraafplaats",
                 "melding__grafnummer",
+                "melding__locatie_verbose",
                 "melding__vak",
                 "melding__thumbnail_afbeelding_relative_url",
             )
@@ -79,8 +80,3 @@ class TaakQuerySet(QuerySet):
         for term in cleaned_search_terms:
             combined_q &= Q(melding__zoek_tekst__icontains=term)
         return self.filter(combined_q).distinct()
-
-    def get_taken_recent(self, user):
-        return self.filter(
-            verwijderd_op__isnull=True,
-        ).order_by("-aangemaakt_op")

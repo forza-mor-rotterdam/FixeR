@@ -154,3 +154,12 @@ def laatste_slug_van_url(url):
     stripped_url = qs_removed_from_url.strip("/")
     last_part_from_url = stripped_url.split("/")[-1]
     return last_part_from_url
+
+
+@register.simple_tag(takes_context=True)
+def profiel_includes_taak(context, taak, profiel):
+    return profiel.includes_taak(
+        taak,
+        context.get("WIJKCODE_BY_WIJKNAAM", {}),
+        context.get("PROFIEL_TAAKTYPE_UUIDS", []),
+    )
