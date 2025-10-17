@@ -81,17 +81,18 @@ class TaaktypeFilter(StandaardFilter):
     _filter_lookup = "taaktype__id__in"
     _label = "Taak"
 
-    def flat_choices(self):
-        return [
-            f"{taaktype['id']}"
-            for taaktype in self._profiel.get_taaktypes().values("id", "omschrijving")
-        ]
-
-    def choices(self):
-        return [
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._cached_choices = [
             (f"{taaktype['id']}", taaktype["omschrijving"])
             for taaktype in self._profiel.get_taaktypes().values("id", "omschrijving")
         ]
+
+    def flat_choices(self):
+        return [taaktype[0] for taaktype in self._cached_choices]
+
+    def choices(self):
+        return self._cached_choices
 
 
 class TaakStatusFilter(StandaardFilter):

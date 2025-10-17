@@ -186,7 +186,7 @@ export default class extends Controller {
         totalSize > this.maxBitSize
           ? `${countDiff} van de ${totalCount} foto's ${
               countDiff > 1 ? 'kunnen' : 'kan'
-            } niet worden verstuurd. Je kan maximaal 30MB aan foto's verzenden! Verminder het aantal foto's of verklein ze. Het totaal van 6 foto's was, ${returnFileSize(
+            } niet worden verstuurd. Je kan maximaal 30MB aan foto's verzenden! Verminder het aantal foto's of verklein ze. Het totaal van ${totalCount} foto's was, ${returnFileSize(
               totalSize
             )}.`
           : ''
