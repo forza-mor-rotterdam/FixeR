@@ -545,7 +545,8 @@ def _meldingen_bestand(request, modified_path):
     response = cache.get(cache_key)
     if not response:
         response = requests.get(url, headers=MORCoreService().get_headers())
-        cache.set(cache_key, response, 600)
+        # cache.set(cache_key, response, 600)
+
     return HttpResponse(
         response,
         content_type=response.headers.get("content-type"),
