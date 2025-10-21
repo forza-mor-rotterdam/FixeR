@@ -224,6 +224,14 @@ class TakenOverzicht(
             index = list(queryset.values_list("id", flat=True)).index(selected_taak.id)
             page = math.floor(index / self.paginate_by) + 1
             self.kwargs["page"] = page
+        elif self.kwargs.get("page"):
+            last_page = math.floor(queryset.count() / self.paginate_by) + 1
+            try:
+                current_page = int(self.kwargs["page"])
+            except Exception:
+                current_page = None
+            if current_page and current_page > last_page:
+                self.kwargs["page"] = last_page
 
         return queryset
 
