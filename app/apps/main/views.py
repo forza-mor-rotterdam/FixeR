@@ -548,7 +548,7 @@ def _meldingen_bestand(request, modified_path):
             "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
         )
     url = f"{instelling.mor_core_basis_url}{modified_path}"
-    response = MORCoreService().bestand_halen(url, stream=False, cache_timeout=600)
+    response = MORCoreService().bestand_halen(url, stream=False, cache_timeout=3600)
     return HttpResponse(
         response,
         content_type=response.headers.get("content-type"),
