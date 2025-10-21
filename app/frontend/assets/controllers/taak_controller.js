@@ -181,14 +181,18 @@ export default class extends Controller {
       self.element.style.left = '100%'
       self.lock = true
       setTimeout(function () {
+        self.buttonNietOpgelostTarget.disabled = false
         self.buttonNietOpgelostTarget.click()
+        self.buttonNietOpgelostTarget.disabled = true
         self.resetIncidentSwipe()
       }, 500)
     } else {
       self.lock = true
       self.element.style.left = '-100%'
       setTimeout(function () {
+        self.buttonOpgelostTarget.disabled = false
         self.buttonOpgelostTarget.click()
+        self.buttonOpgelostTarget.disabled = true
         self.resetIncidentSwipe()
       }, 500)
     }

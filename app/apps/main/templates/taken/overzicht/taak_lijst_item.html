@@ -1,7 +1,8 @@
 {% load l10n %}
 {% load webpack_static from webpack_loader %}
-{% load json_encode replace_comma_by_dot adres_order_nummer from main_tags %}
+{% load json_encode replace_comma_by_dot adres_order_nummer profiel_includes_taak from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
+{% profiel_includes_taak taak user.profiel as taak_in_profiel %}
 <div data-taken-lijst-target="taakItem"
      data-taken-overzicht-target="taakItem"
      data-uuid="{{ taak.uuid }}"
@@ -11,13 +12,14 @@
      data-geometrie="{% if taak.melding.geometrie %}{{ taak.melding.geometrie|json_encode }}{% else %}{% endif %}"
      {% if taak.melding.thumbnail_afbeelding_relative_url %}data-afbeelding-url="{{ taak.melding.thumbnail_afbeelding_relative_url|mor_core_protected_url }}"{% endif %}
      {% if taak.laatste_taakgebeurtenis_omschrijving_intern %}data-has-remark="true"{% endif %}
-     {% if taak.melding.locatie_type != "graf" and not taak.afgesloten_op and taak.taaktype.uuid in profiel_taaktype_uuid_list %} data-controller="taak" {% endif %}
+     {% if taak.melding.locatie_type != "graf" and not taak.afgesloten_op and taak_in_profiel %} data-controller="taak" {% endif %}
      class="list-item">
     <div class="wrapper__swipe" data-taak-target="swipeContainer">
-        {% if taak.melding.locatie_type != "graf" and not taak.afgesloten_op and taak.taaktype.uuid in profiel_taaktype_uuid_list %}
+        {% if taak.melding.locatie_type != "graf" and not taak.afgesloten_op and taak_in_profiel %}
             <button class="container__actions handle--no-success"
                     data-taak-target="buttonNietOpgelost"
                     data-action="modal#openModal"
+                    disabled="true"
                     data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=niet_opgelost">
                 <div>
                     <span>Niet opgelost</span>
@@ -26,6 +28,7 @@
             <button class="container__actions handle--success"
                     data-taak-target="buttonOpgelost"
                     data-action="modal#openModal"
+                    disabled="true"
                     data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}?resolutie=opgelost">
                 <div>
                     <span>Afhandelen</span>

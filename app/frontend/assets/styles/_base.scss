@@ -16,6 +16,10 @@ body {
     @media (min-width: map-get($grid-breakpoints, sm)) {
         font-size: 1.125em;
     }
+
+    &:has(.cover-header.read-only) {
+        background-color: $white;
+    }
 }
 
 body {

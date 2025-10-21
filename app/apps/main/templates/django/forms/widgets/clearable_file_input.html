@@ -19,6 +19,8 @@
     <div class="file-upload multiple hidden" tabindex="1">
         <div class="file-upload-mask">Sleep één of meer bestanden hier naartoe, of klik hier om bestanden te uploaden</div>
         {% include "django/forms/widgets/input.html" %}
+        <span class="help-block invalid-text"
+              data-bijlagen-target="uploadMaxMessage"></span>
         <div id="imagesPreview" class="preview"></div>
     </div>
 </div>

@@ -58,6 +58,7 @@ DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
 UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
 
 INSTALLED_APPS = (
+    "apps.frontend",
     # templates override
     "apps.main",
     "apps.health",

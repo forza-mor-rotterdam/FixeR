@@ -1,7 +1,7 @@
 import logging
 
 from apps.instellingen.models import Instelling
-from apps.main.services import MercureService
+from apps.main.services import LocatieService, MercureService
 from apps.release_notes.models import ReleaseNote
 from device_detector import DeviceDetector
 from django.conf import settings
@@ -44,16 +44,31 @@ def general_settings(context):
         deploy_date_formatted = deploy_date.strftime("%d-%m-%Y %H:%M:%S")
 
     instelling = Instelling.actieve_instelling()
-    taakr_basis_url = None
-    if instelling:
-        taakr_basis_url = instelling.taakr_basis_url
-    else:
+    locatieservice = LocatieService(instelling=instelling)
+    wijken_response = locatieservice.wijken()
+    if wijken_response.get("error"):
         logger.warning(
-            "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            f"Er ging iets mis met het ophalen van wijken: {wijken_response}"
         )
+    wijkcode_by_wijknaam = (
+        {
+            wijk.get("naam"): wijk.get("code")
+            for wijk in wijken_response.get("results", [])
+            if wijk.get("code") and wijk.get("naam")
+        }
+        if not wijken_response.get("error")
+        else {}
+    )
 
     ua = context.META.get("HTTP_USER_AGENT", "")
     device = DeviceDetector(ua).parse()
+
+    profiel_taaktype_uuids = []
+    if user and hasattr(user, "profiel"):
+        profiel_taaktype_uuids = [
+            str(uuid)
+            for uuid in user.profiel.profiel_taaktypes.values_list("uuid", flat=True)
+        ]
 
     return {
         "DEVICE_OS": device.os_name().lower(),
@@ -70,8 +85,10 @@ def general_settings(context):
         "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
         "UNWATCHED_COUNT": unwatched_count,
         "APP_ENV": settings.APP_ENV,
-        "TAAKR_URL": taakr_basis_url,
+        "TAAKR_URL": instelling.taakr_basis_url,
+        "WIJKCODE_BY_WIJKNAAM": wijkcode_by_wijknaam,
         "DEPLOY_DATE": deploy_date_formatted,
         "MOR_CORE_URL_PREFIX": settings.MOR_CORE_URL_PREFIX,
         "MOR_CORE_PROTECTED_URL_PREFIX": settings.MOR_CORE_PROTECTED_URL_PREFIX,
+        "PROFIEL_TAAKTYPE_UUIDS": profiel_taaktype_uuids,
     }

@@ -42,6 +42,9 @@
                 margin-left: $input-padding-y;
                 max-width: 37px;
 
+                &--search {
+                    font-weight: 700;
+                }
                 span {
                     display: inline-block;
                 }
@@ -96,9 +99,7 @@
     .container__sorting,
     .container__search {
         box-sizing: content-box;
-
         .wrapper {
-            margin: $input-padding-x;
             display: flex;
             justify-content: space-between;
 
@@ -127,26 +128,56 @@
             background-size: 24px 24px;
         }
     }
+    .wrapper--search-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 12px;
 
+        & > .btn {
+            flex-basis: content;
+        }
+
+        label {
+            font-weight: 300;
+            font-size: $fz-14;
+
+            input {
+                vertical-align: bottom;
+            }
+        }
+    }
     .wrapper--search {
-        display: none;
         position: relative;
+        display: flex;
+        gap: 20px;
+        flex-direction: row;
+        justify-content: flex-start;
+
+        .wrapper--close {
+            flex: 1 0;
+            position: relative;
+        }
 
         input[type="search"] {
             margin: 0;
+            max-height: 48px;
 
             &::-webkit-search-cancel-button {
                 -webkit-appearance: none;
             }
         }
 
-        button {
+        .btn--search {
+            flex: 0 0 20%;
+        }
+
+        .btn--close {
             background: transparent;
             border: none;
             position: absolute;
             top: 50%;
             right: 6px;
-            transform: translateY(calc(-50% + 2px));
+            transform: translateY(calc(-50% - 2px));
             cursor: pointer;
 
             svg {
@@ -159,10 +190,15 @@
             }
         }
         @media (min-width: map-get($grid-breakpoints, lg)) {
-            display: block;
-
+            gap: 0;
+            margin-right: 20px;
+            margin-bottom: 10px;
             input[type="search"] {
                 width: 350px;
+            }
+
+            .btn--search {
+                min-width: 70px;
             }
         }
     }

@@ -4,7 +4,6 @@ import os
 import uuid
 from datetime import datetime
 
-import requests
 from apps.authenticatie.models import AFSTAND_SORTING_KEY
 from apps.instellingen.models import Instelling
 from apps.main.forms import TaakBehandelForm, TakenLijstFilterForm
@@ -102,8 +101,6 @@ def navigeer(request, lat, long):
     )
 
 
-# Verander hier de instellingen voor de nieuwe homepagina.
-# @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
         return redirect(reverse("taken_overzicht"), False)
@@ -148,6 +145,15 @@ class TakenOverzicht(
         self.initial = {}
         self.form_data = {}
         self.initial_filter_data = None
+        if self.request.session.get("gps"):
+            del self.request.session["gps"]
+
+        if (
+            not request.user.profiel.onboarding_compleet
+            or request.user.profiel.wijken_or_taaktypes_empty
+        ) and request.user.profiel.context.template != "benc":  # Skip onboarding if B&C
+            return redirect(reverse("onboarding"), False)
+
         return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -188,7 +194,9 @@ class TakenOverzicht(
     def get_queryset(self):
         queryset = super().get_queryset()
         profiel = self.request.user.profiel
-        queryset = queryset.filter(**profiel.taken_filter_query_data)
+
+        if not self.request.session.get("deactivate_filters"):
+            queryset = queryset.filter(**profiel.taken_filter_query_data)
         queryset = queryset.taken_zoeken(self.request.session.get("q"))
 
         gps = self.get_gps()
@@ -215,6 +223,14 @@ class TakenOverzicht(
             index = list(queryset.values_list("id", flat=True)).index(selected_taak.id)
             page = math.floor(index / self.paginate_by) + 1
             self.kwargs["page"] = page
+        elif self.kwargs.get("page"):
+            last_page = math.floor(queryset.count() / self.paginate_by) + 1
+            try:
+                current_page = int(self.kwargs["page"])
+            except Exception:
+                current_page = None
+            if current_page and current_page > last_page:
+                self.kwargs["page"] = last_page
 
         return queryset
 
@@ -224,8 +240,9 @@ class TakenOverzicht(
 
         self.initial.update(self.request.user.profiel.taken_filter_validated_data)
         self.initial["q"] = self.request.session.get("q")
-        if self.request.session.get("gps"):
-            del self.request.session["gps"]
+        self.initial["deactivate_filters"] = self.request.session.get(
+            "deactivate_filters"
+        )
         self.initial["sorteer_opties"] = self.request.user.profiel.ui_instellingen.get(
             "sortering", "Adres-reverse"
         )
@@ -285,6 +302,9 @@ def taak_detail(request, uuid):
             "taakdeellinks_bezoekers": [
                 b for link in taakdeellinks for b in link.bezoekers
             ],
+            "profiel_taaktype_uuid_list": list(
+                request.user.profiel.taaktypes.values_list("uuid", flat=True)
+            ),
         },
     )
 
@@ -528,11 +548,7 @@ def _meldingen_bestand(request, modified_path):
             "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
         )
     url = f"{instelling.mor_core_basis_url}{modified_path}"
-    cache_key = f"meldingen_bestand_{url}"
-    response = cache.get(cache_key)
-    if not response:
-        response = requests.get(url, headers=MORCoreService().get_headers())
-        cache.set(cache_key, response, 600)
+    response = MORCoreService().bestand_halen(url, stream=False, cache_timeout=3600)
     return HttpResponse(
         response,
         content_type=response.headers.get("content-type"),

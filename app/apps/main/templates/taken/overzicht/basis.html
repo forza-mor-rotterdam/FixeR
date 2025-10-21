@@ -11,6 +11,7 @@
           data-controller="taken-overzicht"
           data-taken-overzicht-taken-kaart-outlet="#taken_kaart"
           data-taken-overzicht-taken-lijst-outlet="#taken_lijst"
+          data-action="keydown->taken-overzicht#keydownHandler"
           data-turbo-frame="false"
           id="taken_overzicht"
           data-testid="incidentFilterAllForm">
@@ -26,6 +27,7 @@
                     <div class="container__controls">
                         <button type="button"
                                 class="btn btn-secondary btn-sort--small"
+                                data-taken-overzicht-target="toggleZoeken"
                                 data-action="taken-overzicht#onToggleSearchContainer"
                                 aria-label="Toon zoekveld">
                             <span>{% include "icons/search.svg" %}</span>
@@ -46,18 +48,32 @@
                                 {% include "icons/lijst.svg" %}
                             </button>
                         {% endif %}
-                        <div class="wrapper wrapper--search"
-                             data-taken-overzicht-target="zoekFieldDefaultContainer">
-                            {{ form.q }}
-                            <button class="hide"
-                                    type="button"
-                                    data-taken-overzicht-target="cancelZoek"
-                                    data-action="taken-overzicht#onCancelSearch">
-                                {% include "icons/close.svg" %}
-                            </button>
+                        <div data-taken-overzicht-target="zoekFieldDefaultContainer">
+                            <div class="wrapper wrapper--search-group"
+                                 data-taken-overzicht-target="zoekFieldset">
+                                <div class="wrapper wrapper--search">
+                                    <div class="wrapper--close">
+                                        {{ form.q }}
+                                        <button class="hide btn--close"
+                                                type="button"
+                                                data-taken-overzicht-target="cancelZoek"
+                                                data-action="taken-overzicht#onCancelSearch">
+                                            {% include "icons/close.svg" %}
+                                        </button>
+                                    </div>
+                                    <button class="btn btn-secondary btn--search"
+                                            type="button"
+                                            data-taken-overzicht-target="zoekButton"
+                                            data-action="taken-overzicht#onZoekButtonClick">
+                                        <span>Zoek</span>
+                                    </button>
+                                </div>
+                                {{ form.deactivate_filters.as_field_group }}
+                            </div>
                         </div>
                         <button type="button"
                                 class="btn btn-secondary btn-filter--small"
+                                data-taken-overzicht-target="filterButton"
                                 data-action="taken-overzicht#showFilters">
                             <span>{% include "icons/filter.svg" %}</span>
                             <span>Filter</span>
@@ -69,7 +85,7 @@
             </div>
             <div class="container__list">
                 <div class="container__flex list--navigation-tools">
-                    <div class="container__sorting hidden-vertical"
+                    <div class="container__sorting {% if form.deactivate_filters %}hidden-vertical{% else %}show-vertical{% endif %}"
                          data-taken-overzicht-target="sorteerOptiesFieldContainer">{{ form.sorteer_opties }}</div>
                     <div class="container__search hidden-vertical"
                          data-taken-overzicht-target="zoekFieldContainer"></div>

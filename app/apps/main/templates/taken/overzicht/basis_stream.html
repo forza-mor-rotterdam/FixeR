@@ -1,19 +1,17 @@
 {% spaceless %}
-    {% if filters_changed or q_changed or filters_active_changed %}
+    {% if filters_changed or q_changed or deactivate_filters_changed %}
         <turbo-stream action="update" target="stream_taken_aantal">
-        <template>
-            {{ page_obj.paginator.count }}
-        </template>
+        <template>{{ page_obj.paginator.count }}</template>
         </turbo-stream>
     {% endif %}
-    {% if filters_changed or q_changed or filters_active_changed %}
+    {% if filters_changed or q_changed or deactivate_filters_changed %}
         <turbo-stream action="update" target="stream_filter_button">
         <template>
             {% include "taken/overzicht/stream_snippets/stream_filter_button.html" %}
         </template>
         </turbo-stream>
     {% endif %}
-    {% if filters_changed or q_changed or sorteer_opties_changed or page_changed or gps_changed %}
+    {% if filters_changed or q_changed or sorteer_opties_changed or page_changed or gps_changed or deactivate_filters_changed %}
         <turbo-stream action="update" target="stream_taken_lijst">
         <template>
             {% include "taken/overzicht/lijst.html" %}

@@ -182,6 +182,11 @@ button {
             background-color: $gray-tint11;
             border-color: $gray-tint11;
         }
+        &.disabled,
+        &:disabled {
+            background-color: $gray-tint06;
+            border-color: $gray-tint06;
+        }
     }
 
     &-close {

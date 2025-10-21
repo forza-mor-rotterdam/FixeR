@@ -139,24 +139,31 @@ class Profiel(BasisModel):
         blank=True,
     )
 
+    _cached_taken_filter = None
+
     def __str__(self):
         if self.gebruiker:
             return f"Profiel voor: {self.gebruiker}"
         return f"Profiel id: {self.pk}"
 
     def get_taaktypes(self):
-        taaktypes = self.taaktypes if not self.is_benc else self.context.taaktypes
-        return taaktypes.values("id", "omschrijving")
+        return self.profiel_taaktypes.values("id", "omschrijving")
+
+    @property
+    def profiel_taaktypes(self):
+        return self.taaktypes if not self.is_benc else self.context.taaktypes
 
     @property
     def taken_filters(self):
         from apps.taken.filters import FILTERS
 
-        return [
-            f(profiel=self)
-            for f in FILTERS
-            if f.key() in self.context.filters.get("fields", [])
-        ]
+        if not self._cached_taken_filter:
+            self._cached_taken_filter = [
+                f(profiel=self)
+                for f in FILTERS
+                if f.key() in self.context.filters.get("fields", [])
+            ]
+        return self._cached_taken_filter
 
     @property
     def taken_filter_data(self):
@@ -169,19 +176,22 @@ class Profiel(BasisModel):
 
     @property
     def taken_filter_validated_data(self):
+        taken_filter_data = self.taken_filter_data
         taken_filter_validated_data = {
-            f.key(): self.taken_filter_data[f.key()]
+            f.key(): taken_filter_data[f.key()]
             for f in self.taken_filters
-            if self.taken_filter_data.get(f.key())
+            if taken_filter_data.get(f.key())
         }
         return taken_filter_validated_data
 
     @property
     def taken_filter_query_data(self):
+        taken_filter_data_default = self.taken_filter_data_default
+        taken_filter_validated_data = self.taken_filter_validated_data
         return {
-            f.filter_lookup(): self.taken_filter_validated_data.get(f.key())
-            if self.taken_filter_validated_data.get(f.key())
-            else self.taken_filter_data_default.get(f.key())
+            f.filter_lookup(): taken_filter_validated_data.get(f.key())
+            if taken_filter_validated_data.get(f.key())
+            else taken_filter_data_default.get(f.key())
             for f in self.taken_filters
         } | {
             "melding__begraafplaats__isnull": not self.is_benc,
@@ -227,3 +237,17 @@ class Profiel(BasisModel):
     @property
     def taken_sorting(self):
         return self.ui_instellingen.get("sortering", DATUM_REVERSE_SORTING_KEY)
+
+    @property
+    def wijken_or_taaktypes_empty(self):
+        buurt_empty = not self.wijken or all(not wijk for wijk in self.wijken)
+        taken_empty = not self.taaktypes.exists()
+        return buurt_empty or taken_empty
+
+    def includes_taak(self, taak, wijkcode_by_wijknaam={}, profiel_taaktype_uuid=[]):
+        if self.is_benc:
+            return str(taak.taaktype.uuid) in profiel_taaktype_uuid
+        wijkcode = wijkcode_by_wijknaam.get(taak.melding.wijknaam, "")
+        return (
+            str(taak.taaktype.uuid) in profiel_taaktype_uuid
+        ) and wijkcode in self.wijken

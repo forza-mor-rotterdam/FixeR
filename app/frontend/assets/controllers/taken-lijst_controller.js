@@ -1,6 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
 
-let timeoutId = null
 export default class extends Controller {
   static showSortingContainer = false
   static showSearchContainer = false
@@ -14,49 +13,6 @@ export default class extends Controller {
   static outlets = ['taken-kaart']
   static targets = ['taakItem', 'containerHeader']
 
-  initialize() {
-    this.addEventListeners()
-  }
-  connect() {
-    document.addEventListener('turbo:before-fetch-response', () => {
-      this.setScrollPosition()
-    })
-  }
-  disconnect() {
-    document.removeEventListener('turbo:before-fetch-response', this.setScrollPosition)
-    clearTimeout(timeoutId)
-  }
-  setScrollPosition() {
-    if (!document.body.classList.contains('show-modal')) {
-      if (this.hasIncidentlistTarget) {
-        const frame = this.incidentlistTarget.querySelector('turbo-frame')
-        const scrollTarget =
-          window.innerWidth < 1024 ? document.documentElement : this.incidentlistTarget
-        const scrollCorrection =
-          window.innerWidth < 1024
-            ? document.querySelector('main').offsetTop +
-              this.containerHeaderTarget.clientHeight +
-              this.element.offsetHeight / 2
-            : this.element.offsetHeight / 2
-        if (frame?.complete) {
-          timeoutId = setTimeout(() => {
-            const activeItem = this.element.querySelector(
-              `[data-uuid="${sessionStorage.getItem('selectedTaakId')}"]`
-            )
-            if (activeItem) {
-              const topPos = activeItem.offsetTop + activeItem.offsetHeight
-              scrollTarget.scrollTop = topPos - scrollCorrection
-            }
-          }, 100)
-        }
-      }
-    }
-  }
-  addEventListeners() {
-    window.addEventListener('closeModal', () => {
-      this.setScrollPosition()
-    })
-  }
   selecteerTaakItem(taakUuid, preventScroll) {
     const taakItemTarget = this.taakItemTargets.find((elem) => elem.dataset.uuid === taakUuid)
     taakItemTarget?.classList.toggle('highlight-once', taakItemTarget.dataset.uuid === taakUuid)
