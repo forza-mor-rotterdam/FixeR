@@ -17,11 +17,10 @@ class Instelling(BasisModel):
 
     @classmethod
     def actieve_instelling(cls):
-        if not cls.cached_actieve_instelling:
-            cls.cached_actieve_instelling = cls.objects.first()
-        if not cls.cached_actieve_instelling:
+        actieve_instellingen = cls.objects.all()
+        if not actieve_instellingen:
             raise Exception("Er zijn nog geen instellingen aangemaakt")
-        return cls.cached_actieve_instelling
+        return actieve_instellingen[0]
 
     def valideer_url(self, veld, url):
         if veld not in (
