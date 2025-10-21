@@ -163,7 +163,7 @@ class TakenLijstFilterForm(forms.Form):
                 "data-taken-overzicht-target": "filtersActiveField",
             },
         ),
-        label="Zoeken in alle taken",
+        label="Zoeken in alle FixeR taken",
         required=False,
     )
     sorteer_opties = forms.ChoiceField(

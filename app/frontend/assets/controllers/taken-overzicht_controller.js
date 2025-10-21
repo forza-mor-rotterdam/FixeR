@@ -15,6 +15,7 @@ export default class extends Controller {
     'filterInput',
     'cancelZoek',
     'zoekField',
+    'filterButton',
     'pageField',
     'gpsField',
     'selectedChoicesCount',
@@ -156,8 +157,6 @@ export default class extends Controller {
   }
   onSearchChangeHandler(e) {
     const zoekHasValue = e.target.value.length > 0
-    console.log('zoekHasValue')
-    console.log(zoekHasValue)
     this.toggleZoekenTarget.disabled = zoekHasValue
     this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
     this.zoekFieldContainerTarget.classList.add('show-vertical')
@@ -171,6 +170,7 @@ export default class extends Controller {
   }
   onFiltersActiveChangeHandler() {
     this.submit()
+    this.updateFilterButtonEnabled()
   }
   onPageClickEvent(e) {
     this.pageFieldTarget.value = e.params.page
@@ -223,7 +223,16 @@ export default class extends Controller {
       ) {
         this.filtersActiveFieldTarget.checked = false
         this.submit()
+        this.updateFilterButtonEnabled()
       }
+    }
+  }
+  filterButtonTargetConnected() {
+    this.updateFilterButtonEnabled()
+  }
+  updateFilterButtonEnabled() {
+    if (this.hasFilterButtonTarget) {
+      this.filterButtonTarget.disabled = this.filtersActiveFieldTarget.checked
     }
   }
   toggleMapViewHandler() {
