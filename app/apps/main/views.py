@@ -4,7 +4,6 @@ import os
 import uuid
 from datetime import datetime
 
-import requests
 from apps.authenticatie.models import AFSTAND_SORTING_KEY
 from apps.instellingen.models import Instelling
 from apps.main.forms import TaakBehandelForm, TakenLijstFilterForm
@@ -549,12 +548,7 @@ def _meldingen_bestand(request, modified_path):
             "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
         )
     url = f"{instelling.mor_core_basis_url}{modified_path}"
-    cache_key = f"meldingen_bestand_{url}"
-    response = cache.get(cache_key)
-    if not response:
-        response = requests.get(url, headers=MORCoreService().get_headers())
-        # cache.set(cache_key, response, 600)
-
+    response = MORCoreService().bestand_halen(url, stream=False, cache_timeout=600)
     return HttpResponse(
         response,
         content_type=response.headers.get("content-type"),
