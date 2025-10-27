@@ -2,7 +2,7 @@
 {% load webpack_static from webpack_loader %}
 {% load multiply previous next from list_tags %}
 {% load taakopdracht render_onderwerp get_bijlagen from melding_tags %}
-{% load replace_comma_by_dot vind_in_dict from main_tags %}
+{% load replace_comma_by_dot vind_in_dict profiel_includes_taak from main_tags %}
 {% load json_encode from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
@@ -22,6 +22,7 @@
                            aria-label="Terug">{% include "icons/arrow-long.svg" %}</a>
                     </div>
                     {% get_bijlagen melding as bijlagen %}
+                    {% profiel_includes_taak taak user.profiel as taak_in_profiel %}
                     <div data-controller="taak-detail"
                          id="taak_detail"
                          data-taak-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
@@ -34,9 +35,20 @@
                         <div class="taak-detail">
                             <div class="container__header-taaknavigatie">
                                 {% include "taken/taak_detail_header.html" %}
+                                {% if not taak_in_profiel and not taak.afgesloten_op %}
+                                    <div class="cover-header read-only">
+                                        <h3>
+                                            {% include "icons/eye.svg" %}
+                                            Read only weergave
+                                        </h3>
+                                        <p>Deze taak valt buiten je profiel en kun je om die reden alleen inzien maar niet afronden.</p>
+                                    </div>
+                                {% endif %}
                                 {% include "taken/taak_detail_images.html" %}
                                 {% include "taken/taak_detail_foldouts.html" %}
-                                {% include "taken/taak_detail_buttons.html" %}
+                                {% if not taak.afgesloten_op and taak_in_profiel %}
+                                    {% include "taken/taak_detail_buttons.html" %}
+                                {% endif %}
                             </div>
                         </div>
                         {% include "snippets/modal_images.html" %}

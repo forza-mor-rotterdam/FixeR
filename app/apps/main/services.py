@@ -3,6 +3,7 @@ import logging
 from apps.instellingen.models import Instelling
 from django.conf import settings
 from django.contrib import messages
+from mor_api_services import LocatieService as BasisLocatieService
 from mor_api_services import MercureService as BasisMercureService
 from mor_api_services import MORCoreService as BasisMORCoreService
 from mor_api_services import OnderwerpenService as BasisOnderwerpenService
@@ -73,6 +74,24 @@ class TaakRService(BasisTaakRService):
         kwargs.update(
             {
                 "basis_url": instellingen.taakr_basis_url,
+            }
+        )
+        super().__init__(*args, **kwargs)
+
+    def met_fout(self, response=None, fout=""):
+        return standaard_fout_afhandeling(self, response, fout)
+
+
+class LocatieService(BasisLocatieService):
+    def __init__(self, *args, **kwargs):
+        instelling = kwargs.pop("instelling", None)
+        if not instelling:
+            instelling = Instelling.actieve_instelling()
+        default_cache_timeout = 60 * 60 * 24
+        kwargs.update(
+            {
+                "basis_url": instelling.locaties_basis_url,
+                "cache_timeout": kwargs.get("cache_timeout", default_cache_timeout),
             }
         )
         super().__init__(*args, **kwargs)

@@ -1,5 +1,7 @@
 import logging
 
+from apps.frontend.fields import BooleanField
+from apps.frontend.widgets import CheckboxInput
 from apps.taken.filters import FILTERS
 from apps.taken.models import Taak
 from deepdiff import DeepDiff
@@ -154,6 +156,16 @@ class TakenLijstFilterForm(forms.Form):
         ),
         required=False,
     )
+    deactivate_filters = BooleanField(
+        widget=CheckboxInput(
+            attrs={
+                "data-action": "taken-overzicht#onFiltersActiveChangeHandler",
+                "data-taken-overzicht-target": "filtersActiveField",
+            },
+        ),
+        label="Zoeken in alle FixeR taken",
+        required=False,
+    )
     sorteer_opties = forms.ChoiceField(
         widget=forms.Select(
             attrs={
@@ -189,6 +201,7 @@ class TakenLijstFilterForm(forms.Form):
     ]
 
     def __init__(self, *args, **kwargs):
+        self._cached_taken_filters = None
         self.request = kwargs.pop("request", None)
         profiel = self.request.user.profiel
         super().__init__(*args, **kwargs)
@@ -196,7 +209,7 @@ class TakenLijstFilterForm(forms.Form):
         if self.request.session.get("q"):
             del self.request.session["q"]
 
-        for f in profiel.taken_filters:
+        for f in self.profiel_taken_filters:
             self.fields[f.key()] = forms.MultipleChoiceField(
                 widget=TaakFilterCheckboxSelectMultiple(
                     attrs={
@@ -213,12 +226,18 @@ class TakenLijstFilterForm(forms.Form):
             )
         self.fields["sorteer_opties"].choices = profiel.taken_sorting_choices
 
-    def filter_fields(self):
+    @property
+    def profiel_taken_filters(self):
         profiel = self.request.user.profiel
+        if not self._cached_taken_filters:
+            self._cached_taken_filters = profiel.taken_filters
+        return self._cached_taken_filters
+
+    def filter_fields(self):
         return [
             field
             for field in self
-            if field.name in [f.key() for f in profiel.taken_filters]
+            if field.name in [f.key() for f in self.profiel_taken_filters]
         ]
 
     def active_filter_options(self):
@@ -248,6 +267,7 @@ class TakenLijstFilterForm(forms.Form):
                 "q",
                 "page",
                 "gps",
+                "deactivate_filters",
             ]
             if hasattr(self, f"{field}_changed")
         }
@@ -257,7 +277,9 @@ class TakenLijstFilterForm(forms.Form):
         data = self.cleaned_data
         status = "nieuw"
 
-        actieve_filters = {f.key(): data.get(f.key()) for f in profiel.taken_filters}
+        actieve_filters = {
+            f.key(): data.get(f.key()) for f in self.profiel_taken_filters
+        }
 
         # changed fields
         self.filters_changed = bool(
@@ -272,6 +294,9 @@ class TakenLijstFilterForm(forms.Form):
         self.q_changed = data.get("q") != self.request.session.get("q")
         self.page_changed = data.get("page", "") != self.request.session.get("page", "")
         self.gps_changed = data.get("gps", "") != self.request.session.get("gps", "")
+        self.deactivate_filters_changed = data.get(
+            "deactivate_filters"
+        ) != self.request.session.get("deactivate_filters")
 
         # update profiel fields
         profiel.filters.update({status: actieve_filters})
@@ -285,3 +310,4 @@ class TakenLijstFilterForm(forms.Form):
         self.request.session["q"] = data.get("q", "")
         self.request.session["page"] = data.get("page", "")
         self.request.session["gps"] = data.get("gps", "")
+        self.request.session["deactivate_filters"] = data.get("deactivate_filters", "")
