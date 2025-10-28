@@ -47,9 +47,9 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 from rest_framework.authtoken import views
-from rest_framework.routers import DefaultRouter
+from utils.drf.routers import OptionalSlashRouter
 
-router = DefaultRouter()
+router = OptionalSlashRouter()
 router.register(r"taak", TaakViewSet, basename="taak")
 router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 
