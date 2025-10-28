@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime
 
 from apps.authenticatie.models import AFSTAND_SORTING_KEY
+from apps.context.models import Context
 from apps.instellingen.models import Instelling
 from apps.main.forms import TaakBehandelForm, TakenLijstFilterForm
 from apps.main.services import MORCoreService, PDOKService, TaakRService
@@ -149,9 +150,13 @@ class TakenOverzicht(
             del self.request.session["gps"]
 
         if (
-            not request.user.profiel.onboarding_compleet
-            or request.user.profiel.wijken_or_taaktypes_empty
-        ) and request.user.profiel.context.template != "benc":  # Skip onboarding if B&C
+            (
+                not request.user.profiel.onboarding_compleet
+                or request.user.profiel.wijken_or_taaktypes_empty
+            )
+            and request.user.profiel
+            and request.user.profiel.context.template != Context.TemplateOpties.BENC
+        ):  # Skip onboarding if B&C
             return redirect(reverse("onboarding"), False)
 
         return super().get(request, *args, **kwargs)
