@@ -201,7 +201,7 @@ class Profiel(BasisModel):
     def is_benc(self):
         from apps.context.models import Context
 
-        return self.context.template == Context.TemplateOpties.BENC
+        return self.context and self.context.template == Context.TemplateOpties.BENC
 
     @property
     def taken_sorting_choices(self):
