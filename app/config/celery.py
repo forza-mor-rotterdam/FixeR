@@ -2,6 +2,7 @@ import logging
 import os
 import uuid
 
+import celery
 from celery import Celery, shared_task
 from celery.signals import setup_logging
 from django.conf import settings
@@ -67,6 +68,12 @@ def task_router(name, args, kwargs, options, task=None, **kw):
     return queues_by_queue_name[settings.TASK_LOW_PRIORITY_QUEUE_NAME]
 
 
+class BaseTaskWithRetry(celery.Task):
+    autoretry_for = (Exception,)
+    max_retries = 1
+    default_retry_delay = 120
+
+
 @app.task()
 def test_critical_task(sleep=5, param_uuid=None):
     import time
@@ -99,10 +106,12 @@ def test_regular_made_important_task(sleep=5, param_uuid=None):
     return param_uuid
 
 
-@app.task()
-def test_not_so_important_task(sleep=5, param_uuid=None):
+@app.task(base=BaseTaskWithRetry)
+def test_not_so_important_task(sleep=5, generate_failure=False, param_uuid=None):
     import time
 
+    if generate_failure:
+        print(1 / 0)
     time.sleep(sleep)
     return param_uuid
 

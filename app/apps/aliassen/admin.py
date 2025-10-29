@@ -63,6 +63,7 @@ class MeldingAliasAdmin(admin.ModelAdmin):
         "locatie_type",
         "zoek_tekst",
         "locatie_verbose",
+        "response_status_code",
     )
     actions = (action_update_melding_alias_data,)
     search_fields = ("bron_url",)
@@ -70,6 +71,7 @@ class MeldingAliasAdmin(admin.ModelAdmin):
         ResponseDataFilter,
         TakenAantalFilter,
         "locatie_type",
+        "response_status_code",
     )
 
     def get_queryset(self, request):

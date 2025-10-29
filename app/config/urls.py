@@ -17,6 +17,7 @@ from apps.main.views import (
     meldingen_bestand,
     meldingen_bestand_protected,
     navigeer,
+    prometheus_django_metrics,
     root,
     taak_afhandelen,
     taak_delen,
@@ -176,6 +177,7 @@ urlpatterns = [
     ),
     path("beheer/", include("apps.beheer.urls")),
     path("ckeditor5/", include("django_ckeditor_5.urls")),
+    path("metrics", prometheus_django_metrics, name="prometheus_django_metrics"),
 ]
 
 if not settings.ENABLE_DJANGO_ADMIN_LOGIN:

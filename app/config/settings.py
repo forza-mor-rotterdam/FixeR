@@ -81,6 +81,7 @@ INSTALLED_APPS = (
     "corsheaders",
     "django_ckeditor_5",
     "debug_toolbar",
+    "django_prometheus",
     "mozilla_django_oidc",
     "health_check",
     "health_check.cache",
@@ -206,6 +207,7 @@ HIGHEST_PRIORITY_TASKS = [
 HIGH_PRIORITY_TASKS = [
     "config.celery.test_urgent_task",
     "apps.aliassen.tasks.task_update_melding_alias_data",
+    "apps.aliassen.tasks.task_update_melding_alias_data_v2",
 ]
 DEFAULT_PRIORITY_TASKS = [
     "config.celery.test_regular_task",

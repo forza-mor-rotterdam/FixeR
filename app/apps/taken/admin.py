@@ -1,7 +1,3 @@
-import ast
-import importlib
-import json
-
 from apps.taken.admin_filters import (
     AfgeslotenOpFilter,
     ResolutieFilter,
@@ -21,35 +17,17 @@ from django.contrib import admin, messages
 from django.contrib.admin import DateFieldListFilter
 from django.db.models import Count
 from django.utils.safestring import mark_safe
+from django_celery_beat.admin import PeriodicTaskAdmin
+from django_celery_beat.models import PeriodicTask
 from django_celery_results.admin import TaskResultAdmin
 from django_celery_results.models import TaskResult
+from utils.django_celery_results import restart_task
 
 
 def retry_celery_task_admin_action(modeladmin, request, queryset):
     msg = ""
     for task_res in queryset:
-        if task_res.status != "FAILURE":
-            msg += f'{task_res.task_id} => Skipped. Not in "FAILURE" State<br>'
-            continue
-        try:
-            task_actual_name = task_res.task_name.split(".")[-1]
-            module_name = ".".join(task_res.task_name.split(".")[:-1])
-            kwargs = json.loads(task_res.task_kwargs)
-            if isinstance(kwargs, str):
-                kwargs = kwargs.replace("'", '"')
-                kwargs = json.loads(kwargs)
-                if kwargs:
-                    getattr(
-                        importlib.import_module(module_name), task_actual_name
-                    ).apply_async(kwargs=kwargs, task_id=task_res.task_id)
-            if not kwargs:
-                args = ast.literal_eval(ast.literal_eval(task_res.task_args))
-                getattr(
-                    importlib.import_module(module_name), task_actual_name
-                ).apply_async(args, task_id=task_res.task_id)
-            msg += f"{task_res.task_id} => Successfully sent to queue for retry.<br>"
-        except Exception as ex:
-            msg += f"{task_res.task_id} => Unable to process. Error: {ex}<br>"
+        msg += f"{restart_task(task_res)}<br>"
     messages.info(request, mark_safe(msg))
 
 
@@ -267,10 +245,23 @@ class TaakstatusAdmin(admin.ModelAdmin):
 
 
 class CustomTaskResultAdmin(TaskResultAdmin):
+    list_display = (
+        "id",
+        "task_id",
+        "task_name",
+        "status",
+        "result",
+        "date_created",
+        "date_done",
+        "date_started",
+        "task_args",
+        "task_kwargs",
+    )
     list_filter = (
         "status",
         "date_created",
         "date_done",
+        # "periodic_task_name",
         "task_name",
     )
     actions = [
@@ -278,8 +269,15 @@ class CustomTaskResultAdmin(TaskResultAdmin):
     ]
 
 
+class CustomPeriodicTaskAdmin(PeriodicTaskAdmin):
+    raw_id_fields = ("clocked",)
+
+
 admin.site.unregister(TaskResult)
 admin.site.register(TaskResult, CustomTaskResultAdmin)
+
+admin.site.unregister(PeriodicTask)
+admin.site.register(PeriodicTask, CustomPeriodicTaskAdmin)
 
 admin.site.register(Taak, TaakAdmin)
 admin.site.register(Taaktype, TaaktypeAdmin)

@@ -60,23 +60,7 @@ services:
 
   app_celery_worker:
     build: *build-definition
-    command: "celery -A config worker -l info"
-    depends_on:
-      database:
-        condition: service_started
-      redis:
-        condition: service_started
-    volumes:
-      - ./media:/media
-    env_file:
-      - .env.local
-    networks:
-      - fixer_network
-      - mor_bridge_network
-
-  app_celery_beat:
-    build: *build-definition
-    command: "celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    command: ["bash", "/app/deploy/docker-entrypoint.celery.sh"]
     depends_on:
       database:
         condition: service_started
