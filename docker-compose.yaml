@@ -91,14 +91,14 @@ services:
       - mor_bridge_network
 
   mercure:
-    image: dunglas/mercure
+    image: dunglas/mercure:v0.20
     restart: unless-stopped
     environment:
       MERCURE_EXTRA_DIRECTIVES: |
           cors_origins "http://fixer.mor.local:8004"
           anonymous
       SERVER_NAME: ':80'
-    command: /usr/bin/caddy run --config /etc/caddy/Caddyfile.dev
+    # command: /usr/bin/caddy run --config /etc/caddy/Caddyfile.dev
     env_file:
       - .env.local
     ports:
