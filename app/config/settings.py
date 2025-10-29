@@ -6,7 +6,6 @@ from os.path import join
 
 import requests
 import urllib3
-from celery.schedules import crontab
 
 locale.setlocale(locale.LC_ALL, "nl_NL.UTF-8")
 logger = logging.getLogger(__name__)
@@ -176,23 +175,45 @@ AUTH_USER_MODEL = "authenticatie.Gebruiker"
 
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
-CELERY_BROKER_URL = "redis://redis:6379/0"
 
+CELERY_BROKER_URL = "redis://redis:6379/0"
 BROKER_URL = CELERY_BROKER_URL
-CELERY_TASK_TRACK_STARTED = True
+
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_RESULT_EXTENDED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
-CELERYBEAT_SCHEDULE = {
-    "queue_every_five_mins": {
-        "task": "apps.health.tasks.query_every_five_mins",
-        "schedule": crontab(minute=5),
-    },
-}
+
 CELERY_WORKER_CONCURRENCY = 2
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 20
 CELERY_WORKER_MAX_MEMORY_PER_CHILD = 200000
 CELERY_WORKER_SEND_TASK_EVENTS = True
+
+TASK_LOW_PRIORITY_QUEUE_NAME = "low_priority"
+TASK_DEFAULT_PRIORITY_QUEUE_NAME = "default_priority"
+TASK_HIGH_PRIORITY_QUEUE_NAME = "high_priority"
+TASK_HIGHEST_PRIORITY_QUEUE_NAME = "highest_priority"
+
+TASK_QUEUES = (
+    (TASK_HIGHEST_PRIORITY_QUEUE_NAME, 0),
+    (TASK_HIGH_PRIORITY_QUEUE_NAME, 3),
+    (TASK_DEFAULT_PRIORITY_QUEUE_NAME, 6),
+    (TASK_LOW_PRIORITY_QUEUE_NAME, 9),
+)
+CELERY_TASK_DEFAULT_QUEUE = TASK_HIGH_PRIORITY_QUEUE_NAME
+
+HIGHEST_PRIORITY_TASKS = [
+    "config.celery.test_critical_task",
+]
+HIGH_PRIORITY_TASKS = [
+    "config.celery.test_urgent_task",
+    "apps.aliassen.tasks.task_update_melding_alias_data",
+]
+DEFAULT_PRIORITY_TASKS = [
+    "config.celery.test_regular_task",
+    "apps.taken.tasks.task_taakopdracht_notificatie",
+    "apps.taken.tasks.task_taak_aanmaken",
+]
+LOW_PRIORITY_TASKS = []
+CELERY_TASK_ROUTES = "config.celery.task_router"
 
 
 SITE_ID = int(os.getenv("SITE_ID", 1))
@@ -442,6 +463,11 @@ LOGGING = {
         },
         "celery": {
             "handlers": ["console", "file"],
+            "level": "WARNING" if not DEBUG else "DEBUG",
+            "propagate": False,
+        },
+        "mor_api_services": {
+            "handlers": ["console"],
             "level": "WARNING" if not DEBUG else "DEBUG",
             "propagate": False,
         },
