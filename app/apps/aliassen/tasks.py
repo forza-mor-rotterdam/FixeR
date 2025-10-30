@@ -1,3 +1,5 @@
+import uuid
+
 import celery
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -101,6 +103,26 @@ def task_update_melding_alias_data(self, meldingalias_id):
     else:
         return f"Warning: MeldingAlias niet gevonden o.b.v. meldingalias_id '{meldingalias_id}'"
     return f"MeldingAlias data with id={meldingalias_id}, updated"
+
+
+@shared_task(bind=True, base=BaseTaskWithRetryBackoff)
+def task_update_melding_alias_data_v2(self, meldingalias_uuid):
+    from apps.aliassen.models import MeldingAlias
+
+    meldingaliassen = MeldingAlias.objects.filter(uuid=uuid.UUID(meldingalias_uuid))
+    if meldingaliassen:
+        meldingalias = meldingaliassen[0]
+        meldingalias.valideer_bron_url()
+        meldingalias.save()
+        if meldingalias.response_status_code not in [200, 404, 400]:
+            raise Exception(
+                f"meldingalias.response_status_code not in [200, 404, 400], code={meldingalias.response_status_code}, meldingalias_uuid={meldingalias_uuid}"
+            )
+        meldingalias.update_zoek_data()
+        meldingalias.save()
+    else:
+        return f"Warning: MeldingAlias niet gevonden o.b.v. meldingalias_uuid '{meldingalias_uuid}'"
+    return f"MeldingAlias data with uuid={meldingalias_uuid}, updated"
 
 
 @shared_task(bind=True, base=BaseTaskWithRetryBackoff)
