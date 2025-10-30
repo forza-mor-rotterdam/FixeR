@@ -13,8 +13,10 @@ from django.core import signing
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import timezone
+from django_celery_results.models import TaskResult
 from rest_framework.reverse import reverse as drf_reverse
 from utils.diversen import absolute
+from utils.django_celery_results import restart_task
 from utils.fields import ListJSONField
 from utils.models import BasisModel
 
@@ -58,6 +60,40 @@ class Taakgebeurtenis(BasisModel):
     )
     notificatie_verstuurd = models.BooleanField(default=True)
     vervolg_taaktypes = ListJSONField(default=list)
+
+    task_taakopdracht_notificatie = models.OneToOneField(
+        to="django_celery_results.TaskResult",
+        related_name="taakgebeurtenis",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    def get_task_taakopdracht_notificatie(self):
+        from apps.taken.tasks import task_taakopdracht_notificatie_v2
+
+        task_taakopdracht_notificatie_taskresult = (
+            task_taakopdracht_notificatie_v2.delay(
+                taakgebeurtenis_uuid=str(self.uuid),
+            )
+        )
+        taskresults = TaskResult.objects.filter(
+            task_id=task_taakopdracht_notificatie_taskresult.task_id
+        )
+        return taskresults[0] if taskresults else None
+
+    def start_task_taakopdracht_notificatie(self):
+        if not self.task_taakopdracht_notificatie:
+            self.task_taakopdracht_notificatie = (
+                self.get_task_taakopdracht_notificatie()
+            )
+            self.save(update_fields=["task_taakopdracht_notificatie"])
+        else:
+            aangemaakt, message = restart_task(self.task_taakopdracht_notificatie)
+            if not aangemaakt:
+                raise Exception(
+                    f"Het is niet gelukt om de bestaande tasks te herstarten: {message}"
+                )
 
     class Meta:
         ordering = ("-aangemaakt_op",)
@@ -373,10 +409,6 @@ class Taak(BasisModel):
                 )
             )
         return self.cached_eerste_taakgebeurtenis_gebruiker
-
-    def get_melding_alias(self):
-        self.melding.save()
-        return self.melding
 
     @classmethod
     def behandel_opties(cls):

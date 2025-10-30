@@ -1,8 +1,6 @@
 import logging
 
 from apps.taken.managers import aangemaakt, gebeurtenis_toegevoegd, status_aangepast
-from apps.taken.models import Taak
-from apps.taken.tasks import task_taakopdracht_notificatie_voor_taak
 from django.dispatch import receiver
 
 logger = logging.getLogger(__name__)
@@ -27,11 +25,8 @@ def status_aangepast_handler(
     if kwargs.get("raw"):
         return
     logger.debug(f"status_aangepast_handler: {taak} - {vorige_status} -> {status}")
-    get_taak = Taak.objects.get(id=taak.id)
 
-    task_taakopdracht_notificatie_voor_taak.delay(
-        taak_id=get_taak.id,
-    )
+    taakgebeurtenis.start_task_taakopdracht_notificatie()
 
 
 @receiver(aangemaakt, dispatch_uid="taak_aangemaakt")

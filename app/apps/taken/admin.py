@@ -3,8 +3,6 @@ from apps.taken.admin_filters import (
     ResolutieFilter,
     TaakopdrachtStatusCodeFilter,
     TaakopdrachtStatusFilter,
-    TaakstatusFilter,
-    TitelFilter,
 )
 from apps.taken.models import Taak, TaakDeellink, Taakgebeurtenis, Taakstatus, Taaktype
 from apps.taken.tasks import (
@@ -47,10 +45,10 @@ class TaakAdmin(admin.ModelAdmin):
         "resolutie",
         "aangemaakt_op",
         "aangepast_op",
+        "afgesloten_op",
         "verwijderd_op",
         "taakopdracht",
     )
-    list_editable = ("verwijderd_op",)
     readonly_fields = (
         "uuid",
         "aangemaakt_op",
@@ -91,14 +89,16 @@ class TaakAdmin(admin.ModelAdmin):
         "uuid",
         "taakopdracht",
         "melding__bron_url",
+        "melding__uuid",
+        "taaktype__uuid",
     ]
     list_filter = (
-        TaakstatusFilter,
+        "taakstatus__naam",
         TaakopdrachtStatusFilter,
         TaakopdrachtStatusCodeFilter,
         ResolutieFilter,
         AfgeslotenOpFilter,
-        TitelFilter,
+        "taaktype__omschrijving",
         ("afgesloten_op", DateFieldListFilter),
         ("verwijderd_op", DateFieldListFilter),
         ("aangemaakt_op", DateFieldListFilter),
@@ -178,6 +178,14 @@ class TaaktypeAdmin(admin.ModelAdmin):
         "omschrijving",
         "aangemaakt_op",
     )
+    search_fields = [
+        "uuid",
+        "taken_voor_taaktype__uuid",
+    ]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.prefetch_related("taken_voor_taaktype")
 
 
 class TakenAantalFilter(admin.SimpleListFilter):
@@ -201,10 +209,24 @@ class TakenAantalFilter(admin.SimpleListFilter):
         )
 
 
+def taakgebeurtenis_notificatie_action(modeladmin, request, queryset):
+    qs = queryset.filter(notificatie_verstuurd=False)
+    for taakgebeurtenis in qs:
+        taakgebeurtenis.start_task_taakopdracht_notificatie()
+    messages.info(request, f"{qs.count()} taakgebeurtenissen tasks zijn gestart")
+
+
+taakgebeurtenis_notificatie_action.short_description = (
+    "Start notificatie naar MORCore voor taakgebeurtenissen"
+)
+
+
 class TaakgebeurtenisAdmin(admin.ModelAdmin):
     list_display = (
         "id",
+        "uuid",
         "aangemaakt_op",
+        "aangepast_op",
         "gebruiker",
         "taakstatus",
         "resolutie",
@@ -215,11 +237,21 @@ class TaakgebeurtenisAdmin(admin.ModelAdmin):
     raw_id_fields = (
         "taak",
         "taakstatus",
+        "task_taakopdracht_notificatie",
     )
     search_fields = [
+        "uuid",
         "taak__uuid",
     ]
+    actions = (taakgebeurtenis_notificatie_action,)
     list_filter = ("notificatie_verstuurd",)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related(
+            "taak__taaktype",
+            "taakstatus",
+        )
 
 
 class TaakDeellinkAdmin(admin.ModelAdmin):
@@ -230,6 +262,17 @@ class TaakDeellinkAdmin(admin.ModelAdmin):
         "signed_data",
         "taak",
     )
+    search_fields = [
+        "uuid",
+        "taak__uuid",
+    ]
+    raw_id_fields = ("taak",)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related(
+            "taak__taaktype",
+        )
 
 
 class TaakstatusAdmin(admin.ModelAdmin):
@@ -241,7 +284,17 @@ class TaakstatusAdmin(admin.ModelAdmin):
         "aangemaakt_op",
         "aangepast_op",
     )
+    search_fields = [
+        "uuid",
+        "taak__uuid",
+        "taakgebeurtenis_voor_taakstatus__uuid",
+    ]
     raw_id_fields = ("taak",)
+    readonly_fields = (
+        "uuid",
+        "aangemaakt_op",
+        "aangepast_op",
+    )
 
 
 class CustomTaskResultAdmin(TaskResultAdmin):
