@@ -3,22 +3,6 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
 
-class TaakstatusFilter(admin.SimpleListFilter):
-    title = _("Taakstatus")
-    parameter_name = "taakstatus"
-
-    def lookups(self, request, model_admin):
-        status_namen = Taak.objects.values_list(
-            "taakstatus__naam", flat=True
-        ).distinct()
-        return ((status_naam, status_naam) for status_naam in set(status_namen))
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(taakstatus__naam=self.value())
-        return queryset
-
-
 class TaakopdrachtStatusFilter(admin.SimpleListFilter):
     title = _("TaakopdrachtStatus")
     parameter_name = "taakopdrachtStatus"
