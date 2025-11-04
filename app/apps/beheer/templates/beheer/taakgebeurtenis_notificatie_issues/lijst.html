@@ -1,0 +1,71 @@
+{% extends "base_beheer.html" %}
+{% load rotterdam_formulier_html %}
+{% block title %}
+    Taak afhandel notificatie issues | Beheer | PlanR
+{% endblock title %}
+{% block header %}
+    {% with pageTitle="Beheer" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
+{% block body %}
+    <div class="page__beheer">
+        <div>
+            <a href="{% url 'beheer' %}" class="link--back" data-turbo-frame="_top">
+                {% include "icons/arrow-short.svg" %}
+                <span>Beheer</span>
+            </a>
+        </div>
+        <div class="container__flex">
+            <h1>Taak afhandel notificatie issues</h1>
+        </div>
+        <p>
+            Op deze pagina staat een overzicht van notificaties die <strong>niet</strong> succesvol zijn verstuurd naar MORCore
+        </p>
+        <div class="grid-container grid-container--4-1">
+            <div class="grid-item">
+                <form action="{% url 'taakgebeurtenis_notificatie_issues' %}"
+                      method="post"
+                      data-turbo="false"
+                      data-controller="selectAll"
+                      data-selectAll-row-query-selector-value="tr.row">
+                    <h4>
+                        Aantal:
+                        {% if count > page_size %}{{ page_size }}/{% endif %}
+                        {{ count }}
+                    </h4>
+                    {% csrf_token %}
+                    <ul>
+                        {% for p in pages %}<li>{{ p }}</li>{% endfor %}
+                    </ul>
+                    {{ form.page }}
+                    {{ form.q }}
+                    {% if count %}
+                        {{ form.taakgebeurtenissen }}
+                    {% else %}
+                        <div class="alert alert--info">
+                            <span>{% include "icons/info-filled.svg" %}</span>
+                            <div>
+                                <p>Er zijn geen notificatie gevonden</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="form-row container__button">
+                        <div class="form-row btn-row">
+                            <button type="reset"
+                                    class="btn btn-tertiary"
+                                    data-controller="utils"
+                                    data-action="utils#goToUrl"
+                                    data-utils-url-param="{% url 'beheer' %}">
+                                <span>Annuleren</span>
+                            </button>
+                            <button type="submit" class="btn btn-action">
+                                <span>Verstuur</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock body %}

@@ -1,19 +1,29 @@
 import json
 import logging
+import uuid
 from collections import Counter
+from functools import reduce
+from operator import or_
 
-from apps.beheer.forms import AchtegrondTasksAanmakenForm
-from apps.taken.models import Taak
+from apps.beheer.forms import (
+    AchtegrondTasksAanmakenForm,
+    TaakgebeurtenisNotificatieIssuesForm,
+)
+from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus
 from apps.taken.tasks import (
     TASK_LOCK_KEY_NOTFICATIES_VOOR_TAKEN,
     task_taakopdracht_notificatie_voor_taakgebeurtenissen,
 )
+from celery import states
 from config.celery import app
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.cache import cache
 from django.db.models import Count, Q
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 
@@ -138,3 +148,103 @@ class MORCoreNotificatieStatusOverzicht(FormView):
 
         time.sleep(2)
         return super().form_invalid(form)
+
+
+class TaakgebeurtenisNotificatieIssuesView(PermissionRequiredMixin, FormView):
+    permission_required = "authorisatie.taakgebeurtenis_notificatie_issues_aanpassen"
+    template_name = "beheer/taakgebeurtenis_notificatie_issues/lijst.html"
+    form_class = TaakgebeurtenisNotificatieIssuesForm
+    success_url = reverse_lazy("taakgebeurtenis_notificatie_issues")
+    taakopdracht_choices = []
+    page_size = 100
+
+    def dispatch(self, request, *args, **kwargs):
+        self.taakgebeurtenissen = Taakgebeurtenis.objects.select_related(
+            "taak", "taakstatus", "task_taakopdracht_notificatie"
+        ).filter(
+            Q(notificatie_verstuurd=False)
+            & Q(taak__afgesloten_op__isnull=False)
+            & Q(taakstatus__naam=Taakstatus.NaamOpties.VOLTOOID)
+            & (
+                Q(task_taakopdracht_notificatie__isnull=True)
+                | Q(
+                    task_taakopdracht_notificatie__status__in=[
+                        states.FAILURE,
+                        states.SUCCESS,
+                    ]
+                )
+            )
+        )
+
+        if self.request.session.get("taakgebeurtenis_notificatie_issues__q"):
+            q = str(self.request.session.get("taakgebeurtenis_notificatie_issues__q"))
+            filters = {
+                "taak__titel__icontains": q,
+                "notificatie_error__icontains": q,
+            }
+            try:
+                q_uuid = uuid.UUID(q)
+                filters.update(
+                    {
+                        "uuid": q_uuid,
+                        "taak__uuid": q_uuid,
+                        "taak__melding__uuid": q_uuid,
+                    }
+                )
+            except Exception:
+                ...
+
+            q_objects = (Q(**{k: v}) for k, v in filters.items())
+            query = reduce(or_, q_objects)
+            self.taakgebeurtenissen = self.taakgebeurtenissen.filter(query)
+
+        self.initial.update(
+            {"q": self.request.session.get("taakgebeurtenis_notificatie_issues__q")}
+        )
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update(
+            {
+                "taakgebeurtenissen_choices": self.taakgebeurtenissen,
+            }
+        )
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context.update(
+            {
+                "count": self.taakgebeurtenissen.count(),
+            }
+        )
+        return context
+
+    def form_valid(self, form):
+        q = form.cleaned_data["q"]
+        taakgebeurtenissen = form.cleaned_data["taakgebeurtenissen"]
+        if taakgebeurtenissen:
+            start_task_taakopdracht_notificaties_mislukt = [
+                result
+                for result in [
+                    taakgebeurtenis.start_task_taakopdracht_notificatie()
+                    for taakgebeurtenis in taakgebeurtenissen
+                ]
+                if result
+            ]
+            getattr(
+                messages,
+                "warning" if start_task_taakopdracht_notificaties_mislukt else "info",
+            )(
+                self.request,
+                f"{len(taakgebeurtenissen) - len(start_task_taakopdracht_notificaties_mislukt)} van de {len(taakgebeurtenissen)} notificaties zijn verstuurd",
+            )
+
+        if q:
+            self.request.session["taakgebeurtenis_notificatie_issues__q"] = q
+        elif self.request.session.get("taakgebeurtenis_notificatie_issues__q"):
+            del self.request.session["taakgebeurtenis_notificatie_issues__q"]
+
+        return super().form_valid(form)

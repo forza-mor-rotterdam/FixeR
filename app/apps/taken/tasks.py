@@ -206,10 +206,12 @@ def task_taakopdracht_notificatie_v2(self, taakgebeurtenis_uuid):
         aangemaakt_op=taakgebeurtenis.aangemaakt_op.isoformat(),
         bijlagen=bijlagen,
     )
-    if taak_status_aanpassen_response.get("error"):
-        raise Exception(
-            f"task taakopdracht_notificatie: fout={taak_status_aanpassen_response.get('error')}, taak_uuid={taak.uuid}, taakopdracht_url={taak.taakopdracht}"
-        )
+
+    response_error = taak_status_aanpassen_response.get("error")
+
+    taakgebeurtenis.notificatie_verstuurd = not bool(response_error)
+    taakgebeurtenis.notificatie_error = response_error
+    taakgebeurtenis.save(update_fields=["notificatie_verstuurd", "notificatie_error"])
 
     for vervolg_taaktype in taakgebeurtenis.vervolg_taaktypes:
         task_taak_aanmaken.delay(
@@ -221,8 +223,11 @@ def task_taakopdracht_notificatie_v2(self, taakgebeurtenis_uuid):
             # temporary use 'interne opmerkingen' also for all new tasks, after redesign of this modal we will reimplement a message per task
             gebruiker_email=taakgebeurtenis.gebruiker,
         )
-    taakgebeurtenis.notificatie_verstuurd = True
-    taakgebeurtenis.save(update_fields=["notificatie_verstuurd"])
+
+    if response_error:
+        raise Exception(
+            f"task taakopdracht_notificatie: fout={response_error}, taak_uuid={taak.uuid}, taakopdracht_url={taak.taakopdracht}"
+        )
 
     return {
         "taak_uuid": taak.uuid,
