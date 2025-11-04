@@ -59,6 +59,7 @@ class Taakgebeurtenis(BasisModel):
         null=True,
     )
     notificatie_verstuurd = models.BooleanField(default=True)
+    notificatie_error = models.CharField(max_length=5000, null=True, blank=True)
     vervolg_taaktypes = ListJSONField(default=list)
 
     task_taakopdracht_notificatie = models.OneToOneField(
@@ -91,7 +92,7 @@ class Taakgebeurtenis(BasisModel):
         else:
             aangemaakt, message = restart_task(self.task_taakopdracht_notificatie)
             if not aangemaakt:
-                raise Exception(
+                return (
                     f"Het is niet gelukt om de bestaande tasks te herstarten: {message}"
                 )
 

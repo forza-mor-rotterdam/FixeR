@@ -231,7 +231,7 @@ HIGH_PRIORITY_TASKS = [
 ]
 DEFAULT_PRIORITY_TASKS = [
     "config.celery.test_regular_task",
-    "apps.taken.tasks.task_taakopdracht_notificatie",
+    "apps.taken.tasks.task_taakopdracht_notificatie_v2",
     "apps.taken.tasks.task_taak_aanmaken",
 ]
 LOW_PRIORITY_TASKS = []

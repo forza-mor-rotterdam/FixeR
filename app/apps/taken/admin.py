@@ -233,6 +233,7 @@ class TaakgebeurtenisAdmin(admin.ModelAdmin):
         "taak",
         "omschrijving_intern",
         "notificatie_verstuurd",
+        "notificatie_error",
     )
     raw_id_fields = (
         "taak",

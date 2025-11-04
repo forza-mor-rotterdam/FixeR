@@ -4,8 +4,6 @@ import json
 
 
 def restart_task(original_task):
-    if original_task.status != "FAILURE":
-        return False, f'{original_task.task_id} => Skipped. Not in "FAILURE" State'
     try:
         task_actual_name = original_task.task_name.split(".")[-1]
         module_name = ".".join(original_task.task_name.split(".")[:-1])
