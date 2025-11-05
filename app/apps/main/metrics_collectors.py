@@ -13,6 +13,7 @@ class CustomCollector(object):
     def collect(self):
         yield self.collect_meldingalias_data_update_issues_metrics()
         yield self.collect_taakgebeurtenis_notificatie_issues_metrics()
+        yield self.collect_celery_task_results()
 
     def collect_meldingalias_data_update_issues_metrics(self):
         c = CounterMetricFamily(
