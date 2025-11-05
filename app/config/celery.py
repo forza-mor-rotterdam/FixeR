@@ -3,9 +3,11 @@ import os
 import uuid
 
 import celery
-from celery import Celery, shared_task
+from celery import Celery, shared_task, states
 from celery.signals import setup_logging
 from django.conf import settings
+from django.core.exceptions import FieldError
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -171,3 +173,25 @@ def test_highest_priority_tasks(self, count=100, sleep=5):
 def test_high_priority_tasks(self, count=100, sleep=5):
     for i in range(0, count):
         test_urgent_task.delay(sleep=sleep, param_uuid=uuid.uuid4())
+
+
+@app.task(name="celery.backend_cleanup", shared=False, lazy=False)
+def backend_cleanup():
+    from config.celery import app
+    from django_celery_results.models import GroupResult, TaskResult
+
+    def delete_expired(cls, expires, batch_size=100000):
+        qs = cls._default_manager.get_all_expired(expires).order_by("id")
+        try:
+            qs = qs.filter(status=states.SUCCESS)
+        except FieldError:
+            ...
+        while True:
+            ids = list(qs.values_list("id", flat=True)[:batch_size])
+            if not ids:
+                break
+            with transaction.atomic():
+                cls._default_manager.filter(id__in=ids).delete()
+
+    delete_expired(TaskResult, app.conf.result_expires)
+    delete_expired(GroupResult, app.conf.result_expires)

@@ -9,7 +9,7 @@ from apps.beheer.forms import (
     AchtegrondTasksAanmakenForm,
     TaakgebeurtenisNotificatieIssuesForm,
 )
-from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus
+from apps.taken.models import Taak, Taakgebeurtenis
 from apps.taken.tasks import (
     TASK_LOCK_KEY_NOTFICATIES_VOOR_TAKEN,
     task_taakopdracht_notificatie_voor_taakgebeurtenissen,
@@ -159,20 +159,29 @@ class TaakgebeurtenisNotificatieIssuesView(PermissionRequiredMixin, FormView):
     page_size = 100
 
     def dispatch(self, request, *args, **kwargs):
-        self.taakgebeurtenissen = Taakgebeurtenis.objects.select_related(
-            "taak", "taakstatus", "task_taakopdracht_notificatie"
-        ).filter(
-            Q(notificatie_verstuurd=False)
-            & Q(taak__afgesloten_op__isnull=False)
-            & Q(taakstatus__naam=Taakstatus.NaamOpties.VOLTOOID)
-            & (
-                Q(task_taakopdracht_notificatie__isnull=True)
-                | Q(
-                    task_taakopdracht_notificatie__status__in=[
-                        states.FAILURE,
-                        states.SUCCESS,
-                    ]
+        self.taakgebeurtenissen = (
+            Taakgebeurtenis.objects.select_related(
+                "taak__melding", "task_taakopdracht_notificatie"
+            )
+            .filter(
+                Q(notificatie_verstuurd=False)
+                & (
+                    Q(task_taakopdracht_notificatie__isnull=True)
+                    | Q(
+                        task_taakopdracht_notificatie__status__in=[
+                            states.FAILURE,
+                            states.SUCCESS,
+                        ]
+                    )
                 )
+            )
+            .only(
+                "taak__melding__melding_uuid",
+                "taak__uuid",
+                "taak__titel",
+                "uuid",
+                "notificatie_error",
+                "task_taakopdracht_notificatie__status",
             )
         )
 
@@ -188,7 +197,7 @@ class TaakgebeurtenisNotificatieIssuesView(PermissionRequiredMixin, FormView):
                     {
                         "uuid": q_uuid,
                         "taak__uuid": q_uuid,
-                        "taak__melding__uuid": q_uuid,
+                        "taak__melding__melding_uuid": q_uuid,
                     }
                 )
             except Exception:
