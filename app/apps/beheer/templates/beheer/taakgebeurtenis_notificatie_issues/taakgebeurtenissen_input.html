@@ -22,6 +22,8 @@
                     <tr>
                         <th></th>
                         <th>Taak</th>
+                        <th>Taakgebeurtenis uuid</th>
+                        <th>Melding uuid</th>
                         <th>Notificatie error</th>
                     </tr>
                 </thead>
@@ -32,7 +34,11 @@
                                 <td>
                                     <div class="form-check">{% include "django/forms/widgets/input.html" with widget=option %}</div>
                                 </td>
-                                <td>{{ option.label.taak.titel }}</td>
+                                <td>
+                                    <a href="{% url 'taak_detail' option.label.taak.uuid %}">{{ option.label.taak.titel }}</a>
+                                </td>
+                                <td>{{ option.label.uuid }}</td>
+                                <td>{{ option.label.taak.melding.melding_uuid }}</td>
                                 <td>
                                     {% if option.label.notificatie_error %}
                                         {{ option.label.notificatie_error }}
