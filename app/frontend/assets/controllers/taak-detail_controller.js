@@ -219,7 +219,9 @@ export default class extends Controller {
     let textContent = 'Afstand onbekend'
     if (this.currentPosition) {
       const markerLocation = new L.LatLng(this.taakCoordinates[0], this.taakCoordinates[1])
-      textContent = `${Math.round(markerLocation.distanceTo(this.currentPosition))} meter afstand`
+      textContent = `Afstand: ${this.formatDistance(
+        Math.round(markerLocation.distanceTo(this.currentPosition))
+      )}`
     }
     element.textContent = textContent
   }
@@ -505,5 +507,21 @@ export default class extends Controller {
     })
     modalBackdrop.classList.remove('show')
     document.body.classList.remove('show-modal', 'show-modal--transparent', 'show-navigation')
+  }
+
+  formatDistance(meters) {
+    if (meters < 50) {
+      return `${Math.round(meters)} m`
+    }
+    if (meters < 100) {
+      return `${Math.round(meters / 5) * 5} m`
+    }
+    const km = meters / 1000
+    if (km < 100) {
+      return `${(Math.round(km * 10) / 10).toLocaleString('nl-NL', {
+        minimumFractionDigits: 1,
+      })} km`
+    }
+    return `${Math.round(km).toLocaleString('nl-NL')} km`
   }
 }
