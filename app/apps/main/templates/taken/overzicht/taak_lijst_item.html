@@ -55,6 +55,11 @@
                     <div>
                         <h2 class="h5">
                             {{ taak.melding.locatie_verbose }}
+                            {% if taak.melding.plaatsnaam %}
+                                <small>
+                                    {% if taak.melding.plaatsnaam != "Rotterdam" %}, {{ taak.melding.plaatsnaam }}{% endif %}
+                                </small>
+                            {% endif %}
                             {% if taak.taakstatus.naam %}
                                 <span class="badge {% if taak.taakstatus.naam == 'nieuw' or taak.taakstatus.naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span>
                             {% endif %}
@@ -62,13 +67,6 @@
                                 <span class="badge-count badge-count--info">i</span>
                             {% endif %}
                         </h2>
-                        {% if taak.melding.postcode or taak.melding.plaatsnaam %}
-                            <strong>
-                                {% if taak.melding.postcode %}{{ taak.melding.postcode }}{% endif %}
-                                {% if taak.melding.postcode and taak.melding.plaatsnaam %},{% endif %}
-                                {% if taak.melding.plaatsnaam %}{{ taak.melding.plaatsnaam }}{% endif %}
-                            </strong>
-                        {% endif %}
                         <div>
                             <span class="incident__category">{{ taak.titel }}</span>
                         </div>
