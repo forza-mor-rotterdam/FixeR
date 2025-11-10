@@ -79,8 +79,6 @@
         border: none;
         margin-left: 0;
         &:first-child {
-            margin-right: 1rem;
-
             label {
                 &::before {
                     content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC40MTQzIDMuMjEwNDVMMTIuNjkwNCAyMi41MjAzTDkuNDcyMSAxNC4xNTI3TDEuMTA0NDkgMTAuOTM0NEwyMC40MTQzIDMuMjEwNDVaTTUuMjExODIgMTAuOTA3TDEwLjYzMjggMTIuOTkyTDEyLjcxNzggMTguNDEzTDE3LjcyMTggNS45MDMwM0w1LjIxMTgyIDEwLjkwN1oiIGZpbGw9IiM0MDRCNEYiLz4KPC9zdmc+Cg==");

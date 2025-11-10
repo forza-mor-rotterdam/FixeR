@@ -615,6 +615,7 @@
                 margin-top: 0;
                 overflow: hidden;
                 transition: height $transition-duration-default $transition-ease-default;
+                word-break: break-word;
             }
             small {
                 font-size: 0.75em;
