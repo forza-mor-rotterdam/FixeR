@@ -513,11 +513,11 @@ export default class extends Controller {
     if (meters < 50) {
       return `${Math.round(meters)} m`
     }
-    if (meters < 100) {
+    if (meters < 96) {
       return `${Math.round(meters / 5) * 5} m`
     }
     const km = meters / 1000
-    if (km < 100) {
+    if (km < 95) {
       return `${(Math.round(km * 10) / 10).toLocaleString('nl-NL', {
         minimumFractionDigits: 1,
       })} km`
