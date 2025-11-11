@@ -215,7 +215,7 @@ export default class MapController extends Controller {
       this.preventScroll = false
     })
 
-    const paragraphDistance = `<p>Afstand: <span data-taken-overzicht-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span>&nbsp;meter</p>`
+    const paragraphDistance = `<p>Afstand: <span data-taken-overzicht-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span></p>`
     const spanRemark = markerData.hasRemark
       ? `<span class="badge-count badge-count--info">i</span>`
       : ''
