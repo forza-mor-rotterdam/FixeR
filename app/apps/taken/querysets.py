@@ -54,6 +54,7 @@ class TaakQuerySet(QuerySet):
                 "melding__locatie_verbose",
                 "melding__vak",
                 "melding__thumbnail_afbeelding_relative_url",
+                "melding__response_json",
             )
         )
 
