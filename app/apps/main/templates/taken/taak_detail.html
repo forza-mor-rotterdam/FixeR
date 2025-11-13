@@ -11,9 +11,6 @@
 {% endblock title %}
 {% block before_modal_content %}
     {% with melding=taak.melding.response_json %}
-        {% block pageheader %}
-            {{ taak.melding.locatie_verbose }}
-        {% endblock pageheader %}
         <turbo-frame id="taak_basis">
         {% with geometrie=taak.melding.geometrie %}
             <div>
@@ -36,6 +33,7 @@
                          {% if not DEBUG %}data-taak-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
                          {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
                         <div class="taak-detail">
+                            1-{{ melding }}-2
                             <div class="container__header-taaknavigatie">
                                 {% include "taken/taak_detail_header.html" %}
                                 {% if not taak_in_profiel and not taak.afgesloten_op %}
