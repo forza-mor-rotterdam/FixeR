@@ -53,16 +53,16 @@
                 </div>
                 <div class="container__info">
                     <div>
+                        {{ taak.melding.urgentie }}
                         <h2 class="h5">
-                            {{ taak.melding.locatie_verbose }}
-                            {% if taak.melding.plaatsnaam %}
-                                <small>
-                                    {% if taak.melding.plaatsnaam != "Rotterdam" %}, {{ taak.melding.plaatsnaam }}{% endif %}
-                                </small>
-                            {% endif %}
-                            {% if taak.taakstatus.naam %}
-                                <span class="badge {% if taak.taakstatus.naam == 'nieuw' or taak.taakstatus.naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span>
-                            {% endif %}
+                            {% spaceless %}
+                                {{ taak.melding.locatie_verbose }}
+                                {% if taak.melding.plaatsnaam %}
+                                    <small>
+                                        {% if taak.melding.plaatsnaam != "Rotterdam" %}, {{ taak.melding.plaatsnaam }}{% endif %}
+                                    </small>
+                                {% endif %}
+                            {% endspaceless %}
                             {% if taak.laatste_taakgebeurtenis_omschrijving_intern %}
                                 <span class="badge-count badge-count--info">i</span>
                             {% endif %}
@@ -70,10 +70,15 @@
                         <div>
                             <span class="incident__category">{{ taak.titel }}</span>
                         </div>
-                        <div class="incident__moment">
-                            <span data-taak-target="incidentDate">
+                    </div>
+                    <div class="incident__moment">
+                        {% spaceless %}
+                            <span data-controller="utils"
+                                  data-utils-target="dateVerbose"
+                                  data-utils-date-value="{{ taak.taakstatus.aangemaakt_op|date:'D d M Y'|lower }}"></span>
+                            {% if taak.taakstatus.aangemaakt_op|time %}
                                 {% localize on %}
-                                {{ taak.taakstatus.aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}
+                                <span>, {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}</span>
                             {% endlocalize %}
                         </span>
                         {% if taak.melding.locatie_type == "adres" %}
@@ -88,6 +93,9 @@
                         {% endif %}
                     </div>
                 </div>
+                {% if taak.taakstatus.naam %}
+                    <span class="badge {% if taak.taakstatus.naam == 'nieuw' or taak.taakstatus.naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span>
+                {% endif %}
             </div>
         </a>
         {% if taak.melding.geometrie %}
