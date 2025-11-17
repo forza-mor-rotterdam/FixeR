@@ -4,18 +4,15 @@
             <div class="form-row s12  ">
                 <div class="wrapper-horizontal">
                     <ul class="list-clean">
-                        {% if page_obj.has_previous %}
-                            <li class="has-text">
-                                <div>
-                                    <a data-action="taken-overzicht#onPageClickEvent:prevent"
-                                       data-taken-overzicht-page-param="{{ page_obj.previous_page_number }}"
-                                       class="btn--previous">
-                                        {% include "icons/arrow-right.svg" %}
-                                        Vorige
-                                    </a>
-                                </div>
-                            </li>
-                        {% endif %}
+                        <li class="has-text">
+                            <div>
+                                <a {% if page_obj.has_previous %} data-action="taken-overzicht#onPageClickEvent:prevent" data-taken-overzicht-page-param="{{ page_obj.previous_page_number }}" {% endif %}
+                                   class="btn--previous{% if not page_obj.has_previous %} disabled{% endif %}">
+                                    {% include "icons/arrow-right.svg" %}
+                                    Vorige
+                                </a>
+                            </div>
+                        </li>
                         {% for p in page_obj.paginator.page_range %}
                             {% if p == 1 and page_obj.number >= 3 %}
                                 <li>
@@ -43,19 +40,16 @@
                                 </li>
                             {% endif %}
                         {% endfor %}
-                        {% if page_obj.has_next %}
-                            <li class="has-text">
-                                <div>
-                                    <a data-action="taken-overzicht#onPageClickEvent:prevent"
-                                       data-taken-overzicht-page-param="{{ page_obj.next_page_number }}"
-                                       href="#"
-                                       class="btn--next">
-                                        Volgende
-                                        {% include "icons/arrow-right.svg" %}
-                                    </a>
-                                </div>
-                            </li>
-                        {% endif %}
+                        <li class="has-text">
+                            <div>
+                                <a {% if page_obj.has_next %} data-action="taken-overzicht#onPageClickEvent:prevent" data-taken-overzicht-page-param="{{ page_obj.next_page_number }}" {% endif %}
+                                   href="#"
+                                   class="btn--next{% if not page_obj.has_next %} disabled{% endif %}">
+                                    Volgende
+                                    {% include "icons/arrow-right.svg" %}
+                                </a>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
