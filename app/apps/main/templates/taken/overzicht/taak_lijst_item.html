@@ -95,7 +95,7 @@
                 {% if taak.melding.response_json.urgentie >= 0.5 %}
                     <span class="badge__gradient-mask"><span class="badge badge--red">Spoed</span></span>
                 {% elif taak.taakstatus.naam %}
-                    <span class="badge__gradient-mask"><span class="badge {% if taak.taakstatus.naam == 'nieuw' or taak.taakstatus.naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span></span>
+                    <span class="badge__gradient-mask"><span class="badge {% if taak.taakstatus.naam == 'openstaand' %}badge--lightblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% elif taak.taakstatus.naam == voltooid %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span></span>
                 {% endif %}
             </div>
         </a>
