@@ -16,15 +16,26 @@
     }
 
     &--lightblue {
-        background-color: $blue-light;
+        background-color: $blue-200;
+        color: $black;
+        &::before {
+            background-color: $blue-900;
+        }
     }
 
     &--darkblue {
-        background-color: $blue-dark;
+        background-color: $blue-900;
+        &::before {
+            background-color: $blue-200;
+        }
     }
 
     &--green {
-        background-color: $greenblue;
+        background-color: $green-200;
+        color: $black;
+        &::before {
+            background-color: $green-900;
+        }
     }
 
     &--red {
@@ -32,8 +43,11 @@
     }
 
     &--yellow {
-        background-color: $warning;
+        background-color: $orange-200;
         color: $black;
+        &::before {
+            background-color: $orange-800;
+        }
     }
 }
 
