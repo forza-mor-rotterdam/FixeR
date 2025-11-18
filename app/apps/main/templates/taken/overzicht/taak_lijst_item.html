@@ -76,19 +76,16 @@
                             <span data-taak-target="incidentDate">
                                 {% localize on %}
                                 {{ taak.taakstatus.aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}
-                                <br>
                             {% endlocalize %}
-                        </span>
-                    </div>
-                    {% with taak.melding.geometrie as geo %}
-                        <div class="incident__distance">
+                        </span> |
+                        {% with taak.melding.geometrie as geo %}
                             <span>
                                 <span data-taken-overzicht-target="taakAfstand"
                                       data-latitude="{{ geo.1|replace_comma_by_dot }}"
-                                      data-longitude="{{ geo.0|replace_comma_by_dot }}"></span>&nbsp;meter
+                                      data-longitude="{{ geo.0|replace_comma_by_dot }}"></span>
                             </span>
-                        </div>
-                    {% endwith %}
+                        {% endwith %}
+                    </div>
                 </div>
             </div>
         </a>

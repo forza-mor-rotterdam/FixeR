@@ -1,3 +1,5 @@
+import uuid
+
 import celery
 from apps.main.services import MORCoreService
 from apps.main.utils import to_base64
@@ -178,6 +180,59 @@ def task_taakopdracht_notificatie(
         "taak_id": taak.uuid,
         "taakopdracht_url": taak.taakopdracht,
         "melding_uuid": taak.melding.response_json.get("uuid"),
+    }
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def task_taakopdracht_notificatie_v2(self, taakgebeurtenis_uuid):
+    from apps.taken.models import Taakgebeurtenis
+
+    taakgebeurtenis = Taakgebeurtenis.objects.get(uuid=uuid.UUID(taakgebeurtenis_uuid))
+    taak = taakgebeurtenis.taak
+    melding_uuid = taak.melding.response_json.get("uuid")
+
+    if taakgebeurtenis.notificatie_verstuurd:
+        return "De notificatie voor deze taakgebeurtenis is al verstuurd"
+
+    bijlagen = [{"bestand": to_base64(b)} for b in taakgebeurtenis.bijlage_paden]
+
+    taak_status_aanpassen_response = MORCoreService().taakopdracht_notificatie(
+        melding_url=taak.melding.bron_url,
+        taakopdracht_url=taak.taakopdracht,
+        status=taakgebeurtenis.taakstatus.naam if taakgebeurtenis.taakstatus else None,
+        resolutie=taakgebeurtenis.resolutie,
+        gebruiker=taakgebeurtenis.gebruiker,
+        omschrijving_intern=taakgebeurtenis.omschrijving_intern,
+        aangemaakt_op=taakgebeurtenis.aangemaakt_op.isoformat(),
+        bijlagen=bijlagen,
+    )
+
+    response_error = taak_status_aanpassen_response.get("error")
+
+    taakgebeurtenis.notificatie_verstuurd = not bool(response_error)
+    taakgebeurtenis.notificatie_error = response_error
+    taakgebeurtenis.save(update_fields=["notificatie_verstuurd", "notificatie_error"])
+
+    for vervolg_taaktype in taakgebeurtenis.vervolg_taaktypes:
+        task_taak_aanmaken.delay(
+            melding_uuid=melding_uuid,
+            taaktype_url=vervolg_taaktype.get("taaktype_url"),
+            titel=vervolg_taaktype.get("omschrijving"),
+            bericht=vervolg_taaktype.get("bericht"),
+            # bericht=vervolg_taak_bericht,
+            # temporary use 'interne opmerkingen' also for all new tasks, after redesign of this modal we will reimplement a message per task
+            gebruiker_email=taakgebeurtenis.gebruiker,
+        )
+
+    if response_error:
+        raise Exception(
+            f"task taakopdracht_notificatie: fout={response_error}, taak_uuid={taak.uuid}, taakopdracht_url={taak.taakopdracht}"
+        )
+
+    return {
+        "taak_uuid": taak.uuid,
+        "taakopdracht_url": taak.taakopdracht,
+        "melding_uuid": melding_uuid,
     }
 
 

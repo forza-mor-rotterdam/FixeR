@@ -34,7 +34,7 @@
                 align-items: center;
                 justify-content: center;
                 height: 32px;
-                font-size: 12px;
+                font-size: 0.778em;
                 min-height: 0;
                 font-weight: 300;
                 line-height: 12px;
@@ -139,7 +139,7 @@
 
         label {
             font-weight: 300;
-            font-size: $fz-14;
+            font-size: 0.875em;
 
             input {
                 vertical-align: bottom;
@@ -371,6 +371,7 @@
                     margin: 0 0 4px;
                     text-decoration: none;
                     padding-right: 90px;
+                    line-height: 1;
 
                     .badge {
                         position: absolute;
@@ -386,9 +387,6 @@
                     margin-bottom: 2px;
                 }
 
-                .incident__distance {
-                    margin: 0.25rem 0;
-                }
                 .incident__category {
                     color: $gray-tint11;
                 }
@@ -398,10 +396,8 @@
                 }
 
                 .incident__moment {
-                    display: flex;
-                    justify-content: space-between;
-                    span {
-                        flex: 1;
+                    &:last-child {
+                        margin-bottom: 0.5rem;
                     }
                 }
 

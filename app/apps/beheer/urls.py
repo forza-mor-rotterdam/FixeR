@@ -12,7 +12,11 @@ from apps.authorisatie.views import (
     RechtengroepLijstView,
     RechtengroepVerwijderenView,
 )
-from apps.beheer.views import MORCoreNotificatieStatusOverzicht, beheer
+from apps.beheer.views import (
+    MORCoreNotificatieStatusOverzicht,
+    TaakgebeurtenisNotificatieIssuesView,
+    beheer,
+)
 from apps.context.views import (
     ContextAanmakenView,
     ContextAanpassenView,
@@ -132,5 +136,10 @@ urlpatterns = [
         "release-notes/<int:pk>/verwijderen/",
         ReleaseNoteVerwijderenView.as_view(),
         name="release_note_verwijderen",
+    ),
+    path(
+        "taakgebeurtenis-notificatie-issues/",
+        TaakgebeurtenisNotificatieIssuesView.as_view(),
+        name="taakgebeurtenis_notificatie_issues",
     ),
 ]

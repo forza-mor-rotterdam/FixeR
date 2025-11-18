@@ -4,10 +4,12 @@ import os
 import uuid
 from datetime import datetime
 
+import prometheus_client
 from apps.authenticatie.models import AFSTAND_SORTING_KEY
 from apps.context.models import Context
 from apps.instellingen.models import Instelling
 from apps.main.forms import TaakBehandelForm, TakenLijstFilterForm
+from apps.main.metrics_collectors import CustomCollector
 from apps.main.services import MORCoreService, PDOKService, TaakRService
 from apps.main.utils import melding_naar_tijdlijn
 from apps.taken.filters import FILTERS_BY_KEY
@@ -585,3 +587,14 @@ def meldingen_bestand(request):
 def meldingen_bestand_protected(request):
     modified_path = request.path.replace(settings.MOR_CORE_PROTECTED_URL_PREFIX, "")
     return _meldingen_bestand(request, modified_path)
+
+
+def prometheus_django_metrics(request):
+    registry = prometheus_client.CollectorRegistry()
+    registry.register(CustomCollector())
+    metrics_page = prometheus_client.generate_latest(registry)
+    # from django.shortcuts import redirect, render
+    # return render(request, "base.html", {"content": metrics_page})
+    return HttpResponse(
+        metrics_page, content_type=prometheus_client.CONTENT_TYPE_LATEST
+    )

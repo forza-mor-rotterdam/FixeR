@@ -196,11 +196,13 @@ export default class extends Controller {
         taakAfstand.dataset.latitude,
         taakAfstand.dataset.longitude
       )
-      taakAfstand.textContent = Math.round(
-        markerLocation.distanceTo([
-          this.currentPosition.coords.latitude,
-          this.currentPosition.coords.longitude,
-        ])
+      taakAfstand.textContent = this.formatDistance(
+        Math.round(
+          markerLocation.distanceTo([
+            this.currentPosition.coords.latitude,
+            this.currentPosition.coords.longitude,
+          ])
+        )
       )
     }
   }
@@ -255,5 +257,21 @@ export default class extends Controller {
       this.clearSelectedTaakUuidField()
       this.element.requestSubmit()
     }, 200)
+  }
+
+  formatDistance(meters) {
+    if (meters < 50) {
+      return `${Math.round(meters)} m`
+    }
+    if (meters < 96) {
+      return `${Math.round(meters / 5) * 5} m`
+    }
+    const km = meters / 1000
+    if (km < 99.9) {
+      return `${(Math.round(km * 10) / 10).toLocaleString('nl-NL', {
+        minimumFractionDigits: 1,
+      })} km`
+    }
+    return `${Math.round(km).toLocaleString('nl-NL')} km`
   }
 }

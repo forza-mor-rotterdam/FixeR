@@ -2,10 +2,13 @@ import json
 import logging
 
 from apps.main.services import MORCoreService
+from celery import states
+from config.celery import app
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
+from django_celery_results.models import TaskResult
 from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 from utils.constanten import BEGRAAFPLAATS_MIDDELS_ID
@@ -62,12 +65,23 @@ class MeldingAlias(BasisModel):
         null=True,
     )
     melding_uuid = models.UUIDField(null=True, blank=True)
+    response_status_code = models.PositiveSmallIntegerField(
+        default=200,
+    )
+    task_update_melding_alias_data = models.OneToOneField(
+        to="django_celery_results.TaskResult",
+        related_name="meldingalias",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = "Melding alias"
         verbose_name_plural = "Melding aliassen"
 
         indexes = [
+            models.Index(fields=["locatie_type"]),
             models.Index(fields=["straatnaam"]),
             models.Index(fields=["huisnummer"]),
             models.Index(fields=["huisletter"]),
@@ -79,6 +93,7 @@ class MeldingAlias(BasisModel):
             models.Index(fields=["begraafplaats"]),
             models.Index(fields=["locatie_verbose"]),
             GinIndex(fields=["bron_signaal_ids"]),
+            models.Index(fields=["response_status_code"]),
         ]
 
     class MeldingNietValide(Exception):
@@ -88,13 +103,24 @@ class MeldingAlias(BasisModel):
         try:
             response = MORCoreService().haal_data(self.bron_url, raw_response=True)
         except MORCoreService.BasisUrlFout as e:
-            print(e)
+            logger.error(
+                f"Melding ophalen fout: verkeerde basis url voor MORCoreService. url={self.bron_url}, error={e}"
+            )
+            self.response_status_code = 400
             return
-        if response.status_code not in [200, 404]:
-            error = f"Melding ophalen fout: status code: {response.status_code}, melding_alias id: {self.id}"
-            logger.error(error)
-            raise Exception(error)
-        self.response_json = response.json()
+        except Exception as e:
+            self.response_status_code = 500
+            logger.error(f"Melding ophalen fout: {e}")
+            return
+        try:
+            self.response_status_code = int(response.status_code)
+        except Exception:
+            self.response_status_code = 500
+        try:
+            self.response_json = response.json()
+        except Exception as e:
+            logger.error(f"Melding ophalen json parse fout: {e}")
+            self.response_status_code = 415
 
     def get_locatie_verbose(self):
         locatie_verbose = "Geen locatie gegevens"
@@ -196,6 +222,37 @@ class MeldingAlias(BasisModel):
         self.set_zoek_tekst()
         self.set_locatie_verbose()
         self.melding_uuid = melding.get("uuid")
+
+    def get_task_update_melding_alias_data(self):
+        from apps.aliassen.tasks import task_update_melding_alias_data_v2
+
+        task_update_melding_alias_data_taskresult = (
+            task_update_melding_alias_data_v2.delay(
+                meldingalias_uuid=str(self.uuid),
+            )
+        )
+        taskresults = TaskResult.objects.filter(
+            task_id=task_update_melding_alias_data_taskresult.task_id
+        )
+        return taskresults[0] if taskresults else None
+
+    def start_task_update_melding_alias_data(self):
+        if (
+            self.task_update_melding_alias_data
+            and self.task_update_melding_alias_data.status == states.STARTED
+        ):
+            return
+        if (
+            self.task_update_melding_alias_data
+            and self.task_update_melding_alias_data.status
+            in [states.PENDING, states.RETRY]
+        ):
+            app.control.revoke(
+                self.task_update_melding_alias_data.task_id, terminate=True
+            )
+
+        self.task_update_melding_alias_data = self.get_task_update_melding_alias_data()
+        self.save(update_fields=["task_update_melding_alias_data"])
 
     def __str__(self) -> str:
         return self.bron_url

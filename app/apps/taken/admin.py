@@ -1,14 +1,8 @@
-import ast
-import importlib
-import json
-
 from apps.taken.admin_filters import (
     AfgeslotenOpFilter,
     ResolutieFilter,
     TaakopdrachtStatusCodeFilter,
     TaakopdrachtStatusFilter,
-    TaakstatusFilter,
-    TitelFilter,
 )
 from apps.taken.models import Taak, TaakDeellink, Taakgebeurtenis, Taakstatus, Taaktype
 from apps.taken.tasks import (
@@ -21,35 +15,17 @@ from django.contrib import admin, messages
 from django.contrib.admin import DateFieldListFilter
 from django.db.models import Count
 from django.utils.safestring import mark_safe
+from django_celery_beat.admin import PeriodicTaskAdmin
+from django_celery_beat.models import PeriodicTask
 from django_celery_results.admin import TaskResultAdmin
 from django_celery_results.models import TaskResult
+from utils.django_celery_results import restart_task
 
 
 def retry_celery_task_admin_action(modeladmin, request, queryset):
     msg = ""
     for task_res in queryset:
-        if task_res.status != "FAILURE":
-            msg += f'{task_res.task_id} => Skipped. Not in "FAILURE" State<br>'
-            continue
-        try:
-            task_actual_name = task_res.task_name.split(".")[-1]
-            module_name = ".".join(task_res.task_name.split(".")[:-1])
-            kwargs = json.loads(task_res.task_kwargs)
-            if isinstance(kwargs, str):
-                kwargs = kwargs.replace("'", '"')
-                kwargs = json.loads(kwargs)
-                if kwargs:
-                    getattr(
-                        importlib.import_module(module_name), task_actual_name
-                    ).apply_async(kwargs=kwargs, task_id=task_res.task_id)
-            if not kwargs:
-                args = ast.literal_eval(ast.literal_eval(task_res.task_args))
-                getattr(
-                    importlib.import_module(module_name), task_actual_name
-                ).apply_async(args, task_id=task_res.task_id)
-            msg += f"{task_res.task_id} => Successfully sent to queue for retry.<br>"
-        except Exception as ex:
-            msg += f"{task_res.task_id} => Unable to process. Error: {ex}<br>"
+        msg += f"{restart_task(task_res)}<br>"
     messages.info(request, mark_safe(msg))
 
 
@@ -69,10 +45,10 @@ class TaakAdmin(admin.ModelAdmin):
         "resolutie",
         "aangemaakt_op",
         "aangepast_op",
+        "afgesloten_op",
         "verwijderd_op",
         "taakopdracht",
     )
-    list_editable = ("verwijderd_op",)
     readonly_fields = (
         "uuid",
         "aangemaakt_op",
@@ -113,14 +89,16 @@ class TaakAdmin(admin.ModelAdmin):
         "uuid",
         "taakopdracht",
         "melding__bron_url",
+        "melding__uuid",
+        "taaktype__uuid",
     ]
     list_filter = (
-        TaakstatusFilter,
+        "taakstatus__naam",
         TaakopdrachtStatusFilter,
         TaakopdrachtStatusCodeFilter,
         ResolutieFilter,
         AfgeslotenOpFilter,
-        TitelFilter,
+        "taaktype__omschrijving",
         ("afgesloten_op", DateFieldListFilter),
         ("verwijderd_op", DateFieldListFilter),
         ("aangemaakt_op", DateFieldListFilter),
@@ -200,6 +178,14 @@ class TaaktypeAdmin(admin.ModelAdmin):
         "omschrijving",
         "aangemaakt_op",
     )
+    search_fields = [
+        "uuid",
+        "taken_voor_taaktype__uuid",
+    ]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.prefetch_related("taken_voor_taaktype")
 
 
 class TakenAantalFilter(admin.SimpleListFilter):
@@ -223,25 +209,50 @@ class TakenAantalFilter(admin.SimpleListFilter):
         )
 
 
+def taakgebeurtenis_notificatie_action(modeladmin, request, queryset):
+    qs = queryset.filter(notificatie_verstuurd=False)
+    for taakgebeurtenis in qs:
+        taakgebeurtenis.start_task_taakopdracht_notificatie()
+    messages.info(request, f"{qs.count()} taakgebeurtenissen tasks zijn gestart")
+
+
+taakgebeurtenis_notificatie_action.short_description = (
+    "Start notificatie naar MORCore voor taakgebeurtenissen"
+)
+
+
 class TaakgebeurtenisAdmin(admin.ModelAdmin):
     list_display = (
         "id",
+        "uuid",
         "aangemaakt_op",
+        "aangepast_op",
         "gebruiker",
         "taakstatus",
         "resolutie",
         "taak",
         "omschrijving_intern",
         "notificatie_verstuurd",
+        "notificatie_error",
     )
     raw_id_fields = (
         "taak",
         "taakstatus",
+        "task_taakopdracht_notificatie",
     )
     search_fields = [
+        "uuid",
         "taak__uuid",
     ]
+    actions = (taakgebeurtenis_notificatie_action,)
     list_filter = ("notificatie_verstuurd",)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related(
+            "taak__taaktype",
+            "taakstatus",
+        )
 
 
 class TaakDeellinkAdmin(admin.ModelAdmin):
@@ -252,6 +263,17 @@ class TaakDeellinkAdmin(admin.ModelAdmin):
         "signed_data",
         "taak",
     )
+    search_fields = [
+        "uuid",
+        "taak__uuid",
+    ]
+    raw_id_fields = ("taak",)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related(
+            "taak__taaktype",
+        )
 
 
 class TaakstatusAdmin(admin.ModelAdmin):
@@ -263,14 +285,37 @@ class TaakstatusAdmin(admin.ModelAdmin):
         "aangemaakt_op",
         "aangepast_op",
     )
+    search_fields = [
+        "uuid",
+        "taak__uuid",
+        "taakgebeurtenis_voor_taakstatus__uuid",
+    ]
     raw_id_fields = ("taak",)
+    readonly_fields = (
+        "uuid",
+        "aangemaakt_op",
+        "aangepast_op",
+    )
 
 
 class CustomTaskResultAdmin(TaskResultAdmin):
+    list_display = (
+        "id",
+        "task_id",
+        "task_name",
+        "status",
+        "result",
+        "date_created",
+        "date_done",
+        "date_started",
+        "task_args",
+        "task_kwargs",
+    )
     list_filter = (
         "status",
         "date_created",
         "date_done",
+        # "periodic_task_name",
         "task_name",
     )
     actions = [
@@ -278,8 +323,15 @@ class CustomTaskResultAdmin(TaskResultAdmin):
     ]
 
 
+class CustomPeriodicTaskAdmin(PeriodicTaskAdmin):
+    raw_id_fields = ("clocked",)
+
+
 admin.site.unregister(TaskResult)
 admin.site.register(TaskResult, CustomTaskResultAdmin)
+
+admin.site.unregister(PeriodicTask)
+admin.site.register(PeriodicTask, CustomPeriodicTaskAdmin)
 
 admin.site.register(Taak, TaakAdmin)
 admin.site.register(Taaktype, TaaktypeAdmin)
