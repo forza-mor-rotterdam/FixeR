@@ -4,6 +4,7 @@ from apps.aliassen.models import MeldingAlias
 from apps.main.templatetags.gebruikers_tags import _get_gebruiker_object_middels_email
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
+from celery import states
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
@@ -89,7 +90,10 @@ class Taakgebeurtenis(BasisModel):
                 self.get_task_taakopdracht_notificatie()
             )
             self.save(update_fields=["task_taakopdracht_notificatie"])
-        else:
+        elif self.task_taakopdracht_notificatie.status in [
+            states.FAILURE,
+            states.SUCCESS,
+        ]:
             aangemaakt, message = restart_task(self.task_taakopdracht_notificatie)
             if not aangemaakt:
                 return (
