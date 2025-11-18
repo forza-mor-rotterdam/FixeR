@@ -58,7 +58,7 @@ services:
     ports:
       - "6379"
 
-  app_celery_worker:
+  celery:
     build: *build-definition
     command: ["bash", "/app/deploy/docker-entrypoint.celery.sh"]
     depends_on:
