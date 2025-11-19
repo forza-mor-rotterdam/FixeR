@@ -96,16 +96,23 @@
                 {% endif %}
             </div>
         </div>
-        <div class="full-page-view full-page-view__filters" tabindex="0">
+        <dialog class="infosheet full-page-view full-page-view__filters"
+                tabindex="0"
+                data-taken-overzicht-target="filtersheet">
             <div class="full-page-view__main">
                 <div class="full-page-view__header">
                     <div class="full-page-view__action_container">
-                        <h2 class="full-page-view__title">Filters</h2>
-                        <button type="button"
-                                class="btn btn-close"
-                                aria-label="Sluit"
-                                data-action="taken-overzicht#hideFilters"></button>
+                        <h2 class="full-page-view__title">
+                            Filters
+                            {% comment %}  <span class="count count--filter"
+        data-taken-overzicht-target="selectedChoicesCount"></span> {% endcomment %}
+                        </h2>
+                        <button autofocus
+                                class="btn-close--small"
+                                data-action="taken-overzicht#hideFilters"
+                                aria-label="Sluiten">{% include "icons/close.svg" %}</button>
                     </div>
+                    <div class="scroll-handle" data-taken-overzicht-target="scrollHandle"></div>
                 </div>
                 <div class="full-page-view__scroll-pane">
                     <div class="full-page-view__content">
@@ -113,7 +120,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </dialog>
     </form>
     </turbo-frame>
 {% endblock body %}
