@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
+let scrollPositionForDialog = 0
 export default class extends Controller {
   static outlets = ['taken-kaart', 'taken-lijst']
 
@@ -12,6 +13,7 @@ export default class extends Controller {
     'zoekFieldDefaultContainer',
     'toggleMapView',
     'toggleZoeken',
+    'filtersheet',
     'filterInput',
     'cancelZoek',
     'zoekField',
@@ -28,6 +30,7 @@ export default class extends Controller {
     'selectedTaakUuidField',
     'taakAfstand',
     'filtersActiveField',
+    'scrollHandle',
   ]
 
   initialize() {
@@ -93,6 +96,65 @@ export default class extends Controller {
   clearSelectedTaakUuidField() {
     this.selectedTaakUuidFieldTarget.value = ''
   }
+  scrollHandleTargetConnected(element) {
+    this.startX = 0
+    this.startY = 0
+    this.currentX = 0
+    this.currentY = 0
+    this.isSwiping = false
+    if ('ontouchstart' in window) {
+      element.addEventListener('touchstart', (e) => {
+        this.handleTouchStart(e)
+      })
+
+      element.addEventListener('touchmove', (e) => {
+        this.handleTouchMove(e)
+      })
+
+      element.addEventListener('touchend', () => {
+        this.handleTouchEnd()
+      })
+    }
+  }
+
+  handleTouchStart(e) {
+    this.startX = e.touches[0].clientX
+    this.startY = e.touches[0].clientY
+    this.currentX = this.startX // in het geval gebruiker alleen mmar tapt ipv swipet
+    this.currentY = this.startY
+    this.isSwiping = true
+  }
+  handleTouchMove(e) {
+    if (!this.isSwiping) return
+    this.currentX = e.touches[0].clientX
+    this.currentY = e.touches[0].clientY
+
+    const deltaX = this.currentX - this.startX
+    const deltaY = this.currentY - this.startY
+
+    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+      e.preventDefault()
+      if (deltaY > 0) {
+        this.filtersheetTarget.style.transform = `translateY(${deltaY}px)`
+      }
+    }
+  }
+
+  handleTouchEnd() {
+    if (!this.isSwiping) return
+    const swipeDistance = this.startY + this.currentY
+    if (swipeDistance > 100) {
+      this.filtersheetTarget.style.transform = ``
+      this.hideFilters()
+    } else if (swipeDistance < 10) {
+      // Reset positie als swipe te kort is
+      this.filtersheetTarget.style.transform = `translateY(0)`
+    } else {
+      // Reset positie als swipe te kort is
+      this.filtersheetTarget.style.transform = `translateY(0)`
+    }
+  }
+
   updateSelectedChoicesCount() {
     this.selectedChoicesCountTargets.map((elem) => {
       let container = elem.closest('details.filter')
@@ -242,10 +304,29 @@ export default class extends Controller {
   }
   showFilters() {
     this.element.classList.add('show-filters')
+    scrollPositionForDialog = window.scrollY
+    document.body.style.top = `-${scrollPositionForDialog}px`
+    document.body.style.position = 'fixed'
+    this.filtersheetTarget.showModal()
+    this.filtersheetTarget.addEventListener('click', (event) => {
+      if (event.target === event.currentTarget) {
+        event.stopPropagation()
+        this.hideFilters()
+      }
+    })
   }
 
   hideFilters() {
     this.element.classList.remove('show-filters')
+    document.body.style.position = ''
+    document.body.style.top = ''
+    this.filtersheetTarget.close()
+    window.scrollTo({ top: scrollPositionForDialog, left: 0, behavior: 'instant' })
+    this.filtersheetTarget.removeEventListener('click', (event) => {
+      if (event.target !== this.filtersheetTarget.querySelector('.full-page-view__main')) {
+        this.closeInfosheet()
+      }
+    })
   }
   takenLijstOutletConnected() {
     this.updateTaakAfstandTargets()
