@@ -2,6 +2,7 @@ import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
 let scrollPositionForDialog = 0
+let filterCount = 0
 export default class extends Controller {
   static outlets = ['taken-kaart', 'taken-lijst']
 
@@ -31,6 +32,7 @@ export default class extends Controller {
     'taakAfstand',
     'filtersActiveField',
     'scrollHandle',
+    'filterCount',
   ]
 
   initialize() {
@@ -161,9 +163,17 @@ export default class extends Controller {
       if (!container || container.classList.contains('filter--active')) {
         container = elem.closest('form')
       }
-      elem.textContent = `${
-        Array.from(container.querySelectorAll('li.filter-option-container input:checked')).length
-      }`
+      filterCount = Array.from(
+        container.querySelectorAll('li.filter-option-container input:checked')
+      ).length
+      elem.textContent = `${filterCount}`
+      if (elem.parentElement.type === 'button') {
+        if (filterCount > 0) {
+          elem.parentElement.querySelector('.icon').classList.add('active')
+        } else {
+          elem.parentElement.querySelector('.icon').classList.remove('active')
+        }
+      }
     })
   }
 

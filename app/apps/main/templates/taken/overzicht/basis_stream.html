@@ -3,6 +3,9 @@
         <turbo-stream action="update" target="stream_taken_aantal">
         <template>{{ page_obj.paginator.count }}</template>
         </turbo-stream>
+        <turbo-stream action="update" target="stream_taken_aantal_2">
+        <template>{{ page_obj.paginator.count }}</template>
+        </turbo-stream>
     {% endif %}
     {% if filters_changed or q_changed or deactivate_filters_changed %}
         <turbo-stream action="update" target="stream_filter_button">

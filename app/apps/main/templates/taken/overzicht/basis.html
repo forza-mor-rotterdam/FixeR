@@ -71,15 +71,6 @@
                                 {{ form.deactivate_filters.as_field_group }}
                             </div>
                         </div>
-                        <button type="button"
-                                class="btn btn-secondary btn-filter--small"
-                                data-taken-overzicht-target="filterButton"
-                                data-action="taken-overzicht#showFilters">
-                            <span>{% include "icons/filter.svg" %}</span>
-                            <span>Filter</span>
-                            <span class="count count--filter"
-                                  data-taken-overzicht-target="selectedChoicesCount"></span>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -95,6 +86,18 @@
                     {% include "taken/overzicht/kaart.html" %}
                 {% endif %}
             </div>
+            <div class="container__filter-button">
+                <button type="button"
+                        class="btn btn-filter--small"
+                        data-taken-overzicht-target="filterButton"
+                        data-action="taken-overzicht#showFilters">
+                    <span data-taken-overzicht-target="filterCount" class="icon">{% include "icons/filter.svg" %}</span>
+                    <span>Filters</span>
+                    <span class="count count--filter" id="stream_taken_aantal_2">{{ page_obj.paginator.count }}</span>
+                    <span class="count count--filter hidden"
+                          data-taken-overzicht-target="selectedChoicesCount"></span>
+                </button>
+            </div>
         </div>
         <dialog class="infosheet full-page-view full-page-view__filters"
                 tabindex="0"
@@ -102,11 +105,7 @@
             <div class="full-page-view__main">
                 <div class="full-page-view__header">
                     <div class="full-page-view__action_container">
-                        <h2 class="full-page-view__title">
-                            Filters
-                            {% comment %}  <span class="count count--filter"
-        data-taken-overzicht-target="selectedChoicesCount"></span> {% endcomment %}
-                        </h2>
+                        <h2 class="full-page-view__title">Filters</h2>
                         <button autofocus
                                 class="btn-close--small"
                                 data-action="taken-overzicht#hideFilters"
