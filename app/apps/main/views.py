@@ -241,18 +241,24 @@ class TakenOverzicht(
 
         return queryset
 
+    def get_initial(self):
+        initial = super().get_initial()
+        initial.update(self.request.user.profiel.taken_filter_validated_data)
+        initial.update(
+            {
+                "q": self.request.session.get("q"),
+                "deactivate_filters": self.request.session.get("deactivate_filters"),
+                "sorteer_opties": self.request.user.profiel.ui_instellingen.get(
+                    "sortering", "Adres-reverse"
+                ),
+            }
+        )
+        return initial
+
     def get_context_data(self, **kwargs):
         if self.request.GET.get("toon_alle_taken"):
             self.request.session["toon_alle_taken"] = True
 
-        self.initial.update(self.request.user.profiel.taken_filter_validated_data)
-        self.initial["q"] = self.request.session.get("q")
-        self.initial["deactivate_filters"] = self.request.session.get(
-            "deactivate_filters"
-        )
-        self.initial["sorteer_opties"] = self.request.user.profiel.ui_instellingen.get(
-            "sortering", "Adres-reverse"
-        )
         context = super().get_context_data(**kwargs)
         context.update(
             {

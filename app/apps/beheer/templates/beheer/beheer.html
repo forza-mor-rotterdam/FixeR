@@ -20,9 +20,11 @@
         <li>
             <a href="{% url 'release_note_lijst' %}" class="btn btn-tertiary"><span>Berichten</span></a>
         </li>
-        <li>
-            <a href="{% url 'taakgebeurtenis_notificatie_issues' %}"
-               class="btn btn-tertiary"><span>Taakgebeurtenis notificatie issues</span></a>
-        </li>
+        {% if perms.authorisatie.taakgebeurtenis_notificatie_issues_aanpassen %}
+            <li>
+                <a href="{% url 'taakgebeurtenis_notificatie_issues' %}"
+                   class="btn btn-tertiary"><span>Taakgebeurtenis notificatie issues</span></a>
+            </li>
+        {% endif %}
     </ul>
 {% endblock body %}
