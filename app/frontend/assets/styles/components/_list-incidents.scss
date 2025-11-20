@@ -19,7 +19,10 @@
             align-items: center;
         }
         h1 {
-            margin: 2px 0 0;
+            position: absolute;
+            top: -65px;
+            left: 50%;
+            transform: translateX(-70%);
         }
 
         .container__controls {
@@ -506,19 +509,82 @@
             margin: $input-padding-y 0 0;
         }
     }
-    @media (min-width: map-get($grid-breakpoints, lg)) {
-        .container__header {
-            .container__controls {
-                .btn-sort--small {
-                    display: none;
+
+    .container__filter-button {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        background: $white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+        padding-bottom: env(safe-area-inset-bottom);
+
+        .btn {
+            margin: 0;
+            background-color: $white;
+            font-weight: 400;
+
+            .count {
+                width: auto;
+                background: transparent;
+                color: $gray-400;
+                font-size: $fz-12;
+            }
+            .hidden {
+                display: none;
+            }
+            .icon {
+                position: relative;
+                display: inline-block;
+                margin: 0;
+                svg {
+                    position: relative;
+                    left: -4px;
+                    top: 2px;
+
+                    path {
+                        fill: $black;
+                    }
                 }
+
+                &.active {
+                    &::before {
+                        display: block;
+                        content: "";
+                        width: 4px;
+                        height: 4px;
+                        background-color: $green-900;
+                        border: 1px solid $white;
+                        border-radius: 3px;
+                        position: absolute;
+                        top: 4px;
+                        right: 5px;
+                        z-index: 9000;
+                    }
+                }
+            }
+        }
+    }
+    @media (min-width: map-get($grid-breakpoints, sm)) {
+        .container__header {
+            h1 {
+                top: -75px;
             }
         }
     }
     @media (min-width: map-get($grid-breakpoints, lg)) {
         .container__header {
+            h1 {
+                top: -85px;
+            }
             .container__controls {
                 .btn-navigate--small.toggle-view {
+                    display: none;
+                }
+                .btn-sort--small {
                     display: none;
                 }
             }

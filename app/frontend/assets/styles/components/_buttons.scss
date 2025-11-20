@@ -325,11 +325,11 @@ button {
 
     &-togglemenu {
         display: block;
-        width: 56px;
+        width: 50px;
         height: 36px;
         min-height: 0;
         background: transparent;
-        margin: 16px -16px 0 0;
+        margin: 12px -12px 0 0;
         padding: 0;
         position: relative;
 
@@ -339,9 +339,8 @@ button {
             line-height: 18px;
             font-size: 10px;
             position: absolute;
-            right: 5px;
-            top: 0;
-            transform: translateY(70%);
+            right: 7px;
+            top: 8px;
         }
     }
 

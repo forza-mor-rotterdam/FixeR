@@ -69,7 +69,6 @@
         color: $white;
     }
 
-    .btn-togglemenu &,
     .list-item &,
     .leaflet-popup-content-wrapper & {
         width: 18px;
@@ -164,5 +163,20 @@
         ul {
             margin: 0.25em 0 0;
         }
+    }
+}
+
+.initials {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 44px;
+    background-color: $green-200;
+    text-align: center;
+    border-radius: 100%;
+
+    svg {
+        max-width: 18px;
+        max-height: 18px;
     }
 }
