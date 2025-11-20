@@ -208,7 +208,7 @@
 
     .list__incidents {
         list-style: none;
-        padding: 0;
+        padding: 0 0 100px;
         overflow: hidden;
 
         .list__incidents__scroll-wrapper {
@@ -512,15 +512,16 @@
 
     .container__filter-button {
         position: fixed;
-        bottom: 16px;
-        left: 16px;
-        right: 16px;
-        background: $white;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: $gray-100;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: transform 0.2s ease;
-        padding-bottom: env(safe-area-inset-bottom);
+        padding: 16px;
+        z-index: 20;
 
         .btn {
             margin: 0;
@@ -566,6 +567,10 @@
                     }
                 }
             }
+        }
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            position: relative;
+            padding: 0;
         }
     }
     @media (min-width: map-get($grid-breakpoints, sm)) {
