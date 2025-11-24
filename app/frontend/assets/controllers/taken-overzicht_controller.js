@@ -79,6 +79,7 @@ export default class extends Controller {
     if (this.filtersActiveFieldTarget.checked) {
       this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
       this.zoekFieldContainerTarget.classList.add('show-vertical')
+      this.zoekFieldTarget.focus()
     }
   }
   keydownHandler(e) {
@@ -291,8 +292,12 @@ export default class extends Controller {
     if (!this.zoekFieldTarget.value) {
       this.zoekFieldContainerTarget.classList.toggle('hidden-vertical')
       this.zoekFieldContainerTarget.classList.toggle('show-vertical')
+      if (this.zoekFieldContainerTarget.classList.contains('show-vertical')) {
+        console.log(this.zoekFieldContainerTarget)
+        this.zoekFieldTarget.focus()
+      }
       if (
-        this.zoekFieldContainerTarget.classList.contains('hidden-vertical') &&
+        this.zoekFieldContainerTarget.classList.contains('show-vertical') &&
         this.filtersActiveFieldTarget.checked
       ) {
         this.filtersActiveFieldTarget.checked = false
