@@ -20,48 +20,130 @@
         }
         h1 {
             position: absolute;
-            top: -65px;
+            top: -69px;
             left: 50%;
             transform: translateX(-70%);
         }
 
         .container__controls {
-            flex: 0 1 25%;
+            flex: 1;
             display: flex;
             flex-direction: row;
             justify-content: flex-end;
 
-            .btn {
+            .container__buttons {
                 display: flex;
-                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
+
+                .btn {
+                    background-color: transparent;
+                    min-height: 0;
+                    font-size: $fz-14;
+                    font-weight: 400;
+                    line-height: 14px;
+                    margin-bottom: 0;
+                    width: auto;
+                    // display: flex;
+
+                    &--search {
+                        font-weight: 700;
+                    }
+                    span {
+                        display: inline-block;
+                        padding: 0;
+                    }
+
+                    svg {
+                        margin-right: 4px;
+                        vertical-align: bottom;
+                    }
+
+                    @media (min-width: map-get($grid-breakpoints, md)) {
+                        height: 48px !important;
+                        max-width: 48px;
+
+                        .map,
+                        .list,
+                        &-sort--small svg {
+                            width: 32px;
+                            height: 32px;
+                        }
+                    }
+                }
+            }
+
+            .container__filter-button {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: $blue-100;
+                display: flex;
                 align-items: center;
                 justify-content: center;
-                height: 32px;
-                font-size: 0.778em;
-                min-height: 0;
-                font-weight: 300;
-                line-height: 12px;
-                margin-bottom: 0;
-                margin-left: $input-padding-y;
-                max-width: 37px;
+                transition: transform 0.2s ease;
+                padding: 16px;
+                z-index: 20;
 
-                &--search {
-                    font-weight: 700;
-                }
-                span {
-                    display: inline-block;
-                }
+                .btn {
+                    margin: 0;
+                    background-color: $white;
+                    border: 1px solid $gray-200;
+                    font-weight: 400;
+                    width: 100%;
+                    height: 48px;
+                    max-width: none;
+                    display: block;
 
-                @media (min-width: map-get($grid-breakpoints, md)) {
-                    height: 48px !important;
-                    max-width: 48px;
-
-                    .map,
-                    .list,
-                    &-sort--small svg {
-                        width: 32px;
-                        height: 32px;
+                    span {
+                        display: inline;
+                        padding: 0;
+                        font-size: $fz-16;
                     }
+                    .count {
+                        width: auto;
+                        background: transparent;
+                        color: $gray-400;
+                        font-size: $fz-12;
+                    }
+                    .hidden {
+                        display: none;
+                    }
+                    .icon {
+                        position: relative;
+                        display: inline-block;
+                        margin: 0;
+                        svg {
+                            position: relative;
+                            left: -4px;
+                            top: 2px;
+
+                            path {
+                                fill: $black;
+                            }
+                        }
+
+                        &.active {
+                            &::before {
+                                display: block;
+                                content: "";
+                                width: 4px;
+                                height: 4px;
+                                background-color: $green-900;
+                                border: 1px solid $white;
+                                border-radius: 3px;
+                                position: absolute;
+                                top: 4px;
+                                right: 5px;
+                                z-index: 9000;
+                            }
+                        }
+                    }
+                }
+                @media (min-width: map-get($grid-breakpoints, lg)) {
+                    position: relative;
+                    padding: 0;
                 }
             }
         }
@@ -75,7 +157,6 @@
 
             .list__incidents {
                 flex: 1 1 0;
-                border-top: 1px solid $gray-tint04;
             }
         }
         @media (min-width: map-get($grid-breakpoints, lg)) {
@@ -103,8 +184,8 @@
     .container__search {
         box-sizing: content-box;
         .wrapper {
-            display: flex;
-            justify-content: space-between;
+            // display: flex;
+            // justify-content: space-between;
 
             @media (min-width: map-get($grid-breakpoints, lg)) {
                 background-color: transparent;
@@ -141,6 +222,8 @@
         }
 
         label {
+            margin-top: 8px;
+            margin-bottom: 16px;
             font-weight: 300;
             font-size: 0.875em;
 
@@ -151,13 +234,13 @@
     }
     .wrapper--search {
         position: relative;
-        display: flex;
-        gap: 20px;
-        flex-direction: row;
-        justify-content: flex-start;
+        // display: flex;
+        // gap: 20px;
+        // flex-direction: row;
+        // justify-content: flex-start;
 
         .wrapper--close {
-            flex: 1 0;
+            // flex: 1 0;
             position: relative;
         }
 
@@ -168,10 +251,25 @@
             &::-webkit-search-cancel-button {
                 -webkit-appearance: none;
             }
+
+            &:focus,
+            &:hover {
+                border-color: $black;
+            }
         }
 
         .btn--search {
-            flex: 0 0 20%;
+            // flex: 0 0 20%;
+            padding: 4px 8px 4px 4px;
+            background-color: transparent;
+            width: auto;
+            position: absolute;
+            top: 0;
+            right: 0;
+
+            span {
+                padding: 0;
+            }
         }
 
         .btn--close {
@@ -218,7 +316,6 @@
             flex-direction: column;
             justify-content: flex-end;
             gap: 10px;
-            border-top: 1px solid $gray-tint04;
         }
         .container__pagination + .list-item {
             border-top: 1px solid $gray-tint04;
@@ -510,69 +607,6 @@
         }
     }
 
-    .container__filter-button {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: $gray-100;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s ease;
-        padding: 16px;
-        z-index: 20;
-
-        .btn {
-            margin: 0;
-            background-color: $white;
-            font-weight: 400;
-
-            .count {
-                width: auto;
-                background: transparent;
-                color: $gray-400;
-                font-size: $fz-12;
-            }
-            .hidden {
-                display: none;
-            }
-            .icon {
-                position: relative;
-                display: inline-block;
-                margin: 0;
-                svg {
-                    position: relative;
-                    left: -4px;
-                    top: 2px;
-
-                    path {
-                        fill: $black;
-                    }
-                }
-
-                &.active {
-                    &::before {
-                        display: block;
-                        content: "";
-                        width: 4px;
-                        height: 4px;
-                        background-color: $green-900;
-                        border: 1px solid $white;
-                        border-radius: 3px;
-                        position: absolute;
-                        top: 4px;
-                        right: 5px;
-                        z-index: 9000;
-                    }
-                }
-            }
-        }
-        @media (min-width: map-get($grid-breakpoints, lg)) {
-            position: relative;
-            padding: 0;
-        }
-    }
     @media (min-width: map-get($grid-breakpoints, sm)) {
         .container__header {
             h1 {
