@@ -88,13 +88,8 @@ fieldset {
     }
 
     &.search {
-        padding-left: 40px;
+        padding-left: 10px;
         padding-right: 24px;
-        background-repeat: no-repeat;
-        background: $white
-            url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xOS41MDAxIDkuNzVDMTkuNTAwMSA2LjgyNSAxNy4xNzUxIDQuNSAxNC4yNTAxIDQuNUMxMS4zMjUxIDQuNSA5LjAwMDEgNi44MjUgOS4wMDAxIDkuNzVDOS4wMDAxIDEyLjY3NSAxMS4zMjUxIDE1IDE0LjI1MDEgMTVDMTcuMTc1MSAxNSAxOS41MDAxIDEyLjY3NSAxOS41MDAxIDkuNzVaTTcuNTAwMSA5Ljc1QzcuNTAwMSA2IDEwLjUwMDEgMyAxNC4yNTAxIDNDMTguMDAwMSAzIDIxLjAwMDEgNiAyMS4wMDAxIDkuNzVDMjEuMDAwMSAxMy41IDE4LjAwMDEgMTYuNSAxNC4yNTAxIDE2LjVDMTIuNjQ3NCAxNi41IDExLjE4MTggMTUuOTUyMSAxMC4wMjg3IDE1LjAzMThMNC4yNTc0MyAyMC44MDMxTDMuMTk2NzggMTkuNzQyNUw4Ljk2ODExIDEzLjk3MTFDOC4wNDc5NyAxMi44MTgxIDcuNTAwMSAxMS4zNTI1IDcuNTAwMSA5Ljc1WiIgZmlsbD0iIzQwNEI0RiIvPgo8L3N2Zz4K)
-            no-repeat;
-        background-position: 8px 50%;
         color: $gray-tint11;
         font-size: 0.875em;
 
@@ -108,8 +103,6 @@ fieldset {
     }
 }
 
-$form-search-indicator: url("data:image/svg+xml,<svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'> <path fill-rule='evenodd' clip-rule='evenodd' d='M19.5005 9.75C19.5005 6.825 17.1755 4.5 14.2505 4.5C11.3255 4.5 9.00046 6.825 9.00046 9.75C9.00046 12.675 11.3255 15 14.2505 15C17.1755 15 19.5005 12.675 19.5005 9.75ZM7.50046 9.75C7.50046 6 10.5005 3 14.2505 3C18.0005 3 21.0005 6 21.0005 9.75C21.0005 13.5 18.0005 16.5 14.2505 16.5C12.6478 16.5 11.1822 15.9521 10.0292 15.0319L4.25792 20.8031L3.19727 19.7425L8.96853 13.9712C8.04835 12.8182 7.50046 11.3526 7.50046 9.75Z' fill='#{$gray-tint09}'/> </svg>");
-$form-search-indicator-position: left 10px center !default;
 .form-control {
     padding: $input-padding-y 16px;
     font-size: 1em;
@@ -118,11 +111,6 @@ $form-search-indicator-position: left 10px center !default;
     border: 1px solid #7c8b90;
     box-sizing: border-box;
     font-family: "Bolder", sans-serif;
-    &.search {
-        background-image: escape-svg($form-search-indicator) !important;
-        background-position: $form-search-indicator-position;
-        margin: 0;
-    }
 }
 
 .is-invalid {
@@ -185,10 +173,7 @@ $form-search-indicator-position: left 10px center !default;
     padding: $input-padding-y 34px $input-padding-y 16px;
     font-size: 1em;
     color: $gray-tint11;
-    &.search {
-        background-image: escape-svg($form-search-indicator), escape-svg($form-select-indicator) !important;
-        background-position: $form-search-indicator-position, $form-select-bg-position;
-    }
+
     option {
         color: $body-color; // Default color for select elements
     }
