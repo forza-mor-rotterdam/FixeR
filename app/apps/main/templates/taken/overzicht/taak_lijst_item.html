@@ -79,7 +79,7 @@
                                 {% localize on %}
                                 <span>, {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}</span>
                             {% endlocalize %}
-                        </span>
+                        {% endif %}
                         {% if taak.melding.locatie_type == "adres" %}
                             |
                             {% with taak.melding.geometrie as geo %}
@@ -90,7 +90,7 @@
                                 </span>
                             {% endwith %}
                         {% endif %}
-                    </div>
+                    {% endspaceless %}
                 </div>
                 {% if taak.melding.response_json.urgentie >= 0.5 %}
                     <span class="badge__gradient-mask"><span class="badge badge--red">Spoed</span></span>
