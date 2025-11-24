@@ -101,6 +101,18 @@
                     {% include "taken/overzicht/kaart.html" %}
                 {% endif %}
             </div>
+            <div class="container__filter-button">
+                <button type="button"
+                        class="btn btn-filter--small"
+                        data-taken-overzicht-target="filterButton"
+                        data-action="taken-overzicht#showFilters">
+                    <span data-taken-overzicht-target="filterCount" class="icon">{% include "icons/filter.svg" %}</span>
+                    <span>Filters</span>
+                    <span class="count count--filter" id="stream_taken_aantal_2">{{ page_obj.paginator.count }}</span>
+                    <span class="count count--filter hidden"
+                          data-taken-overzicht-target="selectedChoicesCount"></span>
+                </button>
+            </div>
         </div>
         <dialog class="infosheet full-page-view full-page-view__filters"
                 tabindex="0"
