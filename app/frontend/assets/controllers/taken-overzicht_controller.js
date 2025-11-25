@@ -322,8 +322,20 @@ export default class extends Controller {
     }
   }
   toggleMapViewHandler() {
-    this.element.classList.toggle('showMap')
+    // this.element.classList.toggle('showMap')
+    this.toggleMapViewTarget.parentElement.classList.toggle('show')
   }
+
+  showMap() {
+    this.element.classList.add('showMap')
+    this.toggleMapViewTarget.parentElement.classList.toggle('show')
+  }
+
+  showList() {
+    this.element.classList.remove('showMap')
+    this.toggleMapViewTarget.parentElement.classList.toggle('show')
+  }
+
   showFilters() {
     this.element.classList.add('show-filters')
     scrollPositionForDialog = window.scrollY

@@ -39,14 +39,37 @@
                         </div>
                         <div class="container__buttons">
                             {% if request.user.profiel.context.template == "standaard" %}
-                                <button type="button"
-                                        class="btn btn-navigate--small toggle-view"
-                                        data-action="taken-overzicht#toggleMapViewHandler"
-                                        data-taken-overzicht-target="toggleMapView"
-                                        aria-label="Maak route">
-                                    {% include "icons/kaart.svg" %}
-                                    {% include "icons/lijst.svg" %}
-                                </button>
+                                <div class="container__uitklapper">
+                                    <button type="button"
+                                            class="btn btn-navigate--small toggle-view"
+                                            data-action="taken-overzicht#toggleMapViewHandler"
+                                            data-taken-overzicht-target="toggleMapView">
+                                        {% comment %} {% include "icons/kaart.svg" %}
+                                        {% include "icons/lijst.svg" %} {% endcomment %}
+                                        {% include "icons/eye.svg" %}
+                                        <span>Weergave</span>
+                                    </button>
+                                    <div class="content">
+                                        <ul class="list-clean">
+                                            <li>
+                                                <button class="btn btn--list"
+                                                        data-taken-overzicht-target="showList"
+                                                        data-action="taken-overzicht#showList">
+                                                    {% include "icons/lijst2.svg" %}
+                                                    <span>Lijst</span>
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button class="btn btn--map"
+                                                        data-taken-overzicht-target="showMap"
+                                                        data-action="taken-overzicht#showMap">
+                                                    {% include "icons/kaart2.svg" %}
+                                                    <span>Kaart</span>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             {% endif %}
                             <button type="button"
                                     class="btn btn-sort--small"
