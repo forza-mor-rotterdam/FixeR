@@ -44,7 +44,6 @@
                     line-height: 14px;
                     margin-bottom: 0;
                     width: auto;
-                    // display: flex;
 
                     &--search {
                         font-weight: 700;
@@ -55,8 +54,16 @@
                     }
 
                     svg {
-                        margin-right: 4px;
+                        margin-right: 2px;
                         vertical-align: bottom;
+                    }
+
+                    &:disabled {
+                        svg {
+                            path {
+                                fill: $gray-400;
+                            }
+                        }
                     }
 
                     @media (min-width: map-get($grid-breakpoints, md)) {
@@ -260,15 +267,19 @@
 
         .btn--search {
             // flex: 0 0 20%;
-            padding: 4px 8px 4px 4px;
+            padding: 4px 12px 4px 4px;
             background-color: transparent;
             width: auto;
             position: absolute;
-            top: 0;
+            top: 2px;
             right: 0;
 
             span {
                 padding: 0;
+            }
+
+            &.hide {
+                display: none;
             }
         }
 
@@ -278,7 +289,7 @@
             position: absolute;
             top: 50%;
             right: 6px;
-            transform: translateY(calc(-50% - 2px));
+            transform: translateY(calc(-50% + 2px));
             cursor: pointer;
 
             svg {

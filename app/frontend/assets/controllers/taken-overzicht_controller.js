@@ -33,6 +33,7 @@ export default class extends Controller {
     'filtersActiveField',
     'scrollHandle',
     'filterCount',
+    'zoekButton',
   ]
 
   initialize() {
@@ -76,10 +77,12 @@ export default class extends Controller {
       }, 800)
     }
 
-    if (this.filtersActiveFieldTarget.checked) {
+    if (this.filtersActiveFieldTarget.checked || this.zoekFieldTarget.value.length > 0) {
       this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
       this.zoekFieldContainerTarget.classList.add('show-vertical')
       this.zoekFieldTarget.focus()
+      const l = this.zoekFieldTarget.value.length
+      this.zoekFieldTarget.setSelectionRange(l, l)
     }
   }
   keydownHandler(e) {
@@ -205,11 +208,12 @@ export default class extends Controller {
   }
   onCancelSearch() {
     this.zoekFieldTarget.value = ''
-    this.cancelZoekTarget.classList.add('hide')
     this.toggleZoekenTarget.disabled = false
     this.zoekFieldTarget.focus()
     this.clearSelectedTaakUuidField()
     this.submit()
+    this.cancelZoekTarget.classList.add('hide')
+    this.zoekButtonTarget.classList.remove('hide')
   }
   positionChangeEvent(position) {
     this.currentPosition = position
@@ -230,12 +234,16 @@ export default class extends Controller {
   }
   onSearchChangeHandler(e) {
     const zoekHasValue = e.target.value.length > 0
+    const zoekValueLength = e.target.value.length
     this.toggleZoekenTarget.disabled = zoekHasValue
-    this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
-    this.zoekFieldContainerTarget.classList.add('show-vertical')
-    // this.submit()
+    // this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
+    // this.zoekFieldContainerTarget.classList.add('show-vertical')
     this.cancelZoekTarget.classList[zoekHasValue ? 'remove' : 'add']('hide')
+    this.zoekButtonTarget.classList[zoekHasValue ? 'add' : 'remove']('hide')
     this.clearSelectedTaakUuidField()
+    if (zoekValueLength > 2) {
+      this.submit()
+    }
   }
   onSortingChangeHandler() {
     this.clearSelectedTaakUuidField()
@@ -293,7 +301,6 @@ export default class extends Controller {
       this.zoekFieldContainerTarget.classList.toggle('hidden-vertical')
       this.zoekFieldContainerTarget.classList.toggle('show-vertical')
       if (this.zoekFieldContainerTarget.classList.contains('show-vertical')) {
-        console.log(this.zoekFieldContainerTarget)
         this.zoekFieldTarget.focus()
       }
       if (
@@ -348,6 +355,8 @@ export default class extends Controller {
   }
 
   submit() {
+    this.cancelZoekTarget.classList.remove('hide')
+    this.zoekButtonTarget.classList.add('hide')
     clearTimeout(this.to)
     this.to = setTimeout(() => {
       this.clearSelectedTaakUuidField()
