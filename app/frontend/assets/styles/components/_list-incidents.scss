@@ -3,15 +3,25 @@
         .container__header {
             .container__controls {
                 .btn-sort--small {
-                    display: none;
+                    pointer-events: none;
+                    opacity: 0.25;
                 }
             }
+        }
+
+        .btn--map {
+            background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOSIgdmlld0JveD0iMCAwIDEyIDkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xMS4xODQ3IDEuMTIxMTRMNC4xODQ3MyA4LjEyMTE0QzQuMTIzNzYgOC4xODIzMiA0LjA1MTMyIDguMjMwODYgMy45NzE1NSA4LjI2Mzk4QzMuODkxNzggOC4yOTcxMSAzLjgwNjI2IDguMzE0MTYgMy43MTk4OSA4LjMxNDE2QzMuNjMzNTIgOC4zMTQxNiAzLjU0Nzk5IDguMjk3MTEgMy40NjgyMyA4LjI2Mzk4QzMuMzg4NDYgOC4yMzA4NiAzLjMxNjAxIDguMTgyMzIgMy4yNTUwNCA4LjEyMTE0TDAuMTkyNTQ1IDUuMDU4NjRDMC4xMzE1IDQuOTk3NTkgMC4wODMwNzc1IDQuOTI1MTIgMC4wNTAwNDA3IDQuODQ1MzdDMC4wMTcwMDM4IDQuNzY1NjEgOS4wOTYyOWUtMTAgNC42ODAxMiAwIDQuNTkzNzlDLTkuMDk2MjhlLTEwIDQuNTA3NDcgMC4wMTcwMDM4IDQuNDIxOTggMC4wNTAwNDA3IDQuMzQyMjJDMC4wODMwNzc1IDQuMjYyNDcgMC4xMzE1IDQuMTkgMC4xOTI1NDUgNC4xMjg5NUMwLjI1MzU4OSA0LjA2NzkxIDAuMzI2MDU5IDQuMDE5NDggMC40MDU4MTcgMy45ODY0NUMwLjQ4NTU3NSAzLjk1MzQxIDAuNTcxMDU5IDMuOTM2NDEgMC42NTczODggMy45MzY0MUMwLjc0MzcxOCAzLjkzNjQxIDAuODI5MjAyIDMuOTUzNDEgMC45MDg5NiAzLjk4NjQ1QzAuOTg4NzE4IDQuMDE5NDggMS4wNjExOSA0LjA2NzkxIDEuMTIyMjMgNC4xMjg5NUwzLjcyMDQ0IDYuNzI3MTVMMTAuMjU2MSAwLjE5MjU0NEMxMC4zNzk0IDAuMDY5MjYwMiAxMC41NDY2IDAgMTAuNzIxIDBDMTAuODk1MyAwIDExLjA2MjUgMC4wNjkyNjAyIDExLjE4NTggMC4xOTI1NDRDMTEuMzA5MSAwLjMxNTgyOSAxMS4zNzg0IDAuNDgzMDM4IDExLjM3ODQgMC42NTczODhDMTEuMzc4NCAwLjgzMTczOSAxMS4zMDkxIDAuOTk4OTQ4IDExLjE4NTggMS4xMjIyM0wxMS4xODQ3IDEuMTIxMTRaIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K");
+        }
+
+        .btn--list {
+            background-image: none !important;
         }
     }
 }
 .page-incidents {
     .container__header {
         margin-bottom: 16px;
+        z-index: 20;
 
         .row {
             display: flex;
@@ -44,9 +54,22 @@
                     line-height: 14px;
                     margin-bottom: 0;
                     width: auto;
+                    padding: 8px;
+                    transition: opacity $transition-duration-default $transition-ease-default;
+
+                    &:active {
+                        background-color: $white;
+                    }
 
                     &--search {
                         font-weight: 700;
+                    }
+
+                    &-navigate--small {
+                        svg {
+                            width: 14px;
+                            height: 14px;
+                        }
                     }
                     span {
                         display: inline-block;
@@ -75,6 +98,92 @@
                         &-sort--small svg {
                             width: 32px;
                             height: 32px;
+                        }
+                    }
+                }
+
+                .container__uitklapper {
+                    position: relative;
+
+                    > turbo-frame {
+                        height: auto;
+                    }
+                    > span {
+                        font-weight: 700;
+                        text-decoration: none;
+                        color: $black;
+                        font-size: 0.8em;
+                        padding: 0.7em 0.5em 0 0.5em;
+                        cursor: pointer;
+                    }
+
+                    .content {
+                        visibility: hidden;
+                        position: absolute;
+                        display: block;
+                        top: 2em;
+                        left: 0;
+                        padding: 0;
+                        box-shadow: 0 4px 14px 7px rgba(0, 0, 0, 0.07);
+                        opacity: 0;
+                        pointer-events: none;
+                        transition: all $transition-duration-default $transition-ease-default;
+                        transform-origin: right top;
+                        transition-delay: 0.15s;
+                        background-color: $white;
+
+                        ul {
+                            margin: 0;
+                            width: 100%;
+                        }
+
+                        li {
+                            padding: 2px;
+                            .btn {
+                                padding: 8px 40px 8px 8px;
+                                min-width: 100%;
+                                text-align: left;
+                                display: flex;
+                                background-repeat: no-repeat;
+                                background-position: 90% 50%;
+
+                                &--list {
+                                    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOSIgdmlld0JveD0iMCAwIDEyIDkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xMS4xODQ3IDEuMTIxMTRMNC4xODQ3MyA4LjEyMTE0QzQuMTIzNzYgOC4xODIzMiA0LjA1MTMyIDguMjMwODYgMy45NzE1NSA4LjI2Mzk4QzMuODkxNzggOC4yOTcxMSAzLjgwNjI2IDguMzE0MTYgMy43MTk4OSA4LjMxNDE2QzMuNjMzNTIgOC4zMTQxNiAzLjU0Nzk5IDguMjk3MTEgMy40NjgyMyA4LjI2Mzk4QzMuMzg4NDYgOC4yMzA4NiAzLjMxNjAxIDguMTgyMzIgMy4yNTUwNCA4LjEyMTE0TDAuMTkyNTQ1IDUuMDU4NjRDMC4xMzE1IDQuOTk3NTkgMC4wODMwNzc1IDQuOTI1MTIgMC4wNTAwNDA3IDQuODQ1MzdDMC4wMTcwMDM4IDQuNzY1NjEgOS4wOTYyOWUtMTAgNC42ODAxMiAwIDQuNTkzNzlDLTkuMDk2MjhlLTEwIDQuNTA3NDcgMC4wMTcwMDM4IDQuNDIxOTggMC4wNTAwNDA3IDQuMzQyMjJDMC4wODMwNzc1IDQuMjYyNDcgMC4xMzE1IDQuMTkgMC4xOTI1NDUgNC4xMjg5NUMwLjI1MzU4OSA0LjA2NzkxIDAuMzI2MDU5IDQuMDE5NDggMC40MDU4MTcgMy45ODY0NUMwLjQ4NTU3NSAzLjk1MzQxIDAuNTcxMDU5IDMuOTM2NDEgMC42NTczODggMy45MzY0MUMwLjc0MzcxOCAzLjkzNjQxIDAuODI5MjAyIDMuOTUzNDEgMC45MDg5NiAzLjk4NjQ1QzAuOTg4NzE4IDQuMDE5NDggMS4wNjExOSA0LjA2NzkxIDEuMTIyMjMgNC4xMjg5NUwzLjcyMDQ0IDYuNzI3MTVMMTAuMjU2MSAwLjE5MjU0NEMxMC4zNzk0IDAuMDY5MjYwMiAxMC41NDY2IDAgMTAuNzIxIDBDMTAuODk1MyAwIDExLjA2MjUgMC4wNjkyNjAyIDExLjE4NTggMC4xOTI1NDRDMTEuMzA5MSAwLjMxNTgyOSAxMS4zNzg0IDAuNDgzMDM4IDExLjM3ODQgMC42NTczODhDMTEuMzc4NCAwLjgzMTczOSAxMS4zMDkxIDAuOTk4OTQ4IDExLjE4NTggMS4xMjIyM0wxMS4xODQ3IDEuMTIxMTRaIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K");
+                                }
+
+                                svg {
+                                    margin-right: 4px;
+                                }
+
+                                &:hover {
+                                    background-color: $gray-100;
+                                }
+                            }
+                        }
+                        span {
+                            font-size: 0.87em;
+                        }
+                    }
+
+                    &.show {
+                        .btn {
+                            background-color: $white;
+                        }
+                        .content {
+                            visibility: visible;
+                            opacity: 1;
+                            pointer-events: all;
+                            transition: all $transition-duration-default $transition-ease-default;
+                        }
+                    }
+
+                    &:focus {
+                        outline: none !important;
+                    }
+
+                    &.show {
+                        .btn {
+                            background-color: $white;
                         }
                     }
                 }
@@ -241,13 +350,8 @@
     }
     .wrapper--search {
         position: relative;
-        // display: flex;
-        // gap: 20px;
-        // flex-direction: row;
-        // justify-content: flex-start;
 
         .wrapper--close {
-            // flex: 1 0;
             position: relative;
         }
 
@@ -266,7 +370,6 @@
         }
 
         .btn--search {
-            // flex: 0 0 20%;
             padding: 4px 12px 4px 4px;
             background-color: transparent;
             width: auto;
@@ -642,6 +745,19 @@
         .showMap {
             .container__flex {
                 display: block !important;
+            }
+        }
+    }
+
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        .container__uitklapper {
+            position: relative;
+            &:first-child {
+                padding-right: 1em;
+            }
+
+            .content {
+                right: -1.2em;
             }
         }
     }
