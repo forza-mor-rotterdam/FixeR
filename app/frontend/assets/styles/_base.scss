@@ -586,11 +586,6 @@ body.no-js {
     &.container__sorting,
     &.container__search {
         transition: all 0.25s ease-in;
-
-        @media (min-width: map-get($grid-breakpoints, lg)) {
-            max-height: 120px;
-            overflow: hidden;
-        }
     }
 }
 
