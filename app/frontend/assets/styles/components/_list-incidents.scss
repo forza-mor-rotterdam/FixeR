@@ -22,12 +22,6 @@
     .container__header {
         margin-bottom: 16px;
         z-index: 20;
-
-        .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
         h1 {
             position: absolute;
             top: -69px;
@@ -36,11 +30,6 @@
         }
 
         .container__controls {
-            flex: 1;
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
-
             .container__buttons {
                 display: flex;
                 justify-content: space-between;
@@ -86,18 +75,6 @@
                             path {
                                 fill: $gray-400;
                             }
-                        }
-                    }
-
-                    @media (min-width: map-get($grid-breakpoints, md)) {
-                        height: 48px !important;
-                        max-width: 48px;
-
-                        .map,
-                        .list,
-                        &-sort--small svg {
-                            width: 32px;
-                            height: 32px;
                         }
                     }
                 }
@@ -204,6 +181,7 @@
 
                 .btn {
                     margin: 0;
+                    padding: 0 16px;
                     background-color: $white;
                     border: 1px solid $gray-200;
                     font-weight: 400;
@@ -263,6 +241,55 @@
                 }
             }
         }
+
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            .container__controls {
+                display: unset;
+
+                .wrapper__controls {
+                    display: flex;
+                    gap: 20px;
+                }
+
+                .container__search-default {
+                    display: flex;
+                    justify-content: flex-end;
+
+                    .wrapper--search-group {
+                        margin-top: -44px;
+                        pointer-events: none;
+                        input,
+                        button {
+                            margin-left: 0;
+                            pointer-events: initial;
+                        }
+
+                        label {
+                            margin: 8px 100px 16px 0;
+                            pointer-events: initial;
+                        }
+
+                        .btn--search {
+                            pointer-events: initial;
+                        }
+                    }
+
+                    .wrapper--search {
+                        margin: 0;
+                    }
+                }
+                .container__uitklapper {
+                    display: none;
+                }
+                .container__filter-button {
+                    display: block;
+                    .btn {
+                        width: auto;
+                        white-space: nowrap;
+                    }
+                }
+            }
+        }
     }
     .container__list {
         display: flex;
@@ -299,33 +326,34 @@
     .container__sorting,
     .container__search {
         box-sizing: content-box;
-        .wrapper {
-            // display: flex;
-            // justify-content: space-between;
 
-            @media (min-width: map-get($grid-breakpoints, lg)) {
-                background-color: transparent;
-                padding-left: 0;
-            }
-        }
         form {
             width: 100%;
         }
         select {
             background-color: white;
-            border: 1px solid $gray-tint08;
+            border: 1px solid $black;
             outline: 0;
-            padding: 0 16px;
-            font-size: 1em;
+            padding: 0 20px 0 10px;
+            margin-bottom: 1rem;
+            font-size: 0.875em;
             width: 100%;
             color: #404b4f;
             text-align: left;
             -webkit-appearance: none;
             height: 48px;
-            background-image: url("data:image/svg+xml, <svg width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 xmlns=%27http://www.w3.org/2000/svg%27> <path fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M15.75 9.75L12 4.5L8.25 9.75H15.75ZM15.75 14.25L12 19.5L8.25 14.25H15.75Z%27 fill=%27%2365757B%27/> </svg>");
+            background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAxNCAxNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjA5MSA5LjE2MTIyQzEwLjE1MjIgOS4yMjIxOSAxMC4yMDA3IDkuMjk0NjMgMTAuMjMzOCA5LjM3NDRDMTAuMjY2OSA5LjQ1NDE3IDEwLjI4NCA5LjUzOTY5IDEwLjI4NCA5LjYyNjA2QzEwLjI4NCA5LjcxMjQ0IDEwLjI2NjkgOS43OTc5NiAxMC4yMzM4IDkuODc3NzNDMTAuMjAwNyA5Ljk1NzQ5IDEwLjE1MjIgMTAuMDI5OSAxMC4wOTEgMTAuMDkwOUw3LjQ2NTk4IDEyLjcxNTlDNy40MDUwMSAxMi43NzcxIDcuMzMyNTcgMTIuODI1NiA3LjI1MjggMTIuODU4OEM3LjE3MzAzIDEyLjg5MTkgNy4wODc1MSAxMi45MDg5IDcuMDAxMTQgMTIuOTA4OUM2LjkxNDc3IDEyLjkwODkgNi44MjkyNCAxMi44OTE5IDYuNzQ5NDggMTIuODU4OEM2LjY2OTcxIDEyLjgyNTYgNi41OTcyNiAxMi43NzcxIDYuNTM2MjkgMTIuNzE1OUwzLjkxMTI5IDEwLjA5MDlDMy43ODgwMSA5Ljk2NzYyIDMuNzE4NzUgOS44MDA0MSAzLjcxODc1IDkuNjI2MDZDMy43MTg3NSA5LjQ1MTcxIDMuNzg4MDEgOS4yODQ1IDMuOTExMjkgOS4xNjEyMkM0LjAzNDU4IDkuMDM3OTQgNC4yMDE3OSA4Ljk2ODY4IDQuMzc2MTQgOC45Njg2OEM0LjU1MDQ5IDguOTY4NjggNC43MTc3IDkuMDM3OTQgNC44NDA5OCA5LjE2MTIyTDcuMDAxNjkgMTEuMzIwOEw5LjE2MjM5IDkuMTU5NThDOS4yMjM0NCA5LjA5ODY3IDkuMjk1OTEgOS4wNTA0IDkuMzc1NjMgOS4wMTc1MUM5LjQ1NTM2IDguOTg0NjMgOS41NDA3OCA4Ljk2Nzc4IDkuNjI3MDMgOC45Njc5M0M5LjcxMzI3IDguOTY4MDggOS43OTg2MyA4Ljk4NTIzIDkuODc4MjQgOS4wMTg0QzkuOTU3ODUgOS4wNTE1NiAxMC4wMzAxIDkuMTAwMSAxMC4wOTEgOS4xNjEyMlpNNC44NDA5OCA0Ljg0MDkxTDcuMDAxNjkgMi42ODAyTDkuMTYyMzkgNC44NDE0NUM5LjI4NTY3IDQuOTY0NzQgOS40NTI4OCA1LjAzNCA5LjYyNzIzIDUuMDM0QzkuODAxNTggNS4wMzQgOS45Njg3OSA0Ljk2NDc0IDEwLjA5MjEgNC44NDE0NUMxMC4yMTU0IDQuNzE4MTcgMTAuMjg0NiA0LjU1MDk2IDEwLjI4NDYgNC4zNzY2MUMxMC4yODQ2IDQuMjAyMjYgMTAuMjE1NCA0LjAzNTA1IDEwLjA5MjEgMy45MTE3N0w3LjQ2NzA4IDEuMjg2NzdDNy40MDYxMSAxLjIyNTU5IDcuMzMzNjYgMS4xNzcwNCA3LjI1Mzg5IDEuMTQzOTJDNy4xNzQxMyAxLjExMDggNy4wODg2IDEuMDkzNzUgNy4wMDIyMyAxLjA5Mzc1QzYuOTE1ODYgMS4wOTM3NSA2LjgzMDM0IDEuMTEwOCA2Ljc1MDU3IDEuMTQzOTJDNi42NzA4IDEuMTc3MDQgNi41OTgzNiAxLjIyNTU5IDYuNTM3MzkgMS4yODY3N0wzLjkxMjM5IDMuOTExNzdDMy43ODkxIDQuMDM1MDUgMy43MTk4NCA0LjIwMjI2IDMuNzE5ODQgNC4zNzY2MUMzLjcxOTg0IDQuNTUwOTYgMy43ODkxIDQuNzE4MTcgMy45MTIzOSA0Ljg0MTQ1QzQuMDM1NjcgNC45NjQ3NCA0LjIwMjg4IDUuMDM0IDQuMzc3MjMgNS4wMzRDNC41NTE1OCA1LjAzNCA0LjcxODc5IDQuOTY0NzQgNC44NDIwOCA0Ljg0MTQ1TDQuODQwOTggNC44NDA5MVoiIGZpbGw9ImJsYWNrIi8+Cjwvc3ZnPgo=");
             background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 24px 24px;
+            background-position: right 14px center;
+            background-size: 14px 14px;
+        }
+
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            // display: none;
+            .wrapper {
+                background-color: transparent;
+                padding-left: 0;
+            }
         }
     }
     .wrapper--search-group {
@@ -405,15 +433,11 @@
             }
         }
         @media (min-width: map-get($grid-breakpoints, lg)) {
-            gap: 0;
+            order: 2;
             margin-right: 20px;
             margin-bottom: 10px;
             input[type="search"] {
                 width: 350px;
-            }
-
-            .btn--search {
-                min-width: 70px;
             }
         }
     }
@@ -738,7 +762,7 @@
                     display: none;
                 }
                 .btn-sort--small {
-                    display: none;
+                    // display: none;
                 }
             }
         }

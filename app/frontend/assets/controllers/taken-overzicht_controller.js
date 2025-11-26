@@ -300,6 +300,9 @@ export default class extends Controller {
     if (!this.zoekFieldTarget.value) {
       this.zoekFieldContainerTarget.classList.toggle('hidden-vertical')
       this.zoekFieldContainerTarget.classList.toggle('show-vertical')
+      this.zoekFieldDefaultContainerTarget.classList.toggle('hidden-vertical')
+      this.zoekFieldDefaultContainerTarget.classList.toggle('show-vertical')
+
       if (this.zoekFieldContainerTarget.classList.contains('show-vertical')) {
         this.zoekFieldTarget.focus()
       }
