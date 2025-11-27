@@ -571,7 +571,8 @@ body.no-js {
     transition: all 0.25s ease-in;
 
     &.container__sorting,
-    &.container__search {
+    &.container__search,
+    &.container__search-default {
         max-height: 120px;
         overflow: hidden;
     }

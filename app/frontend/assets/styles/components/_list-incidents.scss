@@ -29,6 +29,13 @@
             transform: translateX(-70%);
         }
 
+        .count {
+            width: auto;
+            border-radius: 20px;
+            padding: 0 10px !important;
+            min-width: 1.8em;
+        }
+
         .container__controls {
             .container__buttons {
                 display: flex;
@@ -200,6 +207,7 @@
                         background: transparent;
                         color: $gray-400;
                         font-size: $fz-12;
+                        padding: 0 !important;
                     }
                     .hidden {
                         display: none;
@@ -254,9 +262,19 @@
                 .container__search-default {
                     display: flex;
                     justify-content: flex-end;
+                    // height: 105px;
+                    // overflow: hidden;
+                    // transition: height $transition-duration-default $transition-ease-default;
+
+                    &.hidden-vertical {
+                        // max-height: none;
+                        // height: 0;
+                        // transition: height $transition-duration-default $transition-ease-default;
+                    }
 
                     .wrapper--search-group {
-                        margin-top: -44px;
+                        // margin-top: -44px; //werkt niet icm overlow: hidden
+                        // transform: translateY(-44px);
                         pointer-events: none;
                         input,
                         button {
@@ -554,6 +572,8 @@
                     width: auto;
                     height: auto;
                     background-color: transparent;
+                    min-height: 0;
+                    padding: 0;
                     .map {
                         width: 24px;
                         height: 24px;
