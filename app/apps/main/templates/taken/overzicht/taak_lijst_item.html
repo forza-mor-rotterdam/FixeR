@@ -55,22 +55,33 @@
                     <div>
                         <h2 class="h5">
                             {% spaceless %}
-                                {{ taak.melding.locatie_verbose }}
-                                {% if taak.melding.plaatsnaam %}
-                                    <small>
-                                        {% if taak.melding.plaatsnaam != "Rotterdam" %}, {{ taak.melding.plaatsnaam }}{% endif %}
-                                    </small>
-                                {% endif %}
+                                <span class="adres">
+                                    {% if taak.melding.straatnaam %}
+                                        <span class="straat">{{ taak.melding.straatnaam }}</span>
+                                        <span class="huisnummer">
+                                            {{ taak.melding.huisnummer }}
+                                            {% if taak.melding.huisletter %}{{ taak.melding.huisletter }}{% endif %}
+                                            {% if taak.melding.toevoeging %}-{{ taak.melding.toevoeging }}{% endif %}
+                                        </span>
+                                    {% else %}
+                                        <span class="straat">{{ taak.melding.locatie_verbose }}</span>
+                                    {% endif %}
+                                </span>
                             {% endspaceless %}
-                            {% if taak.laatste_taakgebeurtenis_omschrijving_intern %}
-                                <span class="badge-count badge-count--info">i</span>
-                            {% endif %}
                         </h2>
                         <div>
                             <span class="incident__category">{{ taak.titel }}</span>
                         </div>
+                        {% if taak.melding.plaatsnaam %}
+                            <div class="incident__moment">
+                                <span>
+                                    {% if taak.melding.plaatsnaam != "Rotterdam" %}{{ taak.melding.plaatsnaam }}{% endif %}
+                                </span>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="incident__moment">
+                        {% if taak.laatste_taakgebeurtenis_omschrijving_intern %}<span class="note"></span>{% endif %}
                         {% spaceless %}
                             <span data-controller="utils"
                                   data-utils-target="dateVerbose"

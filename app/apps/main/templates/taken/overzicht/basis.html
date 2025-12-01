@@ -40,17 +40,18 @@
                             </div>
                             <div class="container__buttons">
                                 {% if request.user.profiel.context.template == "standaard" %}
-                                    <div class="container__uitklapper">
+                                    <div class="container__uitklapper"
+                                         data-taken-overzicht-target="uitklapper">
                                         <button type="button"
                                                 class="btn btn-navigate--small toggle-view"
-                                                data-action="taken-overzicht#toggleMapViewHandler"
+                                                data-action="taken-overzicht#toggle"
                                                 data-taken-overzicht-target="toggleMapView">
                                             {% comment %} {% include "icons/kaart.svg" %}
                                             {% include "icons/lijst.svg" %} {% endcomment %}
                                             {% include "icons/eye.svg" %}
                                             <span>Weergave</span>
                                         </button>
-                                        <div class="content">
+                                        <div class="content" data-taken-overzicht-target="content">
                                             <ul class="list-clean">
                                                 <li>
                                                     <button class="btn btn--list"
@@ -72,13 +73,20 @@
                                         </div>
                                     </div>
                                 {% endif %}
-                                <button type="button"
-                                        class="btn btn-sort--small"
-                                        data-action="taken-overzicht#onToggleSortingContainer"
-                                        aria-label="Sorteer de lijst">
-                                    {% include "icons/caret-updown.svg" %}
-                                    <span>Sorteren</span>
-                                </button>
+                                <div class="container__uitklapper"
+                                     data-taken-overzicht-target="uitklapper">
+                                    <button type="button"
+                                            class="btn btn-sort--small"
+                                            data-taken-overzicht-target="toggleSortView"
+                                            data-action="taken-overzicht#toggle"
+                                            aria-label="Sorteer de lijst">
+                                        {% include "icons/caret-updown.svg" %}
+                                        <span>Sorteren</span>
+                                    </button>
+                                    <div class="content wide" data-taken-overzicht-target="content">
+                                        <div data-taken-overzicht-target="sorteerOptiesFieldContainer">{{ form.sorteer_opties }}</div>
+                                    </div>
+                                </div>
                                 <button type="button"
                                         class="btn btn-sort--small"
                                         data-taken-overzicht-target="toggleZoeken"
@@ -118,8 +126,7 @@
             </div>
             <div class="container__list">
                 <div class="container__flex list--navigation-tools">
-                    <div class="container__sorting hidden-vertical"
-                         data-taken-overzicht-target="sorteerOptiesFieldContainer">{{ form.sorteer_opties }}</div>
+                    {% comment %} <div class="container__sorting hidden-vertical" data-taken-overzicht-target="sorteerOptiesFieldContainer">{{ form.sorteer_opties }}</div> {% endcomment %}
                     <div class="container__search hidden-vertical"
                          data-taken-overzicht-target="zoekFieldContainer"></div>
                     <div class="list__incidents" id="stream_taken_lijst">{% include "taken/overzicht/lijst.html" %}</div>

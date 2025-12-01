@@ -180,3 +180,12 @@
         max-height: 18px;
     }
 }
+
+.note {
+    display: inline-block;
+    width: 7px;
+    aspect-ratio: 1/1;
+    border-radius: 2px;
+    background-color: $blue-900;
+    margin-right: 3px;
+}

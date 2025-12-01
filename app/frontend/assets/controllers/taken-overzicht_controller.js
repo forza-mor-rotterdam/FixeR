@@ -13,6 +13,7 @@ export default class extends Controller {
     'zoekFieldContainer',
     'zoekFieldDefaultContainer',
     'toggleMapView',
+    'toggleSortView',
     'toggleZoeken',
     'filtersheet',
     'filterInput',
@@ -34,6 +35,7 @@ export default class extends Controller {
     'scrollHandle',
     'filterCount',
     'zoekButton',
+    'uitklapper',
   ]
 
   initialize() {
@@ -84,7 +86,39 @@ export default class extends Controller {
       const l = this.zoekFieldTarget.value.length
       this.zoekFieldTarget.setSelectionRange(l, l)
     }
+    // Klik buiten -> alles sluiten
+    document.addEventListener('click', this.closeAll)
   }
+
+  disconnect() {
+    document.removeEventListener('click', this.closeAll)
+  }
+
+  toggle(event) {
+    console.log('toggle')
+    event.stopPropagation()
+
+    const current = event.currentTarget.closest('[data-taken-overzicht-target="uitklapper"]')
+
+    // sluit andere dropdowns
+    this.uitklapperTargets.forEach((el) => {
+      if (el !== current) el.classList.remove('show')
+    })
+
+    current.classList.toggle('show')
+  }
+
+  closeAll = (event) => {
+    // Als klik binnen deze dropdown is, niets doen
+    if (this.element.contains(event.target)) return
+
+    this.element.classList.remove('show')
+  }
+
+  allDropdowns() {
+    return document.querySelectorAll('.container__uitklapper')
+  }
+
   keydownHandler(e) {
     // Check if Enter was pressed without Shift, Ctrl, Alt, Caps
     if (
@@ -293,8 +327,10 @@ export default class extends Controller {
     })
   }
   onToggleSortingContainer() {
-    this.sorteerOptiesFieldContainerTarget.classList.toggle('hidden-vertical')
-    this.sorteerOptiesFieldContainerTarget.classList.toggle('show-vertical')
+    console.log('sort')
+    // this.sorteerOptiesFieldContainerTarget.classList.toggle('hidden-vertical')
+    // this.sorteerOptiesFieldContainerTarget.classList.toggle('show-vertical')
+    this.toggleSortViewTarget.parentElement.classList.toggle('show')
   }
   onToggleSearchContainer() {
     if (!this.zoekFieldTarget.value) {
