@@ -73,7 +73,7 @@
                             <span class="incident__category">{{ taak.titel }}</span>
                         </div>
                         {% if taak.melding.plaatsnaam %}
-                            <div class="incident__moment">
+                            <div class="incident__moment primary">
                                 <span>
                                     {% if taak.melding.plaatsnaam != "Rotterdam" %}{{ taak.melding.plaatsnaam }}{% endif %}
                                 </span>
@@ -104,7 +104,7 @@
                     {% endspaceless %}
                 </div>
                 {% if taak.melding.response_json.urgentie >= 0.5 %}
-                    <span class="badge__gradient-mask"><span class="badge badge--red">Spoed</span></span>
+                    <span class="badge__gradient-mask"><span class="badge badge--urgent">Spoed</span></span>
                 {% elif taak.taakstatus.naam and taak.taakstatus.naam != "nieuw" %}
                     <span class="badge__gradient-mask"><span class="badge {% if taak.taakstatus.naam == 'openstaand' %}badge--lightblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% elif taak.taakstatus.naam == voltooid %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span></span>
                 {% endif %}
