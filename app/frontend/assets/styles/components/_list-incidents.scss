@@ -24,7 +24,7 @@
         z-index: 20;
         h1 {
             position: absolute;
-            top: -69px;
+            top: -74px;
             left: 50%;
             transform: translateX(-70%);
         }
@@ -679,7 +679,9 @@
                 }
 
                 .badge {
-                    padding-left: 22px;
+                    &:not(&--urgent) {
+                        padding-left: 22px;
+                    }
                     &__gradient-mask {
                         position: absolute;
                         margin-right: 0;
@@ -734,6 +736,9 @@
 
                 .incident__moment {
                     font-size: $fz-12;
+                    &.primary {
+                        color: $green-900;
+                    }
                     &:last-child {
                         margin-bottom: 0;
                     }
@@ -828,7 +833,7 @@
     @media (min-width: map-get($grid-breakpoints, lg)) {
         .container__header {
             h1 {
-                top: -85px;
+                top: -83px;
             }
             .container__controls {
                 .btn-navigate--small.toggle-view {
