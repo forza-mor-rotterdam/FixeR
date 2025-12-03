@@ -82,6 +82,8 @@ export default class extends Controller {
     if (this.filtersActiveFieldTarget.checked || this.zoekFieldTarget.value.length > 0) {
       this.zoekFieldDefaultContainerTarget.classList.remove('hidden-vertical')
       this.zoekFieldDefaultContainerTarget.classList.add('show-vertical')
+      this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
+      this.zoekFieldContainerTarget.classList.add('show-vertical')
       this.zoekFieldTarget.focus()
       const l = this.zoekFieldTarget.value.length
       this.zoekFieldTarget.setSelectionRange(l, l)
