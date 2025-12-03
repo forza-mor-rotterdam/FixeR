@@ -3,9 +3,9 @@ import logging
 from apps.instellingen.models import Instelling
 from apps.main.services import LocatieService, MercureService
 from apps.release_notes.models import ReleaseNote
-from device_detector import DeviceDetector
 from django.conf import settings
 from django.utils import timezone
+from ua_parser import parse_os
 from utils.diversen import absolute
 
 logger = logging.getLogger(__name__)
@@ -60,8 +60,12 @@ def general_settings(context):
         else {}
     )
 
-    ua = context.META.get("HTTP_USER_AGENT", "")
-    device = DeviceDetector(ua).parse()
+    ua = (
+        context.META.get("HTTP_USER_AGENT", "")
+        if context.META.get("HTTP_USER_AGENT")
+        else ""
+    )
+    os_family = parse_os(ua).family.lower()
 
     profiel_taaktype_uuids = []
     if user and hasattr(user, "profiel"):
@@ -71,7 +75,10 @@ def general_settings(context):
         ]
 
     return {
-        "DEVICE_OS": device.os_name().lower(),
+        "OS_IS_IOS": os_family.startswith("ios"),
+        "OS_IS_ANDROID": os_family.startswith("android"),
+        "OS_IS_MAC": os_family.startswith("mac"),
+        "OS_IS_WINDOWS": os_family.startswith("windows"),
         "UI_SETTINGS": settings.UI_SETTINGS,
         "DEBUG": settings.DEBUG,
         "DEV_SOCKET_PORT": settings.DEV_SOCKET_PORT,

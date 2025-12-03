@@ -14,7 +14,6 @@ from apps.main.services import MORCoreService, PDOKService, TaakRService
 from apps.main.utils import melding_naar_tijdlijn
 from apps.taken.filters import FILTERS_BY_KEY
 from apps.taken.models import Taak, TaakDeellink, Taakstatus
-from device_detector import DeviceDetector
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import (
@@ -33,6 +32,7 @@ from django.http import HttpResponse, HttpResponsePermanentRedirect, JsonRespons
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import FormView, ListView
+from ua_parser import parse_os
 
 logger = logging.getLogger(__name__)
 
@@ -91,15 +91,12 @@ def http_500(request):
 
 
 def navigeer(request, lat, long):
-    ua = request.META.get("HTTP_USER_AGENT", "")
-    device = DeviceDetector(ua).parse()
     return render(
         request,
         "taken/navigeer.html",
         {
             "lat": lat,
             "long": long,
-            "device_os": device.os_name().lower(),
         },
     )
 
@@ -300,8 +297,6 @@ def taak_detail(request, uuid):
     taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
-    ua = request.META.get("HTTP_USER_AGENT", "")
-    device = DeviceDetector(ua).parse()
     taakdeellinks = TaakDeellink.objects.filter(taak=taak)
 
     return render(
@@ -310,7 +305,6 @@ def taak_detail(request, uuid):
         {
             "id": id,
             "taak": taak,
-            "device_os": device.os_name().lower(),
             "taakdeellinks": taakdeellinks,
             "taakdeellinks_bezoekers": [
                 b for link in taakdeellinks for b in link.bezoekers
@@ -365,9 +359,18 @@ def taak_delen(request, uuid):
         return JsonResponse({})
     """
 
-    ua = request.META.get("HTTP_USER_AGENT", "")
-    device = DeviceDetector(ua).parse()
-    whatsapp_url = "whatsapp://" if device.is_mobile() else settings.WHATSAPP_URL
+    ua = (
+        request.META.get("HTTP_USER_AGENT", "")
+        if request.META.get("HTTP_USER_AGENT")
+        else ""
+    )
+    os_family = parse_os(ua).family.lower()
+    os_is_ios = os_family.startswith("ios")
+    os_is_android = os_family.startswith("android")
+
+    whatsapp_url = (
+        "whatsapp://" if os_is_ios or os_is_android else settings.WHATSAPP_URL
+    )
 
     taak_gedeeld = TaakDeellink.objects.create(
         taak=taak,
@@ -415,14 +418,11 @@ def taak_detail_preview(request, uuid, signed_data):
         )
         taak_gedeeld.save()
 
-    ua = request.META.get("HTTP_USER_AGENT", "")
-    device = DeviceDetector(ua).parse()
     return render(
         request,
         "taken/taak_detail_preview.html",
         {
             "taak": taak,
-            "device_os": device.os_name().lower(),
             "signed_data": signed_data,
             "gebruiker_email": (
                 taak_gedeeld.gedeeld_door if taak_gedeeld else gebruiker_email
