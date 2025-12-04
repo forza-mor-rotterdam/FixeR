@@ -364,7 +364,8 @@ def taak_delen(request, uuid):
         if request.META.get("HTTP_USER_AGENT")
         else ""
     )
-    os_family = parse_os(ua).family.lower()
+    parsed_ua = parse_os(ua)
+    os_family = parsed_ua.family.lower() if hasattr(parsed_ua, "family") else ""
     os_is_ios = os_family.startswith("ios")
     os_is_android = os_family.startswith("android")
 
