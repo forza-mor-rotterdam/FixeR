@@ -230,7 +230,7 @@ def task_taakopdracht_notificatie_v2(self, taakgebeurtenis_uuid):
         )
 
     return {
-        "taak_uuid": taak.uuid,
+        "taak_uuid": str(taak.uuid),
         "taakopdracht_url": taak.taakopdracht,
         "melding_uuid": melding_uuid,
     }

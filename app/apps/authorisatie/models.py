@@ -174,6 +174,11 @@ class MelderGegevensBekijkenPermissie(BasisPermissie):
     codenaam = "melder_gegevens_bekijken"
 
 
+class TaakgebeurtenisNotificatieIssuesBekijkenPermissie(BasisPermissie):
+    naam = "Taakgebeurtenis notificatie issues bekijken"
+    codenaam = "taakgebeurtenis_notificatie_issues_aanpassen"
+
+
 gebruikersgroep_permissies = (
     TakenLijstBekijkenPermissie,
     TaakBekijkenPermissie,
@@ -208,6 +213,7 @@ gebruikersgroep_permissies = (
     ReleaseNoteVerwijderenPermissie,
     HomePageBekijkenPermissie,
     MelderGegevensBekijkenPermissie,
+    TaakgebeurtenisNotificatieIssuesBekijkenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [

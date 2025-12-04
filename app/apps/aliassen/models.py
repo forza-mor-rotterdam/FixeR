@@ -239,13 +239,13 @@ class MeldingAlias(BasisModel):
     def start_task_update_melding_alias_data(self):
         if (
             self.task_update_melding_alias_data
-            and self.task_update_melding_alias_data.status == states.STARTED
+            and self.task_update_melding_alias_data.status
+            in [states.STARTED, states.PENDING]
         ):
             return
         if (
             self.task_update_melding_alias_data
-            and self.task_update_melding_alias_data.status
-            in [states.PENDING, states.RETRY]
+            and self.task_update_melding_alias_data.status in [states.RETRY]
         ):
             app.control.revoke(
                 self.task_update_melding_alias_data.task_id, terminate=True

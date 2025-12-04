@@ -35,7 +35,7 @@ redis==4.5.5
 mozilla-django-oidc==3.0.0
 PyJWT<2.4.0
 
-device-detector==5.0.1
+ua-parser[regex]
 geopy==2.4.1
 chardet==5.2.0
 hashids==1.3.1

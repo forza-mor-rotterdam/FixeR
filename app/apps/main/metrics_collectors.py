@@ -28,7 +28,7 @@ class CustomCollector(object):
             FROM "aliassen_meldingalias" \
             WHERE  \
                 "aliassen_meldingalias"."locatie_type" IS NULL  \
-                OR NOT ("aliassen_meldingalias"."response_status_code" = ANY(ARRAY[200, 404])) \
+                OR NOT ("aliassen_meldingalias"."response_status_code" IN (200, 404)) \
         '
 
         with connections["default"].cursor() as cursor:
@@ -57,7 +57,7 @@ class CustomCollector(object):
             WHERE  \
                 "taken_taakgebeurtenis"."notificatie_verstuurd" IS FALSE  \
                 AND "taken_taakstatus"."naam" = \'voltooid\'  \
-                AND ("django_celery_results_taskresult"."status" = ANY(ARRAY[\'FAILURE\', \'SUCCESS\'])  \
+                AND ("django_celery_results_taskresult"."status" IN (\'FAILURE\', \'SUCCESS\')  \
                 OR "taken_taakgebeurtenis"."task_taakopdracht_notificatie_id" IS NULL)  \
         '
 
@@ -110,6 +110,12 @@ class CustomCollector(object):
                     obj["status"],
                 ),
                 obj["count"],
+            )
+
+        if not total_objects:
+            c.add_metric(
+                (),
+                0,
             )
 
         return c
