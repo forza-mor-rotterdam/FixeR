@@ -65,7 +65,8 @@ def general_settings(context):
         if context.META.get("HTTP_USER_AGENT")
         else ""
     )
-    os_family = parse_os(ua).family.lower()
+    parsed_ua = parse_os(ua)
+    os_family = parsed_ua.family.lower() if hasattr(parsed_ua, "family") else ""
 
     profiel_taaktype_uuids = []
     if user and hasattr(user, "profiel"):
