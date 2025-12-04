@@ -219,7 +219,7 @@ export default class extends Controller {
     let textContent = 'Afstand onbekend'
     if (this.currentPosition) {
       const markerLocation = new L.LatLng(this.taakCoordinates[0], this.taakCoordinates[1])
-      textContent = `Afstand: ${this.formatDistance(
+      textContent = `${this.formatDistance(
         Math.round(markerLocation.distanceTo(this.currentPosition))
       )}`
     }

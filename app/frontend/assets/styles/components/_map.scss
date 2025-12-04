@@ -15,9 +15,9 @@
         flex: 1 1 0;
 
         &.map--single {
-            height: 0;
+            width: 100%;
             flex: 0;
-            padding-bottom: 50%;
+            aspect-ratio: 32/20;
         }
 
         .map__overlay {
