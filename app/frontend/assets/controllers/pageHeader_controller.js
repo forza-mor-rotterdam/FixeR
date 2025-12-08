@@ -13,6 +13,8 @@ export default class extends Controller {
           element.classList.remove('show')
         })
       }
+
+      console.log('toggle show--notificatie-lijst')
       document.body.classList.toggle(
         'show--notificatie-lijst',
         this.element.querySelector('.show .container__profiel_notificatie_lijst')

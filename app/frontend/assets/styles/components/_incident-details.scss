@@ -153,7 +153,10 @@ body:has(.detailheader) {
             margin-bottom: 1em;
         }
     }
+}
 
+.container__content,
+.detailheader {
     .container__uitklapper {
         position: relative;
         z-index: 2000;
@@ -220,8 +223,32 @@ body:has(.detailheader) {
         }
 
         &:hover {
-            .legenda {
+            .legenda,
+            .content {
                 display: block;
+            }
+        }
+    }
+}
+
+.detailheader {
+    .container__uitklapper {
+        .legenda {
+            top: 30px;
+            left: auto;
+            right: 0;
+            padding: 0;
+
+            .btn {
+                padding: 8px 12px;
+                min-height: auto;
+                color: inherit;
+                font-weight: 400;
+                margin-bottom: 0;
+
+                span {
+                    padding: 0 4px 0 6px;
+                }
             }
         }
     }

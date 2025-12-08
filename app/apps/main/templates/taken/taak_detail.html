@@ -22,7 +22,19 @@
             <div class="text-wrapper">
                 <h1 class="h2">{{ taak.melding.locatie_verbose }}</h1>
             </div>
-            <div class="container__uitklapper">...</div>
+            <div class="container__uitklapper">
+                <span>...</span>
+                <div class="legenda">
+                    <ul class="list-clean">
+                        <li>
+                            <a class="btn" href="{% url 'taak_delen' taak.uuid %}" target="_blank">
+                                {% include "icons/export.svg" %}
+                                <span>Delen</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
         {% with geometrie=taak.melding.geometrie %}
             <div>
