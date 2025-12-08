@@ -601,20 +601,20 @@
                 .btn-icon--clean {
                     display: none;
                     position: absolute;
-                    right: 0;
+                    left: 0;
                     bottom: 0;
                     z-index: 200;
                     margin-bottom: 0;
-                    width: auto;
-                    height: auto;
-                    background-color: transparent;
+                    width: 20px;
+                    height: 20px;
+                    background-color: $white;
                     min-height: 0;
                     padding: 0;
                     .map {
-                        width: 24px;
-                        height: 24px;
+                        width: 16px;
+                        height: 16px;
                         path {
-                            fill: $primary;
+                            fill: $black;
                         }
                     }
                 }
