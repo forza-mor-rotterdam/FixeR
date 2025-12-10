@@ -1,0 +1,21 @@
+{% load webpack_static from webpack_loader %}
+<section class="section--description">
+    <div class="container__content">
+        <h2 class="h3">{{ taak.titel }}</h2>
+        <div class="container__flex">
+            <button class="btn btn-textlink btn-info"
+                    data-action="infosheet#openInfosheet"
+                    data-infosheet-action-param="{% url 'taaktype_taakr' taak.taaktype.id %}">
+                Taakuitleg
+                {% include "icons/info.svg" %}
+            </button>
+            <div>
+                {% if taak.taakstatus.naam and taak.taakstatus.naam != "nieuw" %}
+                    <span class="badge {% if taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
+                        {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
