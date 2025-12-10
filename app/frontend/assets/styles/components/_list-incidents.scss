@@ -27,12 +27,13 @@
             top: -74px;
             left: 50%;
             transform: translateX(-70%);
+            font-size: 1.25rem;
         }
 
         .count {
             width: auto;
             border-radius: 20px;
-            padding: 0 10px !important;
+            padding: 0 8px !important;
             min-width: 1.8em;
         }
 
@@ -45,7 +46,7 @@
                 .btn {
                     background-color: transparent;
                     min-height: 0;
-                    font-size: $fz-14;
+                    font-size: 0.75em;
                     font-weight: 400;
                     line-height: 14px;
                     margin-bottom: 0;
@@ -167,7 +168,7 @@
 
                             label {
                                 font-weight: 400;
-                                font-size: $fz-14;
+                                font-size: 0.75em;
                                 min-width: 0;
                                 background-position: right 93% 50%;
 
@@ -723,19 +724,16 @@
                 }
 
                 .incident__category {
-                    font-size: $fz-14;
+                    font-size: 0.875em;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     max-width: 100%;
-                }
-
-                .incident__category {
                     display: inline-block;
                 }
 
                 .incident__moment {
-                    font-size: $fz-12;
+                    font-size: 0.75em;
                     &.primary {
                         color: $green-900;
                     }
