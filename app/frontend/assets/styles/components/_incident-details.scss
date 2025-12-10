@@ -32,6 +32,12 @@ body:has(.detailheader) {
             }
         }
     }
+
+    .container__content--sticky-bottom {
+        .sticky {
+            background-color: $blue-100;
+        }
+    }
 }
 
 .detailheader {

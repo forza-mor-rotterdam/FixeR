@@ -357,6 +357,8 @@ button {
         transition-duration: $transition-duration-default;
         transition-timing-function: $transition-ease-default;
         transition-behavior: allow-discrete;
+        position: absolute;
+        bottom: calc(100% + 10px);
 
         svg {
             width: 32px;
