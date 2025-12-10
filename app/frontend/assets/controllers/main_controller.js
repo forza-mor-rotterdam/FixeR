@@ -54,7 +54,7 @@ export default class extends Controller {
   }
 
   closeFoldouts() {
-    const uitklappers = this.element.querySelectorAll('.container__uitklapper')
+    const uitklappers = document.body.querySelectorAll('.container__uitklapper:not(.js-open)')
     uitklappers.forEach((uitklapper) => {
       uitklapper.classList.remove('show')
     })
