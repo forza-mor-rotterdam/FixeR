@@ -13,17 +13,31 @@
     {% with melding=taak.melding.response_json %}
         <turbo-frame id="taak_basis">
         <div class="detailheader">
-            <div>
-                <a href="{% url 'taken_overzicht' %}?taakUuid={{ taak.uuid }}"
-                   data-turbo-action="advance"
-                   class="link--back"
-                   aria-label="Terug">{% include "icons/arrow-long.svg" %}</a>
-            </div>
-            <div class="text-wrapper">
-                <h1 class="h2">{{ taak.melding.locatie_verbose }}</h1>
-            </div>
+            <a href="{% url 'taken_overzicht' %}?taakUuid={{ taak.uuid }}"
+               data-turbo-action="advance"
+               class="link--back"
+               aria-label="Terug">{% include "icons/arrow-long.svg" %}</a>
+            {% comment %} <div class="text-wrapper"> {% endcomment %}
+            {% comment %} <h1 class="h2">{{ taak.melding.locatie_verbose }}</h1> {% endcomment %}
+            <h1 class="h2">
+                {% spaceless %}
+                    <span class="adres">
+                        {% if taak.melding.straatnaam %}
+                            <span class="straat">{{ taak.melding.straatnaam }}</span>
+                            <span class="huisnummer">
+                                {{ taak.melding.huisnummer }}
+                                {% if taak.melding.huisletter %}{{ taak.melding.huisletter }}{% endif %}
+                                {% if taak.melding.toevoeging %}-{{ taak.melding.toevoeging }}{% endif %}
+                            </span>
+                        {% else %}
+                            <span class="straat">{{ taak.melding.locatie_verbose }}</span>
+                        {% endif %}
+                    </span>
+                {% endspaceless %}
+            </h1>
+            {% comment %} </div> {% endcomment %}
             <div class="container__uitklapper">
-                <span>...</span>
+                <span>{% include "icons/ellipsis.svg" %}</span>
                 <div class="legenda">
                     <ul class="list-clean">
                         <li>
