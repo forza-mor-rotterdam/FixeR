@@ -180,7 +180,9 @@ export default class extends Controller {
     setTimeout(() => {
       this.scrollToTop()
     }, 100)
+  }
 
+  imageSliderThumbContainerConnected() {
     if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
       document.body.classList.add('css--safari')
       setTimeout(() => {

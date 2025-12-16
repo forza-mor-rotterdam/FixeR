@@ -64,6 +64,12 @@
                         {{ taak.melding.buurtnaam }}
                     </dd>
                 {% endif %}
+                {% if taak.melding.plaatsnaam and taak.melding.plaatsnaam|lower != "rotterdam" %}
+                    <dt>Plaats</dt>
+                    <dd>
+                        {{ taak.melding.plaatsnaam }}
+                    </dd>
+                {% endif %}
                 {% if taak.melding.grafnummer %}
                     <dt>Grafnummer</dt>
                     <dd>
@@ -146,7 +152,7 @@
         </div>
     </div>
     <div class="container__content">
-        <h3>Details</h3>
+        <h3>Meldingdetails</h3>
         <div class="content">
             <dl>
                 {% if taak.aangemaakt_op %}
@@ -201,10 +207,6 @@
                                    class="btn btn-tertiary">
                                     {% include "icons/phone.svg" %}
                                     Bellen
-                                </a>
-                                <a href="" class="btn btn-tertiary">
-                                    {% include "icons/message.svg" %}
-                                    Whatsapp
                                 </a>
                             </div>
                         </div>
@@ -314,10 +316,6 @@
                         </div>
                     </button>
                 {% endfor %}
-            {% else %}
-                <p>
-                    <small>Geen gegevens bekend</small>
-                </p>
             {% endif %}
         </div>
     </div>
@@ -350,13 +348,13 @@
                             Onbekend
                         {% endif %}
                     </dd>
-                    <dt>[ Gedeeld op Whatsapp ]</dt>
+                    <dt>Gedeeld op Whatsapp</dt>
                     <dd>
-                        ?
+                        {{ taakdeellinks|length }}
                     </dd>
-                    <dt>[ Geopend op Whatsapp ]</dt>
+                    <dt>Geopend op Whatsapp</dt>
                     <dd>
-                        ?
+                        {{ taakdeellinks_bezoekers|length }}
                     </dd>
                 </dl>
             </div>

@@ -135,13 +135,17 @@ export default class extends Controller {
 
   closeInfosheet() {
     if (this.sourceElemParent) {
-      this.injectedHeader?.remove()
-      this.injectedHeader = null
-      this.sourceElemParent.insertAdjacentElement(
-        'beforeEnd',
-        this.infosheetTurboframeTarget.firstChild
+      setTimeout(() => this.injectedHeader?.remove(), 400)
+      setTimeout(() => (this.injectedHeader = null), 400)
+      setTimeout(
+        () =>
+          this.sourceElemParent.insertAdjacentElement(
+            'beforeEnd',
+            this.infosheetTurboframeTarget.firstChild
+          ),
+        400
       )
-      this.sourceElemParent = null
+      setTimeout(() => (this.sourceElemParent = null), 400)
     }
     if (this.hasInfosheetTarget) {
       if (this.infosheetTarget.open) {
