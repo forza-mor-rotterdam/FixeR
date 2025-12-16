@@ -22,7 +22,7 @@
                     </div>
                     {% if taak.laatste_taakgebeurtenis_gebruiker %}
                         <div class="person">
-                            <span class="initials">{{ request.user|gebruikersinitialen }}</span>
+                            <span class="initials">{{ taak.laatste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
                             <div class="message">
                                 <h4>{{ taak.laatste_taakgebeurtenis_gebruiker.full_name }}</h4>
                                 <span class="help-text">{{ taak.laatste_taakgebeurtenis_gebruiker.rol }}</span>
@@ -177,16 +177,84 @@
     <div class="container__content">
         <h3>Contact</h3>
         <div class="content">
-            <div class="person">
-                <span class="initials">{{ request.user|gebruikersinitialen }}</span>
+            <button class="btn person"
+                    data-action="infosheet#openInfosheet"
+                    data-infosheet-extracontent-param=".extra-content"
+                    data-infosheet-header-param="Contactgegevens">
+                <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
                 <div class="message">
                     <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
-                    <span class="help-text">{{ taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
+                    <span>{{ taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
                 </div>
-            </div>
+                <div class="extra-content">
+                    <div class="person">
+                        <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
+                        <div class="message">
+                            <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
+                            <span class="help-text">{{ taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
+                        </div>
+                    </div>
+                    {% if taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer %}
+                        <div class="person">
+                            <div class="container__contact">
+                                <a href="tel:{{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}"
+                                   class="btn btn-tertiary">
+                                    {% include "icons/phone.svg" %}
+                                    Bellen
+                                </a>
+                                <a href="" class="btn btn-tertiary">
+                                    {% include "icons/message.svg" %}
+                                    Whatsapp
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="person person--list">
+                        <dl>
+                            {% if taak.eerste_taakgebeurtenis_gebruiker.personeelsnummer %}
+                                <dt>Personeelsnummer</dt>
+                                <dd>
+                                    {{ taak.eerste_taakgebeurtenis_gebruiker.personeelsnummer }}
+                                </dd>
+                            {% endif %}
+                            {% if taak.eerste_taakgebeurtenis_gebruiker.email %}
+                                <dt>E-mailadres</dt>
+                                <dd>
+                                    <a href="mailto:{{ taak.eerste_taakgebeurtenis_gebruiker.email }}"
+                                       target="_blank"
+                                       class="link"
+                                       data-testid="Medewerker_email">
+                                        {{ taak.eerste_taakgebeurtenis_gebruiker.email }}
+                                    </a>
+                                </dd>
+                            {% endif %}
+                            {% if taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer %}
+                                <dt>Telefoonnummer</dt>
+                                <dd>
+                                    <a href="tel:{{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}"
+                                       target="_blank"
+                                       class="link"
+                                       data-testid="Medewerker_tel">
+                                        {{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}
+                                    </a>
+                                </dd>
+                            {% endif %}
+                            {% if taak.eerste_taakgebeurtenis_gebruiker.afdeling %}
+                                <dt>Afdeling</dt>
+                                <dd>
+                                    {{ taak.eerste_taakgebeurtenis_gebruiker.afdeling }}
+                                </dd>
+                            {% endif %}
+                        </dl>
+                    </div>
+                </div>
+            </button>
             {% if melding.signalen_voor_melding|length > 0 %}
                 {% for signaal in melding.signalen_voor_melding %}
-                    <div class="person">
+                    <button class="btn person"
+                            data-action="infosheet#openInfosheet"
+                            data-infosheet-extracontent-param=".extra-content"
+                            data-infosheet-header-param="Contactgegevens">
                         {% if signaal.melder.naam %}
                             <span class="initials">{{ signaal.melder.naam|gebruikersinitialen }}</span>
                         {% else %}
@@ -196,40 +264,55 @@
                             <h4>{{ signaal.melder.naam }}</h4>
                             <span>Melder</span>
                         </div>
-                    </div>
-                    {% comment %} <div class="margin-bottom">
-                        {% if signaal.melder.naam %}
-                            <p data-testid="Melder_naam">{{ signaal.melder.naam }}</p>
-                        {% else %}
-                            <p>
-                                <small data-testid="Naam_anon">Geen naam opgegeven</small>
-                            </p>
-                        {% endif %}
-                        {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
-                            <p>
-                                <a href="tel:{{ signaal.melder.telefoonnummer }}" target="_blank" class="link link--phone" data-testid="Melder_tel">
-                                    {% include "icons/phone.svg" %}
-                                    {{ signaal.melder.telefoonnummer }}
-                                </a>
-                            </p>
-                        {% else %}
-                            <p>
-                                <small data-testid="Tel_anon">Geen telefoonnummer opgegeven</small>
-                            </p>
-                        {% endif %}
-                        {% if signaal.melder.email %}
-                            <p>
-                                <a href="mailto:{{ signaal.melder.email }}" target="_blank" class="link link--email" data-testid="Melder_email">
-                                    {% include "icons/email.svg" with width="20" height="16" %}
-                                    {{ signaal.melder.email }}
-                                </a>
-                            </p>
-                        {% else %}
-                            <p>
-                                <small data-testid="Email_anon">Geen e-mailadres opgegeven</small>
-                            </p>
-                        {% endif %}
-                    </div> {% endcomment %}
+                        <div class="extra-content">
+                            <div class="person">
+                                {% if signaal.melder.naam %}
+                                    <span class="initials">{{ signaal.melder.naam|gebruikersinitialen }}</span>
+                                {% else %}
+                                    <span class="initials">-</span>
+                                {% endif %}
+                                <div class="message">
+                                    <h4>{{ signaal.melder.naam }}</h4>
+                                    <span>Melder</span>
+                                </div>
+                            </div>
+                            {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
+                                <div class="person">
+                                    <div class="container__contact">
+                                        <a href="tel:{{ signaal.melder.telefoonnummer }}"
+                                           class="btn btn-tertiary">
+                                            {% include "icons/phone.svg" %}
+                                            Bellen
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if signaal.melder.email or signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
+                                <div class="person person--list">
+                                    <dl>
+                                        {% if signaal.melder.email %}
+                                            <dt>E-mailadres</dt>
+                                            <dd>
+                                                <a href="mailto:{{ signaal.melder.email }}"
+                                                   target="_blank"
+                                                   class="link"
+                                                   data-testid="Melder_email">{{ signaal.melder.email }}</a>
+                                            </dd>
+                                        {% endif %}
+                                        {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
+                                            <dt>Telefoonnummer</dt>
+                                            <dd>
+                                                <a href="tel:{{ signaal.melder.telefoonnummer }}"
+                                                   target="_blank"
+                                                   class="link"
+                                                   data-testid="Melder_tel">{{ signaal.melder.telefoonnummer }}</a>
+                                            </dd>
+                                        {% endif %}
+                                    </dl>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </button>
                 {% endfor %}
             {% else %}
                 <p>
