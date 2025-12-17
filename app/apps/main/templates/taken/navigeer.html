@@ -12,7 +12,7 @@
 <turbo-stream action="update" target="modal_body">
 <template>
     <ul class="list-clean">
-        {% if device_os == "ios" or device_os == "mac" %}
+        {% if OS_IS_IOS or OS_IS_MAC %}
             <li class="padding-bottom">
                 <a class="link link--navigate"
                    href="https://maps.apple.com/?daddr={{ lat }},{{ long }}&z=10&"

@@ -77,14 +77,17 @@
                                 {% localize on %}
                                 {{ taak.taakstatus.aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}
                             {% endlocalize %}
-                        </span> |
-                        {% with taak.melding.geometrie as geo %}
-                            <span>
-                                <span data-taken-overzicht-target="taakAfstand"
-                                      data-latitude="{{ geo.1|replace_comma_by_dot }}"
-                                      data-longitude="{{ geo.0|replace_comma_by_dot }}"></span>
-                            </span>
-                        {% endwith %}
+                        </span>
+                        {% if taak.melding.locatie_type == "adres" %}
+                            |
+                            {% with taak.melding.geometrie as geo %}
+                                <span>
+                                    <span data-taken-overzicht-target="taakAfstand"
+                                          data-latitude="{{ geo.1|replace_comma_by_dot }}"
+                                          data-longitude="{{ geo.0|replace_comma_by_dot }}"></span>
+                                </span>
+                            {% endwith %}
+                        {% endif %}
                     </div>
                 </div>
             </div>

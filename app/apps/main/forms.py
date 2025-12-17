@@ -206,9 +206,6 @@ class TakenLijstFilterForm(forms.Form):
         profiel = self.request.user.profiel
         super().__init__(*args, **kwargs)
 
-        if self.request.session.get("q"):
-            del self.request.session["q"]
-
         for f in self.profiel_taken_filters:
             self.fields[f.key()] = forms.MultipleChoiceField(
                 widget=TaakFilterCheckboxSelectMultiple(
