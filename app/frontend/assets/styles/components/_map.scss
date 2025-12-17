@@ -170,6 +170,7 @@
         visibility: hidden;
         pointer-events: none;
         width: 0;
+        overflow: hidden;
     }
 }
 
@@ -180,6 +181,7 @@
         visibility: visible;
         pointer-events: all;
         width: 100%;
+        overflow: visible;
     }
 }
 
@@ -252,25 +254,6 @@
             .container__content {
                 font-size: 32px;
             }
-        }
-    }
-}
-
-button.toggle-view {
-    padding: 0 5px;
-    svg.list {
-        display: none;
-    }
-    svg.map {
-        display: block;
-    }
-
-    .showMap & {
-        svg.list {
-            display: block;
-        }
-        svg.map {
-            display: none;
         }
     }
 }

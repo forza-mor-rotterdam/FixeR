@@ -166,8 +166,16 @@ class TakenLijstFilterForm(forms.Form):
         label="Zoeken in alle FixeR taken",
         required=False,
     )
+    # sorteer_opties = forms.ChoiceField(
+    #     widget=forms.Select(
+    #         attrs={
+    #             "data-action": "taken-overzicht#onSortingChangeHandler",
+    #             "data-main-target": "sorteerField",
+    #             "data-taken-overzicht-target": "sorteerField",
+    #         }
+    #     ),
     sorteer_opties = forms.ChoiceField(
-        widget=forms.Select(
+        widget=forms.RadioSelect(
             attrs={
                 "data-action": "taken-overzicht#onSortingChangeHandler",
                 "data-main-target": "sorteerField",

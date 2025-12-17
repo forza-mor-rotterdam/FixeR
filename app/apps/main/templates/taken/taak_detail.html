@@ -10,8 +10,8 @@
     {{ taak.locatie_verbose }} | FixeR
 {% endblock title %}
 {% block before_modal_content %}
-    <turbo-frame id="taak_basis">
     {% with melding=taak.melding.response_json %}
+        <turbo-frame id="taak_basis">
         {% with geometrie=taak.melding.geometrie %}
             <div>
                 <div>

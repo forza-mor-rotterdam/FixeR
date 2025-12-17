@@ -21,6 +21,7 @@ $green-100: #f9fcfa;
 $green-200: #ebf5ed;
 $green-400: #cfdbd5;
 $green-600: #e3f4dd;
+$green-900: #00811f;
 
 // magentatinten
 $magenta-tint01: #c93675;
@@ -39,13 +40,17 @@ $blue-tint01: #2054c3;
 $blue-tint02: #eaf2ff;
 $yellow-200: #fff9eb;
 $yellow-400: #fff1ce;
+$yellow-900: #fed41d;
+$orange-200: #ffecd9;
+$orange-800: #e2932c;
+$orange-900: #ffa800;
 $red-200: #fcf0f0;
 $red-400: #ffd5d5;
 $red-900: #d22d1f;
 $blue-100: #f7f9fa;
 $blue-200: #eaeef1;
 $blue-800: #6b8893;
-$blue-900: #244048;
+$blue-900: #104ccb;
 $gray-100: #f4f4f5;
 $gray-200: #eaeaea;
 $gray-400: #b7bdc7;
@@ -145,15 +150,15 @@ $link-hover-color: $primary-active;
 $font-family-sans-serif: "Bolder", Arial, sans-serif;
 
 $headings-font-weight: 700;
-$h1-font-size: calc(1.375em + 1.5vw);
+$h1-font-size: calc(1.1em + 1.5vw);
 $h2-font-size: calc(1.275em + 0.3vw);
 $h3-font-size: 1.25em;
 $h4-font-size: 1.125em;
 $h5-font-size: 1em;
 $h6-font-size: 0.8888em;
 $font-size-base: 1em;
+$fz-20: 1.25rem;
 $fz-16: 1rem;
-$fz-14: 0.875rem;
 $fz-12: 0.75rem;
 
 $body-color: $gray-tint11;

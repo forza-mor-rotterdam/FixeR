@@ -32,6 +32,11 @@ body {
     }
 }
 
+html {
+    height: 100%;
+    scrollbar-gutter: stable;
+}
+
 body,
 main,
 header {
@@ -566,7 +571,8 @@ body.no-js {
     transition: all 0.25s ease-in;
 
     &.container__sorting,
-    &.container__search {
+    &.container__search,
+    &.container__search-default {
         max-height: 120px;
         overflow: hidden;
     }
@@ -581,11 +587,6 @@ body.no-js {
     &.container__sorting,
     &.container__search {
         transition: all 0.25s ease-in;
-
-        @media (min-width: map-get($grid-breakpoints, lg)) {
-            max-height: 120px;
-            overflow: hidden;
-        }
     }
 }
 

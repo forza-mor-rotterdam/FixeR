@@ -1,5 +1,6 @@
 .pageheader {
-    height: 64px;
+    height: 60px;
+    min-height: 60px;
     padding: 0;
     border-bottom: 1px solid $gray-tint04;
     padding: 0 16px;
@@ -7,36 +8,29 @@
     position: relative;
     z-index: 2100;
 
-    .container__logo {
-        flex: 1;
-        > a {
-            display: inline-block;
-        }
-        .logo {
-            max-height: 40px;
-            margin: 10px 0 0;
-            display: block;
+    .container__user {
+        display: flex;
+        justify-content: space-between;
+    }
 
-            &--large {
-                display: none;
-            }
-        }
+    .container__icon {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
 
-        .pagetitle {
-            margin: 0;
-            display: inline-block;
-            color: $primary;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -40%);
+        .initials {
+            line-height: 36px;
         }
+    }
+
+    .container__nav {
+        display: flex;
     }
 
     .container__uitklapper {
         position: unset;
         flex: 0 1 auto;
-        margin: 20px 0 0;
+        margin: 15px 0 0;
         flex-direction: column;
         justify-content: center;
 
@@ -193,11 +187,6 @@
                 display: none;
             }
         }
-    }
-
-    .container {
-        display: flex;
-        justify-content: space-between;
     }
 
     .modal-navigation {

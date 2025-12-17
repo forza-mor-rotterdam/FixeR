@@ -71,9 +71,7 @@
           data-notificaties--manager-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
         {% if request.user.is_authenticated %}
             {% block pageheader %}
-                {% with page_title="FixeR" %}
-                    {% include "snippets/pageheader.html" %}
-                {% endwith %}
+                {% include "snippets/pageheader.html" %}
             {% endblock pageheader %}
         {% endif %}
         {% if request.user.is_authenticated and request.user.groups.count or request.user.is_superuser %}

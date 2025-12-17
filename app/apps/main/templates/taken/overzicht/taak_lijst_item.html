@@ -54,30 +54,43 @@
                 <div class="container__info">
                     <div>
                         <h2 class="h5">
-                            {{ taak.melding.locatie_verbose }}
-                            {% if taak.taakstatus.naam %}
-                                <span class="badge {% if taak.taakstatus.naam == 'nieuw' or taak.taakstatus.naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span>
-                            {% endif %}
-                            {% if taak.laatste_taakgebeurtenis_omschrijving_intern %}
-                                <span class="badge-count badge-count--info">i</span>
-                            {% endif %}
+                            {% spaceless %}
+                                <span class="adres">
+                                    {% if taak.melding.straatnaam %}
+                                        <span class="straat">{{ taak.melding.straatnaam }}</span>
+                                        <span class="huisnummer">
+                                            {{ taak.melding.huisnummer }}
+                                            {% if taak.melding.huisletter %}{{ taak.melding.huisletter }}{% endif %}
+                                            {% if taak.melding.toevoeging %}-{{ taak.melding.toevoeging }}{% endif %}
+                                        </span>
+                                    {% else %}
+                                        <span class="straat">{{ taak.melding.locatie_verbose }}</span>
+                                    {% endif %}
+                                </span>
+                            {% endspaceless %}
                         </h2>
-                        {% if taak.melding.postcode or taak.melding.plaatsnaam %}
-                            <strong>
-                                {% if taak.melding.postcode %}{{ taak.melding.postcode }}{% endif %}
-                                {% if taak.melding.postcode and taak.melding.plaatsnaam %},{% endif %}
-                                {% if taak.melding.plaatsnaam %}{{ taak.melding.plaatsnaam }}{% endif %}
-                            </strong>
-                        {% endif %}
                         <div>
                             <span class="incident__category">{{ taak.titel }}</span>
                         </div>
-                        <div class="incident__moment">
-                            <span data-taak-target="incidentDate">
+                        {% if taak.melding.plaatsnaam %}
+                            <div class="incident__moment primary">
+                                <span>
+                                    {% if taak.melding.plaatsnaam != "Rotterdam" %}{{ taak.melding.plaatsnaam }}{% endif %}
+                                </span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="incident__moment">
+                        {% if taak.laatste_taakgebeurtenis_omschrijving_intern %}<span class="note"></span>{% endif %}
+                        {% spaceless %}
+                            <span data-controller="utils"
+                                  data-utils-target="dateVerbose"
+                                  data-utils-date-value="{{ taak.taakstatus.aangemaakt_op|date:'D d M Y'|lower }}"></span>
+                            {% if taak.taakstatus.aangemaakt_op|time %}
                                 {% localize on %}
-                                {{ taak.taakstatus.aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}
+                                <span>, {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}</span>
                             {% endlocalize %}
-                        </span>
+                        {% endif %}
                         {% if taak.melding.locatie_type == "adres" %}
                             |
                             {% with taak.melding.geometrie as geo %}
@@ -88,8 +101,13 @@
                                 </span>
                             {% endwith %}
                         {% endif %}
-                    </div>
+                    {% endspaceless %}
                 </div>
+                {% if taak.melding.response_json.urgentie >= 0.5 %}
+                    <span class="badge__gradient-mask"><span class="badge badge--urgent">Spoed</span></span>
+                {% elif taak.taakstatus.naam and taak.taakstatus.naam != "nieuw" %}
+                    <span class="badge__gradient-mask"><span class="badge {% if taak.taakstatus.naam == 'openstaand' %}badge--lightblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% elif taak.taakstatus.naam == voltooid %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span></span>
+                {% endif %}
             </div>
         </a>
         {% if taak.melding.geometrie %}

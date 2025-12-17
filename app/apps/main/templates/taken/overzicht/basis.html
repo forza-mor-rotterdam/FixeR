@@ -22,33 +22,83 @@
                  data-taken-overzicht-target="containerHeader">
                 <div class="row">
                     <h1 class="h3">
-                        Taken (<span id="stream_taken_aantal">{{ page_obj.paginator.count }}</span>)
+                        Taken <span class="count" id="stream_taken_aantal">{{ page_obj.paginator.count }}</span>
                     </h1>
                     <div class="container__controls">
-                        <button type="button"
-                                class="btn btn-secondary btn-sort--small"
-                                data-taken-overzicht-target="toggleZoeken"
-                                data-action="taken-overzicht#onToggleSearchContainer"
-                                aria-label="Toon zoekveld">
-                            <span>{% include "icons/search.svg" %}</span>
-                        </button>
-                        <button type="button"
-                                class="btn btn-secondary btn-sort--small"
-                                data-action="taken-overzicht#onToggleSortingContainer"
-                                aria-label="Sorteer de lijst">
-                            <span>{% include "icons/sort.svg" %}</span>
-                        </button>
-                        {% if request.user.profiel.context.template == "standaard" %}
-                            <button type="button"
-                                    class="btn btn-secondary btn-navigate--small toggle-view"
-                                    data-action="taken-overzicht#toggleMapViewHandler"
-                                    data-taken-overzicht-target="toggleMapView"
-                                    aria-label="Maak route">
-                                {% include "icons/kaart.svg" %}
-                                {% include "icons/lijst.svg" %}
-                            </button>
-                        {% endif %}
-                        <div data-taken-overzicht-target="zoekFieldDefaultContainer">
+                        <div class="wrapper__controls">
+                            <div class="container__filter-button">
+                                <button type="button"
+                                        class="btn"
+                                        data-taken-overzicht-target="filterButton"
+                                        data-action="taken-overzicht#showFilters">
+                                    <span data-taken-overzicht-target="filterCount" class="icon">{% include "icons/filter.svg" %}</span>
+                                    <span>Filters</span>
+                                    <span class="count count--filter" id="stream_taken_aantal_2">{{ page_obj.paginator.count }}</span>
+                                    <span class="count count--filter hidden"
+                                          data-taken-overzicht-target="selectedChoicesCount"></span>
+                                </button>
+                            </div>
+                            <div class="container__buttons">
+                                {% if request.user.profiel.context.template == "standaard" %}
+                                    <div class="container__uitklapper"
+                                         data-taken-overzicht-target="uitklapper">
+                                        <button type="button"
+                                                class="btn btn-navigate--small toggle-view"
+                                                data-action="taken-overzicht#toggle"
+                                                data-taken-overzicht-target="toggleMapView">
+                                            {% comment %} {% include "icons/kaart.svg" %}
+                                            {% include "icons/lijst.svg" %} {% endcomment %}
+                                            {% include "icons/eye.svg" %}
+                                            <span>Weergave</span>
+                                        </button>
+                                        <div class="content" data-taken-overzicht-target="content">
+                                            <ul class="list-clean">
+                                                <li>
+                                                    <button class="btn btn--list"
+                                                            data-taken-overzicht-target="showList"
+                                                            data-action="taken-overzicht#showList">
+                                                        {% include "icons/lijst2.svg" %}
+                                                        <span>Lijst</span>
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button class="btn btn--map"
+                                                            data-taken-overzicht-target="showMap"
+                                                            data-action="taken-overzicht#showMap">
+                                                        {% include "icons/kaart2.svg" %}
+                                                        <span>Kaart</span>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <div class="container__uitklapper"
+                                     data-taken-overzicht-target="uitklapper">
+                                    <button type="button"
+                                            class="btn btn-sort--small"
+                                            data-taken-overzicht-target="toggleSortView"
+                                            data-action="taken-overzicht#toggle"
+                                            aria-label="Sorteer de lijst">
+                                        {% include "icons/caret-updown.svg" %}
+                                        <span>Sorteren</span>
+                                    </button>
+                                    <div class="content wide" data-taken-overzicht-target="content">
+                                        <div data-taken-overzicht-target="sorteerOptiesFieldContainer">{{ form.sorteer_opties }}</div>
+                                    </div>
+                                </div>
+                                <button type="button"
+                                        class="btn btn-sort--small"
+                                        data-taken-overzicht-target="toggleZoeken"
+                                        data-action="taken-overzicht#onToggleSearchContainer"
+                                        aria-label="Toon zoekveld">
+                                    {% include "icons/search-black.svg" %}
+                                    <span>Zoeken</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="container__search-default hidden-vertical"
+                             data-taken-overzicht-target="zoekFieldDefaultContainer">
                             <div class="wrapper wrapper--search-group"
                                  data-taken-overzicht-target="zoekFieldset">
                                 <div class="wrapper wrapper--search">
@@ -61,32 +111,22 @@
                                             {% include "icons/close.svg" %}
                                         </button>
                                     </div>
-                                    <button class="btn btn-secondary btn--search"
+                                    <button class="btn btn--search"
                                             type="button"
                                             data-taken-overzicht-target="zoekButton"
                                             data-action="taken-overzicht#onZoekButtonClick">
-                                        <span>Zoek</span>
+                                        <span>{% include "icons/search-black.svg" %}</span>
                                     </button>
                                 </div>
                                 {{ form.deactivate_filters.as_field_group }}
                             </div>
                         </div>
-                        <button type="button"
-                                class="btn btn-secondary btn-filter--small"
-                                data-taken-overzicht-target="filterButton"
-                                data-action="taken-overzicht#showFilters">
-                            <span>{% include "icons/filter.svg" %}</span>
-                            <span>Filter</span>
-                            <span class="count count--filter"
-                                  data-taken-overzicht-target="selectedChoicesCount"></span>
-                        </button>
                     </div>
                 </div>
             </div>
             <div class="container__list">
                 <div class="container__flex list--navigation-tools">
-                    <div class="container__sorting {% if form.deactivate_filters %}hidden-vertical{% else %}show-vertical{% endif %}"
-                         data-taken-overzicht-target="sorteerOptiesFieldContainer">{{ form.sorteer_opties }}</div>
+                    {% comment %} <div class="container__sorting hidden-vertical" data-taken-overzicht-target="sorteerOptiesFieldContainer">{{ form.sorteer_opties }}</div> {% endcomment %}
                     <div class="container__search hidden-vertical"
                          data-taken-overzicht-target="zoekFieldContainer"></div>
                     <div class="list__incidents" id="stream_taken_lijst">{% include "taken/overzicht/lijst.html" %}</div>
@@ -96,16 +136,19 @@
                 {% endif %}
             </div>
         </div>
-        <div class="full-page-view full-page-view__filters" tabindex="0">
+        <dialog class="infosheet full-page-view full-page-view__filters"
+                tabindex="0"
+                data-taken-overzicht-target="filtersheet">
             <div class="full-page-view__main">
                 <div class="full-page-view__header">
                     <div class="full-page-view__action_container">
                         <h2 class="full-page-view__title">Filters</h2>
-                        <button type="button"
-                                class="btn btn-close"
-                                aria-label="Sluit"
-                                data-action="taken-overzicht#hideFilters"></button>
+                        <button autofocus
+                                class="btn-close--small"
+                                data-action="taken-overzicht#hideFilters"
+                                aria-label="Sluiten">{% include "icons/close.svg" %}</button>
                     </div>
+                    <div class="scroll-handle" data-taken-overzicht-target="scrollHandle"></div>
                 </div>
                 <div class="full-page-view__scroll-pane">
                     <div class="full-page-view__content">
@@ -113,7 +156,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </dialog>
     </form>
     </turbo-frame>
 {% endblock body %}

@@ -1,6 +1,6 @@
 .container__pagination {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     margin: 1rem 0;
 
     .wrapper-horizontal {
@@ -26,41 +26,60 @@
                 span,
                 a {
                     font-weight: 400;
-                    font-size: 16px;
+                    font-size: $fz-12;
                     display: block;
+                }
+
+                .disabled {
+                    pointer-events: none;
+                    color: $gray-600;
+                    svg {
+                        path {
+                            fill: $gray-600;
+                        }
+                    }
                 }
 
                 svg {
                     width: 10px;
-                    height: 18px;
-                    margin-top: -2px;
+                    height: 10px;
+                    margin-top: 1px;
+                    path {
+                        fill: $black;
+                    }
                 }
 
                 span,
                 a {
                     text-decoration: none;
-                    color: $gray-tint11;
+                    color: black;
+                    border: 1px solid transparent;
                     &.btn--next {
-                        path {
-                            fill: $gray-tint11;
-                        }
+                        // path {
+                        //     fill: $black;
+                        // }
                     }
                     &.btn--previous {
                         svg {
                             transform: rotate(180deg);
-                            fill: $gray-tint11;
+                            // fill: $black;
                         }
                     }
                 }
                 span,
                 a:hover {
-                    border: 0;
+                    border-color: $gray-200;
                     box-shadow: none;
-                    color: $primary;
-                    background-color: #e0eee2;
+                    background-color: $white;
                 }
 
                 &.has-text {
+                    &:first-child {
+                        margin-right: 10px;
+                    }
+                    &:last-child {
+                        margin-left: 10px;
+                    }
                     a {
                         padding-left: 6px;
                         padding-right: 6px;
