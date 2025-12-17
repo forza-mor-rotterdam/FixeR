@@ -17,7 +17,7 @@ export default class extends Controller {
     'selectedImageModal',
     'selectedImageLabel',
     'selectedImageSubLabel',
-    'thumbList',
+    'dotList',
     'image',
     'imageSliderContainer',
     'taakAfstand',
@@ -158,12 +158,16 @@ export default class extends Controller {
       )
       this.markers.addLayer(marker)
     }
-    document.querySelectorAll('.container__image').forEach((element) => {
-      this.pinchZoom(element)
-    })
+    // document.querySelectorAll('.container__image').forEach((element) => {
+    //   this.pinchZoom(element)
+    // })
   }
 
   connect() {
+    this.scrollTimeout = null
+    this.activeIndexValue = 0
+    this.preloadImagesAround(this.activeIndexValue)
+
     window.addEventListener(
       'scroll',
       function () {
@@ -182,18 +186,27 @@ export default class extends Controller {
     }, 100)
   }
 
-  imageSliderThumbContainerConnected() {
-    if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
-      document.body.classList.add('css--safari')
-      setTimeout(() => {
-        this.imageSliderThumbContainerTarget.querySelector('.container__image img').click()
-      }, 600)
-    }
+  disconnect() {
+    window.removeEventListener(
+      'scroll',
+      function () {
+        if (this.hasBtnToTopTarget) {
+          if (document.body.scrollTop >= 100 || document.documentElement.scrollTop >= 100) {
+            this.btnToTopTarget.classList.add('show')
+          } else {
+            this.btnToTopTarget.classList.remove('show')
+          }
+        }
+      }.bind(this),
+      false
+    )
+    setTimeout(() => {
+      this.scrollToTop()
+    }, 100)
   }
 
-  disconnect() {}
-
   scrollToTop(e) {
+    console.log('scroll')
     if (e) {
       e.target.blur()
     }
@@ -320,11 +333,56 @@ export default class extends Controller {
   }
 
   onScrollSlider() {
-    this.highlightThumb(
-      Math.floor(
-        this.imageSliderContainerTarget.scrollLeft / this.imageSliderContainerTarget.offsetWidth
-      )
-    )
+    clearTimeout(this.scrollTimeout)
+
+    this.scrollTimeout = setTimeout(() => {
+      this.updateActiveIndex()
+    }, 80)
+  }
+
+  updateActiveIndex() {
+    const container = this.imageSliderContainerTarget
+    if (!container || !this.imageTargets.length) return
+
+    const itemWidth = container.clientWidth
+    const index = Math.round(container.scrollLeft / itemWidth)
+
+    if (index === this.activeIndexValue) return
+
+    this.activeIndexValue = index
+    this.onActiveIndexChanged(index)
+  }
+
+  onActiveIndexChanged(index) {
+    this.updateDots(index)
+    this.preloadImagesAround(index)
+  }
+
+  preloadImagesAround(index) {
+    const max = this.imageTargets.length - 1
+
+    ;[index - 1, index, index + 1]
+      .filter((i) => i >= 0 && i <= max)
+      .forEach((i) => this.loadImageAtIndex(i))
+  }
+
+  loadImageAtIndex(index) {
+    const li = this.imageTargets[index]
+    if (!li) return
+
+    const img = li.querySelector('img')
+    if (!img || img.src) return
+
+    if (img.dataset.src) {
+      img.src = img.dataset.src
+    }
+  }
+
+  updateDots(index) {
+    for (const item of this.dotListTarget.querySelectorAll('.dot')) {
+      item.classList.remove('selected')
+    }
+    this.dotListTarget.getElementsByClassName('dot')[index].classList.add('selected')
   }
 
   imageScrollInView(index) {
@@ -334,35 +392,6 @@ export default class extends Controller {
       left: Number(index) * this.imageSliderContainerTarget.offsetWidth,
       top: 0,
     })
-  }
-
-  selectImage(e) {
-    this.imageScrollInView(Number(e.params.imageIndex) - 1)
-    this.highlightThumb(Number(e.params.imageIndex) - 1)
-  }
-
-  highlightThumb(index) {
-    this.deselectThumbs(this.thumbListTarget)
-    this.thumbListTarget.getElementsByTagName('li')[index].classList.add('selected')
-    const thumb = this.thumbListTarget.getElementsByTagName('li')[index]
-    const thumbWidth = thumb.offsetWidth
-    const offsetNum = thumbWidth * index
-    const maxScroll = this.thumbListTarget.offsetWidth - this.sliderContainerWidth
-
-    const newLeft =
-      offsetNum - this.sliderContainerWidth / 2 > 0
-        ? offsetNum - this.sliderContainerWidth / 3 < maxScroll
-          ? offsetNum - this.sliderContainerWidth / 3
-          : maxScroll
-        : 0
-
-    this.thumbListTarget.style.left = `-${newLeft}px`
-  }
-
-  deselectThumbs(list) {
-    for (const item of list.querySelectorAll('li')) {
-      item.classList.remove('selected')
-    }
   }
 
   showPreviousImageInModal() {
@@ -437,58 +466,6 @@ export default class extends Controller {
     this.showImage(true)
   }
 
-  pinchZoom(imageElement) {
-    let imageElementScale = 1
-    let start = {}
-    // Calculate distance between two fingers
-    const distance = (event) => {
-      const dist = Math.hypot(
-        event.touches[0].pageX - event.touches[1].pageX,
-        event.touches[0].pageY - event.touches[1].pageY
-      )
-      return dist
-    }
-
-    imageElement.addEventListener('touchstart', (event) => {
-      if (event.touches.length === 2) {
-        event.preventDefault() // Prevent page scroll
-        start.x = (event.touches[0].pageX + event.touches[1].pageX) / 2
-        start.y = (event.touches[0].pageY + event.touches[1].pageY) / 2
-        start.distance = distance(event)
-      }
-    })
-
-    imageElement.addEventListener('touchmove', (event) => {
-      if (event.touches.length === 2) {
-        event.preventDefault() // Prevent page scroll
-        this.isZooming = true
-        let scale
-        if (event.scale) {
-          scale = event.scale
-        } else {
-          const deltaDistance = distance(event)
-          scale = deltaDistance / start.distance
-        }
-        imageElementScale = Math.min(Math.max(1, scale), 4)
-
-        const deltaX = ((event.touches[0].pageX + event.touches[1].pageX) / 2 - start.x) * 2
-        const deltaY = ((event.touches[0].pageY + event.touches[1].pageY) / 2 - start.y) * 2
-        const transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${imageElementScale})`
-        imageElement.style.transform = transform
-        imageElement.style.WebkitTransform = transform
-        imageElement.style.zIndex = '9999'
-      }
-    })
-
-    imageElement.addEventListener('touchend', () => {
-      // Reset image to it's original format
-      imageElement.style.transform = ''
-      imageElement.style.WebkitTransform = ''
-      imageElement.style.zIndex = ''
-      setTimeout(() => (this.isZooming = false), 300)
-    })
-  }
-
   getBrowser() {
     let userAgent = navigator.userAgent
     let browser = 'onbekend'
@@ -497,6 +474,7 @@ export default class extends Controller {
     }
     return browser
   }
+
   closeModal() {
     const modalList = this.element.querySelectorAll('.modal')
     const modalBackdrop = this.element.querySelector('.modal-backdrop')

@@ -12,10 +12,6 @@ body {
     color: $black;
     background-color: $gray-tint00;
     scroll-behavior: smooth;
-
-    &:has(.cover-header.read-only) {
-        background-color: $white;
-    }
 }
 
 body {

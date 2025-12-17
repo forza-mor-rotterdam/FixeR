@@ -186,54 +186,6 @@ body.show-modal--first-filter {
                 font-size: 0.625rem;
             }
         }
-
-        .container__navigate-images {
-            .navigate-images--left,
-            .navigate-images--right {
-                cursor: pointer;
-                position: absolute;
-                width: 48px;
-                height: 48px;
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-
-                opacity: 1;
-                transition: opacity 0.25s ease-in;
-
-                span {
-                    display: block;
-
-                    background-color: $black;
-
-                    svg {
-                        width: 40px;
-                        height: 40px;
-                        margin: 4px;
-                        path {
-                            fill: $white;
-                        }
-                    }
-                }
-
-                &.inactive {
-                    opacity: 0;
-                    pointer-events: none;
-                }
-            }
-            .navigate-images--left {
-                left: 0;
-                span {
-                    svg {
-                        transform: rotate(180deg);
-                    }
-                }
-            }
-
-            .navigate-images--right {
-                right: 0;
-            }
-        }
     }
 }
 

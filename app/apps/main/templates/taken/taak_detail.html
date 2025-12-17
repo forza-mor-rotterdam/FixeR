@@ -16,9 +16,7 @@
             <a href="{% url 'taken_overzicht' %}?taakUuid={{ taak.uuid }}"
                data-turbo-action="advance"
                class="link--back"
-               aria-label="Terug">{% include "icons/arrow-long.svg" %}</a>
-            {% comment %} <div class="text-wrapper"> {% endcomment %}
-            {% comment %} <h1 class="h2">{{ taak.melding.locatie_verbose }}</h1> {% endcomment %}
+               aria-label="Terug">{% include "icons/arrow-short.svg" %}</a>
             <h1 class="h2">
                 {% spaceless %}
                     <span class="adres">
@@ -35,7 +33,6 @@
                     </span>
                 {% endspaceless %}
             </h1>
-            {% comment %} </div> {% endcomment %}
             <div class="container__uitklapper">
                 <span>{% include "icons/ellipsis.svg" %}</span>
                 <div class="legenda">
@@ -66,17 +63,16 @@
                          {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
                         <div class="taak-detail">
                             <div class="container__header-taaknavigatie">
-                                {% include "taken/taak_detail_images.html" %}
-                                {% include "taken/taak_detail_info.html" %}
                                 {% if not taak_in_profiel and not taak.afgesloten_op %}
                                     <div class="cover-header read-only">
-                                        <h3>
-                                            {% include "icons/eye.svg" %}
-                                            Read only weergave
-                                        </h3>
-                                        <p>Deze taak valt buiten je profiel en kun je om die reden alleen inzien maar niet afronden.</p>
+                                        <p>
+                                            <strong>Read only</strong>
+                                            Deze taak valt buiten je profiel en kun je om die reden alleen inzien maar niet afronden.
+                                        </p>
                                     </div>
                                 {% endif %}
+                                {% include "taken/taak_detail_images.html" %}
+                                {% include "taken/taak_detail_info.html" %}
                                 {% include "taken/taak_detail_content.html" %}
                                 {% if not taak.afgesloten_op and taak_in_profiel %}
                                     {% include "taken/taak_detail_buttons.html" %}
