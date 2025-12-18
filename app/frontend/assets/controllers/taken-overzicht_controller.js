@@ -88,7 +88,6 @@ export default class extends Controller {
       const l = this.zoekFieldTarget.value.length
       this.zoekFieldTarget.setSelectionRange(l, l)
     }
-    // Klik buiten -> alles sluiten
     document.addEventListener('click', this.closeAll)
   }
 
@@ -97,12 +96,8 @@ export default class extends Controller {
   }
 
   toggle(event) {
-    console.log('toggle')
     event.stopPropagation()
-
     const current = event.currentTarget.closest('[data-taken-overzicht-target="uitklapper"]')
-
-    // sluit andere dropdowns
     this.uitklapperTargets.forEach((el) => {
       if (el !== current) el.classList.remove('show')
     })
@@ -111,7 +106,6 @@ export default class extends Controller {
   }
 
   closeAll = (event) => {
-    // Als klik binnen deze dropdown is, niets doen
     if (this.element.contains(event.target)) return
 
     this.element.classList.remove('show')
@@ -272,12 +266,10 @@ export default class extends Controller {
     const zoekHasValue = e.target.value.length > 0
     const zoekValueLength = e.target.value.length
     this.toggleZoekenTarget.disabled = zoekHasValue
-    // this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
-    // this.zoekFieldContainerTarget.classList.add('show-vertical')
     this.cancelZoekTarget.classList[zoekHasValue ? 'remove' : 'add']('hide')
     this.zoekButtonTarget.classList[zoekHasValue ? 'add' : 'remove']('hide')
     this.clearSelectedTaakUuidField()
-    if (zoekValueLength > 2) {
+    if (zoekValueLength === 0 || zoekValueLength > 2) {
       this.submit()
     }
   }
@@ -329,9 +321,6 @@ export default class extends Controller {
     })
   }
   onToggleSortingContainer() {
-    console.log('sort')
-    // this.sorteerOptiesFieldContainerTarget.classList.toggle('hidden-vertical')
-    // this.sorteerOptiesFieldContainerTarget.classList.toggle('show-vertical')
     this.toggleSortViewTarget.parentElement.classList.toggle('show')
   }
   onToggleSearchContainer() {
