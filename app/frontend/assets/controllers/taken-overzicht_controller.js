@@ -313,14 +313,14 @@ export default class extends Controller {
         taakAfstand.dataset.latitude,
         taakAfstand.dataset.longitude
       )
-      taakAfstand.textContent = this.formatDistance(
+      taakAfstand.textContent = ` | ${this.formatDistance(
         Math.round(
           markerLocation.distanceTo([
             this.currentPosition.coords.latitude,
             this.currentPosition.coords.longitude,
           ])
         )
-      )
+      )}`
     }
   }
   updateTaakAfstandTargets() {
