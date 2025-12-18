@@ -21,7 +21,7 @@
 .page-incidents {
     .container__header {
         margin-bottom: 16px;
-        z-index: 20;
+        z-index: 2000;
         h1 {
             position: absolute;
             top: -74px;
@@ -644,12 +644,13 @@
 
             .container__info {
                 flex: 1;
-                padding: 6px 0 4px;
+                padding: 6px 0 7px;
                 position: relative;
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
                 max-width: calc(100% - 100px);
+                line-height: 1;
 
                 a {
                     color: inherit;
@@ -761,7 +762,7 @@
                 padding: 0;
 
                 > div {
-                    margin-top: 20px;
+                    margin-top: 10px;
                     padding-top: 48px;
                     line-height: 18px;
                 }
@@ -786,8 +787,7 @@
                         margin-right: 20px;
                         background: url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e")
                             right top no-repeat;
-                        background-size: contain;
-                        background-position: calc(100% + 10px) -10px;
+                        background-position: 100% 0;
                     }
                 }
             }

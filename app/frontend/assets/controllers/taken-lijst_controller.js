@@ -16,21 +16,38 @@ export default class extends Controller {
   selecteerTaakItem(taakUuid, preventScroll) {
     const taakItemTarget = this.taakItemTargets.find((elem) => elem.dataset.uuid === taakUuid)
     taakItemTarget?.classList.toggle('highlight-once', taakItemTarget.dataset.uuid === taakUuid)
-    preventScroll || taakItemTarget?.scrollIntoView()
+    if (!preventScroll && taakItemTarget) {
+      if (!this.isInViewport(taakItemTarget)) {
+        taakItemTarget.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      }
+    }
     setTimeout(() => {
       taakItemTarget?.classList.remove('highlight-once')
     }, 2000)
   }
+
+  isInViewport(el) {
+    const rect = el.getBoundingClientRect()
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    )
+  }
+
   deselecteerTaakItem(taakUuid) {
     const taakItemTarget = this.taakItemTargets.find((elem) => elem.dataset.uuid === taakUuid)
     taakItemTarget?.classList.remove('active')
   }
+
   selectTaakMarker(e) {
     if (this.hasTakenKaartOutlet) {
       const preventScroll = e.params['preventScroll'] != false
       this.takenKaartOutlet.selectTaakMarker(e.params.taakUuid, preventScroll)
     }
   }
+
   getKaartMarkers() {
     return this.taakItemTargets
       .filter((taakItem) => {

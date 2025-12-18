@@ -181,6 +181,7 @@
         visibility: visible;
         pointer-events: all;
         width: 100%;
+        height: calc(100% - 70px);
         overflow: visible;
     }
 }
@@ -232,6 +233,7 @@
             }
             p {
                 margin: 0;
+                word-break: break-word;
                 &:last-of-type {
                     color: $gray-tint08;
                 }
