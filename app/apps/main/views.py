@@ -466,10 +466,18 @@ def taak_afhandelen(request, uuid):
         )
 
     if taaktypes:
-        openstaande_taaktype_urls_voor_melding = [
-            to.get("taaktype")
-            for to in taak.melding.response_json.get("taakopdrachten_voor_melding", [])
+        taak_taaktype = taaktypes[0]
+        taakopdrachten_voor_melding = taak.melding.response_json.get(
+            "taakopdrachten_voor_melding", []
+        )
+        openstaande_taakopdrachten_voor_melding = [
+            to
+            for to in taakopdrachten_voor_melding
             if to.get("status", {}).get("naam") == "nieuw"
+            and not to.get("verwijderd_op")
+        ]
+        openstaande_taaktype_urls_voor_melding = [
+            to.get("taaktype") for to in openstaande_taakopdrachten_voor_melding
         ]
         alle_volgende_taaktypes = [
             (
@@ -478,18 +486,20 @@ def taak_afhandelen(request, uuid):
                 .get("taakapplicatie_taaktype_url"),
                 TaakRService().get_taaktype_by_url(taaktype_url).get("omschrijving"),
             )
-            for taaktype_url in taaktypes[0].get("volgende_taaktypes", [])
+            for taaktype_url in taak_taaktype.get("volgende_taaktypes", [])
             if TaakRService().get_taaktype_by_url(taaktype_url).get("actief")
         ]
+
         volgende_taaktypes = [
             taaktype
             for taaktype in alle_volgende_taaktypes
             if taaktype[0] not in openstaande_taaktype_urls_voor_melding
         ]
         actieve_vervolg_taken = [
-            taaktype
-            for taaktype in alle_volgende_taaktypes
-            if taaktype[0] in openstaande_taaktype_urls_voor_melding
+            (to.get("taaktype"), to.get("titel"))
+            for to in openstaande_taakopdrachten_voor_melding
+            if to.get("taaktype")
+            != taak_taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
         ]
 
     form = TaakBehandelForm(
