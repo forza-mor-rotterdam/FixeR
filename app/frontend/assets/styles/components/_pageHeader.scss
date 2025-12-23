@@ -13,14 +13,8 @@
         justify-content: space-between;
     }
 
-    .container__icon {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        .initials {
-            line-height: 36px;
-        }
+    .container__logo {
+        margin-top: 16px;
     }
 
     .container__nav {
@@ -182,14 +176,6 @@
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         padding: 6px 16px;
-        .container__logo {
-            .logo--large {
-                display: flex;
-            }
-            .logo--small {
-                display: none;
-            }
-        }
     }
 
     .modal-navigation {

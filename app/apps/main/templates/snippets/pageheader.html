@@ -4,8 +4,11 @@
         data-testid="pageHeader"
         data-controller="pageHeader modal">
     <div class="container container__user">
-        <div class="container__icon">
-            <span class="initials">{{ request.user|gebruikersinitialen }}</span>
+        <div class="container__logo">
+            <a href="{% url 'root' %}">
+                <img src="{% webpack_static 'images/favicon-32x32.png' %}" alt="Fixer" />
+            </a>
+            {% if page_title %}<h1 class="pagetitle h2">{{ page_title }}</h1>{% endif %}
         </div>
         {% if request.user.is_authenticated %}
             <div class="container__nav">
