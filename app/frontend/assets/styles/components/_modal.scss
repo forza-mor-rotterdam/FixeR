@@ -103,7 +103,7 @@ body.show-modal--first-filter {
         display: flex;
         flex-direction: column;
         width: 100%;
-        z-index: 2000;
+        z-index: 2003;
     }
 
     &-header {
@@ -241,7 +241,7 @@ body.show-modal--first-filter {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1990;
+    z-index: 2002;
     width: 100vw;
     height: 100vh;
     background-color: $black;

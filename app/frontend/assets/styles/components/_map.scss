@@ -1,8 +1,10 @@
 .showMap {
-    .container__flex {
-        width: 0;
-        overflow: hidden;
-        display: none;
+    @media (max-width: map-get($grid-breakpoints, md)) {
+        .container__flex {
+            width: 0;
+            overflow: hidden;
+            display: none;
+        }
     }
 }
 .container__map {

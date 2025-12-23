@@ -1,10 +1,12 @@
 .taken-overzicht {
     &.showMap {
-        .container__header {
-            .container__controls {
-                .btn-sort--small {
-                    pointer-events: none;
-                    opacity: 0.25;
+        @media (max-width: map-get($grid-breakpoints, md)) {
+            .container__header {
+                .container__controls {
+                    .btn-sort--small {
+                        pointer-events: none;
+                        opacity: 0.25;
+                    }
                 }
             }
         }
@@ -332,7 +334,7 @@
                     }
                 }
                 .container__uitklapper {
-                    &:first-of-type {
+                    &:has(.toggle-view) {
                         display: none;
                     }
                 }

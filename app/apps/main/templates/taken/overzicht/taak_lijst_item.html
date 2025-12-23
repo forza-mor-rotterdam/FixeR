@@ -102,10 +102,12 @@
                         {% endif %}
                     {% endspaceless %}
                 </div>
-                {% if taak.melding.response_json.urgentie >= 0.5 %}
+                {% if taak.taakstatus.naam == 'voltooid' %}
+                    <span class="badge__gradient-mask"><span class="badge badge--green">{{ taak.taakstatus.naam|lower|capfirst }}</span></span>
+                {% elif taak.melding.response_json.urgentie >= 0.5 %}
                     <span class="badge__gradient-mask"><span class="badge badge--urgent">Spoed</span></span>
                 {% elif taak.taakstatus.naam and taak.taakstatus.naam != "nieuw" %}
-                    <span class="badge__gradient-mask"><span class="badge {% if taak.taakstatus.naam == 'openstaand' %}badge--lightblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% elif taak.taakstatus.naam == 'voltooid' %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span></span>
+                    <span class="badge__gradient-mask"><span class="badge {% if taak.taakstatus.naam == 'openstaand' %}badge--lightblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span></span>
                 {% endif %}
             </div>
         </a>

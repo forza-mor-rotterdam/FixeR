@@ -397,8 +397,6 @@ export default class extends Controller {
   }
 
   submit() {
-    this.cancelZoekTarget.classList.remove('hide')
-    this.zoekButtonTarget.classList.add('hide')
     clearTimeout(this.to)
     this.to = setTimeout(() => {
       this.clearSelectedTaakUuidField()
