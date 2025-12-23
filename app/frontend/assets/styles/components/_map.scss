@@ -1,5 +1,5 @@
 .showMap {
-    @media (max-width: map-get($grid-breakpoints, md)) {
+    @media (max-width: map-get($grid-breakpoints, lg)) {
         .container__flex {
             width: 0;
             overflow: hidden;

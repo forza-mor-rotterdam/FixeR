@@ -334,7 +334,7 @@ export default class extends Controller {
         this.zoekFieldTarget.focus()
       }
       if (
-        this.zoekFieldContainerTarget.classList.contains('show-vertical') &&
+        !this.zoekFieldContainerTarget.classList.contains('show-vertical') &&
         this.filtersActiveFieldTarget.checked
       ) {
         this.filtersActiveFieldTarget.checked = false
