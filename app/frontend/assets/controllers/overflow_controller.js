@@ -7,6 +7,8 @@ export default class extends Controller {
     const content = this.element.querySelector('.content__overflow')
 
     if (content.scrollHeight > container.clientHeight) {
+      console.log(12345, this.element)
+      console.log(12345, this.element.closest('.alert'))
       this.element.closest('.alert').classList.add('has-overflow')
       const label = document.createElement('span')
       label.classList.add('toggle')

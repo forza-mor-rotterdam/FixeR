@@ -10,13 +10,13 @@
     {% if taak.laatste_taakgebeurtenis_omschrijving_intern and taak.laatste_taakgebeurtenis_omschrijving_intern|lower != "taak aangemaakt" %}
         <div class="container__content">
             <h3>Opmerking</h3>
-            <div class="content">
+            <div class="content alert">
                 <div class="wrapper">
                     <div class="overflow" tabindex="0" data-controller="overflow">
                         <div class="container__overflow">
                             <p class="content__overflow">
                                 <span class="note"></span>
-                                {{ taak.laatste_taakgebeurtenis_omschrijving_intern }}{{ taak.laatste_taakgebeurtenis_omschrijving_intern }}
+                                {{ taak.laatste_taakgebeurtenis_omschrijving_intern }}
                             </p>
                         </div>
                     </div>
@@ -258,9 +258,9 @@
                             data-infosheet-extracontent-param=".extra-content"
                             data-infosheet-header-param="Contactgegevens">
                         {% if signaal.melder.naam %}
-                            <span class="initials">{{ signaal.melder.naam|gebruikersinitialen }}</span>
+                            <span class="initials initials__extern">{{ signaal.melder.naam|gebruikersinitialen }}</span>
                         {% else %}
-                            <span class="initials">-</span>
+                            <span class="initials initials__extern">--</span>
                         {% endif %}
                         <div class="message">
                             <h4>{{ signaal.melder.naam }}</h4>
@@ -269,9 +269,9 @@
                         <div class="extra-content">
                             <div class="person">
                                 {% if signaal.melder.naam %}
-                                    <span class="initials">{{ signaal.melder.naam|gebruikersinitialen }}</span>
+                                    <span class="initials initials__extern">{{ signaal.melder.naam|gebruikersinitialen }}</span>
                                 {% else %}
-                                    <span class="initials">-</span>
+                                    <span class="initials initials__extern">--</span>
                                 {% endif %}
                                 <div class="message">
                                     <h4>{{ signaal.melder.naam }}</h4>

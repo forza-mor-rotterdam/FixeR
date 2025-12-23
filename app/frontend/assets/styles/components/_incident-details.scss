@@ -72,8 +72,6 @@ body:has(.detailheader) {
         }
 
         .container__overflow {
-            margin-bottom: 1rem;
-
             p:first-child {
                 margin-top: 0;
             }
@@ -137,8 +135,7 @@ body:has(.detailheader) {
 
         input[type="checkbox"] {
             @include form-check-input();
-            vertical-align: top;
-            margin-bottom: 1em;
+            vertical-align: sub;
         }
     }
 }
@@ -156,6 +153,9 @@ body:has(.detailheader) {
             svg {
                 width: 16px;
                 height: 16px;
+                padding: 12px;
+                transform: translate(-12px, -12px);
+                cursor: pointer;
             }
         }
 

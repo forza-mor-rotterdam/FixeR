@@ -19,17 +19,16 @@ def gebruikersnaam(gebruiker):
 def gebruikersinitialen(gebruiker):
     full_initials = "@"
     if isinstance(gebruiker, dict):
-        first_name_initial = (
-            gebruiker.get("first_name", "@")[0]
-            if gebruiker.get("first_name", "@")
-            else "@"
-        )
-        # last_name_initial = gebruiker.get("last_name", "*")[0]
-        full_initials = f"{first_name_initial}".strip()
-    elif hasattr(gebruiker, "first_name") or hasattr(gebruiker, "last_name"):
-        first_name_initial = gebruiker.first_name[0] if gebruiker.first_name else "@"
-        # last_name_initial = gebruiker.last_name[0] if gebruiker.last_name else "*"
-        full_initials = f"{first_name_initial}".strip()
+        first = gebruiker.get("first_name") or ""
+        last = gebruiker.get("last_name") or ""
+    else:
+        first = getattr(gebruiker, "first_name", "") or ""
+        last = getattr(gebruiker, "last_name", "") or ""
+
+    first_initial = first[0] if first else "@"
+    last_initial = last[0] if last else ""
+    full_initials = f"{first_initial}{last_initial}".strip()
+
     return full_initials
 
 
