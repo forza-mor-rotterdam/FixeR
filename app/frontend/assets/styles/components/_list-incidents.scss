@@ -1,6 +1,6 @@
 .taken-overzicht {
     &.showMap {
-        @media (max-width: map-get($grid-breakpoints, md)) {
+        @media (max-width: map-get($grid-breakpoints, lg)) {
             .container__header {
                 .container__controls {
                     .btn-sort--small {
