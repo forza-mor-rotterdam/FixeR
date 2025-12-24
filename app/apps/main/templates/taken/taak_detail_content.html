@@ -5,7 +5,7 @@
 {% load json_encode replace_n python_any from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
-{% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus get_laatste_taakgebeurtenis gebruikersnaam gebruikersinitialen from gebruikers_tags %}
+{% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus get_laatste_taakgebeurtenis gebruikersnaam gebruiker_is_anoniem gebruikersinitialen from gebruikers_tags %}
 <section data-testid="detailTaak" class="padding-bottom">
     {% if taak.laatste_taakgebeurtenis_omschrijving_intern and taak.laatste_taakgebeurtenis_omschrijving_intern|lower != "taak aangemaakt" %}
         <div class="container__content">
@@ -257,28 +257,20 @@
                             data-action="infosheet#openInfosheet"
                             data-infosheet-extracontent-param=".extra-content"
                             data-infosheet-header-param="Contactgegevens">
-                        {% if signaal.melder.naam %}
-                            <span class="initials initials__extern">{{ signaal.melder.naam|gebruikersinitialen }}</span>
-                        {% else %}
-                            <span class="initials initials__extern">--</span>
-                        {% endif %}
+                        <span class="initials initials__extern">{{ signaal.melder|gebruikersinitialen }}</span>
                         <div class="message">
-                            <h4>{{ signaal.melder.naam }}</h4>
+                            <h4>{{ signaal.melder|gebruikersnaam }}</h4>
                             <span>Melder</span>
                         </div>
                         <div class="extra-content">
                             <div class="person">
-                                {% if signaal.melder.naam %}
-                                    <span class="initials initials__extern">{{ signaal.melder.naam|gebruikersinitialen }}</span>
-                                {% else %}
-                                    <span class="initials initials__extern">--</span>
-                                {% endif %}
+                                <span class="initials initials__extern">{{ signaal.melder|gebruikersinitialen }}</span>
                                 <div class="message">
-                                    <h4>{{ signaal.melder.naam }}</h4>
+                                    <h4>{{ signaal.melder|gebruikersnaam }}</h4>
                                     <span>Melder</span>
                                 </div>
                             </div>
-                            {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
+                            {% if signaal.melder.telefoonnummer and not signaal.melder|gebruiker_is_anoniem %}
                                 <div class="person">
                                     <div class="container__contact">
                                         <a href="tel:{{ signaal.melder.telefoonnummer }}"
@@ -289,7 +281,7 @@
                                     </div>
                                 </div>
                             {% endif %}
-                            {% if signaal.melder.email or signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
+                            {% if signaal.melder.email or signaal.melder.telefoonnummer and not signaal.melder|gebruiker_is_anoniem %}
                                 <div class="person person--list">
                                     <dl>
                                         {% if signaal.melder.email %}
@@ -301,7 +293,7 @@
                                                    data-testid="Melder_email">{{ signaal.melder.email }}</a>
                                             </dd>
                                         {% endif %}
-                                        {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
+                                        {% if signaal.melder.telefoonnummer and not signaal.melder|gebruiker_is_anoniem %}
                                             <dt>Telefoonnummer</dt>
                                             <dd>
                                                 <a href="tel:{{ signaal.melder.telefoonnummer }}"

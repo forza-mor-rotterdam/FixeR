@@ -1,6 +1,7 @@
 from apps.main.services import MORCoreService
 from django import template
 from django.contrib.auth import get_user_model
+from utils.diversen import gebruiker_is_anoniem as gebruiker_is_anoniem_basis
 from utils.diversen import gebruikersinitialen as gebruikersinitialen_basis
 from utils.diversen import gebruikersnaam as gebruikersnaam_basis
 
@@ -10,6 +11,11 @@ register = template.Library()
 @register.filter
 def gebruikersnaam(value):
     return gebruikersnaam_basis(value)
+
+
+@register.filter
+def gebruiker_is_anoniem(value):
+    return gebruiker_is_anoniem_basis(value)
 
 
 @register.filter
