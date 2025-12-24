@@ -17,6 +17,7 @@ export default class extends Controller {
     'selectedImageModal',
     'selectedImageLabel',
     'selectedImageSubLabel',
+    'thumbList',
     'dotList',
     'image',
     'imageSliderContainer',
@@ -186,6 +187,15 @@ export default class extends Controller {
     }, 100)
   }
 
+  imageSliderThumbContainerConnected() {
+    if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
+      document.body.classList.add('css--safari')
+      setTimeout(() => {
+        this.imageSliderThumbContainerTarget.querySelector('.container__image img').click()
+      }, 600)
+    }
+  }
+
   disconnect() {
     window.removeEventListener(
       'scroll',
@@ -333,11 +343,21 @@ export default class extends Controller {
   }
 
   onScrollSlider() {
+    this.highlightThumb(
+      Math.floor(
+        this.imageSliderContainerTarget.scrollLeft / this.imageSliderContainerTarget.offsetWidth
+      )
+    )
     clearTimeout(this.scrollTimeout)
 
     this.scrollTimeout = setTimeout(() => {
       this.updateActiveIndex()
     }, 80)
+  }
+
+  selectImage(e) {
+    this.imageScrollInView(Number(e.params.imageIndex) - 1)
+    this.highlightThumb(Number(e.params.imageIndex) - 1)
   }
 
   updateActiveIndex() {
@@ -351,6 +371,22 @@ export default class extends Controller {
 
     this.activeIndexValue = index
     this.onActiveIndexChanged(index)
+  }
+
+  highlightThumb(index) {
+    this.deselectThumbs(this.thumbListTarget)
+    this.thumbListTarget.getElementsByTagName('li')[index].classList.add('selected')
+    const thumb = this.thumbListTarget.getElementsByTagName('li')[index]
+    const thumbWidth = thumb.offsetWidth
+    const offsetNum = thumbWidth * index
+    const maxScroll = this.thumbListTarget.offsetWidth - this.sliderContainerWidth
+    const newLeft =
+      offsetNum - this.sliderContainerWidth / 2 > 0
+        ? offsetNum - this.sliderContainerWidth / 3 < maxScroll
+          ? offsetNum - this.sliderContainerWidth / 3
+          : maxScroll
+        : 0
+    this.thumbListTarget.style.left = `-${newLeft}px`
   }
 
   onActiveIndexChanged(index) {
@@ -375,6 +411,12 @@ export default class extends Controller {
 
     if (img.dataset.src) {
       img.src = img.dataset.src
+    }
+  }
+
+  deselectThumbs(list) {
+    for (const item of list.querySelectorAll('li')) {
+      item.classList.remove('selected')
     }
   }
 

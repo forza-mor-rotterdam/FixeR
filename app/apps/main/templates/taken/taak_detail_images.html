@@ -42,27 +42,43 @@
                         </li>
                     {% endfor %}
                 </ul>
-                {% if bijlagen|length > 1 %}
-                    <div class="container__dots"
-                        data-taak-detail-target="dotsContainer">
-                        <ul data-taak-detail-target="dotList">
-                            {% for foto in bijlagen %}
-                                <li class="dot{% if forloop.first %} selected{% endif %}"></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
-                <div class="container__navigate-images">
-                    <div class="navigate-images--left inactive" data-taak-detail-target="navigateImagesLeft" data-action="click-&gt;taak-detail#showPreviousImageInModal">
-                        <span aria-label="Bekijk vorige afbeelding">
-                            {% include "icons/arrow-right-v2.svg" %}
-                        </span>
-                        </div>
-                        <div class="navigate-images--right" data-taak-detail-target="navigateImagesRight" data-action="click-&gt;taak-detail#showNextImageInModal">
-                            <span aria-label="Bekijk volgende afbeelding">
-                                {% include "icons/arrow-right-v2.svg" %}
-                        </span>
-                    </div>
+            </div>
+            {% if bijlagen|length > 1 %}
+                <div class="container__dots"
+                    data-taak-detail-target="dotsContainer">
+                    <ul data-taak-detail-target="dotList">
+                        {% for foto in bijlagen %}
+                            <li class="dot{% if forloop.first %} selected{% endif %}"></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            {% if bijlagen|length > 1 %}
+                <div class="container__thumbs"
+                        data-taak-detail-target="imageSliderThumbContainer">
+                    <ul data-taak-detail-target="thumbList">
+                        {% for foto in bijlagen %}
+                            <li data-action="click->taak-detail#selectImage"
+                                data-taak-detail-image-index-param="{{ forloop.counter }}">
+                                <div class="container__image">
+                                    <img src="{{ foto.afbeelding_verkleind_relative_url|mor_core_protected_url }}"
+                                            alt="" />
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="container__navigate-images">
+                <div class="navigate-images--left inactive" data-taak-detail-target="navigateImagesLeft" data-action="click-&gt;taak-detail#showPreviousImageInModal">
+                    <span aria-label="Bekijk vorige afbeelding">
+                        {% include "icons/arrow-right-v2.svg" %}
+                    </span>
+                </div>
+                <div class="navigate-images--right" data-taak-detail-target="navigateImagesRight" data-action="click-&gt;taak-detail#showNextImageInModal">
+                    <span aria-label="Bekijk volgende afbeelding">
+                        {% include "icons/arrow-right-v2.svg" %}
+                    </span>
                 </div>
             </div>
         {% else %}

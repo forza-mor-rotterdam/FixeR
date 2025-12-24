@@ -285,6 +285,7 @@ body:has(.detailheader) {
     width: 100%;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    position: relative;
 
     .imageslider {
         display: flex;
@@ -314,18 +315,6 @@ body:has(.detailheader) {
 
     .css--safari & {
         scroll-snap-type: none;
-    }
-
-    .container__navigate-images {
-        visibility: hidden;
-        pointer-events: none;
-    }
-
-    @media (min-width: map-get($grid-breakpoints, lg)) {
-        .container__navigate-images {
-            visibility: visible;
-            pointer-events: all;
-        }
     }
 }
 
@@ -391,7 +380,8 @@ body:has(.detailheader) {
     white-space: nowrap;
     overflow-x: scroll;
     position: relative;
-    height: 98px;
+    height: 110px;
+    display: none;
 
     ul {
         list-style: none;
@@ -409,7 +399,6 @@ body:has(.detailheader) {
             &.selected {
                 .container__image {
                     opacity: 1;
-                    outline: 2px solid $primary;
                 }
             }
         }
@@ -452,12 +441,18 @@ body:has(.detailheader) {
     &.section--imageslider {
         position: relative;
         padding: 0;
+        border: 0;
         > svg {
             padding: 4px;
             background-color: #fff;
             position: absolute;
             top: 30px;
             right: 0;
+            pointer-events: none;
+        }
+
+        .container__navigate-images {
+            visibility: hidden;
             pointer-events: none;
         }
     }
@@ -524,24 +519,6 @@ body:has(.detailheader) {
 
         > div {
             flex: 1 1 auto;
-        }
-    }
-}
-
-.container__taaknavigatie {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 48px;
-
-    span {
-        display: none;
-        color: $gray-tint08;
-        padding-right: 16px;
-        transform: translateY(-10px);
-
-        @media (min-width: map-get($grid-breakpoints, sm)) {
-            display: inline-block;
         }
     }
 }
@@ -855,6 +832,31 @@ body:has(.detailheader) {
         right: 0;
         svg {
             transform: rotate(-90deg);
+        }
+    }
+}
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+    .section--seperated.section--imageslider {
+        .container__navigate-images {
+            visibility: visible;
+            pointer-events: all;
+            .navigate-images--left,
+            .navigate-images--right {
+                top: calc(50% - 55px);
+                transform: translateY(-50%);
+            }
+        }
+
+        .container__thumbs {
+            display: block;
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
+        .container__dots {
+            display: none;
         }
     }
 }
