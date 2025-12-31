@@ -70,7 +70,7 @@ export default class extends Controller {
         })
       }, 800)
     }
-
+    this.onSearchChangeHandler()
     if (this.filtersActiveFieldTarget.checked) {
       this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
       this.zoekFieldContainerTarget.classList.add('show-vertical')
@@ -156,13 +156,15 @@ export default class extends Controller {
     this.submit()
   }
   onSearchChangeHandler(e) {
-    const zoekHasValue = e.target.value.length > 0
+    const zoekHasValue = this.zoekFieldTarget.value.length > 0
     this.toggleZoekenTarget.disabled = zoekHasValue
-    this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
-    this.zoekFieldContainerTarget.classList.add('show-vertical')
-    // this.submit()
+    if (e || zoekHasValue) {
+      this.zoekFieldContainerTarget.classList.remove('hidden-vertical')
+      this.zoekFieldContainerTarget.classList.add('show-vertical')
+    }
     this.cancelZoekTarget.classList[zoekHasValue ? 'remove' : 'add']('hide')
-    this.clearSelectedTaakUuidField()
+
+    e && this.clearSelectedTaakUuidField()
   }
   onSortingChangeHandler() {
     this.clearSelectedTaakUuidField()
