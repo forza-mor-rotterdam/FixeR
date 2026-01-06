@@ -4,27 +4,27 @@ export default class extends Controller {
   static targets = ['containerUitklapper']
 
   connect() {
-    window.addEventListener('click', (e) => {
-      if (
-        !(e.target.closest('.container__uitklapper') || e.target.hasAttribute('data-action')) || // data-action conflicts with window.evenlistener
-        e.target.classList.contains('btn-close--small')
-      ) {
-        this.element.querySelectorAll('.container__uitklapper.show').forEach((element) => {
-          element.classList.remove('show')
-        })
-      }
-      document.body.classList.toggle(
-        'show--notificatie-lijst',
-        this.element.querySelector('.show .container__profiel_notificatie_lijst')
-      )
-    })
-
-    this.element.addEventListener('keydown', function (e) {
-      if (e.code == 'Space' || e.code == 'Enter') {
-        e.preventDefault()
-        document.activeElement.click()
-      }
-    })
+    // window.addEventListener('click', (e) => {
+    //   if (
+    //     !(e.target.closest('.container__uitklapper') || e.target.hasAttribute('data-action')) || // data-action conflicts with window.evenlistener
+    //     e.target.classList.contains('btn-close--small')
+    //   ) {
+    //     this.element.querySelectorAll('.container__uitklapper.show').forEach((element) => {
+    //       element.classList.remove('show')
+    //     })
+    //   }
+    //   console.log('toggle show--notificatie-lijst')
+    //   document.body.classList.toggle(
+    //     'show--notificatie-lijst',
+    //     this.element.querySelector('.show .container__profiel_notificatie_lijst')
+    //   )
+    // })
+    // this.element.addEventListener('keydown', function (e) {
+    //   if (e.code == 'Space' || e.code == 'Enter') {
+    //     e.preventDefault()
+    //     document.activeElement.click()
+    //   }
+    // })
   }
 
   resetFontSize() {

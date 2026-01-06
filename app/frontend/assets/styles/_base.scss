@@ -12,14 +12,6 @@ body {
     color: $black;
     background-color: $gray-tint00;
     scroll-behavior: smooth;
-
-    @media (min-width: map-get($grid-breakpoints, sm)) {
-        font-size: 1.125em;
-    }
-
-    &:has(.cover-header.read-only) {
-        background-color: $white;
-    }
 }
 
 body {
@@ -735,6 +727,7 @@ body.no-js {
     max-height: 2.7em;
     -webkit-box-orient: vertical;
     width: 100%;
+    margin-bottom: 1em;
 }
 .has-overflow {
     .wrapper {
@@ -743,9 +736,11 @@ body.no-js {
             text-align: right;
             text-decoration: underline;
             cursor: pointer;
-            font-size: 0.75em;
-            font-weight: 700;
             margin: 0.5em 0;
+        }
+
+        .container__overflow {
+            margin-bottom: 0;
         }
 
         &.show {
@@ -754,6 +749,19 @@ body.no-js {
                 -webkit-line-clamp: unset;
                 max-height: 20em;
                 transition: max-height 0.25s ease-in-out;
+            }
+        }
+    }
+
+    .overflow {
+        margin-bottom: 1em;
+    }
+
+    &.alert {
+        margin-bottom: 0;
+        .wrapper {
+            .toggle {
+                text-align: left;
             }
         }
     }

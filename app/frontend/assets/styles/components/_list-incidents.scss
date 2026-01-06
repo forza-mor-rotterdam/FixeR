@@ -663,23 +663,6 @@
                     margin: 0 0 3px;
                     text-decoration: none;
                     line-height: 1;
-
-                    .adres {
-                        display: flex;
-                        min-width: 0;
-                    }
-                    .straat {
-                        min-width: 0; /* nodig voor ellipsis */
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                    }
-
-                    .huisnummer {
-                        flex: 0 0 auto; /* mag NIET krimpen */
-                        margin-left: 0.25em; /* 1 spatie tussen straat en huisnummer */
-                        white-space: nowrap;
-                    }
                 }
 
                 .badge {
@@ -861,6 +844,29 @@
             .content {
                 right: -1.2em;
             }
+        }
+    }
+}
+
+.list__incidents,
+.detailheader {
+    h2,
+    .h2 {
+        .adres {
+            display: flex;
+            min-width: 0;
+        }
+        .straat {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .huisnummer {
+            flex: 0 0 auto;
+            margin-left: 0.25em;
+            white-space: nowrap;
         }
     }
 }

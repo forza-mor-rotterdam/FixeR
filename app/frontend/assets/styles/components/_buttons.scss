@@ -155,8 +155,8 @@ button {
 
     &-tertiary {
         background-color: $white;
-        border-color: $gray-tint08;
-        color: $gray-tint11;
+        border-color: $gray-200;
+        color: $black;
 
         svg {
             path {
@@ -315,11 +315,8 @@ button {
         svg {
             margin-left: 4px;
             transform: translateY(2px);
-            width: 16px;
-            height: 16px;
-            path {
-                fill: $blue-800;
-            }
+            width: 14px;
+            height: 14px;
         }
     }
 
@@ -357,6 +354,8 @@ button {
         transition-duration: $transition-duration-default;
         transition-timing-function: $transition-ease-default;
         transition-behavior: allow-discrete;
+        position: absolute;
+        bottom: calc(100% + 10px);
 
         svg {
             width: 32px;
