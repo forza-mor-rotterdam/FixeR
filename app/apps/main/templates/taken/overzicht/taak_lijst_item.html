@@ -58,11 +58,11 @@
                                 {% if taak.melding.straatnaam %}
                                     <span class="straat">{{ taak.melding.straatnaam }}</span>
                                     <span class="huisnummer">
+                                        {# djlint:off #}
                                         {% spaceless %}
-                                            {{ taak.melding.huisnummer }}
-                                            {% if not taak.melding.huisletter %}A{% endif %}
-                                            {% if not taak.melding.toevoeging %}-1{% endif %}
+                                            {{ taak.melding.huisnummer }}{% if not taak.melding.huisletter %}A{% endif %}{% if not taak.melding.toevoeging %}-1{% endif %}
                                         {% endspaceless %}
+                                        {# djlint:on #}
                                     </span>
                                 {% else %}
                                     <span class="straat">{{ taak.melding.locatie_verbose }}</span>
