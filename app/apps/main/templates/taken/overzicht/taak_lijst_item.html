@@ -54,20 +54,20 @@
                 <div class="container__info">
                     <div>
                         <h2 class="h5">
-                            {% spaceless %}
-                                <span class="adres">
-                                    {% if taak.melding.straatnaam %}
-                                        <span class="straat">{{ taak.melding.straatnaam }}</span>
-                                        <span class="huisnummer">
+                            <span class="adres">
+                                {% if taak.melding.straatnaam %}
+                                    <span class="straat">{{ taak.melding.straatnaam }}</span>
+                                    <span class="huisnummer">
+                                        {% spaceless %}
                                             {{ taak.melding.huisnummer }}
-                                            {% if taak.melding.huisletter %}{{ taak.melding.huisletter }}{% endif %}
-                                            {% if taak.melding.toevoeging %}-{{ taak.melding.toevoeging }}{% endif %}
-                                        </span>
-                                    {% else %}
-                                        <span class="straat">{{ taak.melding.locatie_verbose }}</span>
-                                    {% endif %}
-                                </span>
-                            {% endspaceless %}
+                                            {% if not taak.melding.huisletter %}A{% endif %}
+                                            {% if not taak.melding.toevoeging %}-1{% endif %}
+                                        {% endspaceless %}
+                                    </span>
+                                {% else %}
+                                    <span class="straat">{{ taak.melding.locatie_verbose }}</span>
+                                {% endif %}
+                            </span>
                         </h2>
                         <div>
                             <span class="incident__category">{{ taak.titel }}</span>
