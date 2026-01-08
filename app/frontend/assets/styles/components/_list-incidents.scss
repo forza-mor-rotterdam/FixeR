@@ -795,6 +795,26 @@
             flex-direction: row;
         }
 
+        .container__message {
+            max-width: 250px;
+            margin: 0 auto;
+            text-align: center;
+            color: $gray-600;
+            line-height: 1em;
+
+            svg {
+                margin-bottom: 2px;
+            }
+
+            h2 {
+                font-size: 0.75em;
+                color: $gray-800;
+                margin: 0;
+            }
+            div {
+                font-size: 0.75em;
+            }
+        }
         @media (min-width: map-get($grid-breakpoints, lg)) {
             margin: 0 16px 0 0;
         }

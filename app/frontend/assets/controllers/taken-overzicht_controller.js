@@ -200,6 +200,7 @@ export default class extends Controller {
       filterCount = Array.from(
         container.querySelectorAll('li.filter-option-container input:checked')
       ).length
+      console.log(222, filterCount)
       elem.textContent = `${filterCount}`
       if (elem.parentElement.type === 'button') {
         if (filterCount > 0) {
