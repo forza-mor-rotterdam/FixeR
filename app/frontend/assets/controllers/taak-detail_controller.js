@@ -1,6 +1,15 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
+function addMqListener(mq, handler) {
+  if (mq.addEventListener) mq.addEventListener('change', handler)
+  else mq.addListener(handler) // legacy Safari
+}
+
+function removeMqListener(mq, handler) {
+  if (mq.removeEventListener) mq.removeEventListener('change', handler)
+  else mq.removeListener(handler)
+}
 export default class extends Controller {
   static outlets = ['kaart']
   static values = {
@@ -30,6 +39,9 @@ export default class extends Controller {
     'imageCounter',
     'imageSliderThumbContainer',
     'btnToTop',
+    'sectionimageslider',
+    'imageslidermobile',
+    'imagesliderdesktop',
   ]
 
   Mapping = {
@@ -168,6 +180,14 @@ export default class extends Controller {
     this.scrollTimeout = null
     this.activeIndexValue = 0
     this.preloadImagesAround(this.activeIndexValue)
+    this.mq = window.matchMedia('(min-width: 1024px)')
+
+    this._onMqChange = (e) => this.placeSlider(e.matches)
+
+    addMqListener(this.mq, this._onMqChange)
+
+    // Initieel meteen goed zetten
+    this.placeSlider(this.mq.matches)
 
     window.addEventListener(
       'scroll',
@@ -199,6 +219,9 @@ export default class extends Controller {
   }
 
   disconnect() {
+    if (this.mq && this._onMqChange) {
+      removeMqListener(this.mq, this._onMqChange)
+    }
     window.removeEventListener(
       'scroll',
       function () {
@@ -217,8 +240,16 @@ export default class extends Controller {
     }, 100)
   }
 
+  placeSlider(isDesktop) {
+    if (!this.hasSectionimagesliderTarget) return
+    if (!this.hasImageslidermobileTarget || !this.hasImagesliderdesktopTarget) return
+    const host = isDesktop ? this.imagesliderdesktopTarget : this.imageslidermobileTarget
+    if (this.sectionimagesliderTarget.parentNode !== host) {
+      host.appendChild(this.sectionimagesliderTarget)
+    }
+  }
+
   scrollToTop(e) {
-    console.log('scroll')
     if (e) {
       e.target.blur()
     }
@@ -393,6 +424,7 @@ export default class extends Controller {
 
   onActiveIndexChanged(index) {
     this.updateDots(index)
+    this.highlightThumb(index)
     this.preloadImagesAround(index)
   }
 

@@ -11,6 +11,14 @@
     .container__user {
         display: flex;
         justify-content: space-between;
+
+        h1 {
+            font-size: 1.5em;
+
+            a {
+                text-decoration: none;
+            }
+        }
     }
 
     .container__logo {

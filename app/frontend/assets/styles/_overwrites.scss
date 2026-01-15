@@ -1,0 +1,22 @@
+.desktop-only {
+    // display: none !important;
+    display: none;
+    height: 0;
+    overflow: hidden;
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        // display: block !important;
+        display: inherit;
+        height: auto;
+    }
+}
+
+.mobile-only {
+    // display: block !important;
+    display: inherit;
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        // display: none !important;
+        display: none;
+        height: 0;
+        overflow: hidden;
+    }
+}

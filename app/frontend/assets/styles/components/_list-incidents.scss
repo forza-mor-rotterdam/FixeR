@@ -45,6 +45,9 @@
                 justify-content: space-between;
                 width: 100%;
 
+                .container__flex {
+                    display: flex;
+                }
                 .btn {
                     background-color: transparent;
                     min-height: 0;

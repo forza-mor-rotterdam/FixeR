@@ -12,42 +12,63 @@
 {% block before_modal_content %}
     {% with melding=taak.melding.response_json %}
         <turbo-frame id="taak_basis">
-        <div class="detailheader">
-            <a href="{% url 'taken_overzicht' %}?taakUuid={{ taak.uuid }}"
-               data-turbo-action="advance"
-               class="link--back"
-               aria-label="Terug">{% include "icons/arrow-short.svg" %}</a>
-            <h1 class="h2">
-                {% spaceless %}
-                    <span class="adres">
-                        {% if taak.melding.straatnaam %}
-                            <span class="straat">{{ taak.melding.straatnaam }}</span>
-                            <span class="huisnummer">
-                                {{ taak.melding.huisnummer }}
-                                {% if taak.melding.huisletter %}{{ taak.melding.huisletter }}{% endif %}
-                                {% if taak.melding.toevoeging %}-{{ taak.melding.toevoeging }}{% endif %}
-                            </span>
-                        {% else %}
-                            <span class="straat">{{ taak.melding.locatie_verbose }}</span>
+        {% with geometrie=taak.melding.geometrie %}
+            <div class="detailheader">
+                <a href="{% url 'taken_overzicht' %}?taakUuid={{ taak.uuid }}"
+                   data-turbo-action="advance"
+                   class="link--back"
+                   aria-label="Terug">
+                    {% include "icons/arrow-short.svg" %}
+                    <span>Terug</span></a>
+                <h1 class="h2">
+                    {% spaceless %}
+                        <span class="adres">
+                            {% if taak.melding.straatnaam %}
+                                <span class="straat">{{ taak.melding.straatnaam }}</span>
+                                <span class="huisnummer">
+                                    {{ taak.melding.huisnummer }}
+                                    {% if taak.melding.huisletter %}{{ taak.melding.huisletter }}{% endif %}
+                                    {% if taak.melding.toevoeging %}-{{ taak.melding.toevoeging }}{% endif %}
+                                </span>
+                            {% else %}
+                                <span class="straat">{{ taak.melding.locatie_verbose }}</span>
+                            {% endif %}
+                        </span>
+                    {% endspaceless %}
+                </h1>
+                <div class="button__wrapper">
+                    <div class="container__uitklapper">
+                        <span>{% include "icons/ellipsis.svg" %}</span>
+                        <div class="legenda">
+                            <ul class="list-clean">
+                                <li>
+                                    <a class="btn" href="{% url 'taak_delen' taak.uuid %}" target="_blank">
+                                        {% include "icons/export.svg" %}
+                                        <span>Delen</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="container__buttons container__acties desktop-only">
+                        {% if taak.melding.locatie_type %}
+                            {% if geometrie %}
+                                <button class="btn btn-tertiary"
+                                        data-action="modal#openModal"
+                                        data-modal-action-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}">
+                                    {% include "icons/navigate.svg" %}
+                                    Navigeer
+                                </button>
+                            {% endif %}
                         {% endif %}
-                    </span>
-                {% endspaceless %}
-            </h1>
-            <div class="container__uitklapper">
-                <span>{% include "icons/ellipsis.svg" %}</span>
-                <div class="legenda">
-                    <ul class="list-clean">
-                        <li>
-                            <a class="btn" href="{% url 'taak_delen' taak.uuid %}" target="_blank">
-                                {% include "icons/export.svg" %}
-                                <span>Delen</span>
-                            </a>
-                        </li>
-                    </ul>
+                        <button class="btn btn-action"
+                                data-action="modal#openModal"
+                                data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}">
+                            Taak afhandelen
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        {% with geometrie=taak.melding.geometrie %}
             <div>
                 <div>
                     {% get_bijlagen melding as bijlagen %}
@@ -62,24 +83,38 @@
                          {% if not DEBUG %}data-taak-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
                          {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
                         <div class="taak-detail">
-                            <div class="container__header-taaknavigatie">
-                                {% if not taak_in_profiel and not taak.afgesloten_op %}
-                                    <div class="cover-header read-only">
-                                        <p>
-                                            <strong>Read only</strong>
-                                            Deze taak valt buiten je profiel en kun je om die reden alleen inzien maar niet afronden.
-                                        </p>
-                                    </div>
-                                {% endif %}
-                                {% include "taken/taak_detail_images.html" %}
+                            <div class="container__content desktop-only">
+                                <h3>Taakdetails</h3>
                                 {% include "taken/taak_detail_info.html" %}
-                                {% include "taken/taak_detail_content.html" %}
-                                {% if not taak.afgesloten_op and taak_in_profiel %}
-                                    {% include "taken/taak_detail_buttons.html" %}
-                                {% endif %}
+                            </div>
+                            <div class="grid-container">
+                                <div class="grid-item">
+                                    <div class="container__header-taaknavigatie">
+                                        {% if not taak_in_profiel and not taak.afgesloten_op %}
+                                            <div class="cover-header read-only">
+                                                <p>
+                                                    <strong>Read only</strong>
+                                                    Deze taak valt buiten je profiel en kun je om die reden alleen inzien maar niet afronden.
+                                                </p>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <div data-taak-detail-target="imageslidermobile"></div>
+                                            <div class="mobile-only">{% include "taken/taak_detail_info.html" %}</div>
+                                        </div>
+                                        {% include "taken/taak_detail_content.html" %}
+                                        {% if not taak.afgesloten_op and taak_in_profiel %}
+                                            {% include "taken/taak_detail_buttons.html" %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="grid-item">
+                                    <div data-taak-detail-target="imagesliderdesktop"></div>
+                                </div>
                             </div>
                         </div>
                         {% include "snippets/modal_images.html" %}
+                        {% include "taken/taak_detail_images.html" %}
                     </div>
                 </div>
             {% endwith %}

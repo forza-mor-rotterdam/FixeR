@@ -10,8 +10,9 @@
 {# djlint:off #}
 <section class="section--seperated section--imageslider"
          data-testid="detailPhotoviewer"
-         {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
-    <div class="full-width">
+         {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}
+         data-taak-detail-target="sectionimageslider">
+    <div class="full-width--mobile">
         {% if bijlagen %}
             <div class="container__imageslider"
                  data-taak-detail-target="imageSliderContainer"

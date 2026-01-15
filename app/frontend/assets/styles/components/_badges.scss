@@ -118,15 +118,9 @@
     z-index: 2000;
 
     .badge {
-        height: 22px;
-        line-height: 22px;
         font-size: 14px;
-
-        @media (min-width: map-get($grid-breakpoints, md)) {
-            height: 42px;
-            line-height: 42px;
-            font-size: 18px;
-        }
+        padding: 0 2em;
+        font-weight: 700;
     }
 }
 .list-tags,

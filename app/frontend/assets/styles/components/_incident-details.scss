@@ -1,13 +1,12 @@
 body:has(.detailheader) {
-    .pageheader {
-        display: none;
+    @media (max-width: map-get($grid-breakpoints, lg)) {
+        .pageheader {
+            display: none;
+        }
     }
 }
 
 .taak-detail {
-    max-width: map-get($container-max-widths, md);
-    margin: 0 auto;
-
     .link:not(.link--phone):not(.link--email) {
         svg {
             width: 24px;
@@ -36,6 +35,44 @@ body:has(.detailheader) {
     .container__content--sticky-bottom {
         .sticky {
             background-color: $blue-100;
+        }
+    }
+
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        .grid-container {
+            display: block;
+        }
+    }
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        .grid-container {
+            display: grid;
+            grid-template-columns: 50fr 50fr;
+            gap: 20px;
+        }
+    }
+}
+
+.taak-detail,
+.detailheader {
+    .container__acties {
+        display: flex;
+        justify-content: center;
+        gap: 1em;
+        width: 100%;
+        max-width: map-get($container-max-widths, md);
+
+        button {
+            flex: 1;
+            margin-bottom: 0;
+            font-weight: 400;
+            font-size: 0.875em;
+            padding: 0 2em;
+
+            svg {
+                width: 14px;
+                height: 14px;
+                vertical-align: middle;
+            }
         }
     }
 }
@@ -97,27 +134,6 @@ body:has(.detailheader) {
             button {
                 pointer-events: all;
             }
-
-            .container__buttons {
-                display: flex;
-                justify-content: center;
-                gap: 1em;
-                width: 100%;
-                max-width: map-get($container-max-widths, md);
-
-                button {
-                    flex: 1;
-                    margin-bottom: 0;
-                    font-weight: 400;
-                    font-size: 0.875em;
-
-                    svg {
-                        width: 14px;
-                        height: 14px;
-                        vertical-align: middle;
-                    }
-                }
-            }
         }
     }
 
@@ -136,6 +152,13 @@ body:has(.detailheader) {
         input[type="checkbox"] {
             @include form-check-input();
             vertical-align: sub;
+        }
+
+        .container__uitklapper {
+            vertical-align: text-top;
+            svg {
+                padding-bottom: 0;
+            }
         }
     }
 }
@@ -227,13 +250,19 @@ body:has(.detailheader) {
     }
 
     .h2 {
-        font-size: 1.125em;
+        font-size: 1.25em;
         text-align: center;
         margin-top: 0;
         flex: 1;
 
         .adres {
             justify-content: center;
+
+            .straat {
+                &::first-letter {
+                    text-transform: uppercase;
+                }
+            }
         }
     }
 
@@ -264,6 +293,41 @@ body:has(.detailheader) {
                 span {
                     padding: 0 4px 0 6px;
                 }
+            }
+        }
+    }
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px 0 0 0;
+
+        .button__wrapper {
+            display: flex;
+
+            .container__buttons {
+                display: flex;
+                gap: 8px;
+            }
+
+            > .container__uitklapper {
+                position: relative;
+            }
+        }
+        .link--back {
+            top: -62px;
+            left: 90px;
+
+            svg {
+                top: 0;
+            }
+        }
+
+        .h2 {
+            font-size: 1.778em;
+            text-align: left;
+
+            .adres {
+                justify-content: left;
             }
         }
     }
@@ -430,7 +494,7 @@ body:has(.detailheader) {
 }
 
 .section--seperated {
-    .full-width {
+    .full-width--mobile {
         margin: 0 (-(map-get($container-margin, md)));
 
         &--padding {
@@ -837,26 +901,39 @@ body:has(.detailheader) {
 }
 
 @media (min-width: map-get($grid-breakpoints, lg)) {
-    .section--seperated.section--imageslider {
-        .container__navigate-images {
-            visibility: visible;
-            pointer-events: all;
-            .navigate-images--left,
-            .navigate-images--right {
-                top: calc(50% - 55px);
-                transform: translateY(-50%);
-            }
+    .section--seperated {
+        .full-width--mobile {
+            margin: 0;
         }
 
-        .container__thumbs {
-            display: block;
-            &::-webkit-scrollbar {
+        &.section--imageslider {
+            .container__navigate-images {
+                visibility: visible;
+                pointer-events: all;
+                .navigate-images--left,
+                .navigate-images--right {
+                    top: calc(50% - 63px);
+                    transform: translateY(-50%);
+                }
+            }
+
+            .container__thumbs {
+                display: block;
+                &::-webkit-scrollbar {
+                    display: none;
+                }
+            }
+
+            .container__dots {
                 display: none;
             }
         }
+    }
 
-        .container__dots {
-            display: none;
+    .section--description {
+        .container__content {
+            margin: 0 0 1em;
+            padding: 1em 16px 0.75em;
         }
     }
 }
