@@ -185,6 +185,8 @@ export default class extends Controller {
     setTimeout(() => {
       this.scrollToTop()
     }, 100)
+
+    this.showHideImageNavigation()
   }
 
   imageSliderThumbContainerConnected() {
@@ -487,13 +489,15 @@ export default class extends Controller {
   }
 
   showHideImageNavigation() {
-    this.navigateImagesLeftTarget.classList.remove('inactive')
-    this.navigateImagesRightTarget.classList.remove('inactive')
-    if (this.selectedImageIndex === 0) {
-      this.navigateImagesLeftTarget.classList.add('inactive')
-    }
-    if (this.selectedImageIndex === this.imagesList.length - 1) {
-      this.navigateImagesRightTarget.classList.add('inactive')
+    if (this.imagesList.length > 1) {
+      this.navigateImagesLeftTarget.classList.remove('inactive')
+      this.navigateImagesRightTarget.classList.remove('inactive')
+      if (this.selectedImageIndex === 0 || !this.selectedImageIndex) {
+        this.navigateImagesLeftTarget.classList.add('inactive')
+      }
+      if (this.selectedImageIndex === this.imagesList.length - 1) {
+        this.navigateImagesRightTarget.classList.add('inactive')
+      }
     }
   }
 
