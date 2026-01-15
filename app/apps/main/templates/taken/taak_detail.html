@@ -12,6 +12,7 @@
 {% block before_modal_content %}
     {% with melding=taak.melding.response_json %}
         <turbo-frame id="taak_basis">
+        {% profiel_includes_taak taak user.profiel as taak_in_profiel %}
         {% with geometrie=taak.melding.geometrie %}
             <div class="detailheader">
                 <a href="{% url 'taken_overzicht' %}?taakUuid={{ taak.uuid }}"
@@ -84,7 +85,6 @@
             <div>
                 <div>
                     {% get_bijlagen melding as bijlagen %}
-                    {% profiel_includes_taak taak user.profiel as taak_in_profiel %}
                     <div data-controller="taak-detail"
                          id="taak_detail"
                          data-taak-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
@@ -129,7 +129,12 @@
                                     </div>
                                 </div>
                                 <div class="grid-item">
-                                    <div data-taak-detail-target="imagesliderdesktop"></div>
+                                    <div class="container__content desktop-only">
+                                        <h3>Foto's</h3>
+                                        <div class="content">
+                                            <div data-taak-detail-target="imagesliderdesktop"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

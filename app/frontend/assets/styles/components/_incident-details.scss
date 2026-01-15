@@ -96,7 +96,7 @@ body:has(.detailheader) {
             grid-template-columns: 1fr 1fr;
             column-gap: 1rem;
             row-gap: 1rem;
-            margin-top: 0;
+            margin: 0;
 
             dt,
             dd {
@@ -524,7 +524,7 @@ body:has(.detailheader) {
             padding: 4px;
             background-color: #fff;
             position: absolute;
-            top: 30px;
+            top: 16px;
             right: 0;
             pointer-events: none;
         }
@@ -918,39 +918,52 @@ body:has(.detailheader) {
 }
 
 @media (min-width: map-get($grid-breakpoints, lg)) {
-    .section--seperated {
-        .full-width--mobile {
-            margin: 0;
-        }
-
-        &.section--imageslider {
-            .container__navigate-images {
-                visibility: visible;
-                pointer-events: all;
-                .navigate-images--left,
-                .navigate-images--right {
-                    top: calc(50% - 63px);
-                    transform: translateY(-50%);
-                }
+    .taak-detail {
+        .section--seperated {
+            .full-width--mobile {
+                margin: 0;
             }
 
-            .container__thumbs {
-                display: block;
-                &::-webkit-scrollbar {
+            &.section--imageslider {
+                .container__navigate-images {
+                    visibility: visible;
+                    pointer-events: all;
+                    .navigate-images--left,
+                    .navigate-images--right {
+                        top: calc(50% - 63px);
+                        transform: translateY(-50%);
+                    }
+                }
+                > svg {
+                    top: 16px;
+                    right: 16px;
+                }
+
+                .container__thumbs {
+                    display: block;
+                    &::-webkit-scrollbar {
+                        display: none;
+                    }
+                }
+
+                .container__dots {
                     display: none;
                 }
             }
+        }
 
-            .container__dots {
-                display: none;
+        .section--description {
+            .container__content {
+                padding-left: 16px;
+                padding-right: 16px;
+                .h3 {
+                    margin-bottom: 0;
+                }
             }
         }
-    }
-
-    .section--description {
         .container__content {
-            margin: 0 0 1em;
-            padding: 1em 16px 0.75em;
+            margin: 0;
+            padding: 1em 0 0.75em;
 
             h3 {
                 font-size: 1.25em;
@@ -988,11 +1001,11 @@ body:has(.detailheader) {
                 }
             }
         }
-    }
-    .cover-header {
-        margin: 0 0 1em;
-        p {
-            font-size: 1em;
+        .cover-header {
+            margin: 0 0 1em;
+            p {
+                font-size: 1em;
+            }
         }
     }
 }
