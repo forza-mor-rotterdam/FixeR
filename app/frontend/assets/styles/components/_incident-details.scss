@@ -327,7 +327,21 @@ body:has(.detailheader) {
             text-align: left;
 
             .adres {
-                justify-content: left;
+                display: inline;
+            }
+
+            .badge {
+                position: relative;
+                display: inline-block;
+                font-weight: normal;
+                vertical-align: middle;
+                margin-left: 1em;
+                padding: 0 10px 0 22px;
+
+                &--urgent {
+                    font-weight: normal;
+                    padding: 0 10px;
+                }
             }
         }
     }
@@ -544,8 +558,11 @@ body:has(.detailheader) {
 
             &-info {
                 svg {
-                    vertical-align: text-bottom;
+                    vertical-align: text-top;
                     transform: none;
+                }
+                span {
+                    padding: 0;
                 }
             }
         }
@@ -934,6 +951,48 @@ body:has(.detailheader) {
         .container__content {
             margin: 0 0 1em;
             padding: 1em 16px 0.75em;
+
+            h3 {
+                font-size: 1.25em;
+            }
+            h2 {
+                font-size: 1.125em;
+                display: inline-block;
+                margin-right: 0.5em;
+            }
+
+            .container__flex {
+                display: inline-block;
+                width: auto;
+            }
+            .btn {
+                &-info {
+                    display: inline;
+                    color: $gray-600;
+                    width: auto;
+                    svg {
+                        margin: 0;
+                        path {
+                            fill: $gray-600;
+                        }
+                    }
+                    span {
+                        text-decoration: underline;
+                    }
+
+                    &:hover {
+                        span {
+                            text-decoration: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .cover-header {
+        margin: 0 0 1em;
+        p {
+            font-size: 1em;
         }
     }
 }

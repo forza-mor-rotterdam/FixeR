@@ -35,6 +35,16 @@
                             {% endif %}
                         </span>
                     {% endspaceless %}
+                    {% if taak.taakstatus.naam == 'voltooid' %}
+                        <span class="badge badge--green desktop-only">{{ taak.taakstatus.naam|lower|capfirst }}</span>
+                    {% elif taak.melding.response_json.urgentie >= 0.5 %}
+                        <span class="badge badge--urgent desktop-only">Spoed</span>
+                    {% elif taak.taakstatus.naam and taak.taakstatus.naam != "nieuw" %}
+                        <span class="badge desktop-only {% if taak.taakstatus.naam == 'openstaand' %}badge--lightblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow{% endif %}">
+                            {{ taak.taakstatus.naam|lower|capfirst }}
+                            {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
+                        </span>
+                    {% endif %}
                 </h1>
                 <div class="button__wrapper">
                     <div class="container__uitklapper">
@@ -50,23 +60,25 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="container__buttons container__acties desktop-only">
-                        {% if taak.melding.locatie_type %}
-                            {% if geometrie %}
-                                <button class="btn btn-tertiary"
-                                        data-action="modal#openModal"
-                                        data-modal-action-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}">
-                                    {% include "icons/navigate.svg" %}
-                                    Navigeer
-                                </button>
+                    {% if not taak.afgesloten_op and taak_in_profiel %}
+                        <div class="container__buttons container__acties desktop-only">
+                            {% if taak.melding.locatie_type %}
+                                {% if geometrie %}
+                                    <button class="btn btn-tertiary"
+                                            data-action="modal#openModal"
+                                            data-modal-action-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}">
+                                        {% include "icons/navigate.svg" %}
+                                        Navigeer
+                                    </button>
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
-                        <button class="btn btn-action"
-                                data-action="modal#openModal"
-                                data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}">
-                            Taak afhandelen
-                        </button>
-                    </div>
+                            <button class="btn btn-action"
+                                    data-action="modal#openModal"
+                                    data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}">
+                                Taak afhandelen
+                            </button>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div>
@@ -84,6 +96,14 @@
                          {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
                         <div class="taak-detail">
                             <div class="container__content desktop-only">
+                                {% if not taak_in_profiel and not taak.afgesloten_op %}
+                                    <div class="cover-header read-only">
+                                        <p>
+                                            <strong>Read only</strong>
+                                            Deze taak valt buiten je profiel en kun je om die reden alleen inzien maar niet afronden.
+                                        </p>
+                                    </div>
+                                {% endif %}
                                 <h3>Taakdetails</h3>
                                 {% include "taken/taak_detail_info.html" %}
                             </div>
@@ -91,7 +111,7 @@
                                 <div class="grid-item">
                                     <div class="container__header-taaknavigatie">
                                         {% if not taak_in_profiel and not taak.afgesloten_op %}
-                                            <div class="cover-header read-only">
+                                            <div class="cover-header read-only mobile-only">
                                                 <p>
                                                     <strong>Read only</strong>
                                                     Deze taak valt buiten je profiel en kun je om die reden alleen inzien maar niet afronden.

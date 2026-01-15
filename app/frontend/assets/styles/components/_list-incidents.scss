@@ -669,9 +669,6 @@
                 }
 
                 .badge {
-                    &:not(&--urgent) {
-                        padding-left: 22px;
-                    }
                     &__gradient-mask {
                         position: absolute;
                         margin-right: 0;
@@ -693,17 +690,6 @@
                             );
                             z-index: -1;
                         }
-                    }
-
-                    &::before {
-                        content: "";
-                        position: absolute;
-                        width: 8px;
-                        height: 8px;
-                        border-radius: 4px;
-                        top: 50%;
-                        left: 10px;
-                        transform: translateY(-50%);
                     }
                 }
 
