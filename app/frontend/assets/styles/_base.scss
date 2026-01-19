@@ -295,10 +295,19 @@ a,
                 fill: $gray-tint11;
             }
         }
+        span {
+            display: none;
+        }
 
         &:focus-visible,
         &:hover {
             outline: none !important;
+        }
+
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            span {
+                display: inline-block;
+            }
         }
     }
     &.no--link {

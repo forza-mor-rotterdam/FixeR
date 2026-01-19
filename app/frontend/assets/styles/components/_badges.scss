@@ -1,12 +1,27 @@
 .badge {
+    position: relative;
     display: inline-block;
     padding: 0 8px;
     color: $white;
-    // font-weight: 700;
     font-size: $fz-12;
-    line-height: 1.5em;
+    line-height: 2em;
     margin-right: 4px;
     border-radius: 25px;
+
+    &:not(&--urgent) {
+        padding-left: 22px;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 4px;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+    }
 
     h1 & {
         padding: 2px $input-padding-y;
@@ -45,6 +60,10 @@
     &--urgent {
         background-color: $red-tint02;
         font-weight: 700;
+
+        &::before {
+            content: none;
+        }
     }
 
     &--yellow {
@@ -118,15 +137,9 @@
     z-index: 2000;
 
     .badge {
-        height: 22px;
-        line-height: 22px;
         font-size: 14px;
-
-        @media (min-width: map-get($grid-breakpoints, md)) {
-            height: 42px;
-            line-height: 42px;
-            font-size: 18px;
-        }
+        padding: 0 2em;
+        font-weight: 700;
     }
 }
 .list-tags,

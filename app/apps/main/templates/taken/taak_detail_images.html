@@ -10,8 +10,9 @@
 {# djlint:off #}
 <section class="section--seperated section--imageslider"
          data-testid="detailPhotoviewer"
-         {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
-    <div class="full-width">
+         {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}
+         data-taak-detail-target="sectionimageslider">
+    <div class="full-width--mobile">
         {% if bijlagen %}
             <div class="container__imageslider"
                  data-taak-detail-target="imageSliderContainer"
@@ -75,7 +76,7 @@
                         {% include "icons/arrow-right-v2.svg" %}
                     </span>
                 </div>
-                <div class="navigate-images--right" data-taak-detail-target="navigateImagesRight" data-action="click-&gt;taak-detail#showNextImageInModal">
+                <div class="navigate-images--right inactive" data-taak-detail-target="navigateImagesRight" data-action="click-&gt;taak-detail#showNextImageInModal">
                     <span aria-label="Bekijk volgende afbeelding">
                         {% include "icons/arrow-right-v2.svg" %}
                     </span>

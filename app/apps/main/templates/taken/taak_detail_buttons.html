@@ -1,6 +1,6 @@
 {% load context_template from context_tags %}
 {% load replace_comma_by_dot vind_in_dict from main_tags %}
-<section class="section--seperated section--seperated__no-border-bottom"
+<section class="section--seperated section--seperated__no-border-bottom mobile-only"
          data-testid="detailActions">
     <div class="container__content container__content--sticky-bottom">
         {% if not taak.afgesloten_op %}
@@ -9,7 +9,7 @@
                     <button data-taak-detail-target="btnToTop"
                             data-action="taak-detail#scrollToTop"
                             class="btn btn-to-top">{% include "icons/arrow-double.svg" %}</button>
-                    <div class="container__buttons">
+                    <div class="container__buttons container__acties">
                         {% if taak.melding.locatie_type %}
                             {% if geometrie %}
                                 <button class="btn btn-tertiary"
