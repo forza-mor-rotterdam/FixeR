@@ -262,8 +262,10 @@ export default class extends Controller {
   onMapLayerChange(e) {
     if (e.target.checked) {
       this.mapLayers[e.params.mapLayerType].layer.addTo(this.map)
+      this.map.setMinZoom(12)
     } else {
       this.map.removeLayer(this.mapLayers[e.params.mapLayerType].layer)
+      this.map.setMinZoom(12)
     }
   }
 
