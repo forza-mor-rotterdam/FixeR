@@ -9,7 +9,19 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log('infosheet connected')
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        this.closeInfosheet()
+      }
+    })
+  }
+
+  disconnect() {
+    document.removeEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        this.closeInfosheet()
+      }
+    })
   }
   scrollHandleTargetConnected(element) {
     this.startX = 0

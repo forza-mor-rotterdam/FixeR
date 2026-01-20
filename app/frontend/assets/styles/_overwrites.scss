@@ -1,20 +1,16 @@
 .desktop-only {
-    // display: none !important;
     display: none;
     height: 0;
     overflow: hidden;
     @media (min-width: map-get($grid-breakpoints, lg)) {
-        // display: block !important;
-        display: inherit;
+        display: revert;
         height: auto;
     }
 }
 
 .mobile-only {
-    // display: block !important;
-    display: inherit;
+    display: revert;
     @media (min-width: map-get($grid-breakpoints, lg)) {
-        // display: none !important;
         display: none;
         height: 0;
         overflow: hidden;

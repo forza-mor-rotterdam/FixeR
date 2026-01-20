@@ -326,7 +326,7 @@ button {
         height: 36px;
         min-height: 0;
         background: transparent;
-        margin: 16px 0 0 -16px;
+        margin: 18px 0 0 -8px;
         padding: 0;
         position: relative;
 
@@ -338,6 +338,10 @@ button {
             position: absolute;
             right: 7px;
             top: 8px;
+        }
+
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            margin: 8px 0 0 -16px;
         }
     }
 
