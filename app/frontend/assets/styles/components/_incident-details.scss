@@ -1,5 +1,5 @@
 body:has(.detailheader) {
-    @media (max-width: map-get($grid-breakpoints, lg)) {
+    @media (max-width: 1023px) {
         .pageheader {
             display: none;
         }
