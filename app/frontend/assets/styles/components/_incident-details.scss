@@ -245,6 +245,10 @@ body:has(.detailheader) {
     position: relative;
     z-index: 3000;
 
+    .show-navigation & {
+        z-index: 2000;
+    }
+
     div {
         flex: 0 1 auto;
     }
