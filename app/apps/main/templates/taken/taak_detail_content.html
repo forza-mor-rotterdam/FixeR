@@ -171,7 +171,7 @@
                     <dt>MeldR-nummer</dt>
                     <dd>
                         {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
-                            {% if melding.signalen_voor_melding|length != 1 %}
+                            {% if melding.signalen_voor_melding|length == 1 %}
                                 {{ melding.signalen_voor_melding.0.bron_signaal_id }}
                             {% else %}
                                 <div class="container__list">
