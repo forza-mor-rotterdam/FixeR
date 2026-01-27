@@ -171,7 +171,16 @@
                     <dt>MeldR-nummer</dt>
                     <dd>
                         {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
-                            {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+                            {% if melding.signalen_voor_melding|length != 1 %}
+                                {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+                            {% else %}
+                                <div class="container__list">
+                                    <ul>
+                                        {% for melding in melding.signalen_voor_melding %}<li>{{ melding.bron_signaal_id }}</li>{% endfor %}
+                                    </ul>
+                                    <span class="foldout" data-action="click->taak-detail#foldout">{% include "icons/arrow-right-v2.svg" %}</span>
+                                </div>
+                            {% endif %}
                         {% else %}
                             Onbekend
                         {% endif %}

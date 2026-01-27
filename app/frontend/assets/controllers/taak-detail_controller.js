@@ -181,8 +181,8 @@ export default class extends Controller {
     this.activeIndexValue = 0
     this.preloadImagesAround(this.activeIndexValue)
     this.mq = window.matchMedia('(min-width: 1024px)')
-
     this._onMqChange = (e) => this.placeSlider(e.matches)
+    this.currentScrollIndex = null
 
     addMqListener(this.mq, this._onMqChange)
 
@@ -378,11 +378,15 @@ export default class extends Controller {
   }
 
   onScrollSlider() {
-    this.highlightThumb(
-      Math.floor(
-        this.imageSliderContainerTarget.scrollLeft / this.imageSliderContainerTarget.offsetWidth
-      )
+    const index = Math.floor(
+      this.imageSliderContainerTarget.scrollLeft / this.imageSliderContainerTarget.offsetWidth
     )
+
+    if (index !== this.currentScrollIndex) {
+      this.currentScrollIndex = index
+      this.highlightThumb(index)
+    }
+
     clearTimeout(this.scrollTimeout)
 
     this.scrollTimeout = setTimeout(() => {
@@ -396,6 +400,7 @@ export default class extends Controller {
   }
 
   updateActiveIndex() {
+    console.log('updateActiveIndex')
     const container = this.imageSliderContainerTarget
     if (!container || !this.imageTargets.length) return
 
@@ -405,26 +410,48 @@ export default class extends Controller {
     if (index === this.activeIndexValue) return
 
     this.activeIndexValue = index
-    this.onActiveIndexChanged(index)
+    // this.onActiveIndexChanged(index)
+  }
+
+  ensureThumbVisibleByIndex(index) {
+    const container = this.imageSliderThumbContainerTarget
+    const thumbList = this.thumbListTarget
+    const thumbLi = thumbList.querySelectorAll('li')[index - 1] // let op: jouw thumb index-param is forloop.counter (1-based)
+
+    if (!thumbLi) return
+
+    // Als er geen overflow is: niets doen
+    if (container.scrollWidth <= container.clientWidth) return
+
+    const cRect = container.getBoundingClientRect()
+    const tRect = thumbLi.getBoundingClientRect()
+    const padding = 8
+
+    const isLeftOutside = tRect.left < cRect.left + padding
+    const isRightOutside = tRect.right > cRect.right - padding
+    if (!isLeftOutside && !isRightOutside) return
+
+    // Scroll naar center van de thumb
+    const thumbCenterInContainer = tRect.left - cRect.left + container.scrollLeft + tRect.width / 2
+
+    const targetLeft = thumbCenterInContainer - container.clientWidth / 2
+    const maxScroll = container.scrollWidth - container.clientWidth
+    const clamped = Math.max(0, Math.min(targetLeft, maxScroll))
+
+    container.scrollTo({ left: clamped, behavior: 'smooth' })
   }
 
   highlightThumb(index) {
+    console.log('highlightThumb', index)
+    if (index === this.currentThumbIndex) return
+    this.currentThumbIndex = index
     this.deselectThumbs(this.thumbListTarget)
     this.thumbListTarget.getElementsByTagName('li')[index].classList.add('selected')
-    const thumb = this.thumbListTarget.getElementsByTagName('li')[index]
-    const thumbWidth = thumb.offsetWidth
-    const offsetNum = thumbWidth * index
-    const maxScroll = this.thumbListTarget.offsetWidth - this.sliderContainerWidth
-    const newLeft =
-      offsetNum - this.sliderContainerWidth / 2 > 0
-        ? offsetNum - this.sliderContainerWidth / 3 < maxScroll
-          ? offsetNum - this.sliderContainerWidth / 3
-          : maxScroll
-        : 0
-    this.thumbListTarget.style.left = `-${newLeft}px`
+    this.ensureThumbVisibleByIndex(index)
   }
 
   onActiveIndexChanged(index) {
+    console.log('onActiveIndexChanged')
     this.updateDots(index)
     this.highlightThumb(index)
     this.preloadImagesAround(index)
@@ -488,6 +515,7 @@ export default class extends Controller {
   }
 
   showImage(inModal = false) {
+    console.log('showImage')
     const img = this.selectedImageModalTarget.querySelector('img')
     const sd = this.signedDataValue ? `?signed-data=${this.signedDataValue}` : ''
     img.src = `${this.urlPrefixValue}${this.imagesList[this.selectedImageIndex]}${sd}`
@@ -524,13 +552,21 @@ export default class extends Controller {
 
   showHideImageNavigation() {
     if (this.imagesList.length > 1) {
-      this.navigateImagesLeftTarget.classList.remove('inactive')
-      this.navigateImagesRightTarget.classList.remove('inactive')
+      this.navigateImagesLeftTargets.forEach((button) => {
+        button.classList.remove('inactive')
+      })
+      this.navigateImagesRightTargets.forEach((button) => {
+        button.classList.remove('inactive')
+      })
       if (this.selectedImageIndex === 0 || !this.selectedImageIndex) {
-        this.navigateImagesLeftTarget.classList.add('inactive')
+        this.navigateImagesLeftTargets.forEach((button) => {
+          button.classList.add('inactive')
+        })
       }
       if (this.selectedImageIndex === this.imagesList.length - 1) {
-        this.navigateImagesRightTarget.classList.add('inactive')
+        this.navigateImagesRightTargets.forEach((button) => {
+          button.classList.add('inactive')
+        })
       }
     }
   }
@@ -583,5 +619,10 @@ export default class extends Controller {
       })} km`
     }
     return `${Math.round(km).toLocaleString('nl-NL')} km`
+  }
+
+  foldout(e) {
+    console.log(e.target)
+    e.target.parentElement.classList.toggle('show')
   }
 }
