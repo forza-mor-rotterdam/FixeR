@@ -29,7 +29,7 @@
                             {% if taak.melding.straatnaam %}
                                 <span class="straat">{{ taak.melding.straatnaam }}</span>
                                 <span class="huisnummer">
-                                    {{ taak.melding.huisnummer }}
+                                    {% if taak.melding.huisnummer %}{{ taak.melding.huisnummer }}{% endif %}
                                     {% if taak.melding.huisletter %}{{ taak.melding.huisletter }}{% endif %}
                                     {% if taak.melding.toevoeging %}-{{ taak.melding.toevoeging }}{% endif %}
                                 </span>

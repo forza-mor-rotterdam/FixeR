@@ -60,7 +60,7 @@
                                     <span class="huisnummer">
                                         {# djlint:off #}
                                         {% spaceless %}
-                                            {{ taak.melding.huisnummer }}{% if taak.melding.huisletter %}{{ taak.melding.huisletter  }}{% endif %}{% if taak.melding.toevoeging %}-{{ taak.melding.toevoeging }}{% endif %}
+                                            {% if taak.melding.huisnummer %}{{ taak.melding.huisnummer }}{% endif %}{% if taak.melding.huisletter %}{{ taak.melding.huisletter  }}{% endif %}{% if taak.melding.toevoeging %}-{{ taak.melding.toevoeging }}{% endif %}
                                         {% endspaceless %}
                                         {# djlint:on #}
                                     </span>
