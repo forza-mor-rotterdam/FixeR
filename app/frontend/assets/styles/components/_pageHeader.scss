@@ -8,6 +8,10 @@
     position: relative;
     z-index: 2100;
 
+    &:has(.container__uitklapper.show) {
+        z-index: 3100;
+    }
+
     .container__user {
         display: flex;
         justify-content: space-between;

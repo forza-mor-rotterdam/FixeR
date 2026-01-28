@@ -381,6 +381,7 @@ export default class extends Controller {
     const index = Math.floor(
       this.imageSliderContainerTarget.scrollLeft / this.imageSliderContainerTarget.offsetWidth
     )
+    console.log('onScrollSlider', index)
 
     if (index !== this.currentScrollIndex) {
       this.currentScrollIndex = index
@@ -391,12 +392,16 @@ export default class extends Controller {
 
     this.scrollTimeout = setTimeout(() => {
       this.updateActiveIndex()
+      console.log('this.selectedImageIndex', this.selectedImageIndex)
+      this.imageScrollInView(this.selectedImageIndex) //image in detailpage
     }, 80)
   }
 
   selectImage(e) {
-    this.imageScrollInView(Number(e.params.imageIndex) - 1)
-    this.highlightThumb(Number(e.params.imageIndex) - 1)
+    this.selectedImageIndex = Number(e.params.imageIndex) - 1
+    this.imageScrollInView(this.selectedImageIndex)
+    this.highlightThumb(this.selectedImageIndex)
+    this.showHideImageNavigation()
   }
 
   updateActiveIndex() {
@@ -410,17 +415,16 @@ export default class extends Controller {
     if (index === this.activeIndexValue) return
 
     this.activeIndexValue = index
-    // this.onActiveIndexChanged(index)
+    this.onActiveIndexChanged(index)
   }
 
   ensureThumbVisibleByIndex(index) {
     const container = this.imageSliderThumbContainerTarget
     const thumbList = this.thumbListTarget
-    const thumbLi = thumbList.querySelectorAll('li')[index - 1] // let op: jouw thumb index-param is forloop.counter (1-based)
+    const thumbLi = thumbList.querySelectorAll('li')[index - 1]
 
     if (!thumbLi) return
 
-    // Als er geen overflow is: niets doen
     if (container.scrollWidth <= container.clientWidth) return
 
     const cRect = container.getBoundingClientRect()
@@ -451,7 +455,6 @@ export default class extends Controller {
   }
 
   onActiveIndexChanged(index) {
-    console.log('onActiveIndexChanged')
     this.updateDots(index)
     this.highlightThumb(index)
     this.preloadImagesAround(index)
@@ -551,6 +554,7 @@ export default class extends Controller {
   }
 
   showHideImageNavigation() {
+    console.log('this.selectedImageIndex', this.selectedImageIndex)
     if (this.imagesList.length > 1) {
       this.navigateImagesLeftTargets.forEach((button) => {
         button.classList.remove('inactive')
