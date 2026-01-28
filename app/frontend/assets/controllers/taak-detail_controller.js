@@ -392,8 +392,8 @@ export default class extends Controller {
 
     this.scrollTimeout = setTimeout(() => {
       this.updateActiveIndex()
-      console.log('this.selectedImageIndex', this.selectedImageIndex)
-      this.imageScrollInView(this.selectedImageIndex) //image in detailpage
+      console.log('this.selectedImageIndex', this.selectedImageIndex, this.activeIndexValue)
+      this.imageScrollInView(this.activeIndexValue) //image in detailpage
     }, 80)
   }
 
@@ -405,7 +405,6 @@ export default class extends Controller {
   }
 
   updateActiveIndex() {
-    console.log('updateActiveIndex')
     const container = this.imageSliderContainerTarget
     if (!container || !this.imageTargets.length) return
 
@@ -415,6 +414,7 @@ export default class extends Controller {
     if (index === this.activeIndexValue) return
 
     this.activeIndexValue = index
+    console.log('updateActiveIndex', this.activeIndexValue)
     this.onActiveIndexChanged(index)
   }
 
