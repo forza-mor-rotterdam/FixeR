@@ -78,7 +78,6 @@ export default class extends Controller {
         })
       }, 800)
     }
-
     if (this.filtersActiveFieldTarget.checked || this.zoekFieldTarget.value.length > 0) {
       this.zoekFieldDefaultContainerTarget.classList.remove('hidden-vertical')
       this.zoekFieldDefaultContainerTarget.classList.add('show-vertical')
