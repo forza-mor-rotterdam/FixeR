@@ -87,8 +87,6 @@ Typische commando’s (indicatief):
     npm run watch
     npm run build
 
-TODO: indien nodig project-specifiek aanvullen
-
 ---
 
 ## Build & bundling

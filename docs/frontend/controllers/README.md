@@ -308,17 +308,6 @@ Geen centrale registratie.
 
 ---
 
-## Build-integratie
-
-Controllers worden:
-
-- gebundeld via Webpack
-- automatisch geladen
-
-TODO: exacte registratie beschrijven
-
----
-
 ## Inconsistenties & technische schuld
 
 ### Grootte
