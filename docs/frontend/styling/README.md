@@ -173,29 +173,183 @@ Realiteit:
 
 ## Layout & responsive
 
-### Breakpoints
+### Breakpoints (responsive)
 
-TODO: locatie en definities
+FixeR gebruikt een centrale SCSS breakpoint-definitie op basis van `$grid-breakpoints`.
+
+Deze staat in:
+
+    app/frontend/assets/styles/_theme.scss
+
+Definitie:
+
+    $grid-breakpoints: (
+        xs: 0,
+        sm: 576px,
+        md: 768px,
+        lg: 1024px,
+        xl: 1280px,
+        xxl: 1440px,
+    );
+
+Deze breakpoints worden in de code gebruikt via:
+
+    map-get($grid-breakpoints, <key>)
+
+Voorbeeld:
+
+    @media (min-width: map-get($grid-breakpoints, md)) { ... }
 
 ---
 
-### Strategie
+### Strategie: mobile-first
 
-TODO:
-- mobile-first / desktop-first
-- container queries?
-- media query helpers?
+De styling is primair **mobile-first** opgezet.
+
+Dit betekent:
+
+- basis-styling = voor kleine schermen
+- grotere schermen = uitbreidingen via `min-width`
+
+Standaard patroon:
+
+    @media (min-width: map-get($grid-breakpoints, md))
+
+Uitzonderingen met `max-width` komen voor, maar zijn niet dominant.
 
 ---
 
-## Theming & overrides
+### Overzicht van breakpoints
 
-TODO:
-- klant-specifieke styling?
-- omgeving-afhankelijk?
-- hoe georganiseerd?
+| Key | Waarde  | Doelgroep / Gebruik |
+|-----|---------|---------------------|
+| xs  | 0px     | Default / kleinste schermen |
+| sm  | 576px   | Grote telefoons / kleine tablets |
+| md  | 768px   | Tablets / kleine laptops |
+| lg  | 1024px  | Desktop / brede layouts |
+| xl  | 1280px  | Grote desktops |
+| xxl | 1440px  | Zeer brede schermen |
 
-Let op risico op cascade-conflicten.
+---
+
+### Gebruik in de codebase
+
+Op basis van analyse van de SCSS:
+
+### sm (≥ 576px)
+
+Gebruik:
+- lichte layout-aanpassingen
+- extra spacing
+- kleine UI-optimalisaties
+
+Vooral gebruikt in:
+- page header
+- map
+- notifications
+- lists
+
+---
+
+### md (≥ 768px)
+
+Belangrijkste structurele breakpoint.
+
+Gebruik:
+- switch van stacked → columns
+- grotere formulieren
+- complexere layouts
+
+Veel gebruikt in:
+- forms
+- filters
+- lists
+- base
+- unauthorized pages
+
+---
+
+### lg (≥ 1024px)
+
+Primair desktop-breakpoint.
+
+Gebruik:
+- two-panel layouts
+- sidebars
+- grotere overzichten
+- kaartweergave
+
+Veel gebruikt in:
+- incident details
+- notifications
+- onboarding
+- list-incidents
+- beheer-pagina’s
+
+---
+
+### xl / xxl (≥ 1280px / ≥ 1440px)
+
+Momenteel beperkt gebruikt.
+
+Doel:
+- optimalisatie voor zeer brede schermen
+- extra witruimte / schaalbaarheid
+
+Gebruik hiervan is (nog) niet overal consistent.
+
+---
+
+## Uitzonderingen
+
+### Hardcoded widths
+
+In enkele bestanden komt een vaste waarde voor, bijvoorbeeld:
+
+    @media (max-width: 1023px)
+
+Dit wijkt af van `$grid-breakpoints` (lg = 1024px).
+
+Deze regels zijn waarschijnlijk historisch gegroeid of device-specifiek en worden beschouwd als technische schuld, tenzij expliciet gemotiveerd.
+
+---
+
+### max-width media queries
+
+Sommige componenten gebruiken:
+
+    @media (max-width: map-get($grid-breakpoints, lg))
+
+Dit wordt meestal toegepast wanneer:
+
+- een “mobile/tablet”-layout tot en met lg geldt
+- en vanaf lg een desktopvariant actief wordt
+
+Gebruik dit patroon bewust en documenteer het bij complexe componenten.
+
+---
+
+## Richtlijnen voor nieuw werk
+
+Bij nieuwe styling:
+
+1. Gebruik altijd `$grid-breakpoints` via `map-get`
+2. Werk mobile-first (`min-width`)
+3. Vermijd hardcoded pixelwaarden
+4. Gebruik `max-width` alleen met duidelijke reden
+5. Documenteer afwijkingen
+
+---
+
+## Technische schuld
+
+Bekend:
+
+- incidenteel gebruik van vaste widths
+- beperkte toepassing van xl/xxl
+- enkele component-specifieke uitzonderingen
+
+Bij refactors: voorkeur voor centralisatie via `$grid-breakpoints`.
 
 ---
 
