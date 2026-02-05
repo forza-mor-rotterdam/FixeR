@@ -12,7 +12,7 @@ Alle SCSS-bestanden liggen binnen:
 
     app/frontend/assets/styles/
 
-Dit is de hoofdmap voor styling in FixeR.
+De styling is opgebouwd rond één entry-point (`app.scss`) met daaronder basisbestanden en component-specifieke partials.
 
 Binnen deze map vind je:
 
@@ -25,7 +25,97 @@ Binnen deze map vind je:
 - **utilities**
   kleine helpers: spacing, text alignment, visibility
 
-TODO Toon de feitelijke mapinhoud hier zodra die geïnspecteerd is
+### Overzicht SCSS-bestanden
+
+### Hoofd-entry
+
+- app.scss
+  Centraal startpunt voor alle styling.
+  Importeert base-, theme- en componentbestanden.
+
+---
+
+## Basis en configuratie
+
+Deze bestanden bevatten globale instellingen en basisregels:
+
+- _theme.scss
+  Thema-instellingen (kleuren, breakpoints, variabelen)
+
+- _base.scss
+  Baseline styling (reset, typografie, algemene elementen)
+
+- _overwrites.scss
+  Overrides en correcties op bestaande styling
+  (meestal legacy of uitzonderingen)
+
+---
+
+## Component-styling
+
+Component-specifieke styling staat in:
+
+    app/frontend/assets/styles/components/
+
+Deze bestanden corresponderen met UI-componenten of pagina’s.
+
+---
+
+### Algemene UI-componenten
+
+- _alert.scss
+- _animations.scss
+- _badges.scss
+- _buttons.scss
+- _fonts.scss
+- _forms.scss
+- _lists.scss
+- _pagination.scss
+- _spinner.scss
+- _tables.scss
+
+---
+
+### Pagina- en view-specifiek
+
+- _page-home.scss
+- _page-beheer.scss
+- _page-error.scss
+- _page-unauthorized.scss
+- _full-page-view.scss
+- _welcome.scss
+
+---
+
+### Taak- en incident-gerelateerd
+
+- _content-taakr.scss
+- _incident-details.scss
+- _list-incidents.scss
+- _list-mutations.scss
+
+---
+
+### Navigatie, layout en containers
+
+- _pageHeader.scss
+- _modal.scss
+- _infosheet.scss
+- _map.scss
+
+---
+
+### Communicatie & notificaties
+
+- _messages.scss
+- _notifications.scss
+- _logger.scss
+
+---
+
+### Onboarding / flows
+
+- _onboarding.scss
 
 ---
 
@@ -54,10 +144,6 @@ FixeR genereert een Webpack stats-bestand via webpack-bundle-tracker:
 Dit bestand bevat (typisch) een mapping van logical bundle names (bijv. `app`) naar de daadwerkelijke output filenames (bijv. `app-a1b2c3d4e5.js` en `app-a1b2c3d4e5.css`).
 
 Django kan dit stats-bestand gebruiken om in templates altijd de juiste hashed bestandsnamen te includen.
-
-TODO:
-- beschrijf welke Django template tag/helper gebruikt wordt om `webpack-stats.json` te lezen
-- noteer waar die code staat (bijv. een template tag module)
 
 ---
 

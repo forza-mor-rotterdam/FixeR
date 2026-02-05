@@ -34,8 +34,6 @@ Let op:
 - quotes
 - payload-grootte
 
-TODO: voorbeelden uit FixeR toevoegen
-
 ---
 
 ## State management
@@ -69,8 +67,6 @@ Richtlijnen:
 - listeners opruimen
 - coupling vermijden
 
-TODO: centrale eventlijst bijhouden
-
 ---
 
 ## API / fetch patterns
@@ -85,8 +81,6 @@ Meestal met:
 - JSON handling
 - error states
 - loading indicators
-
-TODO: standaard wrapper beschrijven (indien aanwezig)
 
 ---
 
@@ -127,8 +121,6 @@ Richtlijnen:
 - fouten zichtbaar maken voor gebruiker
 - console logging in dev
 - beperkte logging in productie
-
-TODO: project-specifieke afspraken
 
 ---
 
