@@ -52,7 +52,7 @@ Deze front-end documentatie verwijst daar naar voor:
 - Docker-commando’s
 - globale build/run instructies
 
-Duplicatie van deze informatie wordt bewust vermeden.
+Duplicatie van deze informatie wordt zoveel mogelijk vermeden.
 
 ---
 
@@ -71,7 +71,7 @@ Hoofdprincipes:
 
 ---
 
-## Ontwikkelworkflow (beknopt)
+## Ontwikkelworkflow
 
 Voor volledige setup-instructies: zie [root README](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/README.md).
 
@@ -91,7 +91,7 @@ TODO: indien nodig project-specifiek aanvullen
 
 ---
 
-## Build & bundling (beknopt)
+## Build & bundling
 
 De front-end assets worden gebundeld via Webpack.
 

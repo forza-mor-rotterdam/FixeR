@@ -14,7 +14,7 @@ Alle SCSS-bestanden liggen binnen:
 
 Dit is de hoofdmap voor styling in FixeR.
 
-Binnen deze map vind je doorgaans:
+Binnen deze map vind je:
 
 - **basisbestanden**
   Variabelen, mixins, settings
@@ -25,7 +25,7 @@ Binnen deze map vind je doorgaans:
 - **utilities**
   kleine helpers: spacing, text alignment, visibility
 
-(Toon de feitelijke mapinhoud hier zodra die geïnspecteerd is)
+TODO Toon de feitelijke mapinhoud hier zodra die geïnspecteerd is
 
 ---
 
@@ -35,58 +35,73 @@ De SCSS-entrypoints zijn de bestanden die door de bundler (“Webpack/NPM”) wo
 
 In deze projectopzet werkt SCSS via één hoofd-entryfile dat worden geïmporteerd in de frontend build.
 
-Een typisch patroon dat we in projecten met Webpack zien, is:
-
     // hoofd SCSS entry
     app/frontend/assets/styles/app.scss
 
-De bundler volgt vanaf deze entry’s alle imports (`@use`, `@import`) en maakt daar één of meerdere CSS-bestanden van. :contentReference[oaicite:1]{index=1}
+In een standaard setup met `sass-loader` volgt de webpack-bundler vanaf deze entry alle imports (`@use`, `@import`) die in **app.scss** staan en maakt daar één CSS-bestand van.
+Deze CSS-bundle wordt opgenomen door de Django templates via `<link>`
 
-Zonder exacte webpack.config.js-weergave gaan we ervan uit dat:
-
-- **app.scss** de primaire entry is
-- Andere partials (`_*.scss`) worden enkel via imports gebruikt, niet direct als entry
-
-> Belangrijk: Webpack vereenvoudigt SCSS-bundling door één of meerdere main entry files op te geven in `entry` (in webpack.config.js). Die bestanden vormen de basis van wat er uiteindelijk in de gegenereerde CSS-bundle terechtkomt. :contentReference[oaicite:2]{index=2}
+FixeR gebruikt bestandsnaam-hashing voor cache busting van **JS** en **CSS** output. Dit betekent dat browsers/CDN’s assets lang kunnen cachen, en dat bij elke nieuwe build de URL verandert (door de hash in de bestandsnaam), waardoor clients automatisch de nieuwe versie ophalen.
 
 ---
 
-### Hoe SCSS wordt gebundeld
+### Hoe Django de juiste bestandsnamen vindt
 
-In een standaard setup met `sass-loader` (Webpack):
+FixeR genereert een Webpack stats-bestand via webpack-bundle-tracker:
 
-- SCSS verzamelt alle dependencies via `@use`/`@import`
-- Op basis van de entry’s maakt Webpack één of meerdere CSS-bundles
-- Deze CSS-bundles worden opgenomen door de Django templates via `<link>` of via template tags
+    new BundleTracker({ filename: './public/build/webpack-stats.json' })
 
-TODO: exacte bundlename(s) en output-location toevoegen zodra de webpack.config.js bekend is
+Dit bestand bevat (typisch) een mapping van logical bundle names (bijv. `app`) naar de daadwerkelijke output filenames (bijv. `app-a1b2c3d4e5.js` en `app-a1b2c3d4e5.css`).
 
----
+Django kan dit stats-bestand gebruiken om in templates altijd de juiste hashed bestandsnamen te includen.
 
-### Webpack entry-points (SCSS)
-
-De SCSS wordt gebundeld via Webpack met als entry-point
-
-    ./app/frontend/assets/styles/app.scss'
-
-Vanaf dit bestand volgt Webpack alle `@use` / `@import` statements en genereert één CSS-bundle.
-
-De gegenereerde CSS-bestanden worden geplaatst in:
-
-    app/frontend/static/dist/
-
-En via Django templates ingeladen.
-
+TODO:
+- beschrijf welke Django template tag/helper gebruikt wordt om `webpack-stats.json` te lezen
+- noteer waar die code staat (bijv. een template tag module)
 
 ---
 
+### Output locatie en publicPath
+
+Webpack schrijft bestanden naar:
+
+    output.path = './public/build/'
+
+En publicPath is:
+
+    output.publicPath = '/static/'
+
+Dit betekent:
+- bestanden staan fysiek in `app/frontend/public/build/` (relatief aan webpack context)
+- URLs die Webpack in runtime/manifest gebruikt beginnen met `/static/`
+
+In development wordt output.path expliciet opnieuw gezet naar dezelfde map, en wordt filename hashing uitgezet voor JS:
+
+    config.output.path = './public/build/'
+    config.output.filename = '[name].js'
+
+---
+
+### Overige assets (images/icons/script/manifest)
+
+Assets worden gekopieerd met CopyWebpackPlugin:
+
+- images → `images/[name][ext]`
+- icons  → `icons/[name][ext]`
+- script → `script/[name][ext]`
+- manifest.json → `[name][ext]`
+
+Deze bestanden krijgen géén hash in de naam.
+
+Scripts van externe libraries worden wordt apart opgenomen door de Django templates via `<link>`
+
+---
 ### Samenvatting
 
-- SCSS staat in: `app/frontend/assets/styles/` :contentReference[oaicite:4]{index=4}
-- Entry-points zijn waarschijnlijk één of enkele SCSS-bestanden binnen die map
-- De bundler (Webpack) volgt vanaf die entry’s alle imports naar partials
+- SCSS staat in: `app/frontend/assets/styles/`
+- Entry-points één enkel SCSS-bestand binnen die map
+- De bundler (Webpack) volgt vanaf die entry alle imports naar partials
 - De gegenereerde CSS-bundle wordt opgenomen via Django templates
-
 
 ---
 
@@ -115,8 +130,6 @@ Richtlijn (voorkeur):
             → utilities
               → overrides
 
-TODO: feitelijke import-volgorde documenteren
-
 ---
 
 ## Naamgeving
@@ -142,8 +155,6 @@ Voorkeur:
 
     _component-name.scss
     _layout-name.scss
-
-TODO: feitelijke conventies vastleggen
 
 ---
 
@@ -188,18 +199,6 @@ Let op risico op cascade-conflicten.
 
 ---
 
-## Integratie met build
-
-SCSS wordt:
-
-- gecompileerd via Webpack
-- gebundeld in CSS-assets
-- geleverd via Django staticfiles
-
-TODO: exacte pipeline beschrijven
-
----
-
 ## Inconsistenties & technische schuld
 
 ### Legacy styles
@@ -235,7 +234,7 @@ Richtlijn:
 
 ---
 
-## Detaildocumentatie
+<!-- ## Detaildocumentatie
 
 Uitgebreide documentatie per component of module staat in:
 
@@ -251,7 +250,7 @@ Structuur:
 
 Gebruik dit alleen voor complexe styling.
 
----
+--- -->
 
 ## Checklist bij aanpassingen
 
