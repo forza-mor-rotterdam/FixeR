@@ -2,13 +2,6 @@
 
 Dit document beschrijft terugkerende technische patronen in de front-end van FixeR.
 
-Doel:
-- kennis borgen
-- consistentie bevorderen
-- overdraagbaarheid vergroten
-- herhaling voorkomen
-
----
 
 ## HTML + Stimulus integratie
 

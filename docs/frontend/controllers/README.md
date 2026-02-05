@@ -2,12 +2,6 @@
 
 Dit document beschrijft hoe Stimulus controllers binnen FixeR zijn opgezet, gebruikt en onderhouden.
 
-Doel:
-- snel overzicht geven
-- overdracht vereenvoudigen
-- context bieden bij bestaande keuzes
-- inconsistenties expliciet maken
-
 Voor Stimulus zelf: https://stimulus.hotwired.dev
 
 ---
