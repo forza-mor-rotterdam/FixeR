@@ -2,6 +2,14 @@
 
 Deze documentatie beschrijft de opzet, architectuur en werkwijze van de front-end van FixeR.
 
+Doel:
+- kennis borgen
+- consistentie bevorderen
+- overdraagbaarheid vergroten
+- herhaling voorkomen
+
+---
+
 De nadruk ligt op technische overdracht voor front-end ontwikkelaars die het project overnemen of onderhouden.
 
 De documentatie is bewust beperkt tot vier centrale bestanden:

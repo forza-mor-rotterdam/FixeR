@@ -2,12 +2,6 @@
 
 Dit document beschrijft de opzet, conventies en aandachtspunten van de SCSS-styling binnen FixeR.
 
-Doel:
-- overdracht vereenvoudigen
-- consistentie bevorderen
-- technische schuld zichtbaar maken
-- uitbreidingen beheersbaar houden
-
 ---
 
 ## SCSS — Locatie en entry-points
