@@ -157,7 +157,7 @@ Nieuwe patronen:
 
 ---
 
-## Detaildocumentatie (nodig?)
+<!-- ## Detaildocumentatie
 
 Uitgebreide beschrijvingen staan in:
 
@@ -168,4 +168,4 @@ Structuur:
     details/
       dialogs.md
       api-wrapper.md
-      state-sync.md
+      state-sync.md -->

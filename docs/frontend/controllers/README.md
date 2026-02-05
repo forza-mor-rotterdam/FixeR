@@ -257,9 +257,7 @@ Refactorpotentieel aanwezig.
 
 ---
 
-# (((
-
-## Prioriteit voor detaildocumentatie
+<!-- ## Prioriteit voor detaildocumentatie
 
 ### Hoog
 
@@ -290,9 +288,8 @@ Refactorpotentieel aanwezig.
 - lazyloader_controller.js
 - overflow_controller.js
 - hero-image_controller.js
-- logger_controller.js
+- logger_controller.js -->
 
-# )))
 
 ---
 
@@ -307,7 +304,7 @@ Richtlijn:
 
 ---
 
-## Detaildocumentatie
+## Todo Detaildocumentatie
 
 Uitgebreide beschrijvingen staan in:
 
