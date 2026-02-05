@@ -1,221 +1,177 @@
 # Front-End Documentatie — FixeR
 
-Deze documentatie beschrijft de opzet en werking van de front-end van FixeR.
+Deze documentatie beschrijft de opzet, architectuur en werkwijze van de front-end van FixeR.
 
-Focus: technische overdracht aan een ervaren front-end ontwikkelaar.
+De nadruk ligt op technische overdracht voor front-end ontwikkelaars die het project overnemen of onderhouden.
 
----
+De documentatie is bewust beperkt tot vier centrale bestanden:
 
-## Doelgroep
-
-Deze documentatie is bedoeld voor ontwikkelaars met kennis van:
-
-- JavaScript
-- HTML/CSS
-- Template-systemen
-- MVC-achtige architecturen
+- frontend/README.md (dit document)
+- [frontend/controllers/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/controllers/README.md)
+- [frontend/styling/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/styling/README.md)
+- [frontend/patterns/README.md]((https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/patterns/README.md))
 
 ---
 
-## Overzicht
+## Doel van deze documentatie
 
-De front-end bestaat uit:
+Doelen:
 
-- Django templates (server-side rendering)
-- SCSS voor styling
-- JavaScript voor interactiviteit
-- Stimulus voor componentgedrag
-- Webpack/NPM voor bundling
+- inzicht geven in de front-end architectuur
+- uitleggen hoe Stimulus wordt toegepast
+- beschrijven hoe styling is georganiseerd
+- herbruikbare patronen vastleggen
+- bekende inconsistenties benoemen
 
-De applicatie maakt deel uit van een bredere MOR-applicatie-omgeving.
+Niet bedoeld als:
 
----
-
-## Technologie-stack
-
-### Kern
-
-- JavaScript (ES6+)
-- SCSS
-- Django templates
-- Hotwired Stimulus
-- Webpack / NPM
-
-### Externe libraries
-
-- TODO: belangrijkste libraries
-
-### Referenties
-
-- Stimulus: https://stimulus.hotwired.dev
-- TODO: overige documentatie
+- beginnershandleiding
+- algemene JavaScript-cursus
+- marketingdocumentatie
 
 ---
 
-## Ontwikkelworkflow
+## Relatie met de hoofd-README
 
-### Installatie
+Basisinformatie over installatie, dependencies en algemene development workflow staat in de root README van de repository:
 
-Hier komt:
-- hoe je frontend dependencies installeert
-- waar dat gebeurt
-- eventuele vereisten
+https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/README.md
 
-Voorbeeld:
-- npm install
-- docker setup
+Deze front-end documentatie verwijst daar naar voor:
 
-TODO: projectspecifiek invullen
+- installatie van dependencies
+- lokale development setup
+- Docker-commando’s
+- globale build/run instructies
 
----
-
-### Development
-
-Hier komt:
-- hoe je lokaal ontwikkelt
-- watchers
-- hot reload
-- dev-servers
-
-Voorbeeld:
-- npm run watch
-- make run_frontend
-
-TODO: projectspecifiek invullen
+Duplicatie van deze informatie wordt bewust vermeden.
 
 ---
 
-### Build
+## Globale front-end architectuur
 
-Hier komt:
-- hoe productie-assets worden gebouwd
-- waar output terechtkomt
-- wie build triggert (CI, handmatig)
+FixeR is een server-side rendered applicatie op basis van Django, met client-side verrijking via JavaScript.
 
-Voorbeeld:
-- npm run build
-- webpack config
+Hoofdprincipes:
 
-TODO: projectspecifiek invullen
+- Django rendert HTML via templates
+- Templates bevatten data-attributen voor configuratie
+- SCSS en JavaScript worden gebundeld via Webpack
+- Stimulus koppelt gedrag aan DOM-elementen
+- Fetch/AJAX wordt beperkt ingezet (geen SPA)
 
----
-
-### Debugging
-
-Hier komt:
-- hoe je frontend problemen opspoort
-- logging
-- browser devtools
-- bekende valkuilen
-
-Voorbeeld:
-- console logging
-- source maps
-- network tab
-
-TODO: projectspecifiek invullen
 
 ---
 
-## Architectuur (globaal)
+## Ontwikkelworkflow (beknopt)
 
-Hier beschrijf je:
+Voor volledige setup-instructies: zie [root README](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/README.md).
 
-- hoe frontend en backend samenwerken
-- hoe data van Django → JS gaat
-- hoe templates + Stimulus koppelen
-- hoe pagina’s worden opgebouwd
+Globaal:
 
-Niet hier:
-- concrete codevoorbeelden
-- specifieke controllers
+- dependencies installeren via npm
+- front-end assets bouwen via npm scripts / make
+- Django server draait apart of via Docker
 
-Voorbeeldstructuur:
+Typische commando’s (indicatief):
 
-- Django rendert HTML
-- data via data-attributen
-- Stimulus koppelt gedrag
-- fetch voor updates
+    npm install
+    npm run watch
+    npm run build
 
-TODO: projectspecifiek invullen
+TODO: indien nodig project-specifiek aanvullen
 
 ---
 
-## Stimulus-gebruik
+## Build & bundling (beknopt)
 
-Hier beschrijf je:
+De front-end assets worden gebundeld via Webpack.
 
-- hoe controllers zijn opgezet
-- naming
-- targets/values/actions
-- communicatiepatronen
+Kenmerken:
 
-Details per controller staan in controllers/.
+- SCSS wordt gecompileerd naar CSS
+- JavaScript wordt gebundeld per entry-point
+- output wordt geplaatst in static/dist
+- Django templates laden deze assets
+
+Details over entry-points staan in: [styling/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/styling/README.md)
 
 ---
 
-## Styling
+## Controllers
 
-Hier beschrijf je:
+Alle informatie over Stimulus controllers staat in: [controllers/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/controllers/README.md)
 
-- SCSS-structuur
+Daar vind je:
+
+- overzicht van alle controllers
+- conventies en naamgeving
+- prioriteiten
+- aandachtspunten
+- verwijzingen naar detaildocumentatie
+
+---
+
+## Styling (SCSS)
+
+Alles over styling staat in: [styling/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/styling/README.md)
+
+Inclusief:
+
+- mapstructuur
+- entry-points
 - naamgeving
-- component-opzet
 - theming
-
-Details staan in styling/.
+- technische schuld
 
 ---
 
-## Structuur van de documentatie
+## Patterns
 
-- controllers/
-  Beschrijving per Stimulus-controller
+Herbruikbare front-end patronen staan in: [patterns/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/patterns/README.md)
 
-- styling/
-  SCSS-structuur en conventies
+Inclusief:
 
-- patterns/
-  Terugkerende technische patronen
+- HTML + Stimulus integratie
+- state & events
+- fetch gebruik
+- dialog/overlay patronen
+- anti-patterns
 
 ---
 
 ## Bekende aandachtspunten
 
-### Inconsistenties
+De codebase is historisch gegroeid.
 
-Hier beschrijf je:
-- verschillen tussen controllers
-- legacy code
-- historische uitzonderingen
+Gevolgen:
 
----
+- verschillen in controller-opzet
+- variatie in SCSS-structuur
+- gemengde patronen
+- legacy oplossingen
 
-### Technische schuld
-
-Hier beschrijf je:
-- refactor-kansen
-- kwetsbare delen
-- problematische patronen
+Deze worden expliciet gedocumenteerd in de themabestanden.
 
 ---
 
-## Werkwijze voor opvolgers
+## Aanbevolen werkwijze voor opvolgers
 
-Aanbevolen volgorde:
-
-1. Lees deze README
-2. Bestudeer controllers/
-3. Bekijk styling/
-4. Pas kleine dingen aan
-5. Documenteer wijzigingen
+1. Lees dit document volledig
+2. Lees [controllers/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/controllers/README.md)
+3. Lees [styling/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/styling/README.md)
+4. Lees [patterns/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/patterns/README.md)
+5. Bekijk de [root README](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/README.md) voor setup
+6. Bestudeer daarna pas de code
 
 ---
 
 ## Onderhoud
 
 Verantwoordelijke:
-- TODO
+- TODO: naam of rol
 
 Laatste update:
-- TODO
+- TODO: datum
+
+Wijzigingen in architectuur, tooling of patronen dienen hier te worden vastgelegd.
