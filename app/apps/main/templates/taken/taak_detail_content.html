@@ -185,6 +185,35 @@
                             Onbekend
                         {% endif %}
                     </dd>
+                    {% for signaal in melding.signalen_voor_melding %}
+                        {% if signaal.omschrijving_melder %}
+                            <dt>Toelichting</dt>
+                            <dd>
+                                {{ signaal.omschrijving_melder }}
+                            </dd>
+                        {% endif %}
+                        {% with aanvullende_vragen=signaal.aanvullende_vragen %}
+                            {% if aanvullende_vragen %}
+                                {% for qa in aanvullende_vragen %}
+                                    {% if qa.answers|python_any %}
+                                        <dt>{{ qa.question }}</dt>
+                                        <dd>
+                                            {% for answer in qa.answers %}
+                                                {{ answer }}
+                                                {% if not forloop.last %},{% endif %}
+                                            {% endfor %}
+                                        </dd>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        {% if signaal.aanvullende_informatie %}
+                            <dt>Aanvullende informatie</dt>
+                            <dd>
+                                {{ signaal.aanvullende_informatie }}
+                            </dd>
+                        {% endif %}
+                    {% endfor %}
                 {% endif %}
             </dl>
         </div>
