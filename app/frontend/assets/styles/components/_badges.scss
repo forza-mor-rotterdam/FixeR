@@ -1,11 +1,27 @@
 .badge {
+    position: relative;
     display: inline-block;
-    padding: 0 4px;
+    padding: 0 8px;
     color: $white;
-    font-weight: 700;
-    font-size: 0.667em;
-    line-height: 1.5em;
+    font-size: $fz-12;
+    line-height: 2em;
     margin-right: 4px;
+    border-radius: 25px;
+
+    &:not(&--urgent) {
+        padding-left: 22px;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 4px;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+    }
 
     h1 & {
         padding: 2px $input-padding-y;
@@ -15,24 +31,47 @@
     }
 
     &--lightblue {
-        background-color: $blue-light;
+        background-color: $blue-200;
+        color: $black;
+        &::before {
+            background-color: $blue-900;
+        }
     }
 
     &--darkblue {
-        background-color: $blue-dark;
+        background-color: $blue-900;
+        &::before {
+            background-color: $blue-200;
+        }
     }
 
     &--green {
-        background-color: $greenblue;
+        background-color: $green-200;
+        color: $black;
+        &::before {
+            background-color: $green-900;
+        }
     }
 
     &--red {
         background-color: $red-tint02;
     }
 
+    &--urgent {
+        background-color: $red-tint02;
+        font-weight: 700;
+
+        &::before {
+            content: none;
+        }
+    }
+
     &--yellow {
-        background-color: $warning;
+        background-color: $orange-200;
         color: $black;
+        &::before {
+            background-color: $orange-800;
+        }
     }
 }
 
@@ -54,7 +93,6 @@
         color: $white;
     }
 
-    .btn-togglemenu &,
     .list-item &,
     .leaflet-popup-content-wrapper & {
         width: 18px;
@@ -99,15 +137,9 @@
     z-index: 2000;
 
     .badge {
-        height: 22px;
-        line-height: 22px;
         font-size: 14px;
-
-        @media (min-width: map-get($grid-breakpoints, md)) {
-            height: 42px;
-            line-height: 42px;
-            font-size: 18px;
-        }
+        padding: 0 2em;
+        font-weight: 700;
     }
 }
 .list-tags,
@@ -150,4 +182,35 @@
             margin: 0.25em 0 0;
         }
     }
+}
+
+.initials {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 44px;
+    background-color: $green-200;
+    color: $green-900;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 100%;
+
+    svg {
+        max-width: 18px;
+        max-height: 18px;
+    }
+
+    &__extern {
+        background-color: $blue-200;
+        color: $blue-900;
+    }
+}
+
+.note {
+    display: inline-block;
+    width: 7px;
+    aspect-ratio: 1/1;
+    border-radius: 2px;
+    background-color: $blue-900;
+    margin-right: 3px;
 }

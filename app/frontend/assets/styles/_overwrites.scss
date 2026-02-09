@@ -1,0 +1,18 @@
+.desktop-only {
+    display: none;
+    height: 0;
+    overflow: hidden;
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: revert;
+        height: auto;
+    }
+}
+
+.mobile-only {
+    display: revert;
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: none;
+        height: 0;
+        overflow: hidden;
+    }
+}

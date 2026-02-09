@@ -24,28 +24,6 @@ export default class extends Controller {
       self.bindEnd = self.handleGestureEnd.bind(self)
       self.addInitialListeners()
       self.isMoving = false
-
-      if (!!self.dateValue && !!self.daysValue) {
-        self.incidentDateTarget.textContent = self.getNumberOfDays(
-          self.dateValue,
-          parseInt(self.daysValue)
-        )
-      }
-    }
-  }
-
-  getNumberOfDays(date, days) {
-    const date_incident = new Date(date)
-    const dateTypes = ['Vandaag', 'Gisteren', 'Eergisteren', 'dagen']
-    if (days < 3) {
-      const minutes =
-        date_incident.getMinutes() < 10
-          ? `0${date_incident.getMinutes()}`
-          : date_incident.getMinutes()
-      const time = `${date_incident.getHours()}:${minutes}`
-      return `${dateTypes[1]}, ${time}`
-    } else {
-      return `${days} werkdagen`
     }
   }
 

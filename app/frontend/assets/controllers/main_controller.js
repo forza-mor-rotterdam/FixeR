@@ -46,6 +46,20 @@ export default class extends Controller {
       }
     })
   }
+
+  connect() {
+    this.element.addEventListener('click', () => {
+      this.closeFoldouts()
+    })
+  }
+
+  closeFoldouts() {
+    const uitklappers = document.body.querySelectorAll('.container__uitklapper:not(.js-open)')
+    uitklappers.forEach((uitklapper) => {
+      uitklapper.classList.remove('show')
+    })
+  }
+
   setNavigatorEventHandlers() {
     if (!this.navigatorWatchId) {
       this.navigatorWatchId = navigator.geolocation.watchPosition(

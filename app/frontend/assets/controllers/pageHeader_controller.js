@@ -18,7 +18,6 @@ export default class extends Controller {
         this.element.querySelector('.show .container__profiel_notificatie_lijst')
       )
     })
-
     this.element.addEventListener('keydown', function (e) {
       if (e.code == 'Space' || e.code == 'Enter') {
         e.preventDefault()

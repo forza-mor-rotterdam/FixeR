@@ -12,14 +12,6 @@ body {
     color: $black;
     background-color: $gray-tint00;
     scroll-behavior: smooth;
-
-    @media (min-width: map-get($grid-breakpoints, sm)) {
-        font-size: 1.125em;
-    }
-
-    &:has(.cover-header.read-only) {
-        background-color: $white;
-    }
 }
 
 body {
@@ -30,6 +22,11 @@ body {
     &.noScroll {
         overflow: hidden;
     }
+}
+
+html {
+    height: 100%;
+    scrollbar-gutter: stable;
 }
 
 body,
@@ -265,7 +262,7 @@ table {
 
 a,
 .link {
-    color: $primary;
+    color: currentColor;
     text-decoration: underline;
     cursor: pointer;
 
@@ -298,10 +295,19 @@ a,
                 fill: $gray-tint11;
             }
         }
+        span {
+            display: none;
+        }
 
         &:focus-visible,
         &:hover {
             outline: none !important;
+        }
+
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            span {
+                display: inline-block;
+            }
         }
     }
     &.no--link {
@@ -566,7 +572,8 @@ body.no-js {
     transition: all 0.25s ease-in;
 
     &.container__sorting,
-    &.container__search {
+    &.container__search,
+    &.container__search-default {
         max-height: 120px;
         overflow: hidden;
     }
@@ -581,11 +588,6 @@ body.no-js {
     &.container__sorting,
     &.container__search {
         transition: all 0.25s ease-in;
-
-        @media (min-width: map-get($grid-breakpoints, lg)) {
-            max-height: 120px;
-            overflow: hidden;
-        }
     }
 }
 
@@ -734,6 +736,7 @@ body.no-js {
     max-height: 2.7em;
     -webkit-box-orient: vertical;
     width: 100%;
+    margin-bottom: 1em;
 }
 .has-overflow {
     .wrapper {
@@ -742,9 +745,11 @@ body.no-js {
             text-align: right;
             text-decoration: underline;
             cursor: pointer;
-            font-size: 0.75em;
-            font-weight: 700;
             margin: 0.5em 0;
+        }
+
+        .container__overflow {
+            margin-bottom: 0;
         }
 
         &.show {
@@ -753,6 +758,19 @@ body.no-js {
                 -webkit-line-clamp: unset;
                 max-height: 20em;
                 transition: max-height 0.25s ease-in-out;
+            }
+        }
+    }
+
+    .overflow {
+        margin-bottom: 1em;
+    }
+
+    &.alert {
+        margin-bottom: 0;
+        .wrapper {
+            .toggle {
+                text-align: left;
             }
         }
     }

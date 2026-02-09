@@ -81,7 +81,7 @@ body.show-modal--first-filter {
     left: 0;
     overflow-x: hidden;
     overflow-y: auto;
-    z-index: 2100;
+    z-index: 3100;
 
     &-navigation {
         left: 100%;
@@ -103,7 +103,7 @@ body.show-modal--first-filter {
         display: flex;
         flex-direction: column;
         width: 100%;
-        z-index: 2000;
+        z-index: 2003;
     }
 
     &-header {
@@ -186,54 +186,6 @@ body.show-modal--first-filter {
                 font-size: 0.625rem;
             }
         }
-
-        .container__navigate-images {
-            .navigate-images--left,
-            .navigate-images--right {
-                cursor: pointer;
-                position: absolute;
-                width: 48px;
-                height: 48px;
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-
-                opacity: 1;
-                transition: opacity 0.25s ease-in;
-
-                span {
-                    display: block;
-
-                    background-color: $black;
-
-                    svg {
-                        width: 40px;
-                        height: 40px;
-                        margin: 4px;
-                        path {
-                            fill: $white;
-                        }
-                    }
-                }
-
-                &.inactive {
-                    opacity: 0;
-                    pointer-events: none;
-                }
-            }
-            .navigate-images--left {
-                left: 0;
-                span {
-                    svg {
-                        transform: rotate(180deg);
-                    }
-                }
-            }
-
-            .navigate-images--right {
-                right: 0;
-            }
-        }
     }
 }
 
@@ -241,7 +193,7 @@ body.show-modal--first-filter {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1990;
+    z-index: 2002;
     width: 100vw;
     height: 100vh;
     background-color: $black;
@@ -286,7 +238,6 @@ body.show-modal--first-filter {
 }
 
 dialog {
-    // min-height: calc(100% - 3rem);
     max-height: calc(100% - 60px);
     border-style: none;
     padding: 0;

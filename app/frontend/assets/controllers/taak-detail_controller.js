@@ -1,6 +1,15 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
+function addMqListener(mq, handler) {
+  if (mq.addEventListener) mq.addEventListener('change', handler)
+  else mq.addListener(handler) // legacy Safari
+}
+
+function removeMqListener(mq, handler) {
+  if (mq.removeEventListener) mq.removeEventListener('change', handler)
+  else mq.removeListener(handler)
+}
 export default class extends Controller {
   static outlets = ['kaart']
   static values = {
@@ -18,6 +27,7 @@ export default class extends Controller {
     'selectedImageLabel',
     'selectedImageSubLabel',
     'thumbList',
+    'dotList',
     'image',
     'imageSliderContainer',
     'taakAfstand',
@@ -29,6 +39,9 @@ export default class extends Controller {
     'imageCounter',
     'imageSliderThumbContainer',
     'btnToTop',
+    'sectionimageslider',
+    'imageslidermobile',
+    'imagesliderdesktop',
   ]
 
   Mapping = {
@@ -158,12 +171,24 @@ export default class extends Controller {
       )
       this.markers.addLayer(marker)
     }
-    document.querySelectorAll('.container__image').forEach((element) => {
-      this.pinchZoom(element)
-    })
+    // document.querySelectorAll('.container__image').forEach((element) => {
+    //   this.pinchZoom(element)
+    // })
   }
 
   connect() {
+    this.scrollTimeout = null
+    this.activeIndexValue = 0
+    this.preloadImagesAround(this.activeIndexValue)
+    this.mq = window.matchMedia('(min-width: 1024px)')
+    this._onMqChange = (e) => this.placeSlider(e.matches)
+    this.currentScrollIndex = null
+
+    addMqListener(this.mq, this._onMqChange)
+
+    // Initieel meteen goed zetten
+    this.placeSlider(this.mq.matches)
+
     window.addEventListener(
       'scroll',
       function () {
@@ -181,6 +206,10 @@ export default class extends Controller {
       this.scrollToTop()
     }, 100)
 
+    this.showHideImageNavigation()
+  }
+
+  imageSliderThumbContainerConnected() {
     if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
       document.body.classList.add('css--safari')
       setTimeout(() => {
@@ -189,7 +218,36 @@ export default class extends Controller {
     }
   }
 
-  disconnect() {}
+  disconnect() {
+    if (this.mq && this._onMqChange) {
+      removeMqListener(this.mq, this._onMqChange)
+    }
+    window.removeEventListener(
+      'scroll',
+      function () {
+        if (this.hasBtnToTopTarget) {
+          if (document.body.scrollTop >= 100 || document.documentElement.scrollTop >= 100) {
+            this.btnToTopTarget.classList.add('show')
+          } else {
+            this.btnToTopTarget.classList.remove('show')
+          }
+        }
+      }.bind(this),
+      false
+    )
+    setTimeout(() => {
+      this.scrollToTop()
+    }, 100)
+  }
+
+  placeSlider(isDesktop) {
+    if (!this.hasSectionimagesliderTarget) return
+    if (!this.hasImageslidermobileTarget || !this.hasImagesliderdesktopTarget) return
+    const host = isDesktop ? this.imagesliderdesktopTarget : this.imageslidermobileTarget
+    if (this.sectionimagesliderTarget.parentNode !== host) {
+      host.appendChild(this.sectionimagesliderTarget)
+    }
+  }
 
   scrollToTop(e) {
     if (e) {
@@ -204,8 +262,10 @@ export default class extends Controller {
   onMapLayerChange(e) {
     if (e.target.checked) {
       this.mapLayers[e.params.mapLayerType].layer.addTo(this.map)
+      this.map.setMinZoom(12)
     } else {
       this.map.removeLayer(this.mapLayers[e.params.mapLayerType].layer)
+      this.map.setMinZoom(12)
     }
   }
 
@@ -219,7 +279,7 @@ export default class extends Controller {
     let textContent = 'Afstand onbekend'
     if (this.currentPosition) {
       const markerLocation = new L.LatLng(this.taakCoordinates[0], this.taakCoordinates[1])
-      textContent = `Afstand: ${this.formatDistance(
+      textContent = `${this.formatDistance(
         Math.round(markerLocation.distanceTo(this.currentPosition))
       )}`
     }
@@ -318,11 +378,119 @@ export default class extends Controller {
   }
 
   onScrollSlider() {
-    this.highlightThumb(
-      Math.floor(
-        this.imageSliderContainerTarget.scrollLeft / this.imageSliderContainerTarget.offsetWidth
-      )
+    const index = Math.floor(
+      this.imageSliderContainerTarget.scrollLeft / this.imageSliderContainerTarget.offsetWidth
     )
+    console.log('onScrollSlider', index)
+
+    if (index !== this.currentScrollIndex) {
+      this.currentScrollIndex = index
+      this.highlightThumb(index)
+    }
+
+    clearTimeout(this.scrollTimeout)
+
+    this.scrollTimeout = setTimeout(() => {
+      this.updateActiveIndex()
+      console.log('this.selectedImageIndex', this.selectedImageIndex, this.activeIndexValue)
+      this.imageScrollInView(this.activeIndexValue) //image in detailpage
+    }, 80)
+  }
+
+  selectImage(e) {
+    this.selectedImageIndex = Number(e.params.imageIndex) - 1
+    this.imageScrollInView(this.selectedImageIndex)
+    this.highlightThumb(this.selectedImageIndex)
+    this.showHideImageNavigation()
+  }
+
+  updateActiveIndex() {
+    const container = this.imageSliderContainerTarget
+    if (!container || !this.imageTargets.length) return
+
+    const itemWidth = container.clientWidth
+    const index = Math.round(container.scrollLeft / itemWidth)
+
+    if (index === this.activeIndexValue) return
+
+    this.activeIndexValue = index
+    console.log('updateActiveIndex', this.activeIndexValue)
+    this.onActiveIndexChanged(index)
+  }
+
+  ensureThumbVisibleByIndex(index) {
+    const container = this.imageSliderThumbContainerTarget
+    const thumbList = this.thumbListTarget
+    const thumbLi = thumbList.querySelectorAll('li')[index - 1]
+
+    if (!thumbLi) return
+
+    if (container.scrollWidth <= container.clientWidth) return
+
+    const cRect = container.getBoundingClientRect()
+    const tRect = thumbLi.getBoundingClientRect()
+    const padding = 8
+
+    const isLeftOutside = tRect.left < cRect.left + padding
+    const isRightOutside = tRect.right > cRect.right - padding
+    if (!isLeftOutside && !isRightOutside) return
+
+    // Scroll naar center van de thumb
+    const thumbCenterInContainer = tRect.left - cRect.left + container.scrollLeft + tRect.width / 2
+
+    const targetLeft = thumbCenterInContainer - container.clientWidth / 2
+    const maxScroll = container.scrollWidth - container.clientWidth
+    const clamped = Math.max(0, Math.min(targetLeft, maxScroll))
+
+    container.scrollTo({ left: clamped, behavior: 'smooth' })
+  }
+
+  highlightThumb(index) {
+    console.log('highlightThumb', index)
+    if (index === this.currentThumbIndex) return
+    this.currentThumbIndex = index
+    this.deselectThumbs(this.thumbListTarget)
+    this.thumbListTarget.getElementsByTagName('li')[index].classList.add('selected')
+    this.ensureThumbVisibleByIndex(index)
+  }
+
+  onActiveIndexChanged(index) {
+    this.updateDots(index)
+    this.highlightThumb(index)
+    this.preloadImagesAround(index)
+  }
+
+  preloadImagesAround(index) {
+    const max = this.imageTargets.length - 1
+
+    ;[index - 1, index, index + 1]
+      .filter((i) => i >= 0 && i <= max)
+      .forEach((i) => this.loadImageAtIndex(i))
+  }
+
+  loadImageAtIndex(index) {
+    const li = this.imageTargets[index]
+    if (!li) return
+
+    const img = li.querySelector('img')
+    if (!img || img.src) return
+
+    if (img.dataset.src) {
+      img.src = img.dataset.src
+    }
+  }
+
+  deselectThumbs(list) {
+    for (const item of list.querySelectorAll('li')) {
+      item.classList.remove('selected')
+    }
+  }
+
+  updateDots(index) {
+    for (const item of this.dotListTarget.querySelectorAll('.dot')) {
+      item.classList.remove('selected')
+    }
+    this.dotListTarget.getElementsByClassName('dot')[index].classList.add('selected')
   }
 
   imageScrollInView(index) {
@@ -332,35 +500,6 @@ export default class extends Controller {
       left: Number(index) * this.imageSliderContainerTarget.offsetWidth,
       top: 0,
     })
-  }
-
-  selectImage(e) {
-    this.imageScrollInView(Number(e.params.imageIndex) - 1)
-    this.highlightThumb(Number(e.params.imageIndex) - 1)
-  }
-
-  highlightThumb(index) {
-    this.deselectThumbs(this.thumbListTarget)
-    this.thumbListTarget.getElementsByTagName('li')[index].classList.add('selected')
-    const thumb = this.thumbListTarget.getElementsByTagName('li')[index]
-    const thumbWidth = thumb.offsetWidth
-    const offsetNum = thumbWidth * index
-    const maxScroll = this.thumbListTarget.offsetWidth - this.sliderContainerWidth
-
-    const newLeft =
-      offsetNum - this.sliderContainerWidth / 2 > 0
-        ? offsetNum - this.sliderContainerWidth / 3 < maxScroll
-          ? offsetNum - this.sliderContainerWidth / 3
-          : maxScroll
-        : 0
-
-    this.thumbListTarget.style.left = `-${newLeft}px`
-  }
-
-  deselectThumbs(list) {
-    for (const item of list.querySelectorAll('li')) {
-      item.classList.remove('selected')
-    }
   }
 
   showPreviousImageInModal() {
@@ -379,6 +518,7 @@ export default class extends Controller {
   }
 
   showImage(inModal = false) {
+    console.log('showImage')
     const img = this.selectedImageModalTarget.querySelector('img')
     const sd = this.signedDataValue ? `?signed-data=${this.signedDataValue}` : ''
     img.src = `${this.urlPrefixValue}${this.imagesList[this.selectedImageIndex]}${sd}`
@@ -414,13 +554,24 @@ export default class extends Controller {
   }
 
   showHideImageNavigation() {
-    this.navigateImagesLeftTarget.classList.remove('inactive')
-    this.navigateImagesRightTarget.classList.remove('inactive')
-    if (this.selectedImageIndex === 0) {
-      this.navigateImagesLeftTarget.classList.add('inactive')
-    }
-    if (this.selectedImageIndex === this.imagesList.length - 1) {
-      this.navigateImagesRightTarget.classList.add('inactive')
+    console.log('this.selectedImageIndex', this.selectedImageIndex)
+    if (this.imagesList.length > 1) {
+      this.navigateImagesLeftTargets.forEach((button) => {
+        button.classList.remove('inactive')
+      })
+      this.navigateImagesRightTargets.forEach((button) => {
+        button.classList.remove('inactive')
+      })
+      if (this.selectedImageIndex === 0 || !this.selectedImageIndex) {
+        this.navigateImagesLeftTargets.forEach((button) => {
+          button.classList.add('inactive')
+        })
+      }
+      if (this.selectedImageIndex === this.imagesList.length - 1) {
+        this.navigateImagesRightTargets.forEach((button) => {
+          button.classList.add('inactive')
+        })
+      }
     }
   }
 
@@ -435,58 +586,6 @@ export default class extends Controller {
     this.showImage(true)
   }
 
-  pinchZoom(imageElement) {
-    let imageElementScale = 1
-    let start = {}
-    // Calculate distance between two fingers
-    const distance = (event) => {
-      const dist = Math.hypot(
-        event.touches[0].pageX - event.touches[1].pageX,
-        event.touches[0].pageY - event.touches[1].pageY
-      )
-      return dist
-    }
-
-    imageElement.addEventListener('touchstart', (event) => {
-      if (event.touches.length === 2) {
-        event.preventDefault() // Prevent page scroll
-        start.x = (event.touches[0].pageX + event.touches[1].pageX) / 2
-        start.y = (event.touches[0].pageY + event.touches[1].pageY) / 2
-        start.distance = distance(event)
-      }
-    })
-
-    imageElement.addEventListener('touchmove', (event) => {
-      if (event.touches.length === 2) {
-        event.preventDefault() // Prevent page scroll
-        this.isZooming = true
-        let scale
-        if (event.scale) {
-          scale = event.scale
-        } else {
-          const deltaDistance = distance(event)
-          scale = deltaDistance / start.distance
-        }
-        imageElementScale = Math.min(Math.max(1, scale), 4)
-
-        const deltaX = ((event.touches[0].pageX + event.touches[1].pageX) / 2 - start.x) * 2
-        const deltaY = ((event.touches[0].pageY + event.touches[1].pageY) / 2 - start.y) * 2
-        const transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${imageElementScale})`
-        imageElement.style.transform = transform
-        imageElement.style.WebkitTransform = transform
-        imageElement.style.zIndex = '9999'
-      }
-    })
-
-    imageElement.addEventListener('touchend', () => {
-      // Reset image to it's original format
-      imageElement.style.transform = ''
-      imageElement.style.WebkitTransform = ''
-      imageElement.style.zIndex = ''
-      setTimeout(() => (this.isZooming = false), 300)
-    })
-  }
-
   getBrowser() {
     let userAgent = navigator.userAgent
     let browser = 'onbekend'
@@ -495,6 +594,7 @@ export default class extends Controller {
     }
     return browser
   }
+
   closeModal() {
     const modalList = this.element.querySelectorAll('.modal')
     const modalBackdrop = this.element.querySelector('.modal-backdrop')
@@ -523,5 +623,10 @@ export default class extends Controller {
       })} km`
     }
     return `${Math.round(km).toLocaleString('nl-NL')} km`
+  }
+
+  foldout(e) {
+    console.log(e.target)
+    e.target.parentElement.classList.toggle('show')
   }
 }

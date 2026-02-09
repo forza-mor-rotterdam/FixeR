@@ -4,7 +4,7 @@
     height: 100%;
     width: 100%;
     overflow: hidden;
-    z-index: 2090;
+    z-index: 20900;
     pointer-events: none;
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
@@ -571,14 +571,6 @@
                 max-width: 36px;
 
                 .initials {
-                    display: inline-block;
-                    width: 36px;
-                    height: 36px;
-                    line-height: 44px;
-                    background-color: $green-200;
-                    text-align: center;
-                    border-radius: 100%;
-
                     svg {
                         max-width: 18px;
                         max-height: 18px;

@@ -1,16 +1,31 @@
 {% load context_template from context_tags %}
-<section class="section--seperated section--seperated__no-border-bottom"
+{% load replace_comma_by_dot vind_in_dict from main_tags %}
+<section class="section--seperated section--seperated__no-border-bottom mobile-only"
          data-testid="detailActions">
-    <div class="container__details container__details--sticky-bottom">
+    <div class="container__content container__content--sticky-bottom">
         {% if not taak.afgesloten_op %}
             <div class="sticky sticky--bottom">
                 <div class="form-row">
                     <button data-taak-detail-target="btnToTop"
                             data-action="taak-detail#scrollToTop"
                             class="btn btn-to-top">{% include "icons/arrow-double.svg" %}</button>
-                    <button class="btn btn-action"
-                            data-action="modal#openModal"
-                            data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}">Taak afhandelen</button>
+                    <div class="container__buttons container__acties">
+                        {% if taak.melding.locatie_type %}
+                            {% if geometrie %}
+                                <button class="btn btn-tertiary"
+                                        data-action="modal#openModal"
+                                        data-modal-action-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}">
+                                    {% include "icons/navigate.svg" %}
+                                    Navigeer
+                                </button>
+                            {% endif %}
+                        {% endif %}
+                        <button class="btn btn-action"
+                                data-action="modal#openModal"
+                                data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}">
+                            Taak afhandelen
+                        </button>
+                    </div>
                 </div>
             </div>
         {% endif %}

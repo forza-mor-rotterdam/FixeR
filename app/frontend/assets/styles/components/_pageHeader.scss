@@ -1,5 +1,6 @@
 .pageheader {
-    height: 64px;
+    height: 60px;
+    min-height: 60px;
     padding: 0;
     border-bottom: 1px solid $gray-tint04;
     padding: 0 16px;
@@ -7,36 +8,35 @@
     position: relative;
     z-index: 2100;
 
-    .container__logo {
-        flex: 1;
-        > a {
-            display: inline-block;
-        }
-        .logo {
-            max-height: 40px;
-            margin: 10px 0 0;
-            display: block;
+    &:has(.container__uitklapper.show) {
+        z-index: 3100;
+    }
 
-            &--large {
-                display: none;
+    .container__user {
+        display: flex;
+        justify-content: space-between;
+
+        h1 {
+            font-size: 1.5em;
+
+            a {
+                text-decoration: none;
             }
         }
+    }
 
-        .pagetitle {
-            margin: 0;
-            display: inline-block;
-            color: $primary;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -40%);
-        }
+    .container__logo {
+        margin-top: 16px;
+    }
+
+    .container__nav {
+        display: flex;
     }
 
     .container__uitklapper {
         position: unset;
         flex: 0 1 auto;
-        margin: 20px 0 0;
+        margin: 15px 0 0;
         flex-direction: column;
         justify-content: center;
 
@@ -67,6 +67,8 @@
             transform-origin: right top;
             transition-delay: 0.15s;
             background-color: $white;
+            height: 0;
+            overflow: hidden;
 
             &--large {
                 width: 97vw;
@@ -97,6 +99,7 @@
             .content {
                 visibility: visible;
                 opacity: 1;
+                height: auto;
                 transform: scale(1, 1);
                 pointer-events: all;
                 transition: all $transition-duration-default $transition-ease-default;
@@ -185,19 +188,6 @@
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         padding: 6px 16px;
-        .container__logo {
-            .logo--large {
-                display: flex;
-            }
-            .logo--small {
-                display: none;
-            }
-        }
-    }
-
-    .container {
-        display: flex;
-        justify-content: space-between;
     }
 
     .modal-navigation {

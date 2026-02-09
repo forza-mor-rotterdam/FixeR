@@ -6,15 +6,10 @@
         background-color: $white;
         display: flex;
         flex-direction: column;
+        justify-content: flex-start;
         height: 100%;
         left: 0;
         overflow: hidden;
-        position: fixed;
-        top: 0;
-        transform: translate3d(100%, 0, 0);
-        transition:
-            transform 0.3s ease-in-out,
-            opacity 0.3s ease-in-out;
         width: 100%;
         z-index: 11;
         padding: 0 map-get($container-margin, md) map-get($container-margin, md);
@@ -23,15 +18,19 @@
 
     &__header {
         display: flex;
-        flex: 1 0 0;
         justify-content: space-between;
         position: relative;
         min-height: 48px;
         height: 48px;
         align-items: flex-end;
+        padding: 0 map-get($container-margin, md) 1rem;
+        margin-left: -(map-get($container-margin, md));
+        margin-right: -(map-get($container-margin, md));
+        border-bottom: 1px solid $blue-200;
 
         h2 {
             margin-bottom: 0;
+            font-size: $fz-20;
         }
 
         .btn-close {
@@ -43,14 +42,14 @@
     }
 
     &__scroll-pane {
-        height: 100%;
+        flex: 1;
         overflow-x: hidden;
         overflow-y: auto;
-        padding: $input-padding-x 0;
+        padding: $input-padding-x 0 80px;
     }
 
     &__content {
-        height: 100%;
+        min-height: 100%;
         position: relative;
     }
 

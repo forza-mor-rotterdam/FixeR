@@ -1,0 +1,26 @@
+{% load webpack_static from webpack_loader %}
+<section class="section--description">
+    <div class="container__content">
+        <h2 class="h3">{{ taak.titel }}</h2>
+        <div class="container__flex">
+            <button class="btn btn-textlink btn-info"
+                    data-action="infosheet#openInfosheet"
+                    data-infosheet-action-param="{% url 'taaktype_taakr' taak.taaktype.id %}">
+                {% include "icons/info.svg" %}
+                <span>Taakuitleg</span>
+            </button>
+            <div class="mobile-only">
+                {% if taak.taakstatus.naam == 'voltooid' %}
+                    <span class="badge badge--green">{{ taak.taakstatus.naam|lower|capfirst }}</span>
+                {% elif taak.melding.response_json.urgentie >= 0.5 %}
+                    <span class="badge badge--urgent">Spoed</span>
+                {% elif taak.taakstatus.naam and taak.taakstatus.naam != "nieuw" %}
+                    <span class="badge {% if taak.taakstatus.naam == 'openstaand' %}badge--lightblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow{% endif %}">
+                        {{ taak.taakstatus.naam|lower|capfirst }}
+                        {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>

@@ -8,13 +8,9 @@
      data-taken-lijst-selected-taak-uuid-value="{{ selected_taak.uuid }}"
      data-taken-lijst-taken-kaart-outlet="#taken_kaart">
     {% if page_obj.paginator.count %}
-        {% if page_obj.paginator.count > 100 and not request.session.toon_alle_taken %}
-            {% include "taken/overzicht/bericht_te_veel_taken.html" %}
-        {% else %}
-            {% for taak in page_obj %}
-                {% include "taken/overzicht/taak_lijst_item.html" %}
-            {% endfor %}
-        {% endif %}
+        {% for taak in page_obj %}
+            {% include "taken/overzicht/taak_lijst_item.html" %}
+        {% endfor %}
     {% else %}
         {% include "taken/overzicht/bericht_te_weinig_taken.html" %}
     {% endif %}
