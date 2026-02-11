@@ -102,31 +102,60 @@ export default class extends Controller {
     //START SWIPE
 
     let startX = 0
-    if (this.hasSelectedImageModalTarget) {
-      this.selectedImageModalTarget.addEventListener(
-        'touchstart',
-        (e) => {
-          // NIET blokkeren bij pinch (2 vingers)
-          if (e.touches.length !== 1 || this.isZooming) return
+    let startY = 0
+    let locked = null // 'x' | 'y' | null
 
-          startX = e.touches[0].clientX
-          // geen preventDefault nodig
-        },
-        { passive: true }
-      )
+    const LOCK_THRESHOLD = 10
+    const SWIPE_THRESHOLD = 70
 
-      this.selectedImageModalTarget.addEventListener(
-        'touchend',
-        (e) => {
-          if (e.changedTouches.length !== 1 || this.isZooming) return
+    const el = this.selectedImageModalTarget
 
-          const endX = e.changedTouches[0].clientX
-          if (startX - endX > 50) this.showNextImageInModal()
-          if (endX - startX > 50) this.showPreviousImageInModal()
-        },
-        { passive: true }
-      )
-    }
+    el.addEventListener(
+      'touchstart',
+      (e) => {
+        if (e.touches.length !== 1) return // pinch -> nooit swipen
+        const t = e.touches[0]
+        startX = t.clientX
+        startY = t.clientY
+        locked = null
+      },
+      { passive: true }
+    )
+
+    el.addEventListener(
+      'touchmove',
+      (e) => {
+        if (e.touches.length !== 1) return
+
+        const t = e.touches[0]
+        const dx = t.clientX - startX
+        const dy = t.clientY - startY
+
+        if (!locked && Math.abs(dx) + Math.abs(dy) > LOCK_THRESHOLD) {
+          locked = Math.abs(dx) > Math.abs(dy) * 1.3 ? 'x' : 'y'
+        }
+
+        // alleen als we horizontaal swipen: voorkom scroll/jank
+        if (locked === 'x') e.preventDefault()
+      },
+      { passive: false }
+    )
+
+    el.addEventListener(
+      'touchend',
+      (e) => {
+        if (locked !== 'x') return
+        if (e.changedTouches.length !== 1) return
+
+        const endX = e.changedTouches[0].clientX
+        const dx = endX - startX
+
+        if (dx < -SWIPE_THRESHOLD) this.showNextImageInModal()
+        if (dx > SWIPE_THRESHOLD) this.showPreviousImageInModal()
+      },
+      { passive: true }
+    )
+
     // END SWIPE
     this.mapLayers = {
       containers: {
