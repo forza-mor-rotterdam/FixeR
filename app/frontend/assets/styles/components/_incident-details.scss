@@ -101,6 +101,7 @@ body:has(.detailheader) {
             dt,
             dd {
                 margin: 0;
+                word-break: break-word;
             }
 
             dt {
