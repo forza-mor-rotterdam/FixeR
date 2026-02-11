@@ -103,19 +103,29 @@ export default class extends Controller {
 
     let startX = 0
     if (this.hasSelectedImageModalTarget) {
-      this.selectedImageModalTarget.addEventListener('touchstart', (e) => {
-        e.preventDefault()
-        if (e.touches.length === 1 && !this.isZooming) {
+      this.selectedImageModalTarget.addEventListener(
+        'touchstart',
+        (e) => {
+          // NIET blokkeren bij pinch (2 vingers)
+          if (e.touches.length !== 1 || this.isZooming) return
+
           startX = e.touches[0].clientX
-        }
-      })
-      this.selectedImageModalTarget.addEventListener('touchend', (e) => {
-        if (e.changedTouches.length === 1 && !this.isZooming) {
-          let endX = e.changedTouches[0].clientX
+          // geen preventDefault nodig
+        },
+        { passive: true }
+      )
+
+      this.selectedImageModalTarget.addEventListener(
+        'touchend',
+        (e) => {
+          if (e.changedTouches.length !== 1 || this.isZooming) return
+
+          const endX = e.changedTouches[0].clientX
           if (startX - endX > 50) this.showNextImageInModal()
           if (endX - startX > 50) this.showPreviousImageInModal()
-        }
-      })
+        },
+        { passive: true }
+      )
     }
     // END SWIPE
     this.mapLayers = {
