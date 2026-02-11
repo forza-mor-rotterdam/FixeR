@@ -3,6 +3,10 @@
     justify-content: center;
     margin: 1rem 0;
 
+    .form-row {
+        margin-bottom: 0;
+    }
+
     .wrapper-horizontal {
         ul {
             display: flex;
