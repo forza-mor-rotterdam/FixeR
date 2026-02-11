@@ -155,6 +155,7 @@ body.show-modal--first-filter {
             width: 98%;
             height: 98%;
             margin: 0.5% auto;
+            touch-action: auto;
 
             .modal-header {
                 padding: 0;
@@ -179,6 +180,7 @@ body.show-modal--first-filter {
                 width: 100%;
                 height: 100%;
                 object-fit: contain;
+                touch-action: pan-x pan-y pinch-zoom;
             }
 
             .image-counter {
