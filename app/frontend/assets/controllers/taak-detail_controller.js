@@ -42,6 +42,7 @@ export default class extends Controller {
     'sectionimageslider',
     'imageslidermobile',
     'imagesliderdesktop',
+    'containerHiddenContent',
   ]
 
   Mapping = {
@@ -361,6 +362,22 @@ export default class extends Controller {
       window.open(routeUrl, '_blank')
     }
     getRoute(event)
+  }
+
+  containerHiddenContentTargetConnected() {
+    // functie wordt alleen aangeroepen bij meer dan 3 content-divs in deze container
+    // 2,5 items moeten zichtbaar zijn bij het begin
+    // bij klik op 'Toon meer' hoogte van container animeren naar volledige hoogte
+    const contentList = this.containerHiddenContentTarget.querySelectorAll('.content')
+    const heightOnLoad = contentList[0].offsetHeight + contentList[1].offsetHeight + 109
+    console.log('___heightOnLoad', heightOnLoad)
+    this.containerHiddenContentTarget.style.height = `${heightOnLoad}px`
+  }
+
+  toggleContent(e) {
+    const container = e.target.closest('.container__content')
+    container.classList.toggle('show')
+    this.containerHiddenContentTarget.style.height = ``
   }
 
   isValidHttpUrl(string) {
