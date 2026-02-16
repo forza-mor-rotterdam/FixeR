@@ -205,14 +205,13 @@
                                         </dd>
                                     {% endif %}
                                 {% endfor %}
+                            {% elif signaal.aanvullende_informatie %}
+                                <dt>Aanvullende informatie</dt>
+                                <dd>
+                                    {{ signaal.aanvullende_informatie }}
+                                </dd>
                             {% endif %}
                         {% endwith %}
-                        {% if signaal.aanvullende_informatie %}
-                            <dt>Aanvullende informatie</dt>
-                            <dd>
-                                {{ signaal.aanvullende_informatie }}
-                            </dd>
-                        {% endif %}
                     {% endfor %}
                 {% endif %}
             </dl>

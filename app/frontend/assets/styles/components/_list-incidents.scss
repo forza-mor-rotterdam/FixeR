@@ -504,7 +504,7 @@
 
     .list__incidents {
         list-style: none;
-        padding: 0 0 100px;
+        padding: 0 0 70px;
         overflow: hidden;
 
         .list__incidents__scroll-wrapper {
@@ -805,6 +805,7 @@
             }
         }
         @media (min-width: map-get($grid-breakpoints, lg)) {
+            padding: 0;
             margin: 0 16px 0 0;
         }
     }

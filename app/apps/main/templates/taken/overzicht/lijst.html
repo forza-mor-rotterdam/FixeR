@@ -15,6 +15,4 @@
         {% include "taken/overzicht/bericht_te_weinig_taken.html" %}
     {% endif %}
 </div>
-{% if request.session.toon_alle_taken or page_obj.paginator.count <= 100 %}
-    {% include "snippets/paginator.html" with page_obj=page_obj %}
-{% endif %}
+{% include "snippets/paginator.html" with page_obj=page_obj %}
