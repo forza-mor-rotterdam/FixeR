@@ -142,7 +142,7 @@
                 <div class="container__map full-width">
                     <div class="map map--single"
                          id="taken_kaart"
-                         data-action="touchstart->detail#onTwoFingerDrag touchend->detail#onTwoFingerDrag">
+                         data-action="touchstart->taak-detail#onTwoFingerDrag touchend->taak-detail#onTwoFingerDrag">
                         <div class="map__overlay">
                             <span>Gebruik twee vingers om de kaart te verplaatsen</span>
                         </div>
@@ -151,44 +151,38 @@
             {% endif %}
         </div>
     </div>
-    <div class="container__content">
+    <div class="container__content {% if melding.signalen_voor_melding|length > 2 %}hidden--half{% endif %}"
+         {% if melding.signalen_voor_melding|length > 2 %}data-taak-detail-target="containerHiddenContent"{% endif %}>
         <h3>Meldingdetails</h3>
-        <div class="content">
-            <dl>
-                {% if taak.aangemaakt_op %}
-                    <dt>Aangemaakt</dt>
-                    <dd>
-                        {{ taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}
-                    </dd>
-                {% endif %}
-                {% if taak.afgesloten_op %}
-                    <dt>Afgesloten</dt>
-                    <dd>
-                        {{ taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' }}
-                    </dd>
-                {% endif %}
-                {% if taak.melding.locatie_type == "adres" %}
-                    <dt>MeldR-nummer</dt>
-                    <dd>
-                        {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
-                            {% if melding.signalen_voor_melding|length == 1 %}
-                                {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+        {% for signaal in melding.signalen_voor_melding %}
+            <div class="content">
+                <dl>
+                    {% if taak.melding.locatie_type == "adres" %}
+                        <dt>MeldR-nummer</dt>
+                        <dd>
+                            {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
+                                {{ signaal.bron_signaal_id }}
                             {% else %}
-                                <div class="container__list">
-                                    <ul>
-                                        {% for melding in melding.signalen_voor_melding %}<li>{{ melding.bron_signaal_id }}</li>{% endfor %}
-                                    </ul>
-                                    <span class="foldout" data-action="click->taak-detail#foldout">{% include "icons/arrow-right-v2.svg" %}</span>
-                                </div>
+                                Onbekend
                             {% endif %}
-                        {% else %}
-                            Onbekend
-                        {% endif %}
-                    </dd>
-                    {% for signaal in melding.signalen_voor_melding %}
+                        </dd>
+                    {% endif %}
+                    {% if taak.aangemaakt_op %}
+                        <dt>Aangemaakt</dt>
+                        <dd>
+                            {{ taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}
+                        </dd>
+                    {% endif %}
+                    {% if taak.afgesloten_op %}
+                        <dt>Afgesloten</dt>
+                        <dd>
+                            {{ taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' }}
+                        </dd>
+                    {% endif %}
+                    {% if taak.melding.locatie_type == "adres" %}
                         {% if signaal.omschrijving_melder %}
-                            <dt>Toelichting</dt>
-                            <dd>
+                            <dt class="full-width">Toelichting</dt>
+                            <dd class="full-width">
                                 {{ signaal.omschrijving_melder }}
                             </dd>
                         {% endif %}
@@ -196,8 +190,8 @@
                             {% if aanvullende_vragen %}
                                 {% for qa in aanvullende_vragen %}
                                     {% if qa.answers|python_any %}
-                                        <dt>{{ qa.question }}</dt>
-                                        <dd>
+                                        <dt class="full-width">{{ qa.question }}</dt>
+                                        <dd class="full-width">
                                             {% for answer in qa.answers %}
                                                 {{ answer }}
                                                 {% if not forloop.last %},{% endif %}
@@ -206,147 +200,149 @@
                                     {% endif %}
                                 {% endfor %}
                             {% elif signaal.aanvullende_informatie %}
-                                <dt>Aanvullende informatie</dt>
-                                <dd>
+                                <dt class="full-width">Aanvullende informatie</dt>
+                                <dd class="full-width">
                                     {{ signaal.aanvullende_informatie }}
                                 </dd>
                             {% endif %}
                         {% endwith %}
-                    {% endfor %}
-                {% endif %}
-            </dl>
-        </div>
+                    {% endif %}
+                </dl>
+            </div>
+        {% endfor %}
+        {% if melding.signalen_voor_melding|length > 0 %}
+            <button class="btn--toggle" data-action="taak-detail#toggleContent">
+                <span class="more">Toon meer</span>
+                <span class="less">Toon minder</span>
+            </button>
+        {% endif %}
     </div>
     <div class="container__content">
         <h3>Contact</h3>
-        <div class="content">
-            <button class="btn person"
-                    data-action="infosheet#openInfosheet"
-                    data-infosheet-extracontent-param=".extra-content"
-                    data-infosheet-header-param="Contactgegevens">
-                <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
-                <div class="message">
-                    <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
-                    <span>{{ taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
+        <button class="btn person"
+                data-action="infosheet#openInfosheet"
+                data-infosheet-extracontent-param=".extra-content"
+                data-infosheet-header-param="Contactgegevens">
+            <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
+            <div class="message">
+                <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
+                <span>{{ taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
+            </div>
+            <div class="extra-content">
+                <div class="person">
+                    <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
+                    <div class="message">
+                        <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
+                        <span class="help-text">{{ taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
+                    </div>
                 </div>
-                <div class="extra-content">
+                {% if taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer %}
                     <div class="person">
-                        <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
-                        <div class="message">
-                            <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
-                            <span class="help-text">{{ taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
+                        <div class="container__contact">
+                            <a href="tel:{{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}"
+                               class="btn btn-tertiary">
+                                {% include "icons/phone.svg" %}
+                                Bellen
+                            </a>
                         </div>
                     </div>
-                    {% if taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer %}
-                        <div class="person">
-                            <div class="container__contact">
+                {% endif %}
+                <div class="person person--list">
+                    <dl>
+                        {% if taak.eerste_taakgebeurtenis_gebruiker.personeelsnummer %}
+                            <dt>Personeelsnummer</dt>
+                            <dd>
+                                {{ taak.eerste_taakgebeurtenis_gebruiker.personeelsnummer }}
+                            </dd>
+                        {% endif %}
+                        {% if taak.eerste_taakgebeurtenis_gebruiker.email %}
+                            <dt>E-mailadres</dt>
+                            <dd>
+                                <a href="mailto:{{ taak.eerste_taakgebeurtenis_gebruiker.email }}"
+                                   target="_blank"
+                                   class="link"
+                                   data-testid="Medewerker_email">{{ taak.eerste_taakgebeurtenis_gebruiker.email }}</a>
+                            </dd>
+                        {% endif %}
+                        {% if taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer %}
+                            <dt>Telefoonnummer</dt>
+                            <dd>
                                 <a href="tel:{{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}"
-                                   class="btn btn-tertiary">
-                                    {% include "icons/phone.svg" %}
-                                    Bellen
+                                   target="_blank"
+                                   class="link"
+                                   data-testid="Medewerker_tel">
+                                    {{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}
                                 </a>
-                            </div>
-                        </div>
-                    {% endif %}
-                    <div class="person person--list">
-                        <dl>
-                            {% if taak.eerste_taakgebeurtenis_gebruiker.personeelsnummer %}
-                                <dt>Personeelsnummer</dt>
-                                <dd>
-                                    {{ taak.eerste_taakgebeurtenis_gebruiker.personeelsnummer }}
-                                </dd>
-                            {% endif %}
-                            {% if taak.eerste_taakgebeurtenis_gebruiker.email %}
-                                <dt>E-mailadres</dt>
-                                <dd>
-                                    <a href="mailto:{{ taak.eerste_taakgebeurtenis_gebruiker.email }}"
-                                       target="_blank"
-                                       class="link"
-                                       data-testid="Medewerker_email">
-                                        {{ taak.eerste_taakgebeurtenis_gebruiker.email }}
-                                    </a>
-                                </dd>
-                            {% endif %}
-                            {% if taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer %}
-                                <dt>Telefoonnummer</dt>
-                                <dd>
-                                    <a href="tel:{{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}"
-                                       target="_blank"
-                                       class="link"
-                                       data-testid="Medewerker_tel">
-                                        {{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}
-                                    </a>
-                                </dd>
-                            {% endif %}
-                            {% if taak.eerste_taakgebeurtenis_gebruiker.afdeling %}
-                                <dt>Afdeling</dt>
-                                <dd>
-                                    {{ taak.eerste_taakgebeurtenis_gebruiker.afdeling }}
-                                </dd>
-                            {% endif %}
-                        </dl>
-                    </div>
+                            </dd>
+                        {% endif %}
+                        {% if taak.eerste_taakgebeurtenis_gebruiker.afdeling %}
+                            <dt>Afdeling</dt>
+                            <dd>
+                                {{ taak.eerste_taakgebeurtenis_gebruiker.afdeling }}
+                            </dd>
+                        {% endif %}
+                    </dl>
                 </div>
-            </button>
-            {% if melding.signalen_voor_melding|length > 0 %}
-                {% for signaal in melding.signalen_voor_melding %}
-                    <button class="btn person"
-                            data-action="infosheet#openInfosheet"
-                            data-infosheet-extracontent-param=".extra-content"
-                            data-infosheet-header-param="Contactgegevens">
-                        <span class="initials initials__extern">{{ signaal.melder|gebruikersinitialen }}</span>
-                        <div class="message">
-                            <h4>{{ signaal.melder|gebruikersnaam }}</h4>
-                            <span>Melder</span>
+            </div>
+        </button>
+        {% if melding.signalen_voor_melding|length > 0 %}
+            {% for signaal in melding.signalen_voor_melding %}
+                <button class="btn person"
+                        data-action="infosheet#openInfosheet"
+                        data-infosheet-extracontent-param=".extra-content"
+                        data-infosheet-header-param="Contactgegevens">
+                    <span class="initials initials__extern">{{ signaal.melder|gebruikersinitialen }}</span>
+                    <div class="message">
+                        <h4>{{ signaal.melder|gebruikersnaam }}</h4>
+                        <span>Melder</span>
+                    </div>
+                    <div class="extra-content">
+                        <div class="person">
+                            <span class="initials initials__extern">{{ signaal.melder|gebruikersinitialen }}</span>
+                            <div class="message">
+                                <h4>{{ signaal.melder|gebruikersnaam }}</h4>
+                                <span>Melder</span>
+                            </div>
                         </div>
-                        <div class="extra-content">
+                        {% if signaal.melder.telefoonnummer and not signaal.melder|gebruiker_is_anoniem %}
                             <div class="person">
-                                <span class="initials initials__extern">{{ signaal.melder|gebruikersinitialen }}</span>
-                                <div class="message">
-                                    <h4>{{ signaal.melder|gebruikersnaam }}</h4>
-                                    <span>Melder</span>
+                                <div class="container__contact">
+                                    <a href="tel:{{ signaal.melder.telefoonnummer }}"
+                                       class="btn btn-tertiary">
+                                        {% include "icons/phone.svg" %}
+                                        Bellen
+                                    </a>
                                 </div>
                             </div>
-                            {% if signaal.melder.telefoonnummer and not signaal.melder|gebruiker_is_anoniem %}
-                                <div class="person">
-                                    <div class="container__contact">
-                                        <a href="tel:{{ signaal.melder.telefoonnummer }}"
-                                           class="btn btn-tertiary">
-                                            {% include "icons/phone.svg" %}
-                                            Bellen
-                                        </a>
-                                    </div>
-                                </div>
-                            {% endif %}
-                            {% if signaal.melder.email or signaal.melder.telefoonnummer and not signaal.melder|gebruiker_is_anoniem %}
-                                <div class="person person--list">
-                                    <dl>
-                                        {% if signaal.melder.email %}
-                                            <dt>E-mailadres</dt>
-                                            <dd>
-                                                <a href="mailto:{{ signaal.melder.email }}"
-                                                   target="_blank"
-                                                   class="link"
-                                                   data-testid="Melder_email">{{ signaal.melder.email }}</a>
-                                            </dd>
-                                        {% endif %}
-                                        {% if signaal.melder.telefoonnummer and not signaal.melder|gebruiker_is_anoniem %}
-                                            <dt>Telefoonnummer</dt>
-                                            <dd>
-                                                <a href="tel:{{ signaal.melder.telefoonnummer }}"
-                                                   target="_blank"
-                                                   class="link"
-                                                   data-testid="Melder_tel">{{ signaal.melder.telefoonnummer }}</a>
-                                            </dd>
-                                        {% endif %}
-                                    </dl>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </button>
-                {% endfor %}
-            {% endif %}
-        </div>
+                        {% endif %}
+                        {% if signaal.melder.email or signaal.melder.telefoonnummer and not signaal.melder|gebruiker_is_anoniem %}
+                            <div class="person person--list">
+                                <dl>
+                                    {% if signaal.melder.email %}
+                                        <dt>E-mailadres</dt>
+                                        <dd>
+                                            <a href="mailto:{{ signaal.melder.email }}"
+                                               target="_blank"
+                                               class="link"
+                                               data-testid="Melder_email">{{ signaal.melder.email }}</a>
+                                        </dd>
+                                    {% endif %}
+                                    {% if signaal.melder.telefoonnummer and not signaal.melder|gebruiker_is_anoniem %}
+                                        <dt>Telefoonnummer</dt>
+                                        <dd>
+                                            <a href="tel:{{ signaal.melder.telefoonnummer }}"
+                                               target="_blank"
+                                               class="link"
+                                               data-testid="Melder_tel">{{ signaal.melder.telefoonnummer }}</a>
+                                        </dd>
+                                    {% endif %}
+                                </dl>
+                            </div>
+                        {% endif %}
+                    </div>
+                </button>
+            {% endfor %}
+        {% endif %}
     </div>
     {% comment %} <div class="container__content">
         <h3>Andere taken</h3>
