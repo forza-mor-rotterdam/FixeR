@@ -356,7 +356,9 @@
     </div> {% endcomment %}
     <div class="container__content">
         <h3>Tijdlijn</h3>
-        <div class="content">{% include "taken/taak_detail_melding_tijdlijn.html" %}</div>
+        <div class="content">
+            <turbo-frame id="taak_detail_melding_tijdlijn" src="{% url 'taak_detail_melding_tijdlijn' taak.id %}" loading="lazy"></turbo-frame>
+        </div>
     </div>
     {% if perms.authorisatie.beheer_bekijken %}
         <div class="container__content">
