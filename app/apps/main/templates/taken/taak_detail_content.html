@@ -389,4 +389,14 @@
             </div>
         </div>
     {% endif %}
+    <div class="container__content">
+        <div class="content">
+            <details>
+                <summary>
+                    <h3>Tijdlijn</h3>
+                </summary>
+                <turbo-frame id="taak_detail_melding_tijdlijn" src="{% url 'taak_detail_melding_tijdlijn' taak.uuid %}" loading="lazy"></turbo-frame>
+            </details>
+        </div>
+    </div>
 </section>
