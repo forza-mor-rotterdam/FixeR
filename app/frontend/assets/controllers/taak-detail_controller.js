@@ -10,6 +10,8 @@ function removeMqListener(mq, handler) {
   if (mq.removeEventListener) mq.removeEventListener('change', handler)
   else mq.removeListener(handler)
 }
+
+let heightOnLoad = 0
 export default class extends Controller {
   static outlets = ['kaart']
   static values = {
@@ -369,15 +371,25 @@ export default class extends Controller {
     // 2,5 items moeten zichtbaar zijn bij het begin
     // bij klik op 'Toon meer' hoogte van container animeren naar volledige hoogte
     const contentList = this.containerHiddenContentTarget.querySelectorAll('.content')
-    const heightOnLoad = contentList[0].offsetHeight + contentList[1].offsetHeight + 109
-    console.log('___heightOnLoad', heightOnLoad)
-    this.containerHiddenContentTarget.style.height = `${heightOnLoad}px`
+    if (contentList.length > 2) {
+      heightOnLoad =
+        contentList[0]?.offsetHeight + contentList[1].offsetHeight + contentList[2].offsetHeight / 2
+      this.containerHiddenContentTarget.style.height = `${heightOnLoad}px`
+    }
   }
 
   toggleContent(e) {
     const container = e.target.closest('.container__content')
-    container.classList.toggle('show')
-    this.containerHiddenContentTarget.style.height = ``
+    const contentList = this.containerHiddenContentTarget.querySelectorAll('.content')
+    if (contentList.length > 2) {
+      if (container.classList.contains('show')) {
+        container.classList.remove('show')
+        this.containerHiddenContentTarget.style.height = `${heightOnLoad}px`
+      } else {
+        container.classList.add('show')
+        this.containerHiddenContentTarget.style.height = ``
+      }
+    }
   }
 
   isValidHttpUrl(string) {

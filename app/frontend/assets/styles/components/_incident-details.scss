@@ -78,8 +78,12 @@ body:has(.detailheader) {
 }
 
 .container__content {
+    position: relative;
     margin-bottom: 1em;
-    transition: height $transition-duration-default $transition-ease-default;
+    interpolate-size: allow-keywords;
+    transition:
+        height $transition-duration-default $transition-ease-default,
+        padding-bottom $transition-duration-default $transition-ease-default;
 
     h3 {
         font-size: 1em;
@@ -186,10 +190,13 @@ body:has(.detailheader) {
         }
     }
 
+    .btn--toggle {
+        display: none;
+    }
     // de derde content-div moet half verborgen worden, de volgende div's helemaal
     &.hidden--half {
-        position: relative;
-        padding-bottom: 50px;
+        padding-bottom: 60px;
+        overflow-y: hidden;
 
         .btn--toggle {
             text-align: center;
@@ -226,11 +233,11 @@ body:has(.detailheader) {
             .btn--toggle {
                 height: 25px;
                 .more {
-                    display: block;
+                    display: none;
                 }
 
                 .less {
-                    display: none;
+                    display: block;
                 }
             }
         }

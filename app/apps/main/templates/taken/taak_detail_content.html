@@ -151,162 +151,74 @@
             {% endif %}
         </div>
     </div>
-    <div class="container__content {% if melding.signalen_voor_melding|length > 0 %}hidden--half{% endif %}"
-         {% if melding.signalen_voor_melding|length > 0 %}data-taak-detail-target="containerHiddenContent"{% endif %}>
+    <div class="container__content {% if melding.signalen_voor_melding|length > 2 %}hidden--half{% endif %}"
+         {% if melding.signalen_voor_melding|length > 2 %}data-taak-detail-target="containerHiddenContent"{% endif %}>
         <h3>Meldingdetails</h3>
-        <div class="content">
-            <dl>
-                <dt>MeldR-nummer</dt>
-                <dd>
-                    2026-000040
-                </dd>
-                <dt>Aangemaakt</dt>
-                <dd>
-                    09-02-2026 21:45
-                </dd>
-                <dt class="full-width">Toelichting</dt>
-                <dd class="full-width">
-                    bah1
-                </dd>
-                <dt>Wat voor soort afval ligt er naast de wijkcontainer ?</dt>
-                <dd>
-                    Afvalzakken, Grofvuil
-                </dd>
-                <dt>Aanvullende informatie</dt>
-                <dd>
-                    Wat voor soort afval ligt er naast de wijkcontainer ?Afvalzakken, Grofvuil\n
-                </dd>
-            </dl>
-        </div>
-        <div class="content">
-            <dl>
-                <dt>MeldR-nummer</dt>
-                <dd>
-                    2026-000041
-                </dd>
-                <dt>Aangemaakt</dt>
-                <dd>
-                    09-02-2026 21:45
-                </dd>
-                <dt class="full-width">Toelichting</dt>
-                <dd class="full-width">
-                    bah2
-                </dd>
-            </dl>
-        </div>
         {% for signaal in melding.signalen_voor_melding %}
-            >>{{ melding.signalen_voor_melding|length }}<<
-            <div class="content{% if forloop.counter == 1 %} hidden--half{% endif %}{% if forloop.counter > 1 %} hidden{% endif %}" {% if forloop.counter == 1 %}data-action="click->taak-detail#showContent"{% endif %}
-            >
-            <dl>
-                {% if taak.melding.locatie_type == "adres" %}
-                    <dt>MeldR-nummer</dt>
-                    <dd>
-                        {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
-                            {{ signaal.bron_signaal_id }}
-                        {% else %}
-                            Onbekend
-                        {% endif %}
-                    </dd>
-                {% endif %}
-                {% if taak.aangemaakt_op %}
-                    <dt>Aangemaakt</dt>
-                    <dd>
-                        {{ taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}
-                    </dd>
-                {% endif %}
-                {% if taak.afgesloten_op %}
-                    <dt>Afgesloten</dt>
-                    <dd>
-                        {{ taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' }}
-                    </dd>
-                {% endif %}
-                {% if taak.melding.locatie_type == "adres" %}
-                    {% if signaal.omschrijving_melder %}
-                        <dt class="full-width">Toelichting</dt>
-                        <dd class="full-width">
-                            {{ signaal.omschrijving_melder }}
+            <div class="content">
+                <dl>
+                    {% if taak.melding.locatie_type == "adres" %}
+                        <dt>MeldR-nummer</dt>
+                        <dd>
+                            {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
+                                {{ signaal.bron_signaal_id }}
+                            {% else %}
+                                Onbekend
+                            {% endif %}
                         </dd>
                     {% endif %}
-                    {% with aanvullende_vragen=signaal.aanvullende_vragen %}
-                        {% if aanvullende_vragen %}
-                            {% for qa in aanvullende_vragen %}
-                                {% if qa.answers|python_any %}
-                                    <dt class="full-width">{{ qa.question }}</dt>
-                                    <dd class="full-width">
-                                        {% for answer in qa.answers %}
-                                            {{ answer }}
-                                            {% if not forloop.last %},{% endif %}
-                                        {% endfor %}
-                                    </dd>
-                                {% endif %}
-                            {% endfor %}
-                        {% elif signaal.aanvullende_informatie %}
-                            <dt class="full-width">Aanvullende informatie</dt>
+                    {% if taak.aangemaakt_op %}
+                        <dt>Aangemaakt</dt>
+                        <dd>
+                            {{ taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}
+                        </dd>
+                    {% endif %}
+                    {% if taak.afgesloten_op %}
+                        <dt>Afgesloten</dt>
+                        <dd>
+                            {{ taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' }}
+                        </dd>
+                    {% endif %}
+                    {% if taak.melding.locatie_type == "adres" %}
+                        {% if signaal.omschrijving_melder %}
+                            <dt class="full-width">Toelichting</dt>
                             <dd class="full-width">
-                                {{ signaal.aanvullende_informatie }}
+                                {{ signaal.omschrijving_melder }}
                             </dd>
                         {% endif %}
-                    {% endwith %}
-                {% endif %}
-            </dl>
-        </div>
-    {% endfor %}
-    {% if melding.signalen_voor_melding|length > 0 %}
-        <button class="btn--toggle" data-action="taak-detail#toggleContent">
-            <span class="more">Toon meer</span>
-            <span class="less">Toon minder</span>
-        </button>
-    {% endif %}
-</div>
-<!-- start copy static -->
-<div class="container__content">
-    <h3>Meldingdetails</h3>
-    <div class="content">
-        <dl>
-            <dt>MeldR-nummer</dt>
-            <dd>
-                2026-000040
-            </dd>
-            <dt>Aangemaakt</dt>
-            <dd>
-                09-02-2026 21:45
-            </dd>
-            <dt class="full-width">Toelichting</dt>
-            <dd class="full-width">
-                bah1
-            </dd>
-            <dt>Wat voor soort afval ligt er naast de wijkcontainer ?</dt>
-            <dd>
-                Afvalzakken, Grofvuil
-            </dd>
-            <dt>Aanvullende informatie</dt>
-            <dd>
-                Wat voor soort afval ligt er naast de wijkcontainer ?Afvalzakken, Grofvuil\n
-            </dd>
-        </dl>
+                        {% with aanvullende_vragen=signaal.aanvullende_vragen %}
+                            {% if aanvullende_vragen %}
+                                {% for qa in aanvullende_vragen %}
+                                    {% if qa.answers|python_any %}
+                                        <dt class="full-width">{{ qa.question }}</dt>
+                                        <dd class="full-width">
+                                            {% for answer in qa.answers %}
+                                                {{ answer }}
+                                                {% if not forloop.last %},{% endif %}
+                                            {% endfor %}
+                                        </dd>
+                                    {% endif %}
+                                {% endfor %}
+                            {% elif signaal.aanvullende_informatie %}
+                                <dt class="full-width">Aanvullende informatie</dt>
+                                <dd class="full-width">
+                                    {{ signaal.aanvullende_informatie }}
+                                </dd>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                </dl>
+            </div>
+        {% endfor %}
+        {% if melding.signalen_voor_melding|length > 0 %}
+            <button class="btn--toggle" data-action="taak-detail#toggleContent">
+                <span class="more">Toon meer</span>
+                <span class="less">Toon minder</span>
+            </button>
+        {% endif %}
     </div>
-    <div class="content">
-        <dl>
-            <dt>MeldR-nummer</dt>
-            <dd>
-                2026-000041
-            </dd>
-            <dt>Aangemaakt</dt>
-            <dd>
-                09-02-2026 21:45
-            </dd>
-            <dt class="full-width">Toelichting</dt>
-            <dd class="full-width">
-                bah2
-            </dd>
-        </dl>
-    </div>
-</div>
-<!-- end copy static -->
-<div class="container__content">
-    <h3>Contact</h3>
-    <div class="content">
+    <div class="container__content">
+        <h3>Contact</h3>
         <button class="btn person"
                 data-action="infosheet#openInfosheet"
                 data-infosheet-extracontent-param=".extra-content"
@@ -432,56 +344,55 @@
             {% endfor %}
         {% endif %}
     </div>
-</div>
-{% comment %} <div class="container__content">
+    {% comment %} <div class="container__content">
         <h3>Andere taken</h3>
         <div class="content">
 
         </div>
-</div> {% endcomment %}
-{% if perms.authorisatie.beheer_bekijken %}
-    <div class="container__content">
-        <h3>Beheer</h3>
-        <div class="content">
-            <dl>
-                {% if taak.aangemaakt_op %}
-                    <dt>Meldingnummer</dt>
+    </div> {% endcomment %}
+    {% if perms.authorisatie.beheer_bekijken %}
+        <div class="container__content">
+            <h3>Beheer</h3>
+            <div class="content">
+                <dl>
+                    {% if taak.aangemaakt_op %}
+                        <dt>Meldingnummer</dt>
+                        <dd>
+                            {% if melding.uuid %}
+                                {{ melding.uuid }}
+                            {% else %}
+                                Onbekend
+                            {% endif %}
+                        </dd>
+                    {% endif %}
+                    <dt>Taaknummer</dt>
                     <dd>
-                        {% if melding.uuid %}
-                            {{ melding.uuid }}
+                        {% if taak.uuid %}
+                            {{ taak.uuid }}
                         {% else %}
                             Onbekend
                         {% endif %}
                     </dd>
-                {% endif %}
-                <dt>Taaknummer</dt>
-                <dd>
-                    {% if taak.uuid %}
-                        {{ taak.uuid }}
-                    {% else %}
-                        Onbekend
-                    {% endif %}
-                </dd>
-                <dt>Gedeeld op Whatsapp</dt>
-                <dd>
-                    {{ taakdeellinks|length }}
-                </dd>
-                <dt>Geopend op Whatsapp</dt>
-                <dd>
-                    {{ taakdeellinks_bezoekers|length }}
-                </dd>
-            </dl>
+                    <dt>Gedeeld op Whatsapp</dt>
+                    <dd>
+                        {{ taakdeellinks|length }}
+                    </dd>
+                    <dt>Geopend op Whatsapp</dt>
+                    <dd>
+                        {{ taakdeellinks_bezoekers|length }}
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    {% endif %}
+    <div class="container__content">
+        <div class="content">
+            <details>
+                <summary>
+                    <h3>Tijdlijn</h3>
+                </summary>
+                <turbo-frame id="taak_detail_melding_tijdlijn" src="{% url 'taak_detail_melding_tijdlijn' taak.uuid %}" loading="lazy"></turbo-frame>
+            </details>
         </div>
     </div>
-{% endif %}
-<div class="container__content">
-    <div class="content">
-        <details>
-            <summary>
-                <h3>Tijdlijn</h3>
-            </summary>
-            <turbo-frame id="taak_detail_melding_tijdlijn" src="{% url 'taak_detail_melding_tijdlijn' taak.uuid %}" loading="lazy"></turbo-frame>
-        </details>
-    </div>
-</div>
 </section>
