@@ -154,6 +154,17 @@ body:has(.detailheader) {
                 margin: 0;
             }
         }
+
+        > details {
+            > summary {
+                border-top: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+                h3 {
+                    font-size: 1rem;
+                }
+            }
+        }
     }
 
     &--sticky-bottom {
