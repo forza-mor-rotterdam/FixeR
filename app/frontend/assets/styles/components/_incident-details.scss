@@ -135,6 +135,7 @@ body:has(.detailheader) {
         }
 
         > details {
+            margin: 0 -16px;
             > summary {
                 border-top: 0;
                 padding-top: 0;
