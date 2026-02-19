@@ -1,0 +1,9 @@
+@media print {
+    .notification,
+    .container__filter-button,
+    .container--env,
+    .sticky--bottom,
+    .link--back {
+        display: none !important;
+    }
+}
