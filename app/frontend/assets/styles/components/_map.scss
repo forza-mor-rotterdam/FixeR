@@ -291,6 +291,16 @@
     }
 }
 
+label {
+    &.btn-on-map {
+        min-height: 0;
+        padding: 0.5em;
+
+        input {
+            vertical-align: sub;
+        }
+    }
+}
 @media (min-width: map-get($grid-breakpoints, lg)) {
     .container__list {
         .container__map {
