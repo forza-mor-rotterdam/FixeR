@@ -2,6 +2,13 @@
 
 Applicatie voor uitvoerders en teamleiders voor het afhandelen van taken op de MOR-keten
 
+## Meer in-depth documentatie
+**Architectuur:** ...
+
+**Back-end:** ...
+
+**Front-end:** [frontend/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/README.md)
+
 ## Tech Stack
 
 [Python](https://www.python.org/), [Django](https://www.djangoproject.com/start/), [Turbo JS](https://turbo.hotwired.dev/), [Stimulus JS](https://stimulus.hotwired.dev/), [SCSS](https://sass-lang.com/)
