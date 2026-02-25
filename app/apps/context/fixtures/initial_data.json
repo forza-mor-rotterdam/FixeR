@@ -1,0 +1,28 @@
+[
+    {
+        "model": "context.context",
+        "pk": 1,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "uuid": "0fd621bf-392e-4c74-9cb9-b85e55ab4946",
+            "naam": "Schoon, Heel & Veilig",
+            "taaktypes": [],
+            "filters": {"fields": ["taken", "taak_status", "buurt"]},
+            "template": "standaard"
+        }
+    },
+    {
+        "model": "context.context",
+        "pk": 2,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "uuid": "088fb376-baf0-44af-9925-04d2e08e9d94",
+            "naam": "Begraven & Cremeren",
+            "taaktypes": [3],
+            "filters": {"fields": ["begraafplaats", "taken", "taak_status"]},
+            "template": "benc"
+        }
+    }
+]

@@ -1,0 +1,27 @@
+[
+    {
+        "model": "sites.site",
+        "pk": 1,
+        "fields": {
+            "domain": "fixer.mor.local",
+            "name": "fixer.mor.local"
+        }
+    },
+    {
+        "model": "instellingen.instelling",
+        "pk": 1,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "uuid": "0fd621bf-392e-4c74-9cb9-b85e55ab4946",
+            "mor_core_basis_url": "http://core.mor.local:8002",
+            "mor_core_gebruiker_email": "fixer@forzamor.nl",
+            "mor_core_gebruiker_wachtwoord": "insecure",
+            "mor_core_token_timeout": 3600,
+            "taakr_basis_url": "http://taakr.mor.local:8009",
+            "onderwerpen_basis_url": "http://onderwerpen.mor.local:8006",
+            "locaties_basis_url": "http://locatieservice.mor.local:8010",
+            "email_beheer": "functioneelbeheerstz@rotterdam.nl"
+        }
+    }
+]
