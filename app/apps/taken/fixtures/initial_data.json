@@ -1,0 +1,86 @@
+[
+    {
+        "model": "taken.taaktype",
+        "pk": 1,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "uuid": "0fd621bf-392e-4c74-9cb9-b85e55ab4946",
+            "omschrijving": "Grofvuil ophalen",
+            "toelichting": "Betreft grofvuil in openbaar gebied met en zonder grofvuilafspraak.",
+            "actief": true
+        }
+    },
+    {
+        "model": "taken.taaktype",
+        "pk": 2,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "uuid": "088fb376-baf0-44af-9925-04d2e08e9d94",
+            "omschrijving": "Vuil ophalen met knijpwagen",
+            "toelichting": "Voor het ophalen van grofvuil met een knijpwagen.",
+            "actief": true
+        }
+    },
+    {
+        "model": "taken.taaktype",
+        "pk": 3,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "uuid": "07ebcf88-94c0-4c0d-b2e2-527d587af08b",
+            "omschrijving": "Schoonmaken graf/pad",
+            "toelichting": null,
+            "actief": true
+        }
+    },
+    {
+        "model": "taken.taaktype",
+        "pk": 4,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "uuid": "143d569a-b2be-4144-9c2f-7982589d7410",
+            "omschrijving": "Onderzoeken dumping bedrijfsafval",
+            "toelichting": "Betreft het onderzoeken van dumping / achtergelaten bedrijfsafval. Vaak geplaatst naast een wijkcontainer of langs de openbare weg.",
+            "actief": true
+        }
+    },
+    {
+        "model": "taken.taaktype",
+        "pk": 5,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "uuid": "f39e4898-a14b-42d4-a9be-13b324ff928c",
+            "omschrijving": "Handhaven Parkeeroverlast & -overtredingen",
+            "toelichting": "",
+            "actief": true
+        }
+    },
+    {
+        "model": "taken.taaktype",
+        "pk": 6,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "uuid": "c08e999b-8044-4ac8-ae1e-d533a8e1b700",
+            "omschrijving": "Snelherstel bestrating",
+            "toelichting": "",
+            "actief": true
+        }
+    },
+    {
+        "model": "taken.taaktype",
+        "pk": 7,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "uuid": "a24bfa86-a57a-4fd5-9be2-7bb3c9a494f3",
+            "omschrijving": "Volle Papier wijkcontainer Legen",
+            "toelichting": "",
+            "actief": true
+        }
+    }
+]
