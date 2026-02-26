@@ -7,7 +7,7 @@ Applicatie voor uitvoerders en teamleiders voor het afhandelen van taken op de M
 
 **Back-end:** ...
 
-**Front-end:** [frontend/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/README.md)
+**Front-end:** [frontend/README.md](docs/frontend/README.md)
 
 ## Tech Stack
 

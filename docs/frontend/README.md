@@ -15,9 +15,9 @@ De nadruk ligt op technische overdracht voor front-end ontwikkelaars die het pro
 De documentatie is bewust beperkt tot vier centrale bestanden:
 
 - frontend/README.md (dit document)
-- [frontend/controllers/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/controllers/README.md)
-- [frontend/styling/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/styling/README.md)
-- [frontend/patterns/README.md](https://github.com/forza-mor-rotterdam/FixeR/blob/documentatie-frontend/docs/frontend/patterns/README.md)
+- [frontend/controllers/README.md](controllers/README.md)
+- [frontend/styling/README.md](styling/README.md)
+- [frontend/patterns/README.md](patterns/README.md)
 
 ---
 
