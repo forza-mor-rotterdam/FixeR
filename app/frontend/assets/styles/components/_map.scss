@@ -279,7 +279,7 @@
         vertical-align: top;
     }
     span {
-        padding: 0;
+        padding: 0 !important;
         pointer-events: none;
     }
     &:focus-visible {
