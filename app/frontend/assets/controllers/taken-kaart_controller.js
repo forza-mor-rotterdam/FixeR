@@ -56,6 +56,36 @@ export default class MapController extends Controller {
 
     this.drawMap()
     this.createMarkersLayer()
+
+    this.mapLayers = {
+      buurten: {
+        layer: L.tileLayer.wms(
+          'https://service.pdok.nl/cbs/wijkenbuurten/2022/wms/v1_0?request=GetCapabilities&service=WMS',
+          {
+            layers: 'buurten',
+            format: 'image/png',
+            transparent: true,
+            minZoom: 10,
+            maxZoom: 19,
+            srsName: 'EPSG:4326',
+            bbox: '51.9247770, 4.4780970, 51.9247774, 4.4780974',
+          }
+        ),
+        legend: [],
+      },
+      EGD: {
+        layer: L.tileLayer.wms(
+          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
+          {
+            layers: 'BSB.OBJ.EGD',
+            format: 'image/png',
+            transparent: true,
+            minZoom: 10,
+            maxZoom: 19,
+          }
+        ),
+      },
+    }
   }
   connect() {}
   getZoom() {
@@ -84,19 +114,6 @@ export default class MapController extends Controller {
     L.tileLayer(url, config).addTo(this.map)
 
     this.setupResizeObserver()
-
-    this.buurten = L.tileLayer.wms(
-      'https://service.pdok.nl/cbs/wijkenbuurten/2022/wms/v1_0?request=GetCapabilities&service=WMS',
-      {
-        layers: 'buurten',
-        format: 'image/png',
-        transparent: true,
-        minZoom: 10,
-        maxZoom: 19,
-        srsName: 'EPSG:4326',
-        bbox: '51.9247770, 4.4780970, 51.9247774, 4.4780974',
-      }
-    )
   }
 
   setupResizeObserver = () => {
@@ -138,6 +155,16 @@ export default class MapController extends Controller {
         break
     }
   }
+
+  kaartLayerChangeHandler(event) {
+    console.log(event)
+    if (event.target.checked) {
+      this.mapLayers[event.params.mapLayerType].layer.addTo(this.map)
+    } else {
+      this.map.removeLayer(this.mapLayers[event.params.mapLayerType].layer)
+    }
+  }
+
   onTwoFingerDrag(event) {
     if (event.type === 'touchstart' && event.touches.length === 1) {
       event.currentTarget.classList.add('swiping')
@@ -158,20 +185,23 @@ export default class MapController extends Controller {
       this.volgen()
     }
   }
-  toggleBuurten = () => {
-    const checkbox = this.element.querySelector('#buurten-checkbox')
-    const button = this.element.querySelector('#buurten-button')
-    const isChecked = (checkbox.checked = !checkbox.checked)
 
-    if (isChecked) {
-      this.buurten.addTo(this.map)
-    } else {
-      this.map.removeLayer(this.buurten)
-    }
+  // grote wens voor EGD-laag op kaart in taakoverzicht
+  // daarom buurten uitgezet, komt later weer terug als kaart gerefactored wordt.
+  // toggleBuurten = () => {
+  //   const checkbox = this.element.querySelector('#buurten-checkbox')
+  //   const button = this.element.querySelector('#buurten-button')
+  //   const isChecked = (checkbox.checked = !checkbox.checked)
 
-    button.classList.toggle('active', isChecked)
-    checkbox.classList.toggle('active', isChecked)
-  }
+  //   if (isChecked) {
+  //     this.mapLayers['buurten'].layer.addTo(this.map)
+  //   } else {
+  //     this.map.removeLayer(this.mapLayers['buurten'].layer)
+  //   }
+
+  //   button.classList.toggle('active', isChecked)
+  //   checkbox.classList.toggle('active', isChecked)
+  // }
 
   makeRoute = (e) => {
     e.preventDefault()

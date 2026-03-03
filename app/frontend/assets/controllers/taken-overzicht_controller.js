@@ -298,6 +298,15 @@ export default class extends Controller {
     }
     this.submit()
   }
+
+  kaartLayerOptionClickHandler(e) {
+    this.setKaartLayer(e)
+  }
+  setKaartLayer(kaartLayer) {
+    if (this.hasTakenKaartOutlet) {
+      this.takenKaartOutlet.kaartLayerChangeHandler(kaartLayer)
+    }
+  }
   taakAfstandTargetConnected(taakAfstand) {
     if (this.currentPosition) {
       const markerLocation = new L.LatLng(
