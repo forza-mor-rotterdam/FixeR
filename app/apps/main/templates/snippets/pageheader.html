@@ -95,12 +95,23 @@
                                 </a>
                             </li>
                             <li class="wrapper-horizontal">
-                                {% if APP_ENV == "productie" %}
-                                    <a href="https://meldr.rotterdam.nl/" target="_blank">Melding indienen</a>
-                                {% elif APP_ENV == "acceptatie" %}
-                                    <a href="https://mor-accp.mendixcloud.com/" target="_blank">Melding indienen</a>
+                                {% if request.user.profiel.context.template != "benc" %}
+                                    {% if APP_ENV == "productie" %}
+                                        <a href="https://meldr.rotterdam.nl/" target="_blank">Melding indienen</a>
+                                    {% elif APP_ENV == "acceptatie" %}
+                                        <a href="https://mor-accp.mendixcloud.com/" target="_blank">Melding indienen</a>
+                                    {% else %}
+                                        <a href="https://mor-test.mendixcloud.com/" target="_blank">Melding indienen</a>
+                                    {% endif %}
                                 {% else %}
-                                    <a href="https://mor-test.mendixcloud.com/" target="_blank">Melding indienen</a>
+                                    {% if APP_ENV == "productie" %}
+                                        <a href="https://serviceformulier.benc.forzamor.nl/" target="_blank">Melding indienen</a>
+                                    {% elif APP_ENV == "acceptatie" %}
+                                        <a href="https://serviceformulier-acc.benc.forzamor.nl/" target="_blank">Melding indienen</a>
+                                    {% else %}
+                                        <a href="https://serviceformulier-test.benc.forzamor.nl/"
+                                           target="_blank">Melding indienen</a>
+                                    {% endif %}
                                 {% endif %}
                             </li>
                         </ul>
