@@ -103,32 +103,32 @@
         {% block javascripts_end %}
         {% endblock javascripts_end %}
         {% include "snippets/modal_template.html" %}
-        <template id="template_snack_geen_locatie">
-            <div class="notification info"
-                 data-controller="notificaties--snack-item"
-                 data-notificaties--manager-target="snackItem">
-                <div class="container__icon">
-                    {% with "public/notificaties/icons/info.html" as template %}
-                        {% include template %}
-                    {% endwith %}
-                </div>
-                <div class="container__content">
-                    <h3 data-notificaties--snack-item-target="titel">Geen locatie</h3>
-                    <div class="container__message">
-                        <div class="container__link">
-                            <a href="{% if OS_IS_ANDROID %}https://support.google.com/android/thread/227586248/my-phone-location-is-not-working?hl=en{% elif OS_IS_IOS %}https://support.apple.com/nl-nl/102647{% else %}https://duckduckgo.com/?q=browser+geen+locatie+service{% endif %}"
-                               data-turbo="false">Info</a>
-                        </div>
-                        <p data-notificaties--snack-item-target="content">
-                            FixeR heeft heeft nog geen toestemming om je locatie te gebruiken.
-                        </p>
+        {% if request.user.profiel.context.template != "benc" %}
+            <template id="template_snack_geen_locatie">
+                <div class="notification info"
+                     data-controller="notificaties--snack-item"
+                     data-notificaties--manager-target="snackItem">
+                    <div class="container__icon">
+                        {% with "public/notificaties/icons/info.html" as template %}
+                            {% include template %}
+                        {% endwith %}
                     </div>
+                    <div class="container__content">
+                        <h3 data-notificaties--snack-item-target="titel">Geen locatie</h3>
+                        <div class="container__message">
+                            <div class="container__link">
+                                <a href="{% if OS_IS_ANDROID %}https://support.google.com/android/thread/227586248/my-phone-location-is-not-working?hl=en{% elif OS_IS_IOS %}https://support.apple.com/nl-nl/102647{% else %}https://duckduckgo.com/?q=browser+geen+locatie+service{% endif %}"
+                                   data-turbo="false">Info</a>
+                            </div>
+                            <p data-notificaties--snack-item-target="content">FixeR heeft nog geen toestemming om je locatie te gebruiken.</p>
+                        </div>
+                    </div>
+                    <button type="button"
+                            class="btn-close--small"
+                            aria-label="Sluit"
+                            data-action="notificaties--snack-item#sluitSnack">{% include "icons/close.svg" %}</button>
                 </div>
-                <button type="button"
-                        class="btn-close--small"
-                        aria-label="Sluit"
-                        data-action="notificaties--snack-item#sluitSnack">{% include "icons/close.svg" %}</button>
-            </div>
-        </template>
+            </template>
+        {% endif %}
     </body>
 </html>
