@@ -94,6 +94,10 @@ class MeldingAlias(BasisModel):
             models.Index(fields=["locatie_verbose"]),
             GinIndex(fields=["bron_signaal_ids"]),
             models.Index(fields=["response_status_code"]),
+            models.Index(
+                fields=["buurtnaam", "begraafplaats"],
+                name="meldingalias_buurt_begr_idx",
+            ),
         ]
 
     class MeldingNietValide(Exception):
