@@ -6,28 +6,9 @@ from apps.release_notes.models import ReleaseNote
 from django.conf import settings
 from django.utils import timezone
 from ua_parser import parse_os
-from django.core.cache import cache
 from utils.diversen import absolute
 
 logger = logging.getLogger(__name__)
-
-WIJKEN_CACHE_KEY = "locatieservice_wijken"
-WIJKEN_CACHE_TIMEOUT = 300  # 5 minuten
-
-
-def _get_wijken_response(instelling):
-    """Haal wijken op via cache of LocatieService."""
-    wijken_response = cache.get(WIJKEN_CACHE_KEY)
-    if wijken_response is None:
-        locatieservice = LocatieService(instelling=instelling)
-        wijken_response = locatieservice.wijken()
-        if wijken_response.get("error"):
-            logger.warning(
-                f"Er ging iets mis met het ophalen van wijken: {wijken_response}"
-            )
-        else:
-            cache.set(WIJKEN_CACHE_KEY, wijken_response, WIJKEN_CACHE_TIMEOUT)
-    return wijken_response
 
 
 def general_settings(context):
@@ -63,7 +44,12 @@ def general_settings(context):
         deploy_date_formatted = deploy_date.strftime("%d-%m-%Y %H:%M:%S")
 
     instelling = Instelling.actieve_instelling()
-    wijken_response = _get_wijken_response(instelling)
+    locatieservice = LocatieService(instelling=instelling)
+    wijken_response = locatieservice.wijken()
+    if wijken_response.get("error"):
+        logger.warning(
+            f"Er ging iets mis met het ophalen van wijken: {wijken_response}"
+        )
     wijkcode_by_wijknaam = (
         {
             wijk.get("naam"): wijk.get("code")
