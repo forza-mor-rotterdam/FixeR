@@ -107,6 +107,10 @@ class Taakgebeurtenis(BasisModel):
 
         indexes = [
             models.Index(fields=["aangemaakt_op"]),
+            models.Index(
+                fields=["taak", "-aangemaakt_op"],
+                name="taakgeb_taak_aangemaakt_idx",
+            ),
         ]
 
 
