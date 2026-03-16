@@ -86,3 +86,35 @@ turbo-frame,
         }
     }
 }
+
+.pull-to-refresh-indicator {
+    position: fixed;
+    top: env(safe-area-inset-top, 0px);
+    left: 50%;
+    transform: translate(-50%, -52px);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: $primary;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+
+    svg {
+        width: 20px;
+        height: 20px;
+        transition: transform 0.25s ease;
+    }
+
+    &.is-ready svg {
+        transform: rotate(180deg);
+    }
+
+    &.is-hiding {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+}
