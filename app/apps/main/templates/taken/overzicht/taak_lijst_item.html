@@ -72,9 +72,9 @@
                         <div>
                             <span class="incident__category">{{ taak.titel }}</span>
                         </div>
-                        {% if taak.melding.wijknaam %}
+                        {% if taak.melding.plaatsnaam %}
                             <div class="incident__moment primary">
-                                <span>{{ taak.melding.wijknaam }}</span>
+                                {% if taak.melding.plaatsnaam != "Rotterdam" %}{{ taak.melding.plaatsnaam }}{% endif %}
                             </div>
                         {% endif %}
                     </div>
