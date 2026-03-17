@@ -61,7 +61,7 @@
         <script src="//unpkg.com/leaflet-gesture-handling"></script>
     </head>
     <body class="{% block body_class %}app {% endblock body_class %} {% if user.profiel.ui_instellingen.fontsize %}{{ user.profiel.ui_instellingen.fontsize }}{% endif %}"
-          data-controller="notificaties--manager main modal infosheet"
+          data-controller="pull-to-refresh notificaties--manager main modal infosheet"
           data-main-taken-overzicht-outlet="#taken_overzicht"
           data-main-taak-detail-outlet="#taak_detail"
           data-main-taken-kaart-outlet="#taken_kaart"
