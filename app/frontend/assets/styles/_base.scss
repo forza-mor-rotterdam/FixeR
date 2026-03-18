@@ -289,6 +289,20 @@ a,
     &.link--back {
         @include has-icon();
         margin: 0 0 20px 20px;
+
+        @media (max-width: map-get($grid-breakpoints, md)) {
+            &::before {
+                content: "";
+                position: absolute;
+                top: -14px;
+                right: -14px;
+                bottom: -14px;
+                left: -100vw;
+                display: block;
+                background: rgba(0, 0, 0, 0);
+            }
+        }
+
         > svg {
             left: -20px;
             path {
