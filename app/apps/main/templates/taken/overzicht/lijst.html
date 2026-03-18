@@ -11,6 +11,10 @@
         {% for taak in page_obj %}
             {% include "taken/overzicht/taak_lijst_item.html" %}
         {% endfor %}
+    {% elif wacht_op_gps %}
+        <div class="container__message">
+            <div class="spinner"></div>
+        </div>
     {% else %}
         {% include "taken/overzicht/bericht_te_weinig_taken.html" %}
     {% endif %}

@@ -5,6 +5,7 @@ let scrollPositionForDialog = 0
 let filterCount = 0
 export default class extends Controller {
   static outlets = ['taken-kaart', 'taken-lijst']
+  static values = { wachtOpGps: Boolean }
 
   static targets = [
     'sorteerOptiesFieldContainer',
@@ -246,11 +247,16 @@ export default class extends Controller {
   }
   positionChangeEvent(position) {
     this.currentPosition = position
-    this.gpsFieldTarget.value = `${position.coords.latitude},${position.coords.longitude}`
-    if (this.sorteerFieldTarget.value === 'Afstand') {
+    const newGps = `${position.coords.latitude},${position.coords.longitude}`
+    const gpsChanged = this.gpsFieldTarget.value !== newGps
+    this.gpsFieldTarget.value = newGps
+    this.updateTaakAfstandTargets()
+    if (!gpsChanged && !this.wachtOpGpsValue) return
+    const checkedSortOption = this.sorteerFieldTargets.find((el) => el.checked)
+    if (this.wachtOpGpsValue || (checkedSortOption && checkedSortOption.value === 'Afstand')) {
+      this.wachtOpGpsValue = false
       this.submit()
     }
-    this.updateTaakAfstandTargets()
   }
   positionWatchError() {
     this.gpsFieldTarget.value = ''
