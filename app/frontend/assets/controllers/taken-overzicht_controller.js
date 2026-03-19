@@ -261,8 +261,19 @@ export default class extends Controller {
   positionWatchError() {
     this.gpsFieldTarget.value = ''
     this.currentPosition = null
-    this.element.requestSubmit()
+    const checkedSortOption = this.sorteerFieldTargets.find((el) => el.checked)
+    if (this.wachtOpGpsValue || (checkedSortOption && checkedSortOption.value === 'Afstand')) {
+      this.wachtOpGpsValue = false
+      const datumReverseOption = this.sorteerFieldTargets.find(
+        (el) => el.value === 'Datum-reverse'
+      )
+      if (datumReverseOption) {
+        datumReverseOption.checked = true
+      }
+    }
+    this.submit()
   }
+  
 
   onZoekButtonClick() {
     this.submit()
