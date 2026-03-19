@@ -51,6 +51,9 @@ export default class extends Controller {
     }
 
     this.dialogTarget.addEventListener('cancel', (e) => {
+      if (e.target !== this.dialogTarget) {
+        return
+      }
       e.preventDefault()
       this.closeModal()
     })

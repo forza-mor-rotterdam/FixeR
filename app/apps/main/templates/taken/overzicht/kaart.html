@@ -16,14 +16,17 @@
         <div class="map__overlay">
             <span>Gebruik twee vingers om de kaart te verplaatsen</span>
         </div>
-        <button class="btn btn-on-map"
-                data-action="taken-kaart#toggleBuurten"
-                id="buurten-button">
+        {% comment %} <button class="btn btn-on-map" data-action="taken-kaart#toggleBuurten" id="buurten-button">
+            <input type="checkbox" class="form-check-input" id="buurten-checkbox" data-action="taken-kaart#toggleBuurten" />
+            <span>Buurten</span>
+        </button> {% endcomment %}
+        <label class="btn btn-on-map" for="egd-checkbox">
             <input type="checkbox"
                    class="form-check-input"
-                   id="buurten-checkbox"
-                   data-action="taken-kaart#toggleBuurten" />
-            <span>Buurten</span>
-        </button>
+                   id="egd-checkbox"
+                   data-taken-kaart-map-layer-type-param="EGD"
+                   data-action="click->taken-kaart#kaartLayerChangeHandler" />
+            <span>EGD</span>
+        </label>
     </div>
 </div>

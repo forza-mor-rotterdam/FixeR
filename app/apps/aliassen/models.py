@@ -94,6 +94,10 @@ class MeldingAlias(BasisModel):
             models.Index(fields=["locatie_verbose"]),
             GinIndex(fields=["bron_signaal_ids"]),
             models.Index(fields=["response_status_code"]),
+            models.Index(
+                fields=["buurtnaam", "begraafplaats"],
+                name="meldingalias_buurt_begr_idx",
+            ),
         ]
 
     class MeldingNietValide(Exception):
@@ -132,9 +136,9 @@ class MeldingAlias(BasisModel):
         begraafplaats = BEGRAAFPLAATS_MIDDELS_ID.get(self.begraafplaats)
         begraafplaats = begraafplaats or ""
         grafnummer = self.grafnummer or ""
-        grafnummer_verbose = f"Graf {grafnummer}" or ""
+        grafnummer_verbose = f"Graf {grafnummer}" if grafnummer else ""
         vak = self.vak or ""
-        vak_verbose = f"Vak {vak}" or ""
+        vak_verbose = f"Vak {vak}" if vak else ""
         if self.locatie_type == "adres":
             locatie_verbose = (
                 f"{straatnaam} {huisnummer}{huisletter}{toevoeging}".strip()

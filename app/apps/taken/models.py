@@ -107,6 +107,10 @@ class Taakgebeurtenis(BasisModel):
 
         indexes = [
             models.Index(fields=["aangemaakt_op"]),
+            models.Index(
+                fields=["taak", "-aangemaakt_op"],
+                name="taakgeb_taak_aangemaakt_idx",
+            ),
         ]
 
 
@@ -442,6 +446,11 @@ class Taak(BasisModel):
             models.Index(fields=["taakstatus"]),
             models.Index(fields=["taaktype"]),
             models.Index(fields=["melding"]),
+            models.Index(
+                fields=["melding", "taaktype"],
+                condition=models.Q(verwijderd_op__isnull=True),
+                name="taak_melding_type_active_idx",
+            ),
         ]
 
 
