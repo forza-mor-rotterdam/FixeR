@@ -273,7 +273,6 @@ export default class extends Controller {
     }
     this.submit()
   }
-  
 
   onZoekButtonClick() {
     this.submit()
