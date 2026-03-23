@@ -547,6 +547,7 @@ def taak_afhandelen(request, uuid):
                 bijlage_paden=bijlage_paden,
                 taak=taak,
                 vervolg_taaktypes=vervolg_taaktypes,
+                groep=getattr(request.user.groups.first(), "name", None),
             )
             return redirect("taken_overzicht")
         else:
