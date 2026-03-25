@@ -694,7 +694,7 @@ body.no-js {
 }
 .border--gray-shadowed {
     @extend .border--gray;
-    box-shadow: 0px 2px 10px 0px #00000040;
+    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.07);
 }
 .label--positive,
 .label--negative {
