@@ -79,6 +79,7 @@
                     text-decoration: none;
                     color: black;
                     border: 1px solid transparent;
+                    transition: background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease;
                     &.btn--next {
                         // path {
                         //     fill: $black;

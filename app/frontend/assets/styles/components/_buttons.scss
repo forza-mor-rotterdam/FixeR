@@ -239,6 +239,7 @@ button {
                 }
             }
 
+            &:hover,
             &:focus-visible {
                 outline: none !important;
                 background-color: $gray-100;
