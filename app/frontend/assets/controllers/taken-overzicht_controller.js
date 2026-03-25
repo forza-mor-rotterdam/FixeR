@@ -280,7 +280,7 @@ export default class extends Controller {
   onSearchChangeHandler(e) {
     const zoekHasValue = e.target.value.length > 0
     const zoekValueLength = e.target.value.length
-    this.toggleZoekenTarget.disabled = zoekHasValue
+    this.toggleZoekenTarget.disabled = false
     this.cancelZoekTarget.classList[zoekHasValue ? 'remove' : 'add']('hide')
     this.zoekButtonTarget.classList[zoekHasValue ? 'add' : 'remove']('hide')
     this.clearSelectedTaakUuidField()
@@ -348,23 +348,36 @@ export default class extends Controller {
     this.toggleSortViewTarget.parentElement.classList.toggle('show')
   }
   onToggleSearchContainer() {
-    if (!this.zoekFieldTarget.value) {
-      this.zoekFieldContainerTarget.classList.toggle('hidden-vertical')
-      this.zoekFieldContainerTarget.classList.toggle('show-vertical')
-      this.zoekFieldDefaultContainerTarget.classList.toggle('hidden-vertical')
-      this.zoekFieldDefaultContainerTarget.classList.toggle('show-vertical')
+    if (this.zoekFieldTarget.value) {
+      this.zoekFieldTarget.value = ''
+      this.cancelZoekTarget.classList.add('hide')
+      this.zoekButtonTarget.classList.remove('hide')
+      this.zoekFieldContainerTarget.classList.remove('show-vertical')
+      this.zoekFieldContainerTarget.classList.add('hidden-vertical')
+      this.zoekFieldDefaultContainerTarget.classList.remove('show-vertical')
+      this.zoekFieldDefaultContainerTarget.classList.add('hidden-vertical')
+      this.filtersActiveFieldTarget.checked = false
+      this.updateFilterButtonEnabled()
+      this.clearSelectedTaakUuidField()
+      this.submit()
+      return
+    }
 
-      if (this.zoekFieldContainerTarget.classList.contains('show-vertical')) {
-        this.zoekFieldTarget.focus()
-      }
-      if (
-        !this.zoekFieldContainerTarget.classList.contains('show-vertical') &&
-        this.filtersActiveFieldTarget.checked
-      ) {
-        this.filtersActiveFieldTarget.checked = false
-        this.submit()
-        this.updateFilterButtonEnabled()
-      }
+    this.zoekFieldContainerTarget.classList.toggle('hidden-vertical')
+    this.zoekFieldContainerTarget.classList.toggle('show-vertical')
+    this.zoekFieldDefaultContainerTarget.classList.toggle('hidden-vertical')
+    this.zoekFieldDefaultContainerTarget.classList.toggle('show-vertical')
+
+    if (this.zoekFieldContainerTarget.classList.contains('show-vertical')) {
+      this.zoekFieldTarget.focus()
+    }
+    if (
+      !this.zoekFieldContainerTarget.classList.contains('show-vertical') &&
+      this.filtersActiveFieldTarget.checked
+    ) {
+      this.filtersActiveFieldTarget.checked = false
+      this.submit()
+      this.updateFilterButtonEnabled()
     }
   }
   filterButtonTargetConnected() {

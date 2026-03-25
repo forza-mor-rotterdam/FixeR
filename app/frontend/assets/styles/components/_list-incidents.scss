@@ -56,7 +56,7 @@
                     line-height: 14px;
                     margin-bottom: 0;
                     width: auto;
-                    padding: 8px;
+                    padding: 12px;
                     transition: opacity $transition-duration-default $transition-ease-default;
 
                     &:active {
@@ -115,7 +115,7 @@
                         top: 2em;
                         left: 0;
                         padding: 0;
-                        box-shadow: 0 4px 14px 7px rgba(0, 0, 0, 0.07);
+                        box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.07);
                         opacity: 0;
                         pointer-events: none;
                         transition: all $transition-duration-default $transition-ease-default;
@@ -137,14 +137,13 @@
                             padding: 2px;
                             .btn,
                             label {
-                                padding: 8px 40px 8px 8px;
+                                padding: 12px 40px 12px 12px;
                                 min-width: 100%;
                                 text-align: left;
                                 display: flex;
                                 background-repeat: no-repeat;
                                 background-position: 90% 50%;
-                                transition: background-color $transition-duration-default
-                                    $transition-ease-default;
+                                transition: background-color 0.15s ease-in-out;
 
                                 &--list {
                                     background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOSIgdmlld0JveD0iMCAwIDEyIDkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xMS4xODQ3IDEuMTIxMTRMNC4xODQ3MyA4LjEyMTE0QzQuMTIzNzYgOC4xODIzMiA0LjA1MTMyIDguMjMwODYgMy45NzE1NSA4LjI2Mzk4QzMuODkxNzggOC4yOTcxMSAzLjgwNjI2IDguMzE0MTYgMy43MTk4OSA4LjMxNDE2QzMuNjMzNTIgOC4zMTQxNiAzLjU0Nzk5IDguMjk3MTEgMy40NjgyMyA4LjI2Mzk4QzMuMzg4NDYgOC4yMzA4NiAzLjMxNjAxIDguMTgyMzIgMy4yNTUwNCA4LjEyMTE0TDAuMTkyNTQ1IDUuMDU4NjRDMC4xMzE1IDQuOTk3NTkgMC4wODMwNzc1IDQuOTI1MTIgMC4wNTAwNDA3IDQuODQ1MzdDMC4wMTcwMDM4IDQuNzY1NjEgOS4wOTYyOWUtMTAgNC42ODAxMiAwIDQuNTkzNzlDLTkuMDk2MjhlLTEwIDQuNTA3NDcgMC4wMTcwMDM4IDQuNDIxOTggMC4wNTAwNDA3IDQuMzQyMjJDMC4wODMwNzc1IDQuMjYyNDcgMC4xMzE1IDQuMTkgMC4xOTI1NDUgNC4xMjg5NUMwLjI1MzU4OSA0LjA2NzkxIDAuMzI2MDU5IDQuMDE5NDggMC40MDU4MTcgMy45ODY0NUMwLjQ4NTU3NSAzLjk1MzQxIDAuNTcxMDU5IDMuOTM2NDEgMC42NTczODggMy45MzY0MUMwLjc0MzcxOCAzLjkzNjQxIDAuODI5MjAyIDMuOTUzNDEgMC45MDg5NiAzLjk4NjQ1QzAuOTg4NzE4IDQuMDE5NDggMS4wNjExOSA0LjA2NzkxIDEuMTIyMjMgNC4xMjg5NUwzLjcyMDQ0IDYuNzI3MTVMMTAuMjU2MSAwLjE5MjU0NEMxMC4zNzk0IDAuMDY5MjYwMiAxMC41NDY2IDAgMTAuNzIxIDBDMTAuODk1MyAwIDExLjA2MjUgMC4wNjkyNjAyIDExLjE4NTggMC4xOTI1NDRDMTEuMzA5MSAwLjMxNTgyOSAxMS4zNzg0IDAuNDgzMDM4IDExLjM3ODQgMC42NTczODhDMTEuMzc4NCAwLjgzMTczOSAxMS4zMDkxIDAuOTk4OTQ4IDExLjE4NTggMS4xMjIyM0wxMS4xODQ3IDEuMTIxMTRaIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K");
@@ -173,7 +172,7 @@
 
                             label {
                                 font-weight: 400;
-                                font-size: 0.75em;
+                                font-size: 14px;
                                 min-width: 0;
                                 background-position: right 93% 50%;
 
@@ -183,7 +182,7 @@
                             }
                         }
                         span {
-                            font-size: 0.87em;
+                            font-size: 14px;
                         }
                     }
 
