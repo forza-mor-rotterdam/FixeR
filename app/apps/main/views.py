@@ -138,7 +138,7 @@ class TakenOverzicht(
     permission_required = "authorisatie.taken_lijst_bekijken"
     queryset = Taak.objects.taken_lijst()
     form_class = TakenLijstFilterForm
-    paginate_by = 50
+    paginate_by = 3
     success_url = "/"
 
     def get(self, request, *args, **kwargs):

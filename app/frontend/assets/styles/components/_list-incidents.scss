@@ -625,8 +625,25 @@
                     }
                 }
 
-                @media (min-width: map-get($grid-breakpoints, lg)) {
+                @media (min-width: map-get($grid-breakpoints, md)) {
                     .btn-icon--clean {
+                        display: inline-block;
+                    }
+                }
+
+                @media (min-width: map-get($grid-breakpoints, lg)) and ((hover: none) or (pointer: coarse)) {
+                    .btn-icon--clean {
+                        display: inline-block;
+                    }
+                }
+
+                @media (min-width: map-get($grid-breakpoints, lg)) and (hover: hover) and (pointer: fine) {
+                    .btn-icon--clean {
+                        display: none;
+                    }
+
+                    &:hover .btn-icon--clean,
+                    &:focus-within .btn-icon--clean {
                         display: inline-block;
                     }
                 }
@@ -711,6 +728,7 @@
                     font-size: 0.75em;
                     &.primary {
                         color: $green-900;
+                        margin-top: 2px;
                     }
                     &:last-child {
                         margin-bottom: 0;
@@ -871,6 +889,10 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+
+                &::first-letter {
+                    text-transform: uppercase;
+                }
         }
 
         .huisnummer {
