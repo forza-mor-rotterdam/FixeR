@@ -8,6 +8,8 @@
     }
 }
 .container__map {
+    position: relative;
+
     .map {
         width: calc(100% + 32px);
         margin-left: -16px;
@@ -165,6 +167,20 @@
     .form__kaart-modus {
         padding: 0;
     }
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        position: absolute;
+        top: 16px;
+        left: auto;
+        right: 108px;
+        z-index: 1900;
+        min-height: 0;
+        pointer-events: none;
+
+        .form__kaart-modus {
+            pointer-events: all;
+        }
+    }
 }
 
 .container__list {
@@ -192,6 +208,12 @@
     a {
         color: $green;
     }
+
+    .leaflet-control-zoom-in,
+    .leaflet-control-zoom-out {
+        color: $black;
+    }
+
     a.leaflet-popup-close-button {
         top: -4px;
     }
@@ -294,7 +316,7 @@
 label {
     &.btn-on-map {
         min-height: 0;
-        padding: 0.5em;
+        padding: 0.56em;
 
         input {
             vertical-align: sub;

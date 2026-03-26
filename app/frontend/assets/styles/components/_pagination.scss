@@ -3,13 +3,34 @@
     justify-content: center;
     margin: 1rem 0;
 
+    .pagination {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .wrapper-horizontal {
+        display: flex;
+        justify-content: center;
+    }
+
     .form-row {
         margin-bottom: 0;
+    }
+
+    .pagination .form-row {
+        width: auto;
+        margin-left: auto;
+        margin-right: auto;
+        float: none;
+        padding-left: 0;
+        padding-right: 0;
     }
 
     .wrapper-horizontal {
         ul {
             display: flex;
+            justify-content: center;
             li {
                 margin: 0 2px;
                 height: 32px;
@@ -58,6 +79,7 @@
                     text-decoration: none;
                     color: black;
                     border: 1px solid transparent;
+                    transition: background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease;
                     &.btn--next {
                         // path {
                         //     fill: $black;
