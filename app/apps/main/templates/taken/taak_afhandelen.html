@@ -3,14 +3,22 @@
 {% load rotterdam_formulier_html %}
 <turbo-stream action="update" target="modal_header_title">
 <template>
-    Taak afhandelen
+    <span class="taak-afhandelen-modal__title">Taak afronden</span>
 </template>
 </turbo-stream>
 <turbo-stream action="update" target="modal_header_subtitle">
 <template>
-    <strong>{{ taak.melding.locatie_verbose }}</strong>
-    <br />
-    {% if taak.titel %}{{ taak.titel|strip_html }}{% endif %}
+    {% comment %} <strong class="taak-afhandelen-modal__location">{{ taak.melding.locatie_verbose }}</strong>
+    <br /> {% endcomment %}
+    {% if taak.titel %}<span class="taak-afhandelen-modal__subtitle">{{ taak.titel|strip_html }}</span>{% endif %}
+    {% if taak.taaktype.id %}
+        <button class="btn btn-textlink btn-info taak-afhandelen-modal__taakuitleg"
+                data-action="infosheet#openInfosheet"
+                data-infosheet-action-param="{% url 'taaktype_taakr' taak.taaktype.id %}">
+            <span>Taakuitleg</span>
+            {% include "icons/info.svg" %}
+        </button>
+    {% endif %}
 </template>
 </turbo-stream>
 {% if taak.laatste_taakgebeurtenis_omschrijving_intern|lower != "taak aangemaakt" and taak.laatste_taakgebeurtenis_omschrijving_intern %}
@@ -38,20 +46,23 @@
 {% endif %}
 <turbo-stream action="update" target="modal_body">
 <template>
-    <div class="container__form" data-controller="incidentHandleForm">
+    <div class="container__form taak-afhandelen-modal" data-controller="incidentHandleForm">
         {% include "snippets/messages.html" %}
         {% if form %}
             <form action="{% url 'taak_afhandelen' taak.uuid %}"
                   method="post"
                   data-testid="handleIncidentForm"
-                  class="form--incident-handle"
+                  class="form--incident-handle taak-afhandelen-modal__form"
                   data-incidentHandleForm-target="form"
                   data-turbo-frame="_top"
                   enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.errors }}
+                <div class="taak-afhandelen-modal__resolutie-group">
+                    <h3 class="taak-afhandelen-modal__resolutie-title">Is de taak uitgevoerd?</h3>
+                    {{ form.resolutie|render_rotterdam_formulier }}
+                </div>
                 {{ form.bijlagen }}
-                {{ form.resolutie|render_rotterdam_formulier }}
                 <div class="wrapper--flex-order">
                     <div>
                         {% if form.nieuwe_taak %}
