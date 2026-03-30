@@ -13,6 +13,45 @@ export default class extends Controller {
     this.multiple = this.fileInput.hasAttribute('multiple')
     this.accept = this.fileInput.getAttribute('accept')
     this.maxBitSize = 31457280
+
+    this.dropzone = this.element.querySelector('.file-upload')
+    if (this.dropzone) {
+      this.dragOverHandler = (e) => {
+        e.preventDefault()
+        this.dropzone.classList.add('is-dragover')
+      }
+      this.dragLeaveHandler = (e) => {
+        e.preventDefault()
+        if (!this.dropzone.contains(e.relatedTarget)) {
+          this.dropzone.classList.remove('is-dragover')
+        }
+      }
+      this.dropHandler = (e) => {
+        e.preventDefault()
+        this.dropzone.classList.remove('is-dragover')
+        const droppedFiles = e.dataTransfer?.files
+        if (!droppedFiles || droppedFiles.length === 0) {
+          return
+        }
+        this.addFiles(droppedFiles)
+        this.updateImageDisplay(false)
+      }
+
+      this.dropzone.addEventListener('dragenter', this.dragOverHandler)
+      this.dropzone.addEventListener('dragover', this.dragOverHandler)
+      this.dropzone.addEventListener('dragleave', this.dragLeaveHandler)
+      this.dropzone.addEventListener('drop', this.dropHandler)
+    }
+  }
+
+  disconnect() {
+    if (!this.dropzone) {
+      return
+    }
+    this.dropzone.removeEventListener('dragenter', this.dragOverHandler)
+    this.dropzone.removeEventListener('dragover', this.dragOverHandler)
+    this.dropzone.removeEventListener('dragleave', this.dragLeaveHandler)
+    this.dropzone.removeEventListener('drop', this.dropHandler)
   }
 
   removeDuplicates(arr) {
