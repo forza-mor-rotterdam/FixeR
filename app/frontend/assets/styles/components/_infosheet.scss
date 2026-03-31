@@ -19,11 +19,13 @@ dialog.infosheet {
     z-index: 2500;
 
     &:has(> turbo-frame) {
-        display: block;
-
         > turbo-frame {
             display: flex;
             flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
     }
 
@@ -63,6 +65,10 @@ dialog.infosheet {
     }
 
     .header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: #fff;
         padding: 28px 16px 0;
         border-bottom: 1px solid $blue-200;
         h1 {
@@ -90,8 +96,6 @@ dialog.infosheet {
     }
     .content {
         flex: 1;
-        overflow-y: auto;
-        overflow-x: hidden;
         padding-bottom: 1em;
     }
 

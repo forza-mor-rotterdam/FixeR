@@ -5,7 +5,7 @@ export default class extends Controller {
 
   connect() {
     this.requiredLabelInternalText = 'Waarom kan de taak niet worden afgerond?'
-    this.defaultLabelInternalText = 'Interne opmerking'
+    this.defaultLabelInternalText = 'Opmerking voor mid-office'
     this.defaultErrorMessage = 'Vul a.u.b. dit veld in.'
     const btn = this.element.querySelector('[type="radio"][value="niet_opgelost"]')
     if (btn.checked) {

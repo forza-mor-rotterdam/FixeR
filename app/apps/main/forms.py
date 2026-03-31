@@ -66,7 +66,7 @@ class TaakBehandelForm(forms.Form):
     )
 
     omschrijving_intern = forms.CharField(
-        label="Interne opmerking",
+        label="Opmerking voor mid-office",
         widget=forms.Textarea(
             attrs={
                 "class": "form-control",

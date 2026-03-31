@@ -11,7 +11,7 @@
                 data-action="infosheet#closeInfosheet"
                 aria-label="Sluiten">{% include "icons/close.svg" %}</button>
     </div>
-    <div style="padding: 16px; border-bottom: 1px solid #f0f4f7;">
+    <div class="taak-afhandelen-modal__meta">
         {% if taak.titel %}<span class="taak-afhandelen-modal__subtitle">{{ taak.titel|strip_html }}</span>{% endif %}
         {% if taak.taaktype.id %}
             <button class="btn btn-textlink btn-info taak-afhandelen-modal__taakuitleg"
@@ -22,29 +22,10 @@
             </button>
         {% endif %}
     </div>
-    {% if taak.laatste_taakgebeurtenis_omschrijving_intern|lower != "taak aangemaakt" and taak.laatste_taakgebeurtenis_omschrijving_intern %}
-        <div class='alert alert--info margin-vertical'>
-            <div class='wrapper'>
-                <div class='overflow' tabindex='0' data-controller='overflow'>
-                    <strong>
-                        <span class='badge-count'>i</span>Interne opmerking
-                    </strong>
-                    <div class='container__overflow'>
-                        <p class='content__overflow'>{{ taak.laatste_taakgebeurtenis_omschrijving_intern }}</p>
-                    </div>
-                </div>
-                {% if taak.laatste_taakgebeurtenis_gebruiker %}
-                    <p class='margin-top'>
-                        <a href='mailto:{{ taak.laatste_taakgebeurtenis_gebruiker.email }}'>{{ taak.laatste_taakgebeurtenis_gebruiker.email }}</a>
-                    </p>
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
 {% endblock header %}
 {% block content %}
     <div class="content">
-        <div style="padding: 6px 16px 0;">
+        <div class="taak-afhandelen-modal__content-inner">
             <div class="container__form taak-afhandelen-modal" data-controller="incidentHandleForm">
                 {% include "snippets/messages.html" %}
                 {% if form %}
@@ -61,16 +42,17 @@
                         <h3 class="taak-afhandelen-modal__resolutie-title">Is de taak uitgevoerd?</h3>
                         {{ form.resolutie|render_rotterdam_formulier }}
                     </div>
+                    <h3 class="taak-afhandelen-modal__resolutie-title">Foto’s toevoegen</h3>
                     {{ form.bijlagen }}
                     <div class="wrapper--flex-order">
                         <div>
                             {% if form.nieuwe_taak %}
-                                <h3 class="h5">Moet er nog iets gebeuren?</h3>
+                                <h3 class="taak-afhandelen-modal__resolutie-title">Zijn er nog meer taken nodig?</h3>
                                 <div data-incidentHandleForm-target="newTask">
                                     <div class="list-horizontal">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
                                 </div>
                             {% endif %}
-                            {% if actieve_vervolg_taken %}
+                            {% comment %} {% if actieve_vervolg_taken %}
                                 <div class="form-row">
                                     <div class="form-row">
                                         <h3 class="h5">Reeds openstaande taken voor deze melding</h3>
@@ -79,7 +61,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                            {% endif %}
+                            {% endif %} {% endcomment %}
                         </div>
                         <div class="form-control__with-helptext label-strong"
                              data-incidentHandleForm-target="internalText">
@@ -90,10 +72,7 @@
                         <button type="submit"
                                 class="btn btn-action"
                                 data-action="incidentHandleForm#onSubmit">
-                            <span>Taak afhandelen</span>
-                        </button>
-                        <button type="reset" class="btn btn-tertiary" data-action="infosheet#closeInfosheet">
-                            <span>Annuleren</span>
+                            <span>Afronden</span>
                         </button>
                     </div>
                 </form>
