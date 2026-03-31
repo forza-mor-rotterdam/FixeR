@@ -56,7 +56,10 @@
             line-height: 1.4;
         }
 
-        .taak-afhandelen-modal__subtitle {
+    }
+}
+
+.taak-afhandelen-modal__subtitle {
             font-family: "Bolder", sans-serif;
             font-weight: 700;
             font-style: normal;
@@ -66,22 +69,19 @@
             color: #000000;
         }
 
-        .taak-afhandelen-modal__taakuitleg {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-            margin-top: 0.5rem;
-            padding: 0;
+.btn.taak-afhandelen-modal__taakuitleg {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0 3px;
 
-            span {
-                padding: 5px;
-            }
+    span {
+        padding: 5px;
+    }
 
-            svg {
-                margin-left: -4px;
-                transform: none;
-            }
-        }
+    svg {
+        margin-left: -4px;
+        transform: none;
     }
 }
 
