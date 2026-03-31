@@ -16,6 +16,7 @@ dialog.infosheet {
     transition: all $transition-duration-default $transition-ease-default;
     display: flex;
     flex-direction: column;
+    overscroll-behavior: contain;
     z-index: 2500;
 
     &:has(> turbo-frame) {
@@ -26,6 +27,7 @@ dialog.infosheet {
             min-height: 0;
             overflow-y: auto;
             overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
     }
 
@@ -129,6 +131,12 @@ dialog.infosheet {
             display: none;
         }
     }
+}
+
+html.infosheet-open,
+body.infosheet-open {
+    overflow: hidden;
+    overscroll-behavior: none;
 }
 
 dialog::backdrop {

@@ -1,9 +1,18 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['externalText', 'internalText', 'newTask', 'form', 'submitContainer']
+  static targets = [
+    'externalText',
+    'internalText',
+    'newTask',
+    'form',
+    'submitContainer',
+    'charCounter',
+    'confirmPopup',
+  ]
 
   connect() {
+    this.confirmedNewTaskSubmission = false
     this.requiredLabelInternalText = 'Waarom kan de taak niet worden afgerond?'
     this.defaultLabelInternalText = 'Opmerking voor mid-office'
     this.defaultErrorMessage = 'Vul a.u.b. dit veld in.'
@@ -13,7 +22,53 @@ export default class extends Controller {
     } else {
       this.onResolutionTrue()
     }
+
+    if (this.hasInternalTextTarget) {
+      this.internalTextArea = this.internalTextTarget.querySelector('textarea')
+      if (this.internalTextArea) {
+        this.internalTextArea.addEventListener('input', this.updateCharacterCounter.bind(this))
+        this.updateCharacterCounter()
+      }
+    }
+
     this.formTarget.addEventListener(`submit`, this.handleSubmit.bind(this))
+  }
+
+  hasSelectedNewTasks() {
+    if (!this.hasNewTaskTarget) {
+      return false
+    }
+
+    return this.newTaskTarget.querySelectorAll('input[type="checkbox"]:checked').length > 0
+  }
+
+  openConfirmPopup() {
+    if (this.hasConfirmPopupTarget) {
+      this.confirmPopupTarget.showModal()
+    }
+  }
+
+  closeConfirmPopup() {
+    if (this.hasConfirmPopupTarget) {
+      this.confirmPopupTarget.close()
+    }
+  }
+
+  confirmCreateTaskAndSubmit() {
+    this.confirmedNewTaskSubmission = true
+    this.closeConfirmPopup()
+    this.formTarget.requestSubmit()
+    document.querySelector('body').style.pointerEvents = 'none'
+  }
+
+  updateCharacterCounter() {
+    if (!this.hasCharCounterTarget || !this.internalTextArea) {
+      return
+    }
+
+    const currentLength = this.internalTextArea.value.length
+    const maxLength = parseInt(this.internalTextArea.getAttribute('maxlength') || '200', 10)
+    this.charCounterTarget.textContent = `${currentLength}/${maxLength}`
   }
 
   onResolutionFalse() {
@@ -109,6 +164,16 @@ export default class extends Controller {
   onSubmit(event) {
     const allFieldsValid = this.checkValids()
     event.preventDefault()
+    if (!allFieldsValid) {
+      return
+    }
+
+    if (this.hasSelectedNewTasks() && !this.confirmedNewTaskSubmission) {
+      this.openConfirmPopup()
+      return
+    }
+
+    this.confirmedNewTaskSubmission = false
     if (allFieldsValid) {
       this.formTarget.requestSubmit()
       document.querySelector('body').style.pointerEvents = 'none'

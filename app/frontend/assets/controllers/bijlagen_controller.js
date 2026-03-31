@@ -157,9 +157,12 @@ export default class extends Controller {
     while (preview.firstChild) {
       preview.removeChild(preview.firstChild)
     }
+
+    const uploadContainer = this.element.querySelector('.file-upload')
+
     if (this.temp_files.length > 0) {
       const list = document.createElement('ul')
-      list.classList.add('list-clean')
+      list.classList.add('list-clean', 'taak-upload-rail')
       preview.appendChild(list)
       let totalSize = 0
       let validFilesCount = 0
@@ -229,6 +232,10 @@ export default class extends Controller {
               totalSize
             )}.`
           : ''
+    }
+
+    if (uploadContainer) {
+      uploadContainer.classList.toggle('has-files', this.temp_files.length > 0)
     }
   }
 }

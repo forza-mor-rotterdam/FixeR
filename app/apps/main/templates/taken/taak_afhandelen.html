@@ -42,12 +42,18 @@
                         <h3 class="taak-afhandelen-modal__resolutie-title">Is de taak uitgevoerd?</h3>
                         {{ form.resolutie|render_rotterdam_formulier }}
                     </div>
-                    <h3 class="taak-afhandelen-modal__resolutie-title">Foto’s toevoegen</h3>
+                    <div class="taak-afhandelen-modal__heading-row">
+                        <h3 class="taak-afhandelen-modal__resolutie-title">Foto’s toevoegen</h3>
+                        <span class="taak-afhandelen-modal__optional">Optioneel</span>
+                    </div>
                     {{ form.bijlagen }}
                     <div class="wrapper--flex-order">
                         <div>
                             {% if form.nieuwe_taak %}
-                                <h3 class="taak-afhandelen-modal__resolutie-title">Zijn er nog meer taken nodig?</h3>
+                                <div class="taak-afhandelen-modal__heading-row">
+                                    <h3 class="taak-afhandelen-modal__resolutie-title">Zijn er nog meer taken nodig?</h3>
+                                    <span class="taak-afhandelen-modal__optional">Optioneel</span>
+                                </div>
                                 <div data-incidentHandleForm-target="newTask">
                                     <div class="list-horizontal">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
                                 </div>
@@ -66,6 +72,8 @@
                         <div class="form-control__with-helptext label-strong"
                              data-incidentHandleForm-target="internalText">
                             {{ form.omschrijving_intern|render_rotterdam_formulier }}
+                            <div class="taak-afhandelen-modal__char-counter"
+                                 data-incidentHandleForm-target="charCounter">0/200</div>
                         </div>
                     </div>
                     <div class="form-row" data-incidentHandleForm-target="submitContainer">
@@ -77,6 +85,24 @@
                     </div>
                 </form>
             {% endif %}
+            <dialog class="taak-afhandelen-modal__confirm"
+                    data-incidentHandleForm-target="confirmPopup"
+                    aria-labelledby="confirm-create-task-title">
+                <h3 id="confirm-create-task-title">Nog een taak aanmaken?</h3>
+                <p>Je wilt een taak aanmaken voor een andere uitvoerder. Weet je dit zeker?</p>
+                <div class="taak-afhandelen-modal__confirm-actions">
+                    <button type="button"
+                            class="btn btn-action"
+                            data-action="incidentHandleForm#confirmCreateTaskAndSubmit">
+                        <span>Ja, maak deze taak aan</span>
+                    </button>
+                    <button type="button"
+                            class="btn btn-tertiary"
+                            data-action="incidentHandleForm#closeConfirmPopup">
+                        <span>Annuleren</span>
+                    </button>
+                </div>
+            </dialog>
         </div>
         </div>
     </div>

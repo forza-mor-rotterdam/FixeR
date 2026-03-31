@@ -6,22 +6,115 @@ export default class extends Controller {
   static targets = ['infosheet', 'scrollHandle', 'infosheetTurboframe']
   initialize() {
     this.sourceElemParent = null
+    this.isScrollLocked = false
+    this.lastTouchY = null
+    this.onEscapeKeydown = this.onEscapeKeydown.bind(this)
+    this.onBackdropClick = this.onBackdropClick.bind(this)
+    this.onDocumentTouchStart = this.onDocumentTouchStart.bind(this)
+    this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this)
   }
 
   connect() {
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        this.closeInfosheet()
-      }
-    })
+    document.addEventListener('keydown', this.onEscapeKeydown)
   }
 
   disconnect() {
-    document.removeEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        this.closeInfosheet()
+    document.removeEventListener('keydown', this.onEscapeKeydown)
+    this.unlockBackgroundScroll()
+  }
+
+  onEscapeKeydown(event) {
+    if (event.key === 'Escape') {
+      this.closeInfosheet()
+    }
+  }
+
+  onBackdropClick(event) {
+    if (event.target === event.currentTarget) {
+      event.stopPropagation()
+      this.closeInfosheet()
+    }
+  }
+
+  onDocumentTouchStart(event) {
+    this.lastTouchY = event.touches?.[0]?.clientY ?? null
+  }
+
+  findScrollableParent(element) {
+    let current = element
+
+    while (current && current !== this.infosheetTarget) {
+      if (current.scrollHeight > current.clientHeight) {
+        return current
       }
-    })
+      current = current.parentElement
+    }
+
+    return null
+  }
+
+  onDocumentTouchMove(event) {
+    if (!this.hasInfosheetTarget || !this.infosheetTarget.open) {
+      return
+    }
+
+    // Block mobile pull-to-refresh/background scroll gestures outside the sheet.
+    if (!event.target.closest('dialog.infosheet')) {
+      event.preventDefault()
+      return
+    }
+
+    const currentTouchY = event.touches?.[0]?.clientY
+    const deltaY = this.lastTouchY === null ? 0 : currentTouchY - this.lastTouchY
+    this.lastTouchY = currentTouchY
+
+    const scrollableParent = this.findScrollableParent(event.target)
+    if (!scrollableParent) {
+      event.preventDefault()
+      return
+    }
+
+    const atTop = scrollableParent.scrollTop <= 0
+    const atBottom =
+      scrollableParent.scrollTop + scrollableParent.clientHeight >=
+      scrollableParent.scrollHeight - 1
+
+    if ((atTop && deltaY > 0) || (atBottom && deltaY < 0)) {
+      event.preventDefault()
+    }
+  }
+
+  lockBackgroundScroll() {
+    if (this.isScrollLocked) {
+      return
+    }
+
+    scrollPositionForDialog = window.scrollY
+    document.documentElement.classList.add('infosheet-open')
+    document.body.classList.add('infosheet-open')
+    document.body.style.top = `-${scrollPositionForDialog}px`
+    document.body.style.position = 'fixed'
+    document.body.style.width = '100%'
+    document.addEventListener('touchstart', this.onDocumentTouchStart, { passive: true })
+    document.addEventListener('touchmove', this.onDocumentTouchMove, { passive: false })
+    this.isScrollLocked = true
+  }
+
+  unlockBackgroundScroll() {
+    if (!this.isScrollLocked) {
+      return
+    }
+
+    document.removeEventListener('touchstart', this.onDocumentTouchStart)
+    document.removeEventListener('touchmove', this.onDocumentTouchMove)
+    document.documentElement.classList.remove('infosheet-open')
+    document.body.classList.remove('infosheet-open')
+    document.body.style.position = ''
+    document.body.style.top = ''
+    document.body.style.width = ''
+    this.lastTouchY = null
+    window.scrollTo({ top: scrollPositionForDialog, left: 0, behavior: 'instant' })
+    this.isScrollLocked = false
   }
   scrollHandleTargetConnected(element) {
     this.startX = 0
@@ -86,34 +179,22 @@ export default class extends Controller {
     if (this.hasInfosheetTarget) {
       e.preventDefault()
       if (e.params.action) {
-        scrollPositionForDialog = window.scrollY
+        this.lockBackgroundScroll()
         this.infosheetTurboframeTarget.setAttribute('src', e.params.action)
         this.infosheetTarget.showModal()
-        document.body.style.top = `-${scrollPositionForDialog}px`
-        document.body.style.position = 'fixed'
-        this.infosheetTarget.addEventListener('click', (event) => {
-          if (event.target === event.currentTarget) {
-            event.stopPropagation()
-            this.closeInfosheet()
-          }
-        })
+        this.infosheetTarget.removeEventListener('click', this.onBackdropClick)
+        this.infosheetTarget.addEventListener('click', this.onBackdropClick)
       } else if (e.params.selector) {
+        this.lockBackgroundScroll()
         const sourceElem = document.querySelector(e.params.selector)
         this.sourceElemParent = sourceElem.parentNode
         this.infosheetTurboframeTarget.insertAdjacentElement('beforeEnd', sourceElem)
         this.infosheetTarget.showModal()
       } else if (e.params.extracontent) {
-        scrollPositionForDialog = window.scrollY
+        this.lockBackgroundScroll()
         this.infosheetTarget.showModal()
-        document.body.style.top = `-${scrollPositionForDialog}px`
-        document.body.style.position = 'fixed'
-
-        this.infosheetTarget.addEventListener('click', (event) => {
-          if (event.target === event.currentTarget) {
-            event.stopPropagation()
-            this.closeInfosheet()
-          }
-        })
+        this.infosheetTarget.removeEventListener('click', this.onBackdropClick)
+        this.infosheetTarget.addEventListener('click', this.onBackdropClick)
 
         const sourceElem = e.currentTarget.querySelector(e.params.extracontent)
         this.sourceElemParent = sourceElem.parentNode
@@ -163,16 +244,9 @@ export default class extends Controller {
       if (this.infosheetTarget.open) {
         setTimeout(() => (this.infosheetTurboframeTarget.innerHTML = ''), 400)
         this.infosheetTarget.close()
-        document.body.style.position = ''
-        document.body.style.top = ''
-        window.scrollTo({ top: scrollPositionForDialog, left: 0, behavior: 'instant' })
+        this.unlockBackgroundScroll()
       }
     }
-    this.infosheetTarget.removeEventListener('click', (event) => {
-      if (event.target === event.currentTarget) {
-        event.stopPropagation()
-        this.closeInfosheet()
-      }
-    })
+    this.infosheetTarget.removeEventListener('click', this.onBackdropClick)
   }
 }

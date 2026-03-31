@@ -73,7 +73,7 @@ class TaakBehandelForm(forms.Form):
                 "data-testid": "information",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "internalText",
-                "maxlength": "5000",
+                "maxlength": "200",
             }
         ),
         required=False,
