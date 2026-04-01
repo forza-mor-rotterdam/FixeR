@@ -36,6 +36,15 @@ class MultipleFileField(forms.FileField):
         return result
 
 
+REDEN_AFWIJZING_OPTIES = (
+    ("al_verholpen", "De taak is al verholpen"),
+    ("niet_gemeente", "De taak is niet voor de gemeente"),
+    ("niet_voor_mij", "De taak is niet voor mij"),
+    ("locatie_onduidelijk", "De locatie van de taak is onduidelijk"),
+    ("anders", "Anders, namelijk"),
+)
+
+
 class TaakBehandelForm(forms.Form):
     resolutie = forms.ChoiceField(
         widget=forms.RadioSelect(
@@ -48,6 +57,33 @@ class TaakBehandelForm(forms.Form):
         label="Is de taak afgehandeld?",
         choices=Taak.behandel_opties(),
         required=True,
+    )
+
+    reden_afwijzing = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input list--form-radio-input--hidden",
+                "data-action": "change->incidentHandleForm#onChangeRedenAfwijzing",
+                "hideLabel": True,
+            }
+        ),
+        label="Reden",
+        choices=REDEN_AFWIJZING_OPTIES,
+        required=False,
+    )
+
+    anders_namelijk = forms.CharField(
+        label="",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": "3",
+                "placeholder": "Vul hier de reden in",
+                "maxlength": "200",
+                "hideLabel": True,
+            }
+        ),
+        required=False,
     )
 
     bijlagen = MultipleFileField(
@@ -105,6 +141,23 @@ class TaakBehandelForm(forms.Form):
                 ),
                 required=False,
             )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        resolutie = cleaned_data.get("resolutie")
+        reden_afwijzing = cleaned_data.get("reden_afwijzing")
+        anders_namelijk = (cleaned_data.get("anders_namelijk") or "").strip()
+
+        if resolutie == Taak.ResolutieOpties.NIET_OPGELOST and not reden_afwijzing:
+            self.add_error(
+                "reden_afwijzing",
+                "Maak een keuze uit een van de bovenstaande opties.",
+            )
+
+        if reden_afwijzing == "anders" and not anders_namelijk:
+            self.add_error("anders_namelijk", "Dit veld is verplicht.")
+
+        return cleaned_data
 
 
 class TaakFilterCheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):

@@ -9,16 +9,22 @@ export default class extends Controller {
     'submitContainer',
     'charCounter',
     'confirmPopup',
+    'redenAfwijzing',
+    'andersNamelijk',
   ]
 
   connect() {
     this.confirmedNewTaskSubmission = false
-    this.requiredLabelInternalText = 'Waarom kan de taak niet worden afgerond?'
+    this.requiredLabelInternalText = 'Opmerking voor mid-office'
     this.defaultLabelInternalText = 'Opmerking voor mid-office'
     this.defaultErrorMessage = 'Vul a.u.b. dit veld in.'
     const btn = this.element.querySelector('[type="radio"][value="niet_opgelost"]')
     if (btn.checked) {
       this.onResolutionFalse()
+      const andersBtn = this.element.querySelector('[type="radio"][value="anders"]')
+      if (andersBtn && andersBtn.checked && this.hasAndersNamelijkTarget) {
+        this.onChangeRedenAfwijzing({ target: andersBtn })
+      }
     } else {
       this.onResolutionTrue()
     }
@@ -75,7 +81,9 @@ export default class extends Controller {
     if (this.hasInternalTextTarget) {
       this.internalTextTarget.querySelector('label').textContent = this.requiredLabelInternalText
       this.internalTextTarget.querySelector('textarea').classList.add('required')
-      this.internalTextTarget.closest('.wrapper--flex-order').style.flexDirection = 'column-reverse'
+    }
+    if (this.hasRedenAfwijzingTarget) {
+      this.redenAfwijzingTarget.hidden = false
     }
   }
 
@@ -83,7 +91,27 @@ export default class extends Controller {
     if (this.hasInternalTextTarget) {
       this.internalTextTarget.querySelector('label').textContent = this.defaultLabelInternalText
       this.internalTextTarget.querySelector('textarea').classList.remove('required')
-      this.internalTextTarget.closest('.wrapper--flex-order').style.flexDirection = 'column'
+    }
+    if (this.hasRedenAfwijzingTarget) {
+      this.redenAfwijzingTarget.hidden = true
+    }
+    if (this.hasAndersNamelijkTarget) {
+      this.andersNamelijkTarget.hidden = true
+      const andersNamelijkTextarea = this.andersNamelijkTarget.querySelector('textarea')
+      if (andersNamelijkTextarea) {
+        andersNamelijkTextarea.classList.remove('required')
+      }
+    }
+  }
+
+  onChangeRedenAfwijzing(event) {
+    if (this.hasAndersNamelijkTarget) {
+      const isAnders = event.target.value === 'anders'
+      this.andersNamelijkTarget.hidden = !isAnders
+      const andersNamelijkTextarea = this.andersNamelijkTarget.querySelector('textarea')
+      if (andersNamelijkTextarea) {
+        andersNamelijkTextarea.classList.toggle('required', isAnders)
+      }
     }
   }
 
@@ -107,6 +135,29 @@ export default class extends Controller {
         count++
       }
     }
+
+    const resolutionNietOpgelost = this.element.querySelector(
+      '[type="radio"][value="niet_opgelost"]:checked'
+    )
+    if (resolutionNietOpgelost && this.hasRedenAfwijzingTarget) {
+      const selectedReason = this.redenAfwijzingTarget.querySelector(
+        'input[type="radio"][name="reden_afwijzing"]:checked'
+      )
+      const reasonError = this.redenAfwijzingTarget.querySelector('.invalid-text')
+      const reasonRow = this.redenAfwijzingTarget.querySelector('.form-row')
+      const invalidReason = !selectedReason
+
+      if (reasonError) {
+        reasonError.textContent = invalidReason ? this.defaultErrorMessage : ''
+      }
+      if (reasonRow) {
+        reasonRow.classList[invalidReason ? 'add' : 'remove']('is-invalid')
+      }
+      if (invalidReason) {
+        count++
+      }
+    }
+
     return count === 0
   }
   handleSubmit(event) {
