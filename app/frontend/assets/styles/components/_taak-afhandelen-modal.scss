@@ -469,6 +469,12 @@ dialog.taak-afhandelen-modal__confirm {
         padding-bottom: 2.5rem;
     }
 
+    .taak-afhandelen-modal__meta,
+    .taak-afhandelen-modal__content-inner {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
     .taak-afhandelen-modal__form {
         [data-incidentHandleForm-target="submitContainer"] {
             display: flex;
@@ -485,5 +491,19 @@ dialog.taak-afhandelen-modal__confirm {
                 min-width: 220px;
             }
         }
+    }
+}
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+    dialog.infosheet:has(.taak-afhandelen-modal) {
+        width: 100vw;
+        max-width: 100vw;
+    }
+}
+
+@media (min-width: map-get($grid-breakpoints, lg)) and (hover: hover) and (pointer: fine) {
+    dialog.infosheet:has(.taak-afhandelen-modal) {
+        width: 38%;
+        max-width: 100vw;
     }
 }

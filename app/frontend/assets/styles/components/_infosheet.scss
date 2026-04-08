@@ -19,6 +19,20 @@ dialog.infosheet {
     overscroll-behavior: contain;
     z-index: 2500;
 
+    // Keep the Turbo Frame full-width even on browsers where :has support is partial.
+    > #infosheet,
+    > turbo-frame {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        width: 100%;
+        min-width: 0;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
     &:has(> turbo-frame) {
         > turbo-frame {
             display: flex;
