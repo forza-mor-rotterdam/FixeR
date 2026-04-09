@@ -33,6 +33,13 @@ class Taakgebeurtenis(BasisModel):
         GEANNULEERD = "geannuleerd", "Geannuleerd"
         NIET_GEVONDEN = "niet_gevonden", "Niets aangetroffen"
 
+    class RedenAfwijzingOpties(models.TextChoices):
+        AL_VERHOLPEN = "al_verholpen", "De taak is al verholpen"
+        NIET_GEMEENTE = "niet_gemeente", "De taak is niet voor de gemeente"
+        NIET_VOOR_MIJ = "niet_voor_mij", "De taak is niet voor mij"
+        LOCATIE_ONDUIDELIJK = "locatie_onduidelijk", "De locatie van de taak is onduidelijk"
+        ANDERS = "anders", "Anders, namelijk"
+
     taakstatus = models.OneToOneField(
         to="taken.Taakstatus",
         related_name="taakgebeurtenis_voor_taakstatus",
@@ -59,6 +66,13 @@ class Taakgebeurtenis(BasisModel):
         blank=True,
         null=True,
     )
+    reden_afwijzing = models.CharField(
+        max_length=50,
+        choices=RedenAfwijzingOpties.choices,
+        null=True,
+        blank=True,
+    )
+    reden_afwijzing_toelichting = models.CharField(max_length=500, null=True, blank=True)
     notificatie_verstuurd = models.BooleanField(default=True)
     notificatie_error = models.CharField(max_length=5000, null=True, blank=True)
     groep = models.CharField(max_length=100, null=True, blank=True) # naam van rechtengroep van aanmakende gebruiker
@@ -434,10 +448,6 @@ class Taak(BasisModel):
             (
                 Taak.ResolutieOpties.OPGELOST,
                 "De taak is afgerond",
-            ),
-            (
-                Taak.ResolutieOpties.NIET_GEVONDEN,
-                "Niets aangetroffen",
             ),
             (
                 Taak.ResolutieOpties.NIET_OPGELOST,

@@ -590,6 +590,8 @@ def taak_afhandelen(request, uuid):
                 taak=taak,
                 vervolg_taaktypes=vervolg_taaktypes,
                 groep=getattr(request.user.groups.first(), "name", None),
+                reden_afwijzing=form.cleaned_data.get("reden_afwijzing"),
+                reden_afwijzing_toelichting=form.cleaned_data.get("anders_namelijk"),
             )
             return redirect("taken_overzicht")
         else:

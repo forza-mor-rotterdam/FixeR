@@ -3,7 +3,7 @@ import logging
 from apps.frontend.fields import BooleanField
 from apps.frontend.widgets import CheckboxInput
 from apps.taken.filters import FILTERS
-from apps.taken.models import Taak
+from apps.taken.models import Taak, Taakgebeurtenis
 from deepdiff import DeepDiff
 from django import forms
 
@@ -36,13 +36,7 @@ class MultipleFileField(forms.FileField):
         return result
 
 
-REDEN_AFWIJZING_OPTIES = (
-    ("al_verholpen", "De taak is al verholpen"),
-    ("niet_gemeente", "De taak is niet voor de gemeente"),
-    ("niet_voor_mij", "De taak is niet voor mij"),
-    ("locatie_onduidelijk", "De locatie van de taak is onduidelijk"),
-    ("anders", "Anders, namelijk"),
-)
+REDEN_AFWIJZING_OPTIES = Taakgebeurtenis.RedenAfwijzingOpties.choices
 
 
 class TaakBehandelForm(forms.Form):
@@ -119,7 +113,7 @@ class TaakBehandelForm(forms.Form):
         volgende_taaktypes = kwargs.pop("volgende_taaktypes", None)
         super().__init__(*args, **kwargs)
 
-        # Vraag Vervolgtaak? Altijd tonen bij de 3 resoluties (afgehandeld, niet afgehandeld, niets aangetroffen)
+        # Vraag Vervolgtaak? Altijd tonen bij de 2 resoluties (afgehandeld, niet afgehandeld)
         # Alle vervolgtaken als checkboxes weergeven?
         # Bij resolutie 3 ("kan  niet") is interne opmerking VERPLICHT, met tekst "Waarom kan de taak niet worden afgerond?"
         if volgende_taaktypes:
