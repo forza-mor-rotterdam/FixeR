@@ -10,6 +10,7 @@ export default class extends Controller {
     'charCounter',
     'confirmPopup',
     'redenAfwijzing',
+    'reasonHelptext',
     'andersNamelijk',
   ]
 
@@ -35,6 +36,11 @@ export default class extends Controller {
         this.internalTextArea.addEventListener('input', this.updateCharacterCounter.bind(this))
         this.updateCharacterCounter()
       }
+    }
+
+    if (this.hasRedenAfwijzingTarget) {
+      this.redenAfwijzingTarget.addEventListener('change', () => this.updateReasonHelptextVisibility())
+      this.updateReasonHelptextVisibility()
     }
 
     this.formTarget.addEventListener(`submit`, this.handleSubmit.bind(this))
@@ -80,10 +86,10 @@ export default class extends Controller {
   onResolutionFalse() {
     if (this.hasInternalTextTarget) {
       this.internalTextTarget.querySelector('label').textContent = this.requiredLabelInternalText
-      this.internalTextTarget.querySelector('textarea').classList.add('required')
     }
     if (this.hasRedenAfwijzingTarget) {
       this.redenAfwijzingTarget.hidden = false
+      this.updateReasonHelptextVisibility()
     }
   }
 
@@ -95,6 +101,9 @@ export default class extends Controller {
     if (this.hasRedenAfwijzingTarget) {
       this.redenAfwijzingTarget.hidden = true
     }
+    if (this.hasReasonHelptextTarget) {
+      this.reasonHelptextTarget.hidden = false
+    }
     if (this.hasAndersNamelijkTarget) {
       this.andersNamelijkTarget.hidden = true
       const andersNamelijkTextarea = this.andersNamelijkTarget.querySelector('textarea')
@@ -105,6 +114,8 @@ export default class extends Controller {
   }
 
   onChangeRedenAfwijzing(event) {
+    this.updateReasonHelptextVisibility()
+
     if (this.hasAndersNamelijkTarget) {
       const isAnders = event.target.value === 'anders'
       this.andersNamelijkTarget.hidden = !isAnders
@@ -113,6 +124,15 @@ export default class extends Controller {
         andersNamelijkTextarea.classList.toggle('required', isAnders)
       }
     }
+  }
+
+  updateReasonHelptextVisibility() {
+    if (!this.hasReasonHelptextTarget || !this.hasRedenAfwijzingTarget) {
+      return
+    }
+
+    const selectedReason = this.redenAfwijzingTarget.querySelector('input[type="radio"]:checked')
+    this.reasonHelptextTarget.hidden = !!selectedReason
   }
 
   onChangeResolution(event) {

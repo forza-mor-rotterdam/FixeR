@@ -46,7 +46,8 @@
                         <div class="taak-afhandelen-modal__resolutie-group">
                             <h3 class="taak-afhandelen-modal__resolutie-title">Reden</h3>
                             {{ form.reden_afwijzing|render_rotterdam_formulier }}
-                            <p class="help-block taak-afhandelen-modal__reason-helptext">Maak een keuze uit een van de bovenstaande opties</p>
+                            <p class="help-block taak-afhandelen-modal__reason-helptext"
+                               data-incidentHandleForm-target="reasonHelptext">Maak een keuze uit een van de bovenstaande opties</p>
                         </div>
                         <div data-incidentHandleForm-target="andersNamelijk" hidden>
                             {{ form.anders_namelijk|render_rotterdam_formulier }}
