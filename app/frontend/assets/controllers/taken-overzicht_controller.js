@@ -5,6 +5,7 @@ let scrollPositionForDialog = 0
 let filterCount = 0
 export default class extends Controller {
   static outlets = ['taken-kaart', 'taken-lijst']
+  static values = { wachtOpGps: Boolean }
 
   static targets = [
     'sorteerOptiesFieldContainer',
@@ -246,16 +247,31 @@ export default class extends Controller {
   }
   positionChangeEvent(position) {
     this.currentPosition = position
-    this.gpsFieldTarget.value = `${position.coords.latitude},${position.coords.longitude}`
-    if (this.sorteerFieldTarget.value === 'Afstand') {
+    const newGps = `${position.coords.latitude},${position.coords.longitude}`
+    const gpsChanged = this.gpsFieldTarget.value !== newGps
+    this.gpsFieldTarget.value = newGps
+    this.updateTaakAfstandTargets()
+    if (!gpsChanged && !this.wachtOpGpsValue) return
+    const checkedSortOption = this.sorteerFieldTargets.find((el) => el.checked)
+    if (this.wachtOpGpsValue || (checkedSortOption && checkedSortOption.value === 'Afstand')) {
+      this.wachtOpGpsValue = false
       this.submit()
     }
-    this.updateTaakAfstandTargets()
   }
   positionWatchError() {
     this.gpsFieldTarget.value = ''
     this.currentPosition = null
-    this.element.requestSubmit()
+    const checkedSortOption = this.sorteerFieldTargets.find((el) => el.checked)
+    if (this.wachtOpGpsValue || (checkedSortOption && checkedSortOption.value === 'Afstand')) {
+      this.wachtOpGpsValue = false
+      const datumReverseOption = this.sorteerFieldTargets.find(
+        (el) => el.value === 'Datum-reverse'
+      )
+      if (datumReverseOption) {
+        datumReverseOption.checked = true
+      }
+    }
+    this.submit()
   }
 
   onZoekButtonClick() {
@@ -264,7 +280,7 @@ export default class extends Controller {
   onSearchChangeHandler(e) {
     const zoekHasValue = e.target.value.length > 0
     const zoekValueLength = e.target.value.length
-    this.toggleZoekenTarget.disabled = zoekHasValue
+    this.toggleZoekenTarget.disabled = false
     this.cancelZoekTarget.classList[zoekHasValue ? 'remove' : 'add']('hide')
     this.zoekButtonTarget.classList[zoekHasValue ? 'add' : 'remove']('hide')
     this.clearSelectedTaakUuidField()
@@ -332,23 +348,36 @@ export default class extends Controller {
     this.toggleSortViewTarget.parentElement.classList.toggle('show')
   }
   onToggleSearchContainer() {
-    if (!this.zoekFieldTarget.value) {
-      this.zoekFieldContainerTarget.classList.toggle('hidden-vertical')
-      this.zoekFieldContainerTarget.classList.toggle('show-vertical')
-      this.zoekFieldDefaultContainerTarget.classList.toggle('hidden-vertical')
-      this.zoekFieldDefaultContainerTarget.classList.toggle('show-vertical')
+    if (this.zoekFieldTarget.value) {
+      this.zoekFieldTarget.value = ''
+      this.cancelZoekTarget.classList.add('hide')
+      this.zoekButtonTarget.classList.remove('hide')
+      this.zoekFieldContainerTarget.classList.remove('show-vertical')
+      this.zoekFieldContainerTarget.classList.add('hidden-vertical')
+      this.zoekFieldDefaultContainerTarget.classList.remove('show-vertical')
+      this.zoekFieldDefaultContainerTarget.classList.add('hidden-vertical')
+      this.filtersActiveFieldTarget.checked = false
+      this.updateFilterButtonEnabled()
+      this.clearSelectedTaakUuidField()
+      this.submit()
+      return
+    }
 
-      if (this.zoekFieldContainerTarget.classList.contains('show-vertical')) {
-        this.zoekFieldTarget.focus()
-      }
-      if (
-        !this.zoekFieldContainerTarget.classList.contains('show-vertical') &&
-        this.filtersActiveFieldTarget.checked
-      ) {
-        this.filtersActiveFieldTarget.checked = false
-        this.submit()
-        this.updateFilterButtonEnabled()
-      }
+    this.zoekFieldContainerTarget.classList.toggle('hidden-vertical')
+    this.zoekFieldContainerTarget.classList.toggle('show-vertical')
+    this.zoekFieldDefaultContainerTarget.classList.toggle('hidden-vertical')
+    this.zoekFieldDefaultContainerTarget.classList.toggle('show-vertical')
+
+    if (this.zoekFieldContainerTarget.classList.contains('show-vertical')) {
+      this.zoekFieldTarget.focus()
+    }
+    if (
+      !this.zoekFieldContainerTarget.classList.contains('show-vertical') &&
+      this.filtersActiveFieldTarget.checked
+    ) {
+      this.filtersActiveFieldTarget.checked = false
+      this.submit()
+      this.updateFilterButtonEnabled()
     }
   }
   filterButtonTargetConnected() {

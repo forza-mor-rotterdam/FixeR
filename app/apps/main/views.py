@@ -145,8 +145,9 @@ class TakenOverzicht(
         self.initial = {}
         self.form_data = {}
         self.initial_filter_data = None
-        if self.request.session.get("gps"):
-            del self.request.session["gps"]
+        gps = self.request.session.get("gps")
+        if gps:
+            self.form_data["gps"] = gps
 
         if (
             (
@@ -204,14 +205,16 @@ class TakenOverzicht(
         queryset = queryset.taken_zoeken(self.request.session.get("q"))
 
         gps = self.get_gps()
+        self.wacht_op_gps = not gps and profiel.taken_sorting == AFSTAND_SORTING_KEY
+        if self.wacht_op_gps:
+            return queryset.none()
         if gps:
             queryset = queryset.annotate(
                 afstand=ExpressionWrapper(
                     Distance("melding__geometrie", gps), output_field=FloatField()
                 )
             )
-        if gps or (not gps and profiel.taken_sorting != AFSTAND_SORTING_KEY):
-            queryset = queryset.order_by(profiel.taken_sorting_order_by)
+        queryset = queryset.order_by(profiel.taken_sorting_order_by)
 
         selected_taak_uuid = self.request.GET.get(
             "taakUuid", self.form_data.get("selected_taak_uuid", "")
@@ -238,11 +241,13 @@ class TakenOverzicht(
 
         return queryset
 
+
     def get_initial(self):
         initial = super().get_initial()
         initial.update(self.request.user.profiel.taken_filter_validated_data)
         initial.update(
             {
+                "gps": self.request.session.get("gps", ""),
                 "q": self.request.session.get("q"),
                 "deactivate_filters": self.request.session.get("deactivate_filters"),
                 "sorteer_opties": self.request.user.profiel.ui_instellingen.get(
@@ -262,6 +267,7 @@ class TakenOverzicht(
                 "profiel_taaktype_uuid_list": list(
                     self.request.user.profiel.taaktypes.values_list("uuid", flat=True)
                 ),
+                "wacht_op_gps": getattr(self, "wacht_op_gps", False),
             }
         )
         return context
@@ -541,6 +547,7 @@ def taak_afhandelen(request, uuid):
                 bijlage_paden=bijlage_paden,
                 taak=taak,
                 vervolg_taaktypes=vervolg_taaktypes,
+                groep=getattr(request.user.groups.first(), "name", None),
             )
             return redirect("taken_overzicht")
         else:

@@ -61,6 +61,7 @@ class Taakgebeurtenis(BasisModel):
     )
     notificatie_verstuurd = models.BooleanField(default=True)
     notificatie_error = models.CharField(max_length=5000, null=True, blank=True)
+    groep = models.CharField(max_length=100, null=True, blank=True) # naam van rechtengroep van aanmakende gebruiker
     vervolg_taaktypes = ListJSONField(default=list)
 
     task_taakopdracht_notificatie = models.OneToOneField(
@@ -406,6 +407,10 @@ class Taak(BasisModel):
                     self.laatste_taakgebeurtenis.gebruiker
                 )
             )
+            if self.cached_laatste_taakgebeurtenis_gebruiker is not None:
+                self.cached_laatste_taakgebeurtenis_gebruiker["groep"] = (
+                    self.laatste_taakgebeurtenis.groep or ""
+                )
         return self.cached_laatste_taakgebeurtenis_gebruiker
 
     def eerste_taakgebeurtenis_gebruiker(self):
@@ -417,6 +422,10 @@ class Taak(BasisModel):
                     self.eerste_taakgebeurtenis.gebruiker
                 )
             )
+            if self.cached_eerste_taakgebeurtenis_gebruiker is not None:
+                self.cached_eerste_taakgebeurtenis_gebruiker["groep"] = (
+                    self.eerste_taakgebeurtenis.groep or ""
+                )
         return self.cached_eerste_taakgebeurtenis_gebruiker
 
     @classmethod

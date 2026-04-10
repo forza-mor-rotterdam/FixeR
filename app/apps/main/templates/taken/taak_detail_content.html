@@ -25,7 +25,7 @@
                             <span class="initials">{{ taak.laatste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
                             <div class="message">
                                 <h4>{{ taak.laatste_taakgebeurtenis_gebruiker.full_name }}</h4>
-                                <span class="help-text">{{ taak.laatste_taakgebeurtenis_gebruiker.rol }}</span>
+                                <span class="help-text">{{ taak.laatste_taakgebeurtenis_gebruiker.groep|default:taak.laatste_taakgebeurtenis_gebruiker.rol }}</span>
                             </div>
                         </div>
                     {% endif %}
@@ -227,14 +227,14 @@
                 <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
                 <div class="message">
                     <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
-                    <span>{{ taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
+                    <span>{{ taak.eerste_taakgebeurtenis_gebruiker.groep|default:taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
                 </div>
                 <div class="extra-content">
                     <div class="person">
                         <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
                         <div class="message">
                             <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
-                            <span class="help-text">{{ taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
+                            <span class="help-text">{{ taak.eerste_taakgebeurtenis_gebruiker.groep|default:taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
                         </div>
                     </div>
                     {% if taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer %}
