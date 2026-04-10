@@ -39,7 +39,13 @@ export default class extends Controller {
     }
 
     if (this.hasRedenAfwijzingTarget) {
-      this.redenAfwijzingTarget.addEventListener('change', () => this.updateReasonHelptextVisibility())
+      this.redenAfwijzingTarget.addEventListener('change', (event) => {
+        if (event.target?.matches('input[type="radio"]')) {
+          this.onChangeRedenAfwijzing(event)
+        } else {
+          this.updateReasonHelptextVisibility()
+        }
+      })
       this.updateReasonHelptextVisibility()
     }
 
@@ -115,6 +121,12 @@ export default class extends Controller {
 
   onChangeRedenAfwijzing(event) {
     this.updateReasonHelptextVisibility()
+    if (this.hasReasonHelptextTarget) {
+      this.reasonHelptextTarget.hidden = true
+      this.reasonHelptextTarget.style.display = 'none'
+    }
+    this.clearRedenAfwijzingErrors()
+    this.clearReasonMessageNodes()
 
     if (this.hasAndersNamelijkTarget) {
       const isAnders = event.target.value === 'anders'
@@ -124,6 +136,44 @@ export default class extends Controller {
         andersNamelijkTextarea.classList.toggle('required', isAnders)
       }
     }
+  }
+
+  clearRedenAfwijzingErrors() {
+    if (!this.hasRedenAfwijzingTarget) {
+      return
+    }
+
+    this.redenAfwijzingTarget.querySelectorAll('.invalid-text').forEach((errorElement) => {
+      errorElement.textContent = ''
+    })
+    this.redenAfwijzingTarget.querySelectorAll('.form-row').forEach((rowElement) => {
+      rowElement.classList.remove('is-invalid')
+    })
+
+    // Remove server-rendered field errors for this specific reason message.
+    this.formTarget.querySelectorAll('.errorlist li').forEach((listItem) => {
+      const normalizedText = (listItem.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase()
+      if (normalizedText.includes('maak een keuze uit een van de bovenstaande opties')) {
+        listItem.remove()
+      }
+    })
+    this.formTarget.querySelectorAll('.errorlist').forEach((errorList) => {
+      if (!errorList.children.length) {
+        errorList.remove()
+      }
+    })
+  }
+
+  clearReasonMessageNodes() {
+    const reasonMessage = 'maak een keuze uit een van de bovenstaande opties'
+    this.element
+      .querySelectorAll('.help-block, .invalid-text, .errorlist li, .messages li')
+      .forEach((node) => {
+        const normalizedText = (node.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase()
+        if (normalizedText === reasonMessage) {
+          node.remove()
+        }
+      })
   }
 
   updateReasonHelptextVisibility() {
