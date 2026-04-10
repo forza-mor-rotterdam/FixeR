@@ -84,6 +84,7 @@ export default class extends Controller {
   }
   getCurrentPositionSuccess = (position) => {
     document.body.classList.remove('geolocation-error')
+    this.positionPermissionState(true)
 
     let distance = 0
     if (this.currentPosition) {
@@ -112,6 +113,11 @@ export default class extends Controller {
       this.taakDetailOutlet.positionChangeEvent(this.currentPosition)
     }
   }
+  sorteerFieldTargetConnected(element) {
+    if (element.value === 'Afstand' && !this.currentPosition) {
+      this.setAfstandOptionDisabled(element, true)
+    }
+  }
   takenKaartOutletConnected() {
     if (this.currentPosition) {
       this.takenKaartOutlet.positionChangeEvent(this.currentPosition)
@@ -128,13 +134,13 @@ export default class extends Controller {
     }
   }
   positionPermissionState(permissionEnable) {
-    const afstandOption = this.sorteerFieldTarget.querySelector('option[value="Afstand"]')
+    const afstandOption = this.sorteerFieldTargets.find((el) => el.value === 'Afstand')
     this.kaartModusOptionTargets
       .find((elem) => elem.value === 'volgen')
       ?.closest('li')
       .classList[permissionEnable ? 'remove' : 'add']('disabled')
     if (this.hasSorteerFieldTarget && afstandOption) {
-      afstandOption.disabled = !permissionEnable
+      this.setAfstandOptionDisabled(afstandOption, !permissionEnable)
     }
     if (!permissionEnable) {
       if (this.hasKaartModusOptionTarget) {
@@ -145,6 +151,14 @@ export default class extends Controller {
       const clone = template?.content.cloneNode(true)
       const snackContainer = document.getElementById('snack_lijst')
       snackContainer?.appendChild(clone)
+    }
+  }
+  setAfstandOptionDisabled(element, disabled) {
+    element.disabled = disabled
+    const label = element.closest('label')
+    if (label) {
+      label.style.opacity = disabled ? '0.5' : ''
+      label.style.pointerEvents = disabled ? 'none' : ''
     }
   }
   positionWatchError = (error) => {
