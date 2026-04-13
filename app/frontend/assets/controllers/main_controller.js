@@ -147,11 +147,35 @@ export default class extends Controller {
         this.element.querySelector(`input[name="${this.kaartModusOptionTarget.name}"]`).value =
           'toon_alles'
       }
-      const template = document.getElementById('template_snack_geen_locatie')
-      const clone = template?.content.cloneNode(true)
-      const snackContainer = document.getElementById('snack_lijst')
-      snackContainer?.appendChild(clone)
+      // Only show the popup once per session
+      if (!this.hasShownLocationPermissionPopup()) {
+        const template = document.getElementById('template_snack_geen_locatie')
+        const clone = template?.content.cloneNode(true)
+        const snackContainer = document.getElementById('snack_lijst')
+        snackContainer?.appendChild(clone)
+        this.setLocationPermissionPopupShown()
+      }
     }
+  }
+  hasShownLocationPermissionPopup() {
+    return this.getCookie('location_permission_popup_shown') === 'true'
+  }
+  setLocationPermissionPopupShown() {
+    this.setCookie('location_permission_popup_shown', 'true')
+  }
+  setCookie(name, value) {
+    document.cookie = `${name}=${value};path=/`
+  }
+  getCookie(name) {
+    const nameEQ = `${name}=`
+    const cookies = document.cookie.split(';')
+    for (let i = 0; i < cookies.length; i++) {
+      let cookie = cookies[i].trim()
+      if (cookie.indexOf(nameEQ) === 0) {
+        return cookie.substring(nameEQ.length)
+      }
+    }
+    return null
   }
   setAfstandOptionDisabled(element, disabled) {
     element.disabled = disabled
