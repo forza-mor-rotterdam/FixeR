@@ -2,6 +2,7 @@ import logging
 import math
 import os
 import uuid
+import json
 from datetime import datetime
 
 import prometheus_client
@@ -35,6 +36,44 @@ from django.views.generic import FormView, ListView
 from ua_parser import parse_os
 
 logger = logging.getLogger(__name__)
+
+
+def _ensure_melding_response_json(taak):
+    """Recover from malformed JSON stored in related melding response_json."""
+    try:
+        _ = taak.melding.response_json
+        return True
+    except json.JSONDecodeError:
+        logger.exception(
+            "Invalid melding.response_json for taak=%s, melding=%s",
+            taak.uuid,
+            taak.melding_id,
+        )
+
+    # Try refreshing the alias from MOR-Core without touching the broken field value.
+    melding_alias = (
+        type(taak.melding).objects.defer("response_json").filter(pk=taak.melding_id).first()
+    )
+    if melding_alias:
+        try:
+            melding_alias.valideer_bron_url()
+            if melding_alias.response_status_code == 200 and melding_alias.response_json:
+                melding_alias.update_zoek_data()
+            melding_alias.save()
+            taak.melding.refresh_from_db()
+            _ = taak.melding.response_json
+            return True
+        except Exception:
+            logger.exception(
+                "Failed to refresh melding alias from MOR-Core for taak=%s, melding=%s",
+                taak.uuid,
+                taak.melding_id,
+            )
+
+    # Last resort: clear invalid JSON payload to keep page functional.
+    type(taak.melding).objects.filter(pk=taak.melding_id).update(response_json={})
+    taak.melding.refresh_from_db()
+    return True
 
 
 @login_required
@@ -303,6 +342,7 @@ def taak_detail(request, uuid):
     taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
+    _ensure_melding_response_json(taak)
     taakdeellinks = TaakDeellink.objects.filter(taak=taak)
 
     return render(
@@ -328,6 +368,7 @@ def taak_detail_melding_tijdlijn(request, uuid):
     taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
+    _ensure_melding_response_json(taak)
     tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
 
     return render(
@@ -453,6 +494,7 @@ def taak_afhandelen(request, uuid):
     taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
+    _ensure_melding_response_json(taak)
     taaktypes = TaakRService().get_taaktypes(
         params={
             "taakapplicatie_taaktype_url": taak.taaktype.taaktype_url(request),
@@ -548,6 +590,8 @@ def taak_afhandelen(request, uuid):
                 taak=taak,
                 vervolg_taaktypes=vervolg_taaktypes,
                 groep=getattr(request.user.groups.first(), "name", None),
+                reden_afwijzing=form.cleaned_data.get("reden_afwijzing"),
+                reden_afwijzing_toelichting=form.cleaned_data.get("anders_namelijk"),
             )
             return redirect("taken_overzicht")
         else:

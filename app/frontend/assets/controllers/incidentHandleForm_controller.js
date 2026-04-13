@@ -1,26 +1,101 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['externalText', 'internalText', 'newTask', 'form', 'submitContainer']
+  static targets = [
+    'externalText',
+    'internalText',
+    'newTask',
+    'form',
+    'submitContainer',
+    'charCounter',
+    'confirmPopup',
+    'redenAfwijzing',
+    'reasonHelptext',
+    'andersNamelijk',
+  ]
 
   connect() {
-    this.requiredLabelInternalText = 'Waarom kan de taak niet worden afgerond?'
-    this.defaultLabelInternalText = 'Interne opmerking'
+    this.confirmedNewTaskSubmission = false
+    this.requiredLabelInternalText = 'Opmerking voor mid-office'
+    this.defaultLabelInternalText = 'Opmerking voor mid-office'
     this.defaultErrorMessage = 'Vul a.u.b. dit veld in.'
     const btn = this.element.querySelector('[type="radio"][value="niet_opgelost"]')
     if (btn.checked) {
       this.onResolutionFalse()
+      const andersBtn = this.element.querySelector('[type="radio"][value="anders"]')
+      if (andersBtn && andersBtn.checked && this.hasAndersNamelijkTarget) {
+        this.onChangeRedenAfwijzing({ target: andersBtn })
+      }
     } else {
       this.onResolutionTrue()
     }
+
+    if (this.hasInternalTextTarget) {
+      this.internalTextArea = this.internalTextTarget.querySelector('textarea')
+      if (this.internalTextArea) {
+        this.internalTextArea.addEventListener('input', this.updateCharacterCounter.bind(this))
+        this.updateCharacterCounter()
+      }
+    }
+
+    if (this.hasRedenAfwijzingTarget) {
+      this.redenAfwijzingTarget.addEventListener('change', (event) => {
+        if (event.target?.matches('input[type="radio"]')) {
+          this.onChangeRedenAfwijzing(event)
+        } else {
+          this.updateReasonHelptextVisibility()
+        }
+      })
+      this.updateReasonHelptextVisibility()
+    }
+
     this.formTarget.addEventListener(`submit`, this.handleSubmit.bind(this))
+  }
+
+  hasSelectedNewTasks() {
+    if (!this.hasNewTaskTarget) {
+      return false
+    }
+
+    return this.newTaskTarget.querySelectorAll('input[type="checkbox"]:checked').length > 0
+  }
+
+  openConfirmPopup() {
+    if (this.hasConfirmPopupTarget) {
+      this.confirmPopupTarget.showModal()
+    }
+  }
+
+  closeConfirmPopup() {
+    if (this.hasConfirmPopupTarget) {
+      this.confirmPopupTarget.close()
+    }
+  }
+
+  confirmCreateTaskAndSubmit() {
+    this.confirmedNewTaskSubmission = true
+    this.closeConfirmPopup()
+    this.formTarget.requestSubmit()
+    document.querySelector('body').style.pointerEvents = 'none'
+  }
+
+  updateCharacterCounter() {
+    if (!this.hasCharCounterTarget || !this.internalTextArea) {
+      return
+    }
+
+    const currentLength = this.internalTextArea.value.length
+    const maxLength = parseInt(this.internalTextArea.getAttribute('maxlength') || '200', 10)
+    this.charCounterTarget.textContent = `${currentLength}/${maxLength}`
   }
 
   onResolutionFalse() {
     if (this.hasInternalTextTarget) {
       this.internalTextTarget.querySelector('label').textContent = this.requiredLabelInternalText
-      this.internalTextTarget.querySelector('textarea').classList.add('required')
-      this.internalTextTarget.closest('.wrapper--flex-order').style.flexDirection = 'column-reverse'
+    }
+    if (this.hasRedenAfwijzingTarget) {
+      this.redenAfwijzingTarget.hidden = false
+      this.updateReasonHelptextVisibility()
     }
   }
 
@@ -28,8 +103,86 @@ export default class extends Controller {
     if (this.hasInternalTextTarget) {
       this.internalTextTarget.querySelector('label').textContent = this.defaultLabelInternalText
       this.internalTextTarget.querySelector('textarea').classList.remove('required')
-      this.internalTextTarget.closest('.wrapper--flex-order').style.flexDirection = 'column'
     }
+    if (this.hasRedenAfwijzingTarget) {
+      this.redenAfwijzingTarget.hidden = true
+    }
+    if (this.hasReasonHelptextTarget) {
+      this.reasonHelptextTarget.hidden = false
+    }
+    if (this.hasAndersNamelijkTarget) {
+      this.andersNamelijkTarget.hidden = true
+      const andersNamelijkTextarea = this.andersNamelijkTarget.querySelector('textarea')
+      if (andersNamelijkTextarea) {
+        andersNamelijkTextarea.classList.remove('required')
+      }
+    }
+  }
+
+  onChangeRedenAfwijzing(event) {
+    this.updateReasonHelptextVisibility()
+    if (this.hasReasonHelptextTarget) {
+      this.reasonHelptextTarget.hidden = true
+      this.reasonHelptextTarget.style.display = 'none'
+    }
+    this.clearRedenAfwijzingErrors()
+    this.clearReasonMessageNodes()
+
+    if (this.hasAndersNamelijkTarget) {
+      const isAnders = event.target.value === 'anders'
+      this.andersNamelijkTarget.hidden = !isAnders
+      const andersNamelijkTextarea = this.andersNamelijkTarget.querySelector('textarea')
+      if (andersNamelijkTextarea) {
+        andersNamelijkTextarea.classList.toggle('required', isAnders)
+      }
+    }
+  }
+
+  clearRedenAfwijzingErrors() {
+    if (!this.hasRedenAfwijzingTarget) {
+      return
+    }
+
+    this.redenAfwijzingTarget.querySelectorAll('.invalid-text').forEach((errorElement) => {
+      errorElement.textContent = ''
+    })
+    this.redenAfwijzingTarget.querySelectorAll('.form-row').forEach((rowElement) => {
+      rowElement.classList.remove('is-invalid')
+    })
+
+    // Remove server-rendered field errors for this specific reason message.
+    this.formTarget.querySelectorAll('.errorlist li').forEach((listItem) => {
+      const normalizedText = (listItem.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase()
+      if (normalizedText.includes('maak een keuze uit een van de bovenstaande opties')) {
+        listItem.remove()
+      }
+    })
+    this.formTarget.querySelectorAll('.errorlist').forEach((errorList) => {
+      if (!errorList.children.length) {
+        errorList.remove()
+      }
+    })
+  }
+
+  clearReasonMessageNodes() {
+    const reasonMessage = 'maak een keuze uit een van de bovenstaande opties'
+    this.element
+      .querySelectorAll('.help-block, .invalid-text, .errorlist li, .messages li')
+      .forEach((node) => {
+        const normalizedText = (node.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase()
+        if (normalizedText === reasonMessage) {
+          node.remove()
+        }
+      })
+  }
+
+  updateReasonHelptextVisibility() {
+    if (!this.hasReasonHelptextTarget || !this.hasRedenAfwijzingTarget) {
+      return
+    }
+
+    const selectedReason = this.redenAfwijzingTarget.querySelector('input[type="radio"]:checked')
+    this.reasonHelptextTarget.hidden = !!selectedReason
   }
 
   onChangeResolution(event) {
@@ -52,6 +205,29 @@ export default class extends Controller {
         count++
       }
     }
+
+    const resolutionNietOpgelost = this.element.querySelector(
+      '[type="radio"][value="niet_opgelost"]:checked'
+    )
+    if (resolutionNietOpgelost && this.hasRedenAfwijzingTarget) {
+      const selectedReason = this.redenAfwijzingTarget.querySelector(
+        'input[type="radio"][name="reden_afwijzing"]:checked'
+      )
+      const reasonError = this.redenAfwijzingTarget.querySelector('.invalid-text')
+      const reasonRow = this.redenAfwijzingTarget.querySelector('.form-row')
+      const invalidReason = !selectedReason
+
+      if (reasonError) {
+        reasonError.textContent = invalidReason ? this.defaultErrorMessage : ''
+      }
+      if (reasonRow) {
+        reasonRow.classList[invalidReason ? 'add' : 'remove']('is-invalid')
+      }
+      if (invalidReason) {
+        count++
+      }
+    }
+
     return count === 0
   }
   handleSubmit(event) {
@@ -109,6 +285,16 @@ export default class extends Controller {
   onSubmit(event) {
     const allFieldsValid = this.checkValids()
     event.preventDefault()
+    if (!allFieldsValid) {
+      return
+    }
+
+    if (this.hasSelectedNewTasks() && !this.confirmedNewTaskSubmission) {
+      this.openConfirmPopup()
+      return
+    }
+
+    this.confirmedNewTaskSubmission = false
     if (allFieldsValid) {
       this.formTarget.requestSubmit()
       document.querySelector('body').style.pointerEvents = 'none'

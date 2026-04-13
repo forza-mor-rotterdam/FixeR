@@ -16,14 +16,32 @@ dialog.infosheet {
     transition: all $transition-duration-default $transition-ease-default;
     display: flex;
     flex-direction: column;
+    overscroll-behavior: contain;
     z-index: 2500;
 
-    &:has(> turbo-frame) {
-        display: block;
+    // Keep the Turbo Frame full-width even on browsers where :has support is partial.
+    > #infosheet,
+    > turbo-frame {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        width: 100%;
+        min-width: 0;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
 
+    &:has(> turbo-frame) {
         > turbo-frame {
             display: flex;
             flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
     }
 
@@ -63,6 +81,10 @@ dialog.infosheet {
     }
 
     .header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: #fff;
         padding: 28px 16px 0;
         border-bottom: 1px solid $blue-200;
         h1 {
@@ -90,8 +112,6 @@ dialog.infosheet {
     }
     .content {
         flex: 1;
-        overflow-y: auto;
-        overflow-x: hidden;
         padding-bottom: 1em;
     }
 
@@ -125,6 +145,12 @@ dialog.infosheet {
             display: none;
         }
     }
+}
+
+html.infosheet-open,
+body.infosheet-open {
+    overflow: hidden;
+    overscroll-behavior: none;
 }
 
 dialog::backdrop {
