@@ -495,12 +495,13 @@ def taak_afhandelen(request, uuid):
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
     _ensure_melding_response_json(taak)
-    taaktypes = TaakRService().get_taaktypes(
+    taakr_service = TaakRService()
+    taaktypes = taakr_service.get_taaktypes(
         params={
             "taakapplicatie_taaktype_url": taak.taaktype.taaktype_url(request),
         },
-        force_cache=True,
     )
+    
     volgende_taaktypes = []
     actieve_vervolg_taken = []
     if taak.taakstatus.naam == "voltooid":
@@ -527,16 +528,14 @@ def taak_afhandelen(request, uuid):
         openstaande_taaktype_urls_voor_melding = [
             to.get("taaktype") for to in openstaande_taakopdrachten_voor_melding
         ]
-        alle_volgende_taaktypes = [
-            (
-                TaakRService()
-                .get_taaktype_by_url(taaktype_url)
-                .get("taakapplicatie_taaktype_url"),
-                TaakRService().get_taaktype_by_url(taaktype_url).get("omschrijving"),
-            )
-            for taaktype_url in taak_taaktype.get("volgende_taaktypes", [])
-            if TaakRService().get_taaktype_by_url(taaktype_url).get("actief")
-        ]
+        alle_volgende_taaktypes = []
+        for taaktype_url in taak_taaktype.get("volgende_taaktypes", []):
+            taaktype = taakr_service.get_taaktype_by_url(taaktype_url)
+            if taaktype.get("actief"):
+                alle_volgende_taaktypes.append((
+                    taaktype.get("taakapplicatie_taaktype_url"),
+                    taaktype.get("omschrijving"),
+                ))
 
         volgende_taaktypes = [
             taaktype
@@ -593,6 +592,9 @@ def taak_afhandelen(request, uuid):
                 reden_afwijzing=form.cleaned_data.get("reden_afwijzing"),
                 reden_afwijzing_toelichting=form.cleaned_data.get("anders_namelijk"),
             )
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return HttpResponse(status=200)
+
             return redirect("taken_overzicht")
         else:
             logger.error(f"taak_afhandelen: for errors: {form.errors}")

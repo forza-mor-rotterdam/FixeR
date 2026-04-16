@@ -279,6 +279,7 @@ export default class extends Controller {
     }
 
     request.open('post', form.action)
+    request.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     request.timeout = 300000
     request.send(formData)
   }
