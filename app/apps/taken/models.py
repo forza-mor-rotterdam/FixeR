@@ -447,7 +447,7 @@ class Taak(BasisModel):
         return (
             (
                 Taak.ResolutieOpties.OPGELOST,
-                "De taak is afgerond",
+                "De taak is uitgevoerd",
             ),
             (
                 Taak.ResolutieOpties.NIET_OPGELOST,
