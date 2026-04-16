@@ -6,6 +6,7 @@ export default class extends Controller {
   static targets = ['infosheet', 'scrollHandle', 'infosheetTurboframe']
   initialize() {
     this.sourceElemParent = null
+    this.frameStateStack = []
     this.isScrollLocked = false
     this.lastTouchY = null
     this.onEscapeKeydown = this.onEscapeKeydown.bind(this)
@@ -20,7 +21,39 @@ export default class extends Controller {
 
   disconnect() {
     document.removeEventListener('keydown', this.onEscapeKeydown)
+    this.frameStateStack = []
     this.unlockBackgroundScroll()
+  }
+
+  stashCurrentInfosheetState() {
+    if (!this.hasInfosheetTurboframeTarget || !this.infosheetTarget.open) {
+      return
+    }
+
+    if (!this.infosheetTurboframeTarget.firstChild) {
+      return
+    }
+
+    const currentContent = document.createDocumentFragment()
+    while (this.infosheetTurboframeTarget.firstChild) {
+      currentContent.appendChild(this.infosheetTurboframeTarget.firstChild)
+    }
+
+    this.frameStateStack.push(currentContent)
+    this.infosheetTurboframeTarget.removeAttribute('src')
+  }
+
+  restorePreviousInfosheetState() {
+    if (!this.hasInfosheetTurboframeTarget || this.frameStateStack.length === 0) {
+      return false
+    }
+
+    const previousContent = this.frameStateStack.pop()
+    this.infosheetTurboframeTarget.removeAttribute('src')
+    this.infosheetTurboframeTarget.innerHTML = ''
+    this.infosheetTurboframeTarget.appendChild(previousContent)
+
+    return true
   }
 
   onEscapeKeydown(event) {
@@ -180,6 +213,8 @@ export default class extends Controller {
       e.preventDefault()
       if (e.params.action) {
         this.lockBackgroundScroll()
+        this.stashCurrentInfosheetState()
+        this.infosheetTurboframeTarget.innerHTML = ''
         this.infosheetTurboframeTarget.setAttribute('src', e.params.action)
         this.infosheetTarget.showModal()
         this.infosheetTarget.removeEventListener('click', this.onBackdropClick)
@@ -227,6 +262,10 @@ export default class extends Controller {
   }
 
   closeInfosheet() {
+    if (this.restorePreviousInfosheetState()) {
+      return
+    }
+
     if (this.sourceElemParent) {
       setTimeout(() => this.injectedHeader?.remove(), 400)
       setTimeout(() => (this.injectedHeader = null), 400)
@@ -243,6 +282,8 @@ export default class extends Controller {
     if (this.hasInfosheetTarget) {
       if (this.infosheetTarget.open) {
         setTimeout(() => (this.infosheetTurboframeTarget.innerHTML = ''), 400)
+        this.infosheetTurboframeTarget.removeAttribute('src')
+        this.frameStateStack = []
         this.infosheetTarget.close()
         this.unlockBackgroundScroll()
       }
