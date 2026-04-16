@@ -155,6 +155,9 @@ def task_taakopdracht_notificatie(
         omschrijving_intern=taakgebeurtenis.omschrijving_intern,
         aangemaakt_op=taakgebeurtenis.aangemaakt_op.isoformat(),
         bijlagen=bijlagen,
+        reden_afwijzing=taakgebeurtenis.reden_afwijzing,
+        reden_afwijzing_toelichting=taakgebeurtenis.reden_afwijzing_toelichting,
+        vervolg_taaktypes=taakgebeurtenis.vervolg_taaktypes,
     )
     if taak_status_aanpassen_response.get("error"):
         cache.delete(task_lock_key)
@@ -206,6 +209,9 @@ def task_taakopdracht_notificatie_v2(self, taakgebeurtenis_uuid):
         omschrijving_intern=taakgebeurtenis.omschrijving_intern,
         aangemaakt_op=taakgebeurtenis.aangemaakt_op.isoformat(),
         bijlagen=bijlagen,
+        reden_afwijzing=taakgebeurtenis.reden_afwijzing,
+        reden_afwijzing_toelichting=taakgebeurtenis.reden_afwijzing_toelichting,
+        vervolg_taaktypes=taakgebeurtenis.vervolg_taaktypes,
     )
 
     response_error = taak_status_aanpassen_response.get("error")

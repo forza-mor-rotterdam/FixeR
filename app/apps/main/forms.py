@@ -3,7 +3,7 @@ import logging
 from apps.frontend.fields import BooleanField
 from apps.frontend.widgets import CheckboxInput
 from apps.taken.filters import FILTERS
-from apps.taken.models import Taak
+from apps.taken.models import Taak, Taakgebeurtenis
 from deepdiff import DeepDiff
 from django import forms
 
@@ -36,6 +36,9 @@ class MultipleFileField(forms.FileField):
         return result
 
 
+REDEN_AFWIJZING_OPTIES = Taakgebeurtenis.RedenAfwijzingOpties.choices
+
+
 class TaakBehandelForm(forms.Form):
     resolutie = forms.ChoiceField(
         widget=forms.RadioSelect(
@@ -48,6 +51,33 @@ class TaakBehandelForm(forms.Form):
         label="Is de taak afgehandeld?",
         choices=Taak.behandel_opties(),
         required=True,
+    )
+
+    reden_afwijzing = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input list--form-radio-input--hidden",
+                "data-action": "change->incidentHandleForm#onChangeRedenAfwijzing",
+                "hideLabel": True,
+            }
+        ),
+        label="Reden",
+        choices=REDEN_AFWIJZING_OPTIES,
+        required=False,
+    )
+
+    anders_namelijk = forms.CharField(
+        label="",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": "3",
+                "placeholder": "Vul hier de reden in",
+                "maxlength": "200",
+                "hideLabel": True,
+            }
+        ),
+        required=False,
     )
 
     bijlagen = MultipleFileField(
@@ -66,14 +96,14 @@ class TaakBehandelForm(forms.Form):
     )
 
     omschrijving_intern = forms.CharField(
-        label="Interne opmerking",
+        label="Opmerking voor mid-office",
         widget=forms.Textarea(
             attrs={
                 "class": "form-control",
                 "data-testid": "information",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "internalText",
-                "maxlength": "5000",
+                "maxlength": "200",
             }
         ),
         required=False,
@@ -83,7 +113,7 @@ class TaakBehandelForm(forms.Form):
         volgende_taaktypes = kwargs.pop("volgende_taaktypes", None)
         super().__init__(*args, **kwargs)
 
-        # Vraag Vervolgtaak? Altijd tonen bij de 3 resoluties (afgehandeld, niet afgehandeld, niets aangetroffen)
+        # Vraag Vervolgtaak? Altijd tonen bij de 2 resoluties (afgehandeld, niet afgehandeld)
         # Alle vervolgtaken als checkboxes weergeven?
         # Bij resolutie 3 ("kan  niet") is interne opmerking VERPLICHT, met tekst "Waarom kan de taak niet worden afgerond?"
         if volgende_taaktypes:
@@ -105,6 +135,23 @@ class TaakBehandelForm(forms.Form):
                 ),
                 required=False,
             )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        resolutie = cleaned_data.get("resolutie")
+        reden_afwijzing = cleaned_data.get("reden_afwijzing")
+        anders_namelijk = (cleaned_data.get("anders_namelijk") or "").strip()
+
+        if resolutie == Taak.ResolutieOpties.NIET_OPGELOST and not reden_afwijzing:
+            self.add_error(
+                "reden_afwijzing",
+                "Maak een keuze uit een van de bovenstaande opties.",
+            )
+
+        if reden_afwijzing == "anders" and not anders_namelijk:
+            self.add_error("anders_namelijk", "Dit veld is verplicht.")
+
+        return cleaned_data
 
 
 class TaakFilterCheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
