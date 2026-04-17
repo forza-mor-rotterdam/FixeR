@@ -4,6 +4,11 @@ const SWIPE_TRESHOLD = 100
 let scrollPositionForDialog = 0
 export default class extends Controller {
   static targets = ['infosheet', 'scrollHandle', 'infosheetTurboframe']
+
+  isMobileOrTablet() {
+    return window.innerWidth < 1024
+  }
+
   initialize() {
     this.sourceElemParent = null
     this.frameStateStack = []
@@ -13,16 +18,64 @@ export default class extends Controller {
     this.onBackdropClick = this.onBackdropClick.bind(this)
     this.onDocumentTouchStart = this.onDocumentTouchStart.bind(this)
     this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this)
+    this.onDocumentFocusIn = this.onDocumentFocusIn.bind(this)
   }
 
   connect() {
     document.addEventListener('keydown', this.onEscapeKeydown)
+    document.addEventListener('focusin', this.onDocumentFocusIn, true)
   }
 
   disconnect() {
     document.removeEventListener('keydown', this.onEscapeKeydown)
+    document.removeEventListener('focusin', this.onDocumentFocusIn, true)
     this.frameStateStack = []
     this.unlockBackgroundScroll()
+  }
+
+  onDocumentFocusIn(event) {
+    if (!this.hasInfosheetTarget || !this.infosheetTarget.open || !this.isMobileOrTablet()) {
+      return
+    }
+
+    const focusedElement = event.target
+    if (!(focusedElement instanceof HTMLElement)) {
+      return
+    }
+
+    const isField = focusedElement.matches('input, textarea, select, [contenteditable="true"]')
+    if (!isField || !this.infosheetTarget.contains(focusedElement)) {
+      return
+    }
+
+    window.requestAnimationFrame(() => {
+      this.ensureFocusedFieldVisible(focusedElement)
+    })
+  }
+
+  ensureFocusedFieldVisible(element) {
+    if (!this.hasInfosheetTurboframeTarget) {
+      return
+    }
+
+    // First let the browser place the focused field in view.
+    element.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+
+    const elementRect = element.getBoundingClientRect()
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight
+    const topPadding = 16
+    const bottomPadding = 24
+
+    if (elementRect.bottom > viewportHeight - bottomPadding) {
+      const delta = elementRect.bottom - (viewportHeight - bottomPadding)
+      this.infosheetTurboframeTarget.scrollBy({ top: delta, behavior: 'auto' })
+      return
+    }
+
+    if (elementRect.top < topPadding) {
+      const delta = topPadding - elementRect.top
+      this.infosheetTurboframeTarget.scrollBy({ top: -delta, behavior: 'auto' })
+    }
   }
 
   stashCurrentInfosheetState() {
@@ -65,6 +118,9 @@ export default class extends Controller {
   onBackdropClick(event) {
     if (event.target === event.currentTarget) {
       event.stopPropagation()
+      if (window.innerWidth < 1024) {
+        return
+      }
       this.closeInfosheet()
     }
   }

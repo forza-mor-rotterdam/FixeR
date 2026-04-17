@@ -499,11 +499,20 @@ dialog.taak-afhandelen-modal__confirm {
         width: 100vw;
         max-width: 100vw;
     }
+
+    .taak-afhandelen-modal__form [data-incidentHandleForm-target="newTask"] .list-horizontal {
+        ul.list--form-check-input {
+            li {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+        }
+    }
 }
 
 @media (min-width: map-get($grid-breakpoints, lg)) and (hover: hover) and (pointer: fine) {
     dialog.infosheet:has(.taak-afhandelen-modal) {
-        width: 38%;
+        width: 19%;
         max-width: 100vw;
     }
 }

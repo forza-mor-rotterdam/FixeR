@@ -16,6 +16,7 @@ export default class extends Controller {
 
   connect() {
     this.confirmedNewTaskSubmission = false
+    this.shouldShowReasonHelptext = false
     this.requiredLabelInternalText = 'Opmerking voor mid-office'
     this.defaultLabelInternalText = 'Opmerking voor mid-office'
     this.defaultErrorMessage = 'Vul a.u.b. dit veld in.'
@@ -95,6 +96,7 @@ export default class extends Controller {
     }
     if (this.hasRedenAfwijzingTarget) {
       this.redenAfwijzingTarget.hidden = false
+      this.shouldShowReasonHelptext = false
       this.updateReasonHelptextVisibility()
     }
   }
@@ -108,7 +110,8 @@ export default class extends Controller {
       this.redenAfwijzingTarget.hidden = true
     }
     if (this.hasReasonHelptextTarget) {
-      this.reasonHelptextTarget.hidden = false
+      this.shouldShowReasonHelptext = false
+      this.reasonHelptextTarget.hidden = true
     }
     if (this.hasAndersNamelijkTarget) {
       this.andersNamelijkTarget.hidden = true
@@ -122,8 +125,8 @@ export default class extends Controller {
   onChangeRedenAfwijzing(event) {
     this.updateReasonHelptextVisibility()
     if (this.hasReasonHelptextTarget) {
+      this.shouldShowReasonHelptext = false
       this.reasonHelptextTarget.hidden = true
-      this.reasonHelptextTarget.style.display = 'none'
     }
     this.clearRedenAfwijzingErrors()
     this.clearReasonMessageNodes()
@@ -181,8 +184,14 @@ export default class extends Controller {
       return
     }
 
+    if (this.redenAfwijzingTarget.hidden) {
+      this.reasonHelptextTarget.hidden = true
+      return
+    }
+
     const selectedReason = this.redenAfwijzingTarget.querySelector('input[type="radio"]:checked')
-    this.reasonHelptextTarget.hidden = !!selectedReason
+    this.reasonHelptextTarget.hidden = !!selectedReason || !this.shouldShowReasonHelptext
+    this.reasonHelptextTarget.style.display = this.reasonHelptextTarget.hidden ? 'none' : ''
   }
 
   onChangeResolution(event) {
@@ -213,16 +222,10 @@ export default class extends Controller {
       const selectedReason = this.redenAfwijzingTarget.querySelector(
         'input[type="radio"][name="reden_afwijzing"]:checked'
       )
-      const reasonError = this.redenAfwijzingTarget.querySelector('.invalid-text')
-      const reasonRow = this.redenAfwijzingTarget.querySelector('.form-row')
       const invalidReason = !selectedReason
 
-      if (reasonError) {
-        reasonError.textContent = invalidReason ? this.defaultErrorMessage : ''
-      }
-      if (reasonRow) {
-        reasonRow.classList[invalidReason ? 'add' : 'remove']('is-invalid')
-      }
+      this.shouldShowReasonHelptext = invalidReason
+      this.updateReasonHelptextVisibility()
       if (invalidReason) {
         count++
       }
