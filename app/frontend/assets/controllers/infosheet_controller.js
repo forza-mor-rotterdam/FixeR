@@ -65,6 +65,9 @@ export default class extends Controller {
   onBackdropClick(event) {
     if (event.target === event.currentTarget) {
       event.stopPropagation()
+      if (window.innerWidth < 1024) {
+        return
+      }
       this.closeInfosheet()
     }
   }
