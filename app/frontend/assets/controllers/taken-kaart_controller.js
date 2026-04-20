@@ -37,10 +37,18 @@ export default class MapController extends Controller {
     this.markerMe = null
     this.markers = null
     this.buurten = null
-    this.kaartModus = KaartModus.TOON_ALLES
+    this.kaartModus = this.getKaartModus()
+    // Reset de kaart naar de gecachete positie
+    const cachedPosition = this.getCachedPosition()
+    const initialCenter =
+      this.kaartModus === KaartModus.VOLGEN && cachedPosition
+        ? cachedPosition
+        : [StandaardKaartCenter.coords.latitude, StandaardKaartCenter.coords.longitude]
+    const initialZoom =
+      this.kaartModus === KaartModus.VOLGEN && cachedPosition ? this.getZoom() : StandaardKaartZoom
     this.map = L.map(this.kaartId, {
-      zoom: StandaardKaartZoom,
-      center: [StandaardKaartCenter.coords.latitude, StandaardKaartCenter.coords.longitude],
+      zoom: initialZoom,
+      center: initialCenter,
     })
     this.map.on('zoomend', () => {
       if (this.kaartModus === KaartModus.VOLGEN) {
@@ -49,6 +57,7 @@ export default class MapController extends Controller {
     })
     this.map.on('dragstart', () => {
       this.kaartModus = null
+      this.setKaartModusStorage(null)
       if (this.hasTakenOverzichtOutlet) {
         this.takenOverzichtOutlet.setKaartModus(this.kaartModus)
       }
@@ -94,6 +103,25 @@ export default class MapController extends Controller {
   setZoom(zoom) {
     sessionStorage.setItem('kaartZoom', zoom)
   }
+  getKaartModus() {
+    return sessionStorage.getItem('kaartModus') || KaartModus.TOON_ALLES
+  }
+  setKaartModusStorage(kaartModus) {
+    if (kaartModus) {
+      sessionStorage.setItem('kaartModus', kaartModus)
+    } else {
+      sessionStorage.removeItem('kaartModus')
+    }
+  }
+  getCachedPosition() {
+    const cached = sessionStorage.getItem('lastPosition')
+    if (!cached) return null
+    const [lat, lng] = cached.split(',').map(Number)
+    return [lat, lng]
+  }
+  setCachedPosition(lat, lng) {
+    sessionStorage.setItem('lastPosition', `${lat},${lng}`)
+  }
   drawMap = () => {
     const url =
       'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}'
@@ -119,7 +147,10 @@ export default class MapController extends Controller {
   setupResizeObserver = () => {
     const resizeObserver = new ResizeObserver(() => {
       this.map.invalidateSize()
-      this.map.closePopup()
+      // We gebruiken deze keepPopupOpen boolean omdat de kaart lijkt te resizen bij initieel laden.
+      if (!this.keepPopupOpen) {
+        this.map.closePopup()
+      }
     })
     resizeObserver.observe(document.getElementById(this.kaartId))
   }
@@ -130,13 +161,21 @@ export default class MapController extends Controller {
   selectTaakMarker(taakUuid, preventScroll) {
     const obj = this.markerList.find((obj) => obj.options.taakUuid == taakUuid)
     this.preventScroll = preventScroll
-    obj?.openPopup()
+    if (obj) {
+      this.keepPopupOpen = true
+      obj.openPopup()
+      // We gebruiken deze keepPopupOpen boolean omdat de kaart lijkt te resizen bij initieel laden.
+      setTimeout(() => {
+        this.keepPopupOpen = false
+      }, 500)
+    }
   }
   toonAlles = () => this.map.fitBounds(this.markers.getBounds())
-  volgen = () => this.map.flyTo(this.markerMe.getLatLng(), this.getZoom())
+  volgen = () => this.map.setView(this.markerMe.getLatLng(), this.getZoom())
 
   kaartModusChangeHandler = (kaartModus) => {
     this.kaartModus = kaartModus
+    this.setKaartModusStorage(kaartModus)
     if (!Object.keys(this.markers.getBounds()).length) {
       return
     }
@@ -173,13 +212,16 @@ export default class MapController extends Controller {
     }
   }
   positionChangeEvent = (position) => {
+    const lat = position.coords.latitude
+    const lng = position.coords.longitude
+    this.setCachedPosition(lat, lng)
     if (!this.markerMe) {
-      this.markerMe = new L.Marker([position.coords.latitude, position.coords.longitude], {
+      this.markerMe = new L.Marker([lat, lng], {
         icon: MapController.markerIcons.blue,
       })
       this.markers.addLayer(this.markerMe)
     } else {
-      this.markerMe.setLatLng([position.coords.latitude, position.coords.longitude])
+      this.markerMe.setLatLng([lat, lng])
     }
     if (this.kaartModus === KaartModus.VOLGEN) {
       this.volgen()
@@ -279,5 +321,11 @@ export default class MapController extends Controller {
       .map((markerData) => {
         this.plotTaakMarker(markerData)
       })
+    const selectedInput = this.element
+      .closest('form')
+      ?.querySelector('input[name="selected_taak_uuid"]')
+    if (selectedInput && selectedInput.value) {
+      this.selectTaakMarker(selectedInput.value, false)
+    }
   }
 }

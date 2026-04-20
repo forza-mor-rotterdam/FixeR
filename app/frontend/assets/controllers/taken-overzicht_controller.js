@@ -68,17 +68,6 @@ export default class extends Controller {
     urlObj.search = ''
     const url = urlObj.toString()
     window.history.replaceState({}, '', url)
-    if (
-      this.hasTakenLijstOutlet &&
-      this.hasSelectedTaakUuidFieldTarget &&
-      this.selectedTaakUuidFieldTarget.value
-    ) {
-      setTimeout(() => {
-        this.takenLijstOutlet.selectTaakMarker({
-          params: { taakUuid: this.selectedTaakUuidFieldTarget.value, preventScroll: false },
-        })
-      }, 800)
-    }
     if (this.filtersActiveFieldTarget.checked || this.zoekFieldTarget.value.length > 0) {
       this.zoekFieldDefaultContainerTarget.classList.remove('hidden-vertical')
       this.zoekFieldDefaultContainerTarget.classList.add('show-vertical')
@@ -87,6 +76,20 @@ export default class extends Controller {
       this.zoekFieldTarget.focus()
       const l = this.zoekFieldTarget.value.length
       this.zoekFieldTarget.setSelectionRange(l, l)
+    }
+
+    const hasSelectedTaak =
+      this.hasSelectedTaakUuidFieldTarget && this.selectedTaakUuidFieldTarget.value
+    if (hasSelectedTaak) {
+      sessionStorage.removeItem('kaartModus')
+    }
+    const savedKaartModus = sessionStorage.getItem('kaartModus')
+    if (savedKaartModus === 'volgen' && this.hasKaartModusOptionTarget) {
+      const volgenOption = this.kaartModusOptionTargets.find((elem) => elem.value === 'volgen')
+      if (volgenOption) {
+        volgenOption.checked = true
+        volgenOption.closest('li').classList.add('active')
+      }
     }
     document.addEventListener('click', this.closeAll)
   }
