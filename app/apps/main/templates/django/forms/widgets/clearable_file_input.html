@@ -17,10 +17,12 @@
         <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
     {% endfor %}
     <div class="file-upload multiple hidden" tabindex="1">
-        <div class="file-upload-mask">Sleep één of meer bestanden hier naartoe, of klik hier om bestanden te uploaden</div>
+        <div class="file-upload-rail">
+            <div class="file-upload-mask">Klik om foto's toe te voegen</div>
+            <div id="imagesPreview" class="preview"></div>
+        </div>
         {% include "django/forms/widgets/input.html" %}
         <span class="help-block invalid-text"
               data-bijlagen-target="uploadMaxMessage"></span>
-        <div id="imagesPreview" class="preview"></div>
     </div>
 </div>
