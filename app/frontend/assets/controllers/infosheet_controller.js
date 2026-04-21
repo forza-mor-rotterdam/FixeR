@@ -13,11 +13,8 @@ export default class extends Controller {
     this.sourceElemParent = null
     this.frameStateStack = []
     this.isScrollLocked = false
-    this.lastTouchY = null
     this.onEscapeKeydown = this.onEscapeKeydown.bind(this)
     this.onBackdropClick = this.onBackdropClick.bind(this)
-    this.onDocumentTouchStart = this.onDocumentTouchStart.bind(this)
-    this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this)
     this.onDocumentFocusIn = this.onDocumentFocusIn.bind(this)
   }
 
@@ -125,54 +122,6 @@ export default class extends Controller {
     }
   }
 
-  onDocumentTouchStart(event) {
-    this.lastTouchY = event.touches?.[0]?.clientY ?? null
-  }
-
-  findScrollableParent(element) {
-    let current = element
-
-    while (current && current !== this.infosheetTarget) {
-      if (current.scrollHeight > current.clientHeight) {
-        return current
-      }
-      current = current.parentElement
-    }
-
-    return null
-  }
-
-  onDocumentTouchMove(event) {
-    if (!this.hasInfosheetTarget || !this.infosheetTarget.open) {
-      return
-    }
-
-    // Block mobile pull-to-refresh/background scroll gestures outside the sheet.
-    if (!event.target.closest('dialog.infosheet')) {
-      event.preventDefault()
-      return
-    }
-
-    const currentTouchY = event.touches?.[0]?.clientY
-    const deltaY = this.lastTouchY === null ? 0 : currentTouchY - this.lastTouchY
-    this.lastTouchY = currentTouchY
-
-    const scrollableParent = this.findScrollableParent(event.target)
-    if (!scrollableParent) {
-      event.preventDefault()
-      return
-    }
-
-    const atTop = scrollableParent.scrollTop <= 0
-    const atBottom =
-      scrollableParent.scrollTop + scrollableParent.clientHeight >=
-      scrollableParent.scrollHeight - 1
-
-    if ((atTop && deltaY > 0) || (atBottom && deltaY < 0)) {
-      event.preventDefault()
-    }
-  }
-
   lockBackgroundScroll() {
     if (this.isScrollLocked) {
       return
@@ -184,8 +133,6 @@ export default class extends Controller {
     document.body.style.top = `-${scrollPositionForDialog}px`
     document.body.style.position = 'fixed'
     document.body.style.width = '100%'
-    document.addEventListener('touchstart', this.onDocumentTouchStart, { passive: true })
-    document.addEventListener('touchmove', this.onDocumentTouchMove, { passive: false })
     this.isScrollLocked = true
   }
 
@@ -194,14 +141,11 @@ export default class extends Controller {
       return
     }
 
-    document.removeEventListener('touchstart', this.onDocumentTouchStart)
-    document.removeEventListener('touchmove', this.onDocumentTouchMove)
     document.documentElement.classList.remove('infosheet-open')
     document.body.classList.remove('infosheet-open')
     document.body.style.position = ''
     document.body.style.top = ''
     document.body.style.width = ''
-    this.lastTouchY = null
     window.scrollTo({ top: scrollPositionForDialog, left: 0, behavior: 'instant' })
     this.isScrollLocked = false
   }
@@ -251,7 +195,7 @@ export default class extends Controller {
 
   handleTouchEnd() {
     if (!this.isSwiping) return
-    const swipeDistance = this.startY + this.currentY
+    const swipeDistance = this.currentY - this.startY
     if (swipeDistance > SWIPE_TRESHOLD) {
       this.infosheetTarget.style.transform = ``
       this.closeInfosheet()

@@ -17,6 +17,7 @@ dialog.infosheet {
     display: flex;
     flex-direction: column;
     overscroll-behavior: contain;
+    touch-action: pan-y;
     z-index: 2500;
 
     // Keep the Turbo Frame full-width even on browsers where :has support is partial.
@@ -30,6 +31,8 @@ dialog.infosheet {
         min-height: 0;
         overflow-y: auto;
         overflow-x: hidden;
+        overscroll-behavior-y: contain;
+        touch-action: pan-y;
         -webkit-overflow-scrolling: touch;
     }
 
@@ -41,6 +44,8 @@ dialog.infosheet {
             min-height: 0;
             overflow-y: auto;
             overflow-x: hidden;
+            overscroll-behavior-y: contain;
+            touch-action: pan-y;
             -webkit-overflow-scrolling: touch;
         }
     }
@@ -51,9 +56,16 @@ dialog.infosheet {
 
     &[open] {
         max-height: 90vh;
+        max-height: 90svh;
         opacity: 1;
         transform: translateY(0);
         transition: all $transition-duration-default $transition-ease-default;
+    }
+
+    @supports (height: 100dvh) {
+        &[open] {
+            max-height: 90dvh;
+        }
     }
 
     &::before {
@@ -131,10 +143,20 @@ dialog.infosheet {
         transform: translate3d(100%, 0, 0);
         top: 0;
         height: 100vh;
+        height: 100svh;
 
         &[open] {
             max-height: none;
             height: 100vh;
+            height: 100svh;
+        }
+
+        @supports (height: 100dvh) {
+            height: 100dvh;
+
+            &[open] {
+                height: 100dvh;
+            }
         }
 
         .content {
