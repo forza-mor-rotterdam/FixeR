@@ -71,7 +71,10 @@ export default class extends Controller {
 				return
 			}
 
-			if (document.body.classList.contains('show-dialog')) {
+			if (
+				document.body.classList.contains('show-dialog') ||
+				document.body.classList.contains('infosheet-open')
+			) {
 				isTracking = false
 				return
 			}

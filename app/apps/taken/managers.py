@@ -29,6 +29,8 @@ class TaakManager(models.Manager):
             omschrijving_intern = serializer.validated_data.pop(
                 "omschrijving_intern", None
             )
+
+            groep = serializer.validated_data.get("additionele_informatie", {}).get("groep")
             taak = serializer.save()
 
             taakstatus = Taakstatus.objects.create(
@@ -39,6 +41,7 @@ class TaakManager(models.Manager):
                 taakstatus=taakstatus,
                 gebruiker=gebruiker,
                 omschrijving_intern=omschrijving_intern,
+                groep=groep,
             )
             taak.taakstatus = taakstatus
             taak.save()
@@ -59,6 +62,9 @@ class TaakManager(models.Manager):
         bijlage_paden,
         taak,
         vervolg_taaktypes,
+        groep=None,
+        reden_afwijzing=None,
+        reden_afwijzing_toelichting=None,
         db="default",
     ):
         from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus
@@ -89,6 +95,9 @@ class TaakManager(models.Manager):
                 bijlage_paden=bijlage_paden,
                 notificatie_verstuurd=False,
                 vervolg_taaktypes=vervolg_taaktypes,
+                groep=groep,
+                reden_afwijzing=reden_afwijzing,
+                reden_afwijzing_toelichting=reden_afwijzing_toelichting,
             )
 
             locked_taak.taakstatus = taakgebeurtenis.taakstatus

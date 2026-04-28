@@ -155,6 +155,9 @@ def task_taakopdracht_notificatie(
         omschrijving_intern=taakgebeurtenis.omschrijving_intern,
         aangemaakt_op=taakgebeurtenis.aangemaakt_op.isoformat(),
         bijlagen=bijlagen,
+        reden_afwijzing=taakgebeurtenis.reden_afwijzing,
+        reden_afwijzing_toelichting=taakgebeurtenis.reden_afwijzing_toelichting,
+        vervolg_taaktypes=taakgebeurtenis.vervolg_taaktypes,
     )
     if taak_status_aanpassen_response.get("error"):
         cache.delete(task_lock_key)
@@ -171,6 +174,7 @@ def task_taakopdracht_notificatie(
             # bericht=vervolg_taak_bericht,
             # temporary use 'interne opmerkingen' also for all new tasks, after redesign of this modal we will reimplement a message per task
             gebruiker_email=taakgebeurtenis.gebruiker,
+            gebruiker_groep=taakgebeurtenis.groep,
         )
     taakgebeurtenis.notificatie_verstuurd = True
     taakgebeurtenis.save(update_fields=["notificatie_verstuurd"])
@@ -205,6 +209,9 @@ def task_taakopdracht_notificatie_v2(self, taakgebeurtenis_uuid):
         omschrijving_intern=taakgebeurtenis.omschrijving_intern,
         aangemaakt_op=taakgebeurtenis.aangemaakt_op.isoformat(),
         bijlagen=bijlagen,
+        reden_afwijzing=taakgebeurtenis.reden_afwijzing,
+        reden_afwijzing_toelichting=taakgebeurtenis.reden_afwijzing_toelichting,
+        vervolg_taaktypes=taakgebeurtenis.vervolg_taaktypes,
     )
 
     response_error = taak_status_aanpassen_response.get("error")
@@ -222,6 +229,7 @@ def task_taakopdracht_notificatie_v2(self, taakgebeurtenis_uuid):
             # bericht=vervolg_taak_bericht,
             # temporary use 'interne opmerkingen' also for all new tasks, after redesign of this modal we will reimplement a message per task
             gebruiker_email=taakgebeurtenis.gebruiker,
+            gebruiker_groep=taakgebeurtenis.groep,
         )
 
     if response_error:
@@ -238,7 +246,7 @@ def task_taakopdracht_notificatie_v2(self, taakgebeurtenis_uuid):
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
 def task_taak_aanmaken(
-    self, melding_uuid, taaktype_url, titel, bericht, gebruiker_email
+    self, melding_uuid, taaktype_url, titel, bericht, gebruiker_email, gebruiker_groep=None
 ):
     taak_aanmaken_response = MORCoreService().taak_aanmaken(
         melding_uuid=melding_uuid,
@@ -246,6 +254,7 @@ def task_taak_aanmaken(
         titel=titel,
         bericht=bericht,
         gebruiker=gebruiker_email,
+        additionele_informatie={"groep": gebruiker_groep},
     )
 
     if isinstance(taak_aanmaken_response, dict) and taak_aanmaken_response.get("error"):
@@ -310,11 +319,12 @@ def update_taak_status_met_taakopdracht_status(self, taak_id):
             taak=taak,
         )
         resolutie = taak.additionele_informatie.get("taakopdracht", {}).get("resolutie")
-        gebruiker = (
+        eerste_taakopdracht_gebeurtenis = (
             taak.additionele_informatie.get("taakopdracht", {})
             .get("taakgebeurtenissen_voor_taakopdracht", [{}])[0]
-            .get("gebruiker")
         )
+        gebruiker = eerste_taakopdracht_gebeurtenis.get("gebruiker")
+        groep = eerste_taakopdracht_gebeurtenis.get("groep")
         afgesloten_op = None
         try:
             afgesloten_op = parser.parse(
@@ -327,6 +337,7 @@ def update_taak_status_met_taakopdracht_status(self, taak_id):
             resolutie=resolutie,
             gebruiker=gebruiker,
             taak=taak,
+            groep=groep,
         )
         taak.taakstatus = taakstatus
         taak.resolutie = resolutie

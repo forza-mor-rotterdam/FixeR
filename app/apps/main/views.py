@@ -145,8 +145,9 @@ class TakenOverzicht(
         self.initial = {}
         self.form_data = {}
         self.initial_filter_data = None
-        if self.request.session.get("gps"):
-            del self.request.session["gps"]
+        gps = self.request.session.get("gps")
+        if gps:
+            self.form_data["gps"] = gps
 
         if (
             (
@@ -204,14 +205,16 @@ class TakenOverzicht(
         queryset = queryset.taken_zoeken(self.request.session.get("q"))
 
         gps = self.get_gps()
+        self.wacht_op_gps = not gps and profiel.taken_sorting == AFSTAND_SORTING_KEY
+        if self.wacht_op_gps:
+            return queryset.none()
         if gps:
             queryset = queryset.annotate(
                 afstand=ExpressionWrapper(
                     Distance("melding__geometrie", gps), output_field=FloatField()
                 )
             )
-        if gps or (not gps and profiel.taken_sorting != AFSTAND_SORTING_KEY):
-            queryset = queryset.order_by(profiel.taken_sorting_order_by)
+        queryset = queryset.order_by(profiel.taken_sorting_order_by)
 
         selected_taak_uuid = self.request.GET.get(
             "taakUuid", self.form_data.get("selected_taak_uuid", "")
@@ -238,11 +241,13 @@ class TakenOverzicht(
 
         return queryset
 
+
     def get_initial(self):
         initial = super().get_initial()
         initial.update(self.request.user.profiel.taken_filter_validated_data)
         initial.update(
             {
+                "gps": self.request.session.get("gps", ""),
                 "q": self.request.session.get("q"),
                 "deactivate_filters": self.request.session.get("deactivate_filters"),
                 "sorteer_opties": self.request.user.profiel.ui_instellingen.get(
@@ -262,6 +267,7 @@ class TakenOverzicht(
                 "profiel_taaktype_uuid_list": list(
                     self.request.user.profiel.taaktypes.values_list("uuid", flat=True)
                 ),
+                "wacht_op_gps": getattr(self, "wacht_op_gps", False),
             }
         )
         return context
@@ -447,12 +453,13 @@ def taak_afhandelen(request, uuid):
     taak = get_object_or_404(Taak, uuid=uuid)
     if taak.verwijderd_op:
         return render(request, "410.html", {}, status=410)
-    taaktypes = TaakRService().get_taaktypes(
+    taakr_service = TaakRService()
+    taaktypes = taakr_service.get_taaktypes(
         params={
             "taakapplicatie_taaktype_url": taak.taaktype.taaktype_url(request),
         },
-        force_cache=True,
     )
+    
     volgende_taaktypes = []
     actieve_vervolg_taken = []
     if taak.taakstatus.naam == "voltooid":
@@ -479,16 +486,14 @@ def taak_afhandelen(request, uuid):
         openstaande_taaktype_urls_voor_melding = [
             to.get("taaktype") for to in openstaande_taakopdrachten_voor_melding
         ]
-        alle_volgende_taaktypes = [
-            (
-                TaakRService()
-                .get_taaktype_by_url(taaktype_url)
-                .get("taakapplicatie_taaktype_url"),
-                TaakRService().get_taaktype_by_url(taaktype_url).get("omschrijving"),
-            )
-            for taaktype_url in taak_taaktype.get("volgende_taaktypes", [])
-            if TaakRService().get_taaktype_by_url(taaktype_url).get("actief")
-        ]
+        alle_volgende_taaktypes = []
+        for taaktype_url in taak_taaktype.get("volgende_taaktypes", []):
+            taaktype = taakr_service.get_taaktype_by_url(taaktype_url)
+            if taaktype.get("actief"):
+                alle_volgende_taaktypes.append((
+                    taaktype.get("taakapplicatie_taaktype_url"),
+                    taaktype.get("omschrijving"),
+                ))
 
         volgende_taaktypes = [
             taaktype
@@ -541,7 +546,13 @@ def taak_afhandelen(request, uuid):
                 bijlage_paden=bijlage_paden,
                 taak=taak,
                 vervolg_taaktypes=vervolg_taaktypes,
+                groep=getattr(request.user.groups.first(), "name", None),
+                reden_afwijzing=form.cleaned_data.get("reden_afwijzing"),
+                reden_afwijzing_toelichting=form.cleaned_data.get("anders_namelijk"),
             )
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return HttpResponse(status=200)
+
             return redirect("taken_overzicht")
         else:
             logger.error(f"taak_afhandelen: for errors: {form.errors}")

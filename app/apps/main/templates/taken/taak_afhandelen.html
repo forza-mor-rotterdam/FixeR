@@ -1,94 +1,121 @@
+{% extends "infosheet/turbo.html" %}
 {% load webpack_static from webpack_loader %}
 {% load json_encode strip_html from main_tags %}
 {% load rotterdam_formulier_html %}
-<turbo-stream action="update" target="modal_header_title">
-<template>
-    Taak afhandelen
-</template>
-</turbo-stream>
-<turbo-stream action="update" target="modal_header_subtitle">
-<template>
-    <strong>{{ taak.melding.locatie_verbose }}</strong>
-    <br />
-    {% if taak.titel %}{{ taak.titel|strip_html }}{% endif %}
-</template>
-</turbo-stream>
-{% if taak.laatste_taakgebeurtenis_omschrijving_intern|lower != "taak aangemaakt" and taak.laatste_taakgebeurtenis_omschrijving_intern %}
-    <turbo-stream action="update" target="modal_header_info_extra">
-    <template>
-        <div class='alert alert--info margin-vertical'>
-            <div class='wrapper'>
-                <div class='overflow' tabindex='0' data-controller='overflow'>
-                    <strong>
-                        <span class='badge-count'>i</span>Interne opmerking
-                    </strong>
-                    <div class='container__overflow'>
-                        <p class='content__overflow'>{{ taak.laatste_taakgebeurtenis_omschrijving_intern }}</p>
+{% block header %}
+    <div class="header">
+        <div class="scroll-handle" data-infosheet-target="scrollHandle"></div>
+        <h1>Taak afronden</h1>
+        <button autofocus
+                class="btn-close--small"
+                data-action="infosheet#closeInfosheet"
+                aria-label="Sluiten">{% include "icons/close.svg" %}</button>
+    </div>
+    <div class="taak-afhandelen-modal__meta">
+        {% if taak.titel %}<span class="taak-afhandelen-modal__subtitle">{{ taak.titel|strip_html }}</span>{% endif %}
+        {% if taak.taaktype.id %}
+            <button class="btn btn-textlink btn-info taak-afhandelen-modal__taakuitleg"
+                    data-action="infosheet#openInfosheet"
+                    data-infosheet-action-param="{% url 'taaktype_taakr' taak.taaktype.id %}">
+                <span>Taakuitleg</span>
+                {% include "icons/info.svg" %}
+            </button>
+        {% endif %}
+    </div>
+{% endblock header %}
+{% block content %}
+    <div class="content">
+        <div class="taak-afhandelen-modal__content-inner">
+            <div class="container__form taak-afhandelen-modal" data-controller="incidentHandleForm">
+                {% include "snippets/messages.html" %}
+                {% if form %}
+                <form action="{% url 'taak_afhandelen' taak.uuid %}"
+                      method="post"
+                      data-testid="handleIncidentForm"
+                      class="form--incident-handle taak-afhandelen-modal__form"
+                      data-incidentHandleForm-target="form"
+                      data-turbo-frame="_top"
+                      enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.errors }}
+                    <div class="taak-afhandelen-modal__resolutie-group">
+                        <h3 class="taak-afhandelen-modal__resolutie-title">Is de taak uitgevoerd?</h3>
+                        {{ form.resolutie|render_rotterdam_formulier }}
                     </div>
-                </div>
-                {% if taak.laatste_taakgebeurtenis_gebruiker %}
-                    <p class='margin-top'>
-                        <a href='mailto:{{ taak.laatste_taakgebeurtenis_gebruiker.email }}'>{{ taak.laatste_taakgebeurtenis_gebruiker.email }}</a>
-                    </p>
-                {% endif %}
-            </div>
-        </div>
-    </template>
-    </turbo-stream>
-{% endif %}
-<turbo-stream action="update" target="modal_body">
-<template>
-    <div class="container__form" data-controller="incidentHandleForm">
-        {% include "snippets/messages.html" %}
-        {% if form %}
-            <form action="{% url 'taak_afhandelen' taak.uuid %}"
-                  method="post"
-                  data-testid="handleIncidentForm"
-                  class="form--incident-handle"
-                  data-incidentHandleForm-target="form"
-                  data-turbo-frame="_top"
-                  enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.errors }}
-                {{ form.bijlagen }}
-                {{ form.resolutie|render_rotterdam_formulier }}
-                <div class="wrapper--flex-order">
-                    <div>
-                        {% if form.nieuwe_taak %}
-                            <h3 class="h5">Moet er nog iets gebeuren?</h3>
-                            <div data-incidentHandleForm-target="newTask">
-                                <div class="list-horizontal">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
-                            </div>
-                        {% endif %}
-                        {% if actieve_vervolg_taken %}
-                            <div class="form-row">
-                                <div class="form-row">
-                                    <h3 class="h5">Reeds openstaande taken voor deze melding</h3>
-                                    <ul>
-                                        {% for vervolg_taak in actieve_vervolg_taken %}<li>{{ vervolg_taak.1 }}</li>{% endfor %}
-                                    </ul>
+                    <div data-incidentHandleForm-target="redenAfwijzing" hidden>
+                        <div class="taak-afhandelen-modal__resolutie-group">
+                            <h3 class="taak-afhandelen-modal__resolutie-title">Reden</h3>
+                            {{ form.reden_afwijzing|render_rotterdam_formulier }}
+                            <p class="help-block taak-afhandelen-modal__reason-helptext"
+                                         data-incidentHandleForm-target="reasonHelptext"
+                                         hidden>Maak een keuze uit een van de bovenstaande opties</p>
+                        </div>
+                        <div data-incidentHandleForm-target="andersNamelijk" hidden>
+                            {{ form.anders_namelijk|render_rotterdam_formulier }}
+                        </div>
+                    </div>
+                        <div class="taak-afhandelen-modal__heading-row">
+                        <h3 class="taak-afhandelen-modal__resolutie-title">Foto’s toevoegen</h3>
+                        <span class="taak-afhandelen-modal__optional">Optioneel</span>
+                    </div>
+                    {{ form.bijlagen }}
+                    <div class="wrapper--flex-order">
+                        <div>
+                            {% if form.nieuwe_taak %}
+                                <div class="taak-afhandelen-modal__heading-row">
+                                    <h3 class="taak-afhandelen-modal__resolutie-title">Zijn er nog meer taken nodig?</h3>
+                                    <span class="taak-afhandelen-modal__optional">Optioneel</span>
                                 </div>
-                            </div>
-                        {% endif %}
+                                <div data-incidentHandleForm-target="newTask">
+                                    <div class="list-horizontal">{{ form.nieuwe_taak|render_rotterdam_formulier }}</div>
+                                </div>
+                            {% endif %}
+                            {% comment %} {% if actieve_vervolg_taken %}
+                                <div class="form-row">
+                                    <div class="form-row">
+                                        <h3 class="h5">Reeds openstaande taken voor deze melding</h3>
+                                        <ul>
+                                            {% for vervolg_taak in actieve_vervolg_taken %}<li>{{ vervolg_taak.1 }}</li>{% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            {% endif %} {% endcomment %}
+                        </div>
+                        <div class="form-control__with-helptext label-strong"
+                             data-incidentHandleForm-target="internalText">
+                            {{ form.omschrijving_intern|render_rotterdam_formulier }}
+                            <div class="taak-afhandelen-modal__char-counter"
+                                 data-incidentHandleForm-target="charCounter">0/200</div>
+                        </div>
                     </div>
-                    <div class="form-control__with-helptext label-strong"
-                         data-incidentHandleForm-target="internalText">
-                        {{ form.omschrijving_intern|render_rotterdam_formulier }}
+                    <div class="form-row" data-incidentHandleForm-target="submitContainer">
+                        <button type="submit"
+                                class="btn btn-action"
+                                data-action="incidentHandleForm#onSubmit">
+                            <span>Afronden</span>
+                        </button>
                     </div>
-                </div>
-                <div class="form-row" data-incidentHandleForm-target="submitContainer">
-                    <button type="submit"
+                </form>
+            {% endif %}
+            <dialog class="taak-afhandelen-modal__confirm"
+                    data-incidentHandleForm-target="confirmPopup"
+                    aria-labelledby="confirm-create-task-title">
+                <h3 id="confirm-create-task-title">Nog een taak aanmaken?</h3>
+                <p>Je wilt een taak aanmaken voor een andere uitvoerder. Weet je dit zeker?</p>
+                <div class="taak-afhandelen-modal__confirm-actions">
+                    <button type="button"
                             class="btn btn-action"
-                            data-action="incidentHandleForm#onSubmit"
-                            data-action="modal#closeModal">
-                        <span>Taak afhandelen</span>
+                            data-action="incidentHandleForm#confirmCreateTaskAndSubmit">
+                        <span>Ja, maak deze taak aan</span>
                     </button>
-                    <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
+                    <button type="button"
+                            class="btn btn-tertiary"
+                            data-action="incidentHandleForm#closeConfirmPopup">
                         <span>Annuleren</span>
                     </button>
                 </div>
-            </form>
-        {% endif %}
+            </dialog>
+        </div>
+        </div>
     </div>
-</template>
-</turbo-stream>
+{% endblock content %}

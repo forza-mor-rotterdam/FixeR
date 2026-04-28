@@ -11,6 +11,7 @@
           data-controller="taken-overzicht"
           data-taken-overzicht-taken-kaart-outlet="#taken_kaart"
           data-taken-overzicht-taken-lijst-outlet="#taken_lijst"
+          data-taken-overzicht-wacht-op-gps-value="{% if wacht_op_gps %}true{% else %}false{% endif %}"
           data-action="keydown->taken-overzicht#keydownHandler"
           data-turbo-frame="false"
           id="taken_overzicht"
@@ -144,7 +145,7 @@
                 <div class="full-page-view__header">
                     <div class="full-page-view__action_container">
                         <h2 class="full-page-view__title">Filters</h2>
-                        <button autofocus
+                        <button
                                 class="btn-close--small"
                                 data-action="taken-overzicht#hideFilters"
                                 aria-label="Sluiten">{% include "icons/close.svg" %}</button>

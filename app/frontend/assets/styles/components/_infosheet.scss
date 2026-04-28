@@ -16,14 +16,37 @@ dialog.infosheet {
     transition: all $transition-duration-default $transition-ease-default;
     display: flex;
     flex-direction: column;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     z-index: 2500;
 
-    &:has(> turbo-frame) {
-        display: block;
+    // Keep the Turbo Frame full-width even on browsers where :has support is partial.
+    > #infosheet,
+    > turbo-frame {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        width: 100%;
+        min-width: 0;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        overscroll-behavior-y: contain;
+        touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
+    }
 
+    &:has(> turbo-frame) {
         > turbo-frame {
             display: flex;
             flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior-y: contain;
+            touch-action: pan-y;
+            -webkit-overflow-scrolling: touch;
         }
     }
 
@@ -33,9 +56,16 @@ dialog.infosheet {
 
     &[open] {
         max-height: 90vh;
+        max-height: 90svh;
         opacity: 1;
         transform: translateY(0);
         transition: all $transition-duration-default $transition-ease-default;
+    }
+
+    @supports (height: 100dvh) {
+        &[open] {
+            max-height: 90dvh;
+        }
     }
 
     &::before {
@@ -55,13 +85,18 @@ dialog.infosheet {
         top: 25px;
         right: 8px;
         padding: 5px;
+        &:hover,
         &:focus {
             outline: none !important;
-            background-color: #f4f4f5;
+            background-color: $gray-100;
         }
     }
 
     .header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: #fff;
         padding: 28px 16px 0;
         border-bottom: 1px solid $blue-200;
         h1 {
@@ -89,8 +124,6 @@ dialog.infosheet {
     }
     .content {
         flex: 1;
-        overflow-y: auto;
-        overflow-x: hidden;
         padding-bottom: 1em;
     }
 
@@ -104,16 +137,27 @@ dialog.infosheet {
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
         inset: auto 0 0 auto;
-        width: 38%;
+        width: 550px;
+        max-width: 550px;
         max-height: none;
         border-radius: 0;
         transform: translate3d(100%, 0, 0);
         top: 0;
         height: 100vh;
+        height: 100svh;
 
         &[open] {
             max-height: none;
             height: 100vh;
+            height: 100svh;
+        }
+
+        @supports (height: 100dvh) {
+            height: 100dvh;
+
+            &[open] {
+                height: 100dvh;
+            }
         }
 
         .content {
@@ -124,6 +168,12 @@ dialog.infosheet {
             display: none;
         }
     }
+}
+
+html.infosheet-open,
+body.infosheet-open {
+    overflow: hidden;
+    overscroll-behavior: none;
 }
 
 dialog::backdrop {

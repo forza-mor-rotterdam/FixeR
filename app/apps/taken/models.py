@@ -33,6 +33,13 @@ class Taakgebeurtenis(BasisModel):
         GEANNULEERD = "geannuleerd", "Geannuleerd"
         NIET_GEVONDEN = "niet_gevonden", "Niets aangetroffen"
 
+    class RedenAfwijzingOpties(models.TextChoices):
+        AL_VERHOLPEN = "al_verholpen", "De taak is al verholpen"
+        NIET_GEMEENTE = "niet_gemeente", "De taak is niet voor de gemeente"
+        NIET_VOOR_MIJ = "niet_voor_mij", "De taak is niet voor mij"
+        LOCATIE_ONDUIDELIJK = "locatie_onduidelijk", "De locatie van de taak is onduidelijk"
+        ANDERS = "anders", "Anders, namelijk"
+
     taakstatus = models.OneToOneField(
         to="taken.Taakstatus",
         related_name="taakgebeurtenis_voor_taakstatus",
@@ -59,8 +66,16 @@ class Taakgebeurtenis(BasisModel):
         blank=True,
         null=True,
     )
+    reden_afwijzing = models.CharField(
+        max_length=50,
+        choices=RedenAfwijzingOpties.choices,
+        null=True,
+        blank=True,
+    )
+    reden_afwijzing_toelichting = models.CharField(max_length=500, null=True, blank=True)
     notificatie_verstuurd = models.BooleanField(default=True)
     notificatie_error = models.CharField(max_length=5000, null=True, blank=True)
+    groep = models.CharField(max_length=100, null=True, blank=True) # naam van rechtengroep van aanmakende gebruiker
     vervolg_taaktypes = ListJSONField(default=list)
 
     task_taakopdracht_notificatie = models.OneToOneField(
@@ -406,6 +421,10 @@ class Taak(BasisModel):
                     self.laatste_taakgebeurtenis.gebruiker
                 )
             )
+            if self.cached_laatste_taakgebeurtenis_gebruiker is not None:
+                self.cached_laatste_taakgebeurtenis_gebruiker["groep"] = (
+                    self.laatste_taakgebeurtenis.groep or ""
+                )
         return self.cached_laatste_taakgebeurtenis_gebruiker
 
     def eerste_taakgebeurtenis_gebruiker(self):
@@ -417,6 +436,10 @@ class Taak(BasisModel):
                     self.eerste_taakgebeurtenis.gebruiker
                 )
             )
+            if self.cached_eerste_taakgebeurtenis_gebruiker is not None:
+                self.cached_eerste_taakgebeurtenis_gebruiker["groep"] = (
+                    self.eerste_taakgebeurtenis.groep or ""
+                )
         return self.cached_eerste_taakgebeurtenis_gebruiker
 
     @classmethod
@@ -424,11 +447,7 @@ class Taak(BasisModel):
         return (
             (
                 Taak.ResolutieOpties.OPGELOST,
-                "De taak is afgerond",
-            ),
-            (
-                Taak.ResolutieOpties.NIET_GEVONDEN,
-                "Niets aangetroffen",
+                "De taak is uitgevoerd",
             ),
             (
                 Taak.ResolutieOpties.NIET_OPGELOST,

@@ -76,8 +76,8 @@
                                 {% endif %}
                             {% endif %}
                             <button class="btn btn-action"
-                                    data-action="modal#openModal"
-                                    data-modal-action-param="{% url 'taak_afhandelen' taak.uuid %}">
+                                    data-action="infosheet#openInfosheet"
+                                data-infosheet-action-param="{% url 'taak_afhandelen' taak.uuid %}"> 
                                 Taak afhandelen
                             </button>
                         </div>
