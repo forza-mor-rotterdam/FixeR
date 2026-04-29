@@ -364,7 +364,11 @@ body:has(.detailheader) {
         position: absolute;
         top: 1.125em;
         left: 0;
-        padding: 3px 12px;
+        margin-left: 18px;
+
+        svg {
+            left: -18px;
+        }
     }
 
     .container__uitklapper {
@@ -416,9 +420,10 @@ body:has(.detailheader) {
         .link--back {
             top: -62px;
             left: 90px;
-            padding: 0px 12px;
+            margin-left: 18px;
 
             svg {
+                left: -18px;
                 top: 0;
             }
         }
