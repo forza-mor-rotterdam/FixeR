@@ -630,6 +630,16 @@ body:has(.detailheader) {
         position: relative;
         padding: 0;
         border: 0;
+
+        &.section--imageslider-empty {
+            background-color: $gray-tint01;
+
+            .no-image {
+                background-color: transparent;
+                margin: 0;
+            }
+        }
+
         > svg {
             padding: 4px;
             background-color: #fff;
