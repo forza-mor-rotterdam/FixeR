@@ -180,7 +180,9 @@ export default class MapController extends Controller {
       return
     }
     if (!this.markerMe) {
-      this.toonAlles()
+      if (this.kaartModus === KaartModus.TOON_ALLES) {
+        this.toonAlles()
+      }
       return
     }
     switch (this.kaartModus) {
