@@ -1,6 +1,6 @@
 {% load json_encode from main_tags %}
 <details class="filter filter--active" id="foldout_active-filters">
-    <summary>
+    <summary data-taken-overzicht-target="firstFilterBlock">
         <span>Actieve filters</span>
         <span class="count count--filter"
               data-taken-overzicht-target="selectedChoicesCount">{{ filter_manager.active_filter_count }}</span>
