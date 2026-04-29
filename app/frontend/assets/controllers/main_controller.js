@@ -135,17 +135,17 @@ export default class extends Controller {
   }
   positionPermissionState(permissionEnable) {
     const afstandOption = this.sorteerFieldTargets.find((el) => el.value === 'Afstand')
-    this.kaartModusOptionTargets
-      .find((elem) => elem.value === 'volgen')
-      ?.closest('li')
-      .classList[permissionEnable ? 'remove' : 'add']('disabled')
+    const volgenOption = this.kaartModusOptionTargets.find((elem) => elem.value === 'volgen')
+    volgenOption?.closest('li')?.classList[permissionEnable ? 'remove' : 'add']('disabled')
     if (this.hasSorteerFieldTarget && afstandOption) {
       this.setAfstandOptionDisabled(afstandOption, !permissionEnable)
     }
     if (!permissionEnable) {
-      if (this.hasKaartModusOptionTarget) {
-        this.element.querySelector(`input[name="${this.kaartModusOptionTarget.name}"]`).value =
-          'toon_alles'
+      const toonAllesOption = this.kaartModusOptionTargets.find(
+        (elem) => elem.value === 'toon_alles'
+      )
+      if (toonAllesOption) {
+        toonAllesOption.checked = true
       }
       // Only show the popup once per session
       if (!this.hasShownLocationPermissionPopup()) {
