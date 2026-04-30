@@ -102,6 +102,10 @@ dialog.infosheet:has(.taak-afhandelen-modal) {
     }
 }
 
+.taak-afhandelen-modal__meta:not(:has(> :nth-child(3))) .taak-afhandelen-modal__taakuitleg {
+    margin-top: -0.25rem;
+}
+
 .taak-afhandelen-modal__form {
     .taak-afhandelen-modal__resolutie-group {
         > .form-row {
@@ -573,5 +577,9 @@ dialog.taak-afhandelen-modal__confirm {
     dialog.infosheet:has(.taak-afhandelen-modal) {
         width: 550px;
         max-width: 550px;
+    }
+
+    .taak-afhandelen-modal__meta {
+        display: none;
     }
 }
