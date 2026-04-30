@@ -73,7 +73,7 @@ class TaakBehandelForm(forms.Form):
                 "class": "form-control",
                 "rows": "3",
                 "placeholder": "Vul hier de reden in",
-                "maxlength": "200",
+                "maxlength": "2000",
                 "hideLabel": True,
             }
         ),
