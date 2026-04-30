@@ -308,10 +308,9 @@ export default class extends Controller {
     this.setKaartModus(e.target.value)
   }
   setKaartModus(kaartModus) {
-    this.kaartModusOptionTargets
-      .find((elem) => elem.value === 'volgen')
-      .closest('li')
-      .classList[kaartModus === 'volgen' ? 'add' : 'remove']('active')
+    const volgenOption = this.kaartModusOptionTargets.find((elem) => elem.value === 'volgen')
+    const volgenOptionContainer = volgenOption?.closest('li')
+    volgenOptionContainer?.classList[kaartModus === 'volgen' ? 'add' : 'remove']('active')
     if (this.hasTakenKaartOutlet) {
       this.takenKaartOutlet.kaartModusChangeHandler(kaartModus)
     }
