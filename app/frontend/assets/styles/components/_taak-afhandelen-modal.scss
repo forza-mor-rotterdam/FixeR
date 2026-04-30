@@ -209,6 +209,10 @@ dialog.infosheet:has(.taak-afhandelen-modal) {
         }
     }
 
+    [data-incidentHandleForm-target="internalText"] .form-row {
+        margin-bottom: 0;
+    }
+
     .taak-afhandelen-modal__char-counter {
         margin-top: 0.375rem;
         text-align: right;
@@ -347,7 +351,7 @@ dialog.infosheet:has(.taak-afhandelen-modal) {
             text-align: center;
             font-size: 14px;
             padding: 1.75rem 1rem 0.25rem;
-            border: 1px dashed #7c8b90;
+            border: 1px dashed #B7BDC7;
             background-position: center calc(50% - 18px);
             background-size: 22px;
             border-radius: 8px;
@@ -406,6 +410,8 @@ dialog.infosheet:has(.taak-afhandelen-modal) {
     textarea.form-control {
         min-height: 140px;
         resize: vertical;
+        margin-bottom: 0;
+        border-color: #eaeaea;
     }
 
 }
@@ -470,10 +476,10 @@ dialog.taak-afhandelen-modal__confirm {
         margin: 2rem -#{$container-padding-x} 0;
         padding: 1rem $container-padding-x calc(1rem + env(safe-area-inset-bottom));
         background: var(--taak-modal-surface);
-        border-top: 1px solid var(--taak-modal-border);
 
         .btn {
             width: 100%;
+            max-width: 100%;
             margin: 0;
 
             &.is-loading,
@@ -532,8 +538,7 @@ dialog.taak-afhandelen-modal__confirm {
             }
 
             .btn {
-                width: auto;
-                min-width: 220px;
+                width: 100%;
             }
         }
     }

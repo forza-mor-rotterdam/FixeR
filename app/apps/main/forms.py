@@ -103,7 +103,8 @@ class TaakBehandelForm(forms.Form):
                 "data-testid": "information",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "internalText",
-                "maxlength": "1000",
+                "placeholder": "Type om een opmerking toe te voegen...",
+                "maxlength": "200",
             }
         ),
         required=False,
