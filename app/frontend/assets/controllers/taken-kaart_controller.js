@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
+import { getStoredMapLayerState, setStoredMapLayerState } from './helpers/mapLayerStorage'
+
 const KaartModus = Object.freeze({
   TOON_ALLES: 'toon_alles',
   VOLGEN: 'volgen',
@@ -96,7 +98,27 @@ export default class MapController extends Controller {
       },
     }
   }
-  connect() {}
+  connect() {
+    this.restoreMapLayerState('EGD')
+  }
+
+  setMapLayerCheckboxState(mapLayerType, enabled) {
+    const checkbox = this.element.querySelector(
+      `[data-taken-kaart-map-layer-type-param="${mapLayerType}"]`
+    )
+    if (checkbox) {
+      checkbox.checked = enabled
+    }
+  }
+
+  restoreMapLayerState(mapLayerType) {
+    const enabled = getStoredMapLayerState(mapLayerType)
+    this.setMapLayerCheckboxState(mapLayerType, enabled)
+    if (enabled) {
+      this.mapLayers[mapLayerType].layer.addTo(this.map)
+    }
+  }
+
   getZoom() {
     return sessionStorage.getItem('kaartZoom') || StandaardKaartZoom
   }
@@ -158,6 +180,12 @@ export default class MapController extends Controller {
     this.markers = new L.featureGroup()
     this.map.addLayer(this.markers)
   }
+
+  ensureMarkersLayer() {
+    if (!this.markers && this.map) {
+      this.createMarkersLayer()
+    }
+  }
   selectTaakMarker(taakUuid, preventScroll) {
     const obj = this.markerList.find((obj) => obj.options.taakUuid == taakUuid)
     this.preventScroll = preventScroll
@@ -196,12 +224,12 @@ export default class MapController extends Controller {
   }
 
   kaartLayerChangeHandler(event) {
-    console.log(event)
     if (event.target.checked) {
       this.mapLayers[event.params.mapLayerType].layer.addTo(this.map)
     } else {
       this.map.removeLayer(this.mapLayers[event.params.mapLayerType].layer)
     }
+    setStoredMapLayerState(event.params.mapLayerType, event.target.checked)
   }
 
   onTwoFingerDrag(event) {
@@ -212,6 +240,7 @@ export default class MapController extends Controller {
     }
   }
   positionChangeEvent = (position) => {
+    this.ensureMarkersLayer()
     const lat = position.coords.latitude
     const lng = position.coords.longitude
     this.setCachedPosition(lat, lng)
@@ -266,11 +295,15 @@ export default class MapController extends Controller {
     }
   }
   clearTaakMarker(taakUuid) {
+    this.ensureMarkersLayer()
     const marker = this.markerList.find((obj) => obj.options.taakUuid === taakUuid)
     this.markerList = this.markerList.filter((obj) => obj.options.taakUuid != taakUuid)
-    this.markers.removeLayer(marker)
+    if (marker) {
+      this.markers.removeLayer(marker)
+    }
   }
   plotTaakMarker(markerData) {
+    this.ensureMarkersLayer()
     const lat = markerData.geometrie.coordinates ? markerData.geometrie.coordinates[1] : 51.9247772
     const long = markerData.geometrie.coordinates ? markerData.geometrie.coordinates[0] : 4.4780972
     const adres = markerData.adres
