@@ -51,6 +51,10 @@ def _get_gebruiker_object_middels_email(value):
     else:
         gebruiker = {}
 
+    # Zorg ervoor dat rol en rechtengroep altijd bestaan (ook als user niet lokaal bestaat)
+    gebruiker.setdefault("rol", "")
+    gebruiker.setdefault("rechtengroep", "")
+
     user_model = get_user_model()
     user_from_model = user_model.objects.filter(email=value).first()
     if user_from_model:
