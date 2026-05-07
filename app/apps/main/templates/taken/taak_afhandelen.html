@@ -50,11 +50,7 @@
                                          data-incidentHandleForm-target="reasonHelptext"
                                          hidden>Maak een keuze uit een van de bovenstaande opties</p>
                         </div>
-                        <div data-incidentHandleForm-target="andersNamelijk" hidden>
-                            {{ form.anders_namelijk|render_rotterdam_formulier }}
-                            <div class="taak-afhandelen-modal__char-counter"
-                                 data-incidentHandleForm-target="andersNamelijkCharCounter">0/1000</div>
-                        </div>
+                        <div data-incidentHandleForm-target="internalTextReasonLocation"></div>
                     </div>
                         <div class="taak-afhandelen-modal__heading-row">
                         <h3 class="taak-afhandelen-modal__resolutie-title">Foto’s toevoegen</h3>
@@ -83,11 +79,13 @@
                                 </div>
                             {% endif %} {% endcomment %}
                         </div>
-                        <div class="form-control__with-helptext label-strong"
-                             data-incidentHandleForm-target="internalText">
-                            {{ form.omschrijving_intern|render_rotterdam_formulier }}
-                            <div class="taak-afhandelen-modal__char-counter"
-                                 data-incidentHandleForm-target="charCounter">0/1000</div>
+                            <div data-incidentHandleForm-target="internalTextDefaultLocation">
+                               <div class="form-control__with-helptext label-strong"
+                                   data-incidentHandleForm-target="internalText">
+                                  {{ form.omschrijving_intern|render_rotterdam_formulier }}
+                                  <div class="taak-afhandelen-modal__char-counter"
+                                      data-incidentHandleForm-target="charCounter">0/1000</div>
+                               </div>
                         </div>
                     </div>
                     <div class="form-row" data-incidentHandleForm-target="submitContainer">
