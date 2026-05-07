@@ -52,6 +52,8 @@
                         </div>
                         <div data-incidentHandleForm-target="andersNamelijk" hidden>
                             {{ form.anders_namelijk|render_rotterdam_formulier }}
+                            <div class="taak-afhandelen-modal__char-counter"
+                                 data-incidentHandleForm-target="andersNamelijkCharCounter">0/1000</div>
                         </div>
                     </div>
                         <div class="taak-afhandelen-modal__heading-row">
@@ -85,7 +87,7 @@
                              data-incidentHandleForm-target="internalText">
                             {{ form.omschrijving_intern|render_rotterdam_formulier }}
                             <div class="taak-afhandelen-modal__char-counter"
-                                 data-incidentHandleForm-target="charCounter">0/2000</div>
+                                 data-incidentHandleForm-target="charCounter">0/1000</div>
                         </div>
                     </div>
                     <div class="form-row" data-incidentHandleForm-target="submitContainer">

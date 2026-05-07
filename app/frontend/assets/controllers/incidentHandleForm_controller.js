@@ -8,6 +8,7 @@ export default class extends Controller {
     'form',
     'submitContainer',
     'charCounter',
+    'andersNamelijkCharCounter',
     'confirmPopup',
     'redenAfwijzing',
     'reasonHelptext',
@@ -36,6 +37,14 @@ export default class extends Controller {
       if (this.internalTextArea) {
         this.internalTextArea.addEventListener('input', this.updateCharacterCounter.bind(this))
         this.updateCharacterCounter()
+      }
+    }
+
+    if (this.hasAndersNamelijkTarget) {
+      this.andersNamelijkTextArea = this.andersNamelijkTarget.querySelector('textarea')
+      if (this.andersNamelijkTextArea) {
+        this.andersNamelijkTextArea.addEventListener('input', this.updateAndersNamelijkCounter.bind(this))
+        this.updateAndersNamelijkCounter()
       }
     }
 
@@ -88,6 +97,16 @@ export default class extends Controller {
     const currentLength = this.internalTextArea.value.length
     const maxLength = parseInt(this.internalTextArea.getAttribute('maxlength') || '200', 10)
     this.charCounterTarget.textContent = `${currentLength}/${maxLength}`
+  }
+
+  updateAndersNamelijkCounter() {
+    if (!this.hasAndersNamelijkCharCounterTarget || !this.andersNamelijkTextArea) {
+      return
+    }
+
+    const currentLength = this.andersNamelijkTextArea.value.length
+    const maxLength = parseInt(this.andersNamelijkTextArea.getAttribute('maxlength') || '1000', 10)
+    this.andersNamelijkCharCounterTarget.textContent = `${currentLength}/${maxLength}`
   }
 
   onResolutionFalse() {
