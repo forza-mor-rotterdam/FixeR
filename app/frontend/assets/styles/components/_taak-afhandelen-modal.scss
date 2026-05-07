@@ -224,6 +224,15 @@ dialog.infosheet:has(.taak-afhandelen-modal) {
         color: #6a7378;
     }
 
+    [data-incidentHandleForm-target="internalText"],
+    [data-incidentHandleForm-target="andersNamelijk"] {
+        .form-control,
+        .form-row,
+        .s12 {
+            margin-bottom: 0;
+        }
+    }
+
     .list-horizontal {
         ul.list--form-check-input {
             input[type="checkbox"] {
