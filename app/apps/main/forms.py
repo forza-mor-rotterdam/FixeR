@@ -96,7 +96,7 @@ class TaakBehandelForm(forms.Form):
     )
 
     omschrijving_intern = forms.CharField(
-        label="Opmerking voor mid-office",
+        label="Toelichting voor mid-office",
         widget=forms.Textarea(
             attrs={
                 "class": "form-control",
@@ -130,6 +130,7 @@ class TaakBehandelForm(forms.Form):
         resolutie = cleaned_data.get("resolutie")
         reden_afwijzing = cleaned_data.get("reden_afwijzing")
         anders_namelijk = (cleaned_data.get("anders_namelijk") or "").strip()
+        omschrijving_intern = (cleaned_data.get("omschrijving_intern") or "").strip()
 
         if resolutie == Taak.ResolutieOpties.NIET_OPGELOST and not reden_afwijzing:
             self.add_error(
@@ -139,6 +140,9 @@ class TaakBehandelForm(forms.Form):
 
         if reden_afwijzing == "anders" and not anders_namelijk:
             self.add_error("anders_namelijk", "Dit veld is verplicht.")
+
+        if reden_afwijzing in {"niet_voor_mij", "anders"} and not omschrijving_intern:
+            self.add_error("omschrijving_intern", "Dit veld is verplicht.")
 
         return cleaned_data
 

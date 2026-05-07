@@ -7,6 +7,8 @@ export default class extends Controller {
     'newTask',
     'form',
     'submitContainer',
+    'internalTextDefaultLocation',
+    'internalTextReasonLocation',
     'confirmPopup',
     'redenAfwijzing',
     'reasonHelptext',
@@ -17,15 +19,17 @@ export default class extends Controller {
   connect() {
     this.confirmedNewTaskSubmission = false
     this.shouldShowReasonHelptext = false
-    this.requiredLabelInternalText = 'Opmerking voor mid-office'
-    this.defaultLabelInternalText = 'Opmerking voor mid-office'
+    this.requiredLabelInternalText = 'Toelichting voor mid-office'
+    this.defaultLabelInternalText = 'Toelichting voor mid-office'
     this.defaultErrorMessage = 'Vul a.u.b. dit veld in.'
     const btn = this.element.querySelector('[type="radio"][value="niet_opgelost"]')
     if (btn.checked) {
       this.onResolutionFalse()
-      const andersBtn = this.element.querySelector('[type="radio"][value="anders"]')
-      if (andersBtn && andersBtn.checked && this.hasAndersNamelijkTarget) {
-        this.onChangeRedenAfwijzing({ target: andersBtn })
+      const selectedReasonBtn = this.element.querySelector(
+        '[type="radio"][name="reden_afwijzing"]:checked'
+      )
+      if (selectedReasonBtn) {
+        this.onChangeRedenAfwijzing({ target: selectedReasonBtn })
       }
     } else {
       this.onResolutionTrue()
@@ -118,8 +122,11 @@ export default class extends Controller {
   }
 
   onResolutionFalse() {
+    this.moveInternalTextToReasonLocation()
     if (this.hasInternalTextTarget) {
-      this.internalTextTarget.querySelector('label').textContent = this.requiredLabelInternalText
+      this.internalTextTarget.querySelector('label').textContent = this.defaultLabelInternalText
+      this.internalTextTarget.querySelector('textarea').classList.remove('required')
+      this.internalTextTarget.classList.remove('is-required')
     }
     if (this.hasRedenAfwijzingTarget) {
       this.redenAfwijzingTarget.hidden = false
@@ -129,9 +136,11 @@ export default class extends Controller {
   }
 
   onResolutionTrue() {
+    this.moveInternalTextToDefaultLocation()
     if (this.hasInternalTextTarget) {
       this.internalTextTarget.querySelector('label').textContent = this.defaultLabelInternalText
       this.internalTextTarget.querySelector('textarea').classList.remove('required')
+      this.internalTextTarget.classList.remove('is-required')
     }
     if (this.hasRedenAfwijzingTarget) {
       this.redenAfwijzingTarget.hidden = true
@@ -166,6 +175,39 @@ export default class extends Controller {
         andersNamelijkTextarea.classList.toggle('required', isAnders)
       }
     }
+
+    this.updateInternalTextRequirement(event.target.value)
+  }
+
+  updateInternalTextRequirement(reasonValue) {
+    if (!this.hasInternalTextTarget) {
+      return
+    }
+
+    const internalTextArea = this.internalTextTarget.querySelector('textarea')
+    if (!internalTextArea) {
+      return
+    }
+
+    const isRequired = ['niet_voor_mij', 'anders'].includes(reasonValue)
+    internalTextArea.classList.toggle('required', isRequired)
+    this.internalTextTarget.classList.toggle('is-required', isRequired)
+  }
+
+  moveInternalTextToReasonLocation() {
+    if (!this.hasInternalTextReasonLocationTarget || !this.hasInternalTextTarget) {
+      return
+    }
+
+    this.internalTextReasonLocationTarget.appendChild(this.internalTextTarget)
+  }
+
+  moveInternalTextToDefaultLocation() {
+    if (!this.hasInternalTextDefaultLocationTarget || !this.hasInternalTextTarget) {
+      return
+    }
+
+    this.internalTextDefaultLocationTarget.appendChild(this.internalTextTarget)
   }
 
   clearRedenAfwijzingErrors() {
