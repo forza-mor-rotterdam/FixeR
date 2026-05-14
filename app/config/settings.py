@@ -27,6 +27,8 @@ GIT_SHA = os.getenv("GIT_SHA")
 DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 APP_ENV = os.getenv("APP_ENV", PRODUCTIE)  # acceptatie/test/productie
+TEAMS_WEBHOOK_URL = os.getenv("TEAMS_WEBHOOK_URL", "")
+MOR_SERVICE_NAME = "fixer"
 DEBUG = ENVIRONMENT == "development"
 
 # Fernet Key
@@ -458,6 +460,11 @@ LOG_LEVEL = "INFO" if DEBUG else "INFO"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+    },
     "formatters": {
         "verbose": {
             "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
@@ -476,12 +483,22 @@ LOGGING = {
             "filename": "/app/uwsgi.log",
             "formatter": "verbose",
         },
+        "teams": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "mor_api_services.teams_logging.TeamsWebhookHandler",
+        },
     },
     "loggers": {
         "": {
             "handlers": ["console"],
             "level": LOG_LEVEL,
             "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["teams", "console"],
+            "level": "ERROR",
+            "propagate": False,
         },
         "celery": {
             "handlers": ["console", "file"],

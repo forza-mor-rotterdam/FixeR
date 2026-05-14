@@ -47,6 +47,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from mor_api_services.teams_logging import test_teams_error_view
 from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
@@ -174,6 +175,11 @@ urlpatterns = [
         r"core-protected/media/",
         meldingen_bestand_protected,
         name="meldingen_bestand_protected",
+    ),
+    path(
+        "beheer/test-teams-foutmelding/",
+        test_teams_error_view,
+        name="test_teams_foutmelding",
     ),
     path("beheer/", include("apps.beheer.urls")),
     path("ckeditor5/", include("django_ckeditor_5.urls")),
