@@ -73,7 +73,7 @@ class TaakBehandelForm(forms.Form):
                 "class": "form-control",
                 "rows": "3",
                 "placeholder": "Vul hier de reden in",
-                "maxlength": "200",
+                "maxlength": "1000",
                 "hideLabel": True,
             }
         ),
@@ -103,7 +103,7 @@ class TaakBehandelForm(forms.Form):
                 "data-testid": "information",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "internalText",
-                "maxlength": "2000",
+                "maxlength": "1000",
             }
         ),
         required=False,
@@ -131,6 +131,7 @@ class TaakBehandelForm(forms.Form):
                     attrs={
                         "class": "form-control",
                         "rows": "4",
+                        "maxlength": "1000",
                     }
                 ),
                 required=False,
