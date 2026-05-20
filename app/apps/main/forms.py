@@ -338,6 +338,7 @@ class TakenLijstFilterForm(forms.Form):
             DeepDiff(
                 profiel.taken_filter_validated_data,
                 {k: v for k, v in actieve_filters.items() if v},
+                ignore_order=True,
             )
         )
         self.sorteer_opties_changed = data.get(

@@ -220,72 +220,74 @@
     <div class="container__content">
         <h3>Contact</h3>
         <div class="content">
-            <button class="btn person"
-                    data-action="infosheet#openInfosheet"
-                    data-infosheet-extracontent-param=".extra-content"
-                    data-infosheet-header-param="Contactgegevens">
-                <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
-                <div class="message">
-                    <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
-                    <span>{{ taak.eerste_taakgebeurtenis_gebruiker.groep|default:taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
-                </div>
-                <div class="extra-content">
-                    <div class="person">
-                        <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
-                        <div class="message">
-                            <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
-                            <span class="help-text">{{ taak.eerste_taakgebeurtenis_gebruiker.groep|default:taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
-                        </div>
+            {% if taak.eerste_taakgebeurtenis_gebruiker %}
+                <button class="btn person"
+                        data-action="infosheet#openInfosheet"
+                        data-infosheet-extracontent-param=".extra-content"
+                        data-infosheet-header-param="Contactgegevens">
+                    <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
+                    <div class="message">
+                        <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
+                        <span>{{ taak.eerste_taakgebeurtenis_gebruiker.groep|default:taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
                     </div>
-                    {% if taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer %}
+                    <div class="extra-content">
                         <div class="person">
-                            <div class="container__contact">
-                                <a href="tel:{{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}"
-                                   class="btn btn-tertiary">
-                                    {% include "icons/phone.svg" %}
-                                    Bellen
-                                </a>
+                            <span class="initials">{{ taak.eerste_taakgebeurtenis_gebruiker|gebruikersinitialen }}</span>
+                            <div class="message">
+                                <h4>{{ taak.eerste_taakgebeurtenis_gebruiker.full_name }}</h4>
+                                <span class="help-text">{{ taak.eerste_taakgebeurtenis_gebruiker.groep|default:taak.eerste_taakgebeurtenis_gebruiker.rol }}</span>
                             </div>
                         </div>
-                    {% endif %}
-                    <div class="person person--list">
-                        <dl>
-                            {% if taak.eerste_taakgebeurtenis_gebruiker.personeelsnummer %}
-                                <dt>Personeelsnummer</dt>
-                                <dd>
-                                    {{ taak.eerste_taakgebeurtenis_gebruiker.personeelsnummer }}
-                                </dd>
-                            {% endif %}
-                            {% if taak.eerste_taakgebeurtenis_gebruiker.email %}
-                                <dt>E-mailadres</dt>
-                                <dd>
-                                    <a href="mailto:{{ taak.eerste_taakgebeurtenis_gebruiker.email }}"
-                                       target="_blank"
-                                       class="link"
-                                       data-testid="Medewerker_email">{{ taak.eerste_taakgebeurtenis_gebruiker.email }}</a>
-                                </dd>
-                            {% endif %}
-                            {% if taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer %}
-                                <dt>Telefoonnummer</dt>
-                                <dd>
+                        {% if taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer %}
+                            <div class="person">
+                                <div class="container__contact">
                                     <a href="tel:{{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}"
-                                       target="_blank"
-                                       class="link"
-                                       data-testid="Medewerker_tel">
-                                        {{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}
+                                       class="btn btn-tertiary">
+                                        {% include "icons/phone.svg" %}
+                                        Bellen
                                     </a>
-                                </dd>
-                            {% endif %}
-                            {% if taak.eerste_taakgebeurtenis_gebruiker.afdeling %}
-                                <dt>Afdeling</dt>
-                                <dd>
-                                    {{ taak.eerste_taakgebeurtenis_gebruiker.afdeling }}
-                                </dd>
-                            {% endif %}
-                        </dl>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="person person--list">
+                            <dl>
+                                {% if taak.eerste_taakgebeurtenis_gebruiker.personeelsnummer %}
+                                    <dt>Personeelsnummer</dt>
+                                    <dd>
+                                        {{ taak.eerste_taakgebeurtenis_gebruiker.personeelsnummer }}
+                                    </dd>
+                                {% endif %}
+                                {% if taak.eerste_taakgebeurtenis_gebruiker.email %}
+                                    <dt>E-mailadres</dt>
+                                    <dd>
+                                        <a href="mailto:{{ taak.eerste_taakgebeurtenis_gebruiker.email }}"
+                                           target="_blank"
+                                           class="link"
+                                           data-testid="Medewerker_email">{{ taak.eerste_taakgebeurtenis_gebruiker.email }}</a>
+                                    </dd>
+                                {% endif %}
+                                {% if taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer %}
+                                    <dt>Telefoonnummer</dt>
+                                    <dd>
+                                        <a href="tel:{{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}"
+                                           target="_blank"
+                                           class="link"
+                                           data-testid="Medewerker_tel">
+                                            {{ taak.eerste_taakgebeurtenis_gebruiker.telefoonnummer }}
+                                        </a>
+                                    </dd>
+                                {% endif %}
+                                {% if taak.eerste_taakgebeurtenis_gebruiker.afdeling %}
+                                    <dt>Afdeling</dt>
+                                    <dd>
+                                        {{ taak.eerste_taakgebeurtenis_gebruiker.afdeling }}
+                                    </dd>
+                                {% endif %}
+                            </dl>
+                        </div>
                     </div>
-                </div>
-            </button>
+                </button>
+            {% endif %}
             {% if melding.signalen_voor_melding|length > 0 %}
                 {% for signaal in melding.signalen_voor_melding %}
                     <button class="btn person"
