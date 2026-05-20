@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
+import 'proj4leaflet'
 
 function addMqListener(mq, handler) {
   if (mq.addEventListener) mq.addEventListener('change', handler)
@@ -160,6 +161,12 @@ export default class extends Controller {
     )
 
     // END SWIPE
+    const egdWmsUrl = 'https://www.gis.rotterdam.nl/gisweb2/BSB.OBJ.EGD/wms'
+    const rdNewCrs = new L.Proj.CRS(
+      'EPSG:28992',
+      '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.4171,50.3319,465.5524,-0.398957388243134,0.343987817378283,-1.87740163998045,4.0725 +units=m +no_defs'
+    )
+
     this.mapLayers = {
       containers: {
         layer: L.tileLayer.wms(
@@ -175,16 +182,17 @@ export default class extends Controller {
         legend: [],
       },
       EGD: {
-        layer: L.tileLayer.wms(
-          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
-          {
-            layers: 'BSB.OBJ.EGD',
-            format: 'image/png',
-            transparent: true,
-            minZoom: 10,
-            maxZoom: 19,
-          }
-        ),
+        layer: L.tileLayer.wms(egdWmsUrl, {
+          layers: 'sdo_gwr_bsb_obj_egd',
+          version: '1.3.0',
+          styles: '',
+          crs: rdNewCrs,
+          pane: 'egdPane',
+          format: 'image/png',
+          transparent: true,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
       },
     }
     this.markers = new L.featureGroup()
@@ -207,6 +215,9 @@ export default class extends Controller {
         tap: !L.Browser.mobile,
         twoFingerZoom: true,
       }).setView(this.taakCoordinates, 18)
+
+      this.map.createPane('egdPane')
+
       L.tileLayer(url, config).addTo(this.map)
       const marker = L.marker(this.taakCoordinates, { icon: this.markerIcons.magenta }).addTo(
         this.map
