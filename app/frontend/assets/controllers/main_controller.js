@@ -135,23 +135,39 @@ export default class extends Controller {
   }
   positionPermissionState(permissionEnable) {
     const afstandOption = this.sorteerFieldTargets.find((el) => el.value === 'Afstand')
-    this.kaartModusOptionTargets
-      .find((elem) => elem.value === 'volgen')
-      ?.closest('li')
-      .classList[permissionEnable ? 'remove' : 'add']('disabled')
+    const volgenOption = this.kaartModusOptionTargets.find((elem) => elem.value === 'volgen')
+    volgenOption?.closest('li')?.classList[permissionEnable ? 'remove' : 'add']('disabled')
     if (this.hasSorteerFieldTarget && afstandOption) {
       this.setAfstandOptionDisabled(afstandOption, !permissionEnable)
     }
     if (!permissionEnable) {
-      if (this.hasKaartModusOptionTarget) {
-        this.element.querySelector(`input[name="${this.kaartModusOptionTarget.name}"]`).value =
-          'toon_alles'
+      const toonAllesOption = this.kaartModusOptionTargets.find(
+        (elem) => elem.value === 'toon_alles'
+      )
+      if (toonAllesOption) {
+        toonAllesOption.checked = true
       }
-      const template = document.getElementById('template_snack_geen_locatie')
-      const clone = template?.content.cloneNode(true)
-      const snackContainer = document.getElementById('snack_lijst')
-      snackContainer?.appendChild(clone)
+      // Only show the popup once per session
+      if (!this.hasShownLocationPermissionPopup()) {
+        const template = document.getElementById('template_snack_geen_locatie')
+        const clone = template?.content.cloneNode(true)
+        const snackContainer = document.getElementById('snack_lijst')
+        snackContainer?.appendChild(clone)
+        this.setLocationPermissionPopupShown()
+      }
     }
+  }
+  hasShownLocationPermissionPopup() {
+    return this.getSessionValue('location_permission_popup_shown') === 'true'
+  }
+  setLocationPermissionPopupShown() {
+    this.setSessionValue('location_permission_popup_shown', 'true')
+  }
+  setSessionValue(name, value) {
+    window.sessionStorage.setItem(name, value)
+  }
+  getSessionValue(name) {
+    return window.sessionStorage.getItem(name)
   }
   setAfstandOptionDisabled(element, disabled) {
     element.disabled = disabled
