@@ -158,24 +158,16 @@ export default class extends Controller {
     }
   }
   hasShownLocationPermissionPopup() {
-    return this.getCookie('location_permission_popup_shown') === 'true'
+    return this.getSessionValue('location_permission_popup_shown') === 'true'
   }
   setLocationPermissionPopupShown() {
-    this.setCookie('location_permission_popup_shown', 'true')
+    this.setSessionValue('location_permission_popup_shown', 'true')
   }
-  setCookie(name, value) {
-    document.cookie = `${name}=${value};path=/`
+  setSessionValue(name, value) {
+    window.sessionStorage.setItem(name, value)
   }
-  getCookie(name) {
-    const nameEQ = `${name}=`
-    const cookies = document.cookie.split(';')
-    for (let i = 0; i < cookies.length; i++) {
-      let cookie = cookies[i].trim()
-      if (cookie.indexOf(nameEQ) === 0) {
-        return cookie.substring(nameEQ.length)
-      }
-    }
-    return null
+  getSessionValue(name) {
+    return window.sessionStorage.getItem(name)
   }
   setAfstandOptionDisabled(element, disabled) {
     element.disabled = disabled
