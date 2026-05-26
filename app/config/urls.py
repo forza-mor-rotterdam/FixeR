@@ -5,7 +5,7 @@ from apps.authenticatie.views import (
     LogoutView,
     OnboardingView,
 )
-from apps.health.views import healthz
+from apps.health.views import HealthCheckView, healthz
 from apps.main.views import (
     TakenOverzicht,
     clear_melding_token_from_cache,
@@ -81,7 +81,7 @@ urlpatterns = [
         name="clear_melding_token_from_cache",
     ),
     path("config/", config, name="config"),
-    path("health/", include("health_check.urls")),
+    path("health/", HealthCheckView.as_view(), name="health_check_home"),
     path("healthz/", healthz, name="healthz"),
     path(
         "taken/",
