@@ -18,9 +18,11 @@ class TaaktypeAanpassenForm(forms.ModelForm):
             attrs={
                 "data-testid": "omschrijving",
                 "rows": "8",
+                "maxlength": "1000",
             }
         ),
         required=False,
+        max_length=1000,
     )
     actief = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
