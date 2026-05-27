@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from apps.instellingen.models import Instelling
 from django.test import TestCase
 from django.urls import reverse
 from health_check.db.backends import DatabaseBackend
@@ -7,6 +8,16 @@ from health_check.exceptions import ServiceUnavailable
 
 
 class HealthCheckViewTest(TestCase):
+    databases = "__all__"
+
+    @classmethod
+    def setUpTestData(cls):
+        Instelling.objects.create(
+            mor_core_gebruiker_email="health@forzamor.nl",
+            mor_core_gebruiker_wachtwoord="insecure",
+            email_beheer="health@forzamor.nl",
+        )
+
     def test_returns_503_on_service_unavailable(self):
         with patch.object(
             DatabaseBackend,
