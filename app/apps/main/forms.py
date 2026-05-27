@@ -103,7 +103,7 @@ class TaakBehandelForm(forms.Form):
                 "data-testid": "information",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "internalText",
-                "maxlength": "200",
+                "maxlength": "1000",
             }
         ),
         required=False,
@@ -338,6 +338,7 @@ class TakenLijstFilterForm(forms.Form):
             DeepDiff(
                 profiel.taken_filter_validated_data,
                 {k: v for k, v in actieve_filters.items() if v},
+                ignore_order=True,
             )
         )
         self.sorteer_opties_changed = data.get(

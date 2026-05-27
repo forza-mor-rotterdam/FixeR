@@ -5,7 +5,7 @@ from apps.authenticatie.views import (
     LogoutView,
     OnboardingView,
 )
-from apps.health.views import healthz
+from apps.health.views import HealthCheckView, healthz
 from apps.main.views import (
     TakenOverzicht,
     clear_melding_token_from_cache,
@@ -47,6 +47,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from mor_api_services.teams_logging import test_teams_error_view
 from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
@@ -80,7 +81,7 @@ urlpatterns = [
         name="clear_melding_token_from_cache",
     ),
     path("config/", config, name="config"),
-    path("health/", include("health_check.urls")),
+    path("health/", HealthCheckView.as_view(), name="health_check_home"),
     path("healthz/", healthz, name="healthz"),
     path(
         "taken/",
@@ -174,6 +175,11 @@ urlpatterns = [
         r"core-protected/media/",
         meldingen_bestand_protected,
         name="meldingen_bestand_protected",
+    ),
+    path(
+        "beheer/test-teams-foutmelding/",
+        test_teams_error_view,
+        name="test_teams_foutmelding",
     ),
     path("beheer/", include("apps.beheer.urls")),
     path("ckeditor5/", include("django_ckeditor_5.urls")),

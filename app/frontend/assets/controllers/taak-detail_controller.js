@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 import 'proj4leaflet'
+import { getStoredMapLayerState, setStoredMapLayerState } from './helpers/mapLayerStorage'
 
 function addMqListener(mq, handler) {
   if (mq.addEventListener) mq.addEventListener('change', handler)
@@ -173,6 +174,8 @@ export default class extends Controller {
           'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
           {
             layers: 'OBS.OO.CONTAINER',
+            crs: rdNewCrs,
+            pane: 'egdPane',
             format: 'image/png',
             transparent: true,
             minZoom: 10,
@@ -260,6 +263,29 @@ export default class extends Controller {
     }, 100)
 
     this.showHideImageNavigation()
+
+    this.restoreMapLayerState('EGD')
+  }
+
+  setMapLayerCheckboxState(mapLayerType, enabled) {
+    const checkbox = this.element.querySelector(
+      `[data-taak-detail-map-layer-type-param="${mapLayerType}"]`
+    )
+    if (checkbox) {
+      checkbox.checked = enabled
+    }
+  }
+
+  restoreMapLayerState(mapLayerType) {
+    if (!this.map || !this.mapLayers[mapLayerType]) {
+      return
+    }
+    const enabled = getStoredMapLayerState(mapLayerType)
+    this.setMapLayerCheckboxState(mapLayerType, enabled)
+    if (enabled) {
+      this.mapLayers[mapLayerType].layer.addTo(this.map)
+      this.map.setMinZoom(12)
+    }
   }
 
   imageSliderThumbContainerConnected() {
@@ -320,6 +346,7 @@ export default class extends Controller {
       this.map.removeLayer(this.mapLayers[e.params.mapLayerType].layer)
       this.map.setMinZoom(12)
     }
+    setStoredMapLayerState(e.params.mapLayerType, e.target.checked)
   }
 
   toggleDetailLocatie(element) {

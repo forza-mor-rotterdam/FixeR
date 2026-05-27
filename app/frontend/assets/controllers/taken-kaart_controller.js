@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 import 'proj4leaflet'
+import { getStoredMapLayerState, setStoredMapLayerState } from './helpers/mapLayerStorage'
 const KaartModus = Object.freeze({
   TOON_ALLES: 'toon_alles',
   VOLGEN: 'volgen',
@@ -43,10 +44,18 @@ export default class MapController extends Controller {
     this.markerMe = null
     this.markers = null
     this.buurten = null
-    this.kaartModus = KaartModus.TOON_ALLES
+    this.kaartModus = this.getKaartModus()
+    // Reset de kaart naar de gecachete positie
+    const cachedPosition = this.getCachedPosition()
+    const initialCenter =
+      this.kaartModus === KaartModus.VOLGEN && cachedPosition
+        ? cachedPosition
+        : [StandaardKaartCenter.coords.latitude, StandaardKaartCenter.coords.longitude]
+    const initialZoom =
+      this.kaartModus === KaartModus.VOLGEN && cachedPosition ? this.getZoom() : StandaardKaartZoom
     this.map = L.map(this.kaartId, {
-      zoom: StandaardKaartZoom,
-      center: [StandaardKaartCenter.coords.latitude, StandaardKaartCenter.coords.longitude],
+      zoom: initialZoom,
+      center: initialCenter,
     })
     this.map.createPane('egdPane')
     this.map.on('zoomend', () => {
@@ -56,6 +65,7 @@ export default class MapController extends Controller {
     })
     this.map.on('dragstart', () => {
       this.kaartModus = null
+      this.setKaartModusStorage(null)
       if (this.hasTakenOverzichtOutlet) {
         this.takenOverzichtOutlet.setKaartModus(this.kaartModus)
       }
@@ -95,12 +105,51 @@ export default class MapController extends Controller {
       },
     }
   }
-  connect() {}
+  connect() {
+    this.restoreMapLayerState('EGD')
+  }
+
+  setMapLayerCheckboxState(mapLayerType, enabled) {
+    const checkbox = this.element.querySelector(
+      `[data-taken-kaart-map-layer-type-param="${mapLayerType}"]`
+    )
+    if (checkbox) {
+      checkbox.checked = enabled
+    }
+  }
+
+  restoreMapLayerState(mapLayerType) {
+    const enabled = getStoredMapLayerState(mapLayerType)
+    this.setMapLayerCheckboxState(mapLayerType, enabled)
+    if (enabled) {
+      this.mapLayers[mapLayerType].layer.addTo(this.map)
+    }
+  }
+
   getZoom() {
     return sessionStorage.getItem('kaartZoom') || StandaardKaartZoom
   }
   setZoom(zoom) {
     sessionStorage.setItem('kaartZoom', zoom)
+  }
+  getKaartModus() {
+    return sessionStorage.getItem('kaartModus') || KaartModus.TOON_ALLES
+  }
+  setKaartModusStorage(kaartModus) {
+    if (kaartModus) {
+      sessionStorage.setItem('kaartModus', kaartModus)
+    } else {
+      sessionStorage.removeItem('kaartModus')
+    }
+  }
+  getCachedPosition() {
+    const cached = sessionStorage.getItem('lastPosition')
+    if (!cached) return null
+    const [lat, lng] = cached.split(',').map(Number)
+    return [lat, lng]
+  }
+  setCachedPosition(lat, lng) {
+    sessionStorage.setItem('lastPosition', `${lat},${lng}`)
   }
   drawMap = () => {
     const url =
@@ -127,7 +176,10 @@ export default class MapController extends Controller {
   setupResizeObserver = () => {
     const resizeObserver = new ResizeObserver(() => {
       this.map.invalidateSize()
-      this.map.closePopup()
+      // We gebruiken deze keepPopupOpen boolean omdat de kaart lijkt te resizen bij initieel laden.
+      if (!this.keepPopupOpen) {
+        this.map.closePopup()
+      }
     })
     resizeObserver.observe(document.getElementById(this.kaartId))
   }
@@ -135,21 +187,37 @@ export default class MapController extends Controller {
     this.markers = new L.featureGroup()
     this.map.addLayer(this.markers)
   }
+
+  ensureMarkersLayer() {
+    if (!this.markers && this.map) {
+      this.createMarkersLayer()
+    }
+  }
   selectTaakMarker(taakUuid, preventScroll) {
     const obj = this.markerList.find((obj) => obj.options.taakUuid == taakUuid)
     this.preventScroll = preventScroll
-    obj?.openPopup()
+    if (obj) {
+      this.keepPopupOpen = true
+      obj.openPopup()
+      // We gebruiken deze keepPopupOpen boolean omdat de kaart lijkt te resizen bij initieel laden.
+      setTimeout(() => {
+        this.keepPopupOpen = false
+      }, 500)
+    }
   }
   toonAlles = () => this.map.fitBounds(this.markers.getBounds())
-  volgen = () => this.map.flyTo(this.markerMe.getLatLng(), this.getZoom())
+  volgen = () => this.map.setView(this.markerMe.getLatLng(), this.getZoom())
 
   kaartModusChangeHandler = (kaartModus) => {
     this.kaartModus = kaartModus
+    this.setKaartModusStorage(kaartModus)
     if (!Object.keys(this.markers.getBounds()).length) {
       return
     }
     if (!this.markerMe) {
-      this.toonAlles()
+      if (this.kaartModus === KaartModus.TOON_ALLES) {
+        this.toonAlles()
+      }
       return
     }
     switch (this.kaartModus) {
@@ -165,12 +233,12 @@ export default class MapController extends Controller {
   }
 
   kaartLayerChangeHandler(event) {
-    console.log(event)
     if (event.target.checked) {
       this.mapLayers[event.params.mapLayerType].layer.addTo(this.map)
     } else {
       this.map.removeLayer(this.mapLayers[event.params.mapLayerType].layer)
     }
+    setStoredMapLayerState(event.params.mapLayerType, event.target.checked)
   }
 
   onTwoFingerDrag(event) {
@@ -181,13 +249,17 @@ export default class MapController extends Controller {
     }
   }
   positionChangeEvent = (position) => {
+    this.ensureMarkersLayer()
+    const lat = position.coords.latitude
+    const lng = position.coords.longitude
+    this.setCachedPosition(lat, lng)
     if (!this.markerMe) {
-      this.markerMe = new L.Marker([position.coords.latitude, position.coords.longitude], {
+      this.markerMe = new L.Marker([lat, lng], {
         icon: MapController.markerIcons.blue,
       })
       this.markers.addLayer(this.markerMe)
     } else {
-      this.markerMe.setLatLng([position.coords.latitude, position.coords.longitude])
+      this.markerMe.setLatLng([lat, lng])
     }
     if (this.kaartModus === KaartModus.VOLGEN) {
       this.volgen()
@@ -232,11 +304,15 @@ export default class MapController extends Controller {
     }
   }
   clearTaakMarker(taakUuid) {
+    this.ensureMarkersLayer()
     const marker = this.markerList.find((obj) => obj.options.taakUuid === taakUuid)
     this.markerList = this.markerList.filter((obj) => obj.options.taakUuid != taakUuid)
-    this.markers.removeLayer(marker)
+    if (marker) {
+      this.markers.removeLayer(marker)
+    }
   }
   plotTaakMarker(markerData) {
+    this.ensureMarkersLayer()
     const lat = markerData.geometrie.coordinates ? markerData.geometrie.coordinates[1] : 51.9247772
     const long = markerData.geometrie.coordinates ? markerData.geometrie.coordinates[0] : 4.4780972
     const adres = markerData.adres
@@ -287,5 +363,11 @@ export default class MapController extends Controller {
       .map((markerData) => {
         this.plotTaakMarker(markerData)
       })
+    const selectedInput = this.element
+      .closest('form')
+      ?.querySelector('input[name="selected_taak_uuid"]')
+    if (selectedInput && selectedInput.value) {
+      this.selectTaakMarker(selectedInput.value, false)
+    }
   }
 }
