@@ -123,19 +123,6 @@ class TaakBehandelForm(forms.Form):
                 choices=volgende_taaktypes,
                 required=False,
             )
-            # Omschrijving nieuwe taak nodig?
-            self.fields["omschrijving_nieuwe_taak"] = forms.CharField(
-                label="Toelichting",
-                help_text="Deze tekst wordt niet naar de melder verstuurd.",
-                widget=forms.Textarea(
-                    attrs={
-                        "class": "form-control",
-                        "rows": "4",
-                        "maxlength": "1000",
-                    }
-                ),
-                required=False,
-            )
 
     def clean(self):
         cleaned_data = super().clean()
