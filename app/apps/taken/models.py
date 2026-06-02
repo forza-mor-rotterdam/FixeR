@@ -72,7 +72,7 @@ class Taakgebeurtenis(BasisModel):
         null=True,
         blank=True,
     )
-    reden_afwijzing_toelichting = models.CharField(max_length=500, null=True, blank=True)
+    reden_afwijzing_toelichting = models.CharField(max_length=1000, null=True, blank=True)
     notificatie_verstuurd = models.BooleanField(default=True)
     notificatie_error = models.CharField(max_length=5000, null=True, blank=True)
     groep = models.CharField(max_length=100, null=True, blank=True) # naam van rechtengroep van aanmakende gebruiker

@@ -73,7 +73,7 @@ class TaakBehandelForm(forms.Form):
                 "class": "form-control",
                 "rows": "3",
                 "placeholder": "Vul hier de reden in",
-                "maxlength": "200",
+                "maxlength": "1000",
                 "hideLabel": True,
             }
         ),
@@ -122,18 +122,6 @@ class TaakBehandelForm(forms.Form):
                 widget=forms.CheckboxSelectMultiple,
                 label="",
                 choices=volgende_taaktypes,
-                required=False,
-            )
-            # Omschrijving nieuwe taak nodig?
-            self.fields["omschrijving_nieuwe_taak"] = forms.CharField(
-                label="Toelichting",
-                help_text="Deze tekst wordt niet naar de melder verstuurd.",
-                widget=forms.Textarea(
-                    attrs={
-                        "class": "form-control",
-                        "rows": "4",
-                    }
-                ),
                 required=False,
             )
 
