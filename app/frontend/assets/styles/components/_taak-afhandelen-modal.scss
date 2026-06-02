@@ -16,6 +16,15 @@
     }
 }
 
+dialog.infosheet:has(.taak-afhandelen-modal) {
+    .btn-close--small,
+    .btn-close--small:hover,
+    .btn-close--small:focus,
+    .btn-close--small:focus-visible {
+        background-color: transparent;
+    }
+}
+
 #modal_header {
     &:has(~ #modal_body .taak-afhandelen-modal) .btn-close {
         width: 11.82px;
@@ -91,6 +100,10 @@
         margin-left: -4px;
         transform: none;
     }
+}
+
+.taak-afhandelen-modal__meta:not(:has(> :nth-child(3))) .taak-afhandelen-modal__taakuitleg {
+    margin-top: -0.25rem;
 }
 
 .taak-afhandelen-modal__form {
@@ -197,6 +210,10 @@
             white-space: nowrap;
             font-weight: 400;
         }
+    }
+
+    [data-incidentHandleForm-target="internalText"] .form-row {
+        margin-bottom: 0;
     }
 
     .taak-afhandelen-modal__char-counter {
@@ -336,10 +353,10 @@
             justify-content: center;
             text-align: center;
             font-size: 14px;
-            padding: 1rem 1rem 0.25rem;
-            border: 2px dashed var(--taak-modal-border);
-            background-position: center calc(50% - 14px);
-            background-size: 28px;
+            padding: 1.75rem 1rem 0.25rem;
+            border: 1px dashed #B7BDC7;
+            background-position: center calc(50% - 18px);
+            background-size: 22px;
             border-radius: 8px;
             background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2LjEyNSAxMy4yNUMxNi4xMjUgMTMuNTQ4NCAxNi4wMDY1IDEzLjgzNDUgMTUuNzk1NSAxNC4wNDU1QzE1LjU4NDUgMTQuMjU2NSAxNS4yOTg0IDE0LjM3NSAxNSAxNC4zNzVIMTMuMTI1VjE2LjI1QzEzLjEyNSAxNi41NDg0IDEzLjAwNjUgMTYuODM0NSAxMi43OTU1IDE3LjA0NTVDMTIuNTg0NSAxNy4yNTY1IDEyLjI5ODQgMTcuMzc1IDEyIDE3LjM3NUMxMS43MDE2IDE3LjM3NSAxMS40MTU1IDE3LjI1NjUgMTEuMjA0NSAxNy4wNDU1QzEwLjk5MzUgMTYuODM0NSAxMC44NzUgMTYuNTQ4NCAxMC44NzUgMTYuMjVWMTQuMzc1SDlDOC43MDE2MyAxNC4zNzUgOC40MTU0OCAxNC4yNTY1IDguMjA0NSAxNC4wNDU1QzcuOTkzNTMgMTMuODM0NSA3Ljg3NSAxMy41NDg0IDcuODc1IDEzLjI1QzcuODc1IDEyLjk1MTYgNy45OTM1MyAxMi42NjU1IDguMjA0NSAxMi40NTQ1QzguNDE1NDggMTIuMjQzNSA4LjcwMTYzIDEyLjEyNSA5IDEyLjEyNUgxMC44NzVWMTAuMjVDMTAuODc1IDkuOTUxNjMgMTAuOTkzNSA5LjY2NTQ4IDExLjIwNDUgOS40NTQ1QzExLjQxNTUgOS4yNDM1MyAxMS43MDE2IDkuMTI1IDEyIDkuMTI1QzEyLjI5ODQgOS4xMjUgMTIuNTg0NSA5LjI0MzUzIDEyLjc5NTUgOS40NTQ1QzEzLjAwNjUgOS42NjU0OCAxMy4xMjUgOS45NTE2MyAxMy4xMjUgMTAuMjVWMTIuMTI1SDE1QzE1LjI5ODQgMTIuMTI1IDE1LjU4NDUgMTIuMjQzNSAxNS43OTU1IDEyLjQ1NDVDMTYuMDA2NSAxMi42NjU1IDE2LjEyNSAxMi45NTE2IDE2LjEyNSAxMy4yNVpNMjIuMTI1IDhWMTguNUMyMi4xMjUgMTguODQ0NyAyMi4wNTcxIDE5LjE4NjEgMjEuOTI1MiAxOS41MDQ1QzIxLjc5MzMgMTkuODIzIDIxLjU5OTkgMjAuMTEyNCAyMS4zNTYyIDIwLjM1NjJDMjEuMTEyNCAyMC41OTk5IDIwLjgyMyAyMC43OTMzIDIwLjUwNDUgMjAuOTI1MkMyMC4xODYxIDIxLjA1NzEgMTkuODQ0NyAyMS4xMjUgMTkuNSAyMS4xMjVINC41QzMuODAzODEgMjEuMTI1IDMuMTM2MTMgMjAuODQ4NCAyLjY0Mzg0IDIwLjM1NjJDMi4xNTE1NiAxOS44NjM5IDEuODc1IDE5LjE5NjIgMS44NzUgMTguNVY4QzEuODc1IDcuMzAzODEgMi4xNTE1NiA2LjYzNjEzIDIuNjQzODQgNi4xNDM4NEMzLjEzNjEzIDUuNjUxNTYgMy44MDM4MSA1LjM3NSA0LjUgNS4zNzVINi44OTgxM0w3Ljg0MTI1IDMuOTYwMzFDOC4wMTI0MiAzLjcwMzQyIDguMjQ0MzcgMy40OTI3NyA4LjUxNjUxIDMuMzQ3MDVDOC43ODg2NSAzLjIwMTMzIDkuMDkyNTUgMy4xMjUwNiA5LjQwMTI1IDMuMTI1SDE0LjU5ODhDMTQuOTA3NCAzLjEyNTA2IDE1LjIxMTQgMy4yMDEzMyAxNS40ODM1IDMuMzQ3MDVDMTUuNzU1NiAzLjQ5Mjc3IDE1Ljk4NzYgMy43MDM0MiAxNi4xNTg4IDMuOTYwMzFMMTcuMTAxOSA1LjM3NUgxOS41QzE5Ljg0NDcgNS4zNzUgMjAuMTg2MSA1LjQ0MjkgMjAuNTA0NSA1LjU3NDgyQzIwLjgyMyA1LjcwNjczIDIxLjExMjQgNS45MDAwOSAyMS4zNTYyIDYuMTQzODRDMjEuNTk5OSA2LjM4NzYgMjEuNzkzMyA2LjY3Njk4IDIxLjkyNTIgNi45OTU0NkMyMi4wNTcxIDcuMzEzOTQgMjIuMTI1IDcuNjU1MjggMjIuMTI1IDhaTTE5Ljg3NSA4QzE5Ljg3NSA3LjkwMDU0IDE5LjgzNTUgNy44MDUxNiAxOS43NjUyIDcuNzM0ODNDMTkuNjk0OCA3LjY2NDUxIDE5LjU5OTUgNy42MjUgMTkuNSA3LjYyNUgxNi41QzE2LjMxNDYgNy42MjUyNyAxNi4xMzIgNy41Nzk3MiAxNS45Njg0IDcuNDkyMzdDMTUuODA0OCA3LjQwNTAzIDE1LjY2NTQgNy4yNzg2MiAxNS41NjI1IDcuMTI0MzhMMTQuMzk4MSA1LjM3NUg5LjYwMTg3TDguNDM3NSA3LjEyNDM4QzguMzM0NTkgNy4yNzg2MiA4LjE5NTE2IDcuNDA1MDMgOC4wMzE1OSA3LjQ5MjM3QzcuODY4MDMgNy41Nzk3MiA3LjY4NTQyIDcuNjI1MjcgNy41IDcuNjI1SDQuNUM0LjQwMDU0IDcuNjI1IDQuMzA1MTYgNy42NjQ1MSA0LjIzNDg0IDcuNzM0ODNDNC4xNjQ1MSA3LjgwNTE2IDQuMTI1IDcuOTAwNTQgNC4xMjUgOFYxOC41QzQuMTI1IDE4LjU5OTUgNC4xNjQ1MSAxOC42OTQ4IDQuMjM0ODQgMTguNzY1MkM0LjMwNTE2IDE4LjgzNTUgNC40MDA1NCAxOC44NzUgNC41IDE4Ljg3NUgxOS41QzE5LjU5OTUgMTguODc1IDE5LjY5NDggMTguODM1NSAxOS43NjUyIDE4Ljc2NTJDMTkuODM1NSAxOC42OTQ4IDE5Ljg3NSAxOC41OTk1IDE5Ljg3NSAxOC41VjhaIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K") !important;
         }
@@ -396,6 +413,8 @@
     textarea.form-control {
         min-height: 140px;
         resize: vertical;
+        margin-bottom: 0;
+        border-color: #eaeaea;
     }
 
 }
@@ -460,11 +479,37 @@ dialog.taak-afhandelen-modal__confirm {
         margin: 2rem -#{$container-padding-x} 0;
         padding: 1rem $container-padding-x calc(1rem + env(safe-area-inset-bottom));
         background: var(--taak-modal-surface);
-        border-top: 1px solid var(--taak-modal-border);
 
         .btn {
             width: 100%;
+            max-width: 100%;
             margin: 0;
+
+            &.is-loading,
+            &.is-loading:disabled {
+                pointer-events: none;
+                background-color: $green-tint01;
+                border-color: $green-tint01;
+                color: $white;
+
+                span {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.5rem;
+
+                    &::before {
+                        content: "";
+                        width: 1rem;
+                        height: 1rem;
+                        border: 2px solid currentColor;
+                        border-top-color: transparent;
+                        border-radius: 50%;
+                        animation: spinner 0.8s linear infinite;
+                        flex: 0 0 auto;
+                    }
+                }
+            }
         }
 
         .btn + .btn {
@@ -496,8 +541,7 @@ dialog.taak-afhandelen-modal__confirm {
             }
 
             .btn {
-                width: auto;
-                min-width: 220px;
+                width: 100%;
             }
         }
     }
@@ -532,5 +576,9 @@ dialog.taak-afhandelen-modal__confirm {
     dialog.infosheet:has(.taak-afhandelen-modal) {
         width: 550px;
         max-width: 550px;
+    }
+
+    .taak-afhandelen-modal__meta {
+        display: none;
     }
 }

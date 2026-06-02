@@ -11,6 +11,7 @@ export default class extends Controller {
     'redenAfwijzing',
     'reasonHelptext',
     'andersNamelijk',
+    'submitButton',
   ]
 
   connect() {
@@ -265,42 +266,16 @@ export default class extends Controller {
     const form = event.target
     const formData = new FormData(form)
     var request = new XMLHttpRequest()
-    let uploadStart = Date.now()
-
-    self.submitContainerTarget.classList.add('busy')
     document.activeElement.blur()
-    let progressContainer = document.createElement('div')
-    let progressRemainingTime = document.createElement('div')
-    let progressPercentage = document.createElement('div')
-    progressContainer.classList.add('container__progress')
-    progressRemainingTime.classList.add('progress--time')
-    progressPercentage.classList.add('progress--bar')
+    const submitButton = this.hasSubmitButtonTarget
+      ? this.submitButtonTarget
+      : self.submitContainerTarget.querySelector('.btn-action')
+    if (submitButton) {
+      submitButton.disabled = true
+      submitButton.classList.add('is-loading')
+      submitButton.setAttribute('aria-busy', 'true')
+    }
 
-    self.submitContainerTarget.insertBefore(
-      progressContainer,
-      self.submitContainerTarget.querySelector('.btn-action')
-    )
-    progressContainer.insertBefore(progressRemainingTime, null)
-    progressContainer.insertBefore(progressPercentage, null)
-
-    request.upload.addEventListener('progress', function (e) {
-      if (e.lengthComputable) {
-        let duration = Date.now() - uploadStart
-        let estimatedRemainingTotalSeconds = (duration * (e.total / e.loaded) - duration) / 1000
-        let estimatedRemainingSeconds = Math.round(estimatedRemainingTotalSeconds % 60)
-        let estimatedRemainingMinutes =
-          (estimatedRemainingTotalSeconds - (estimatedRemainingTotalSeconds % 60)) / 60
-        let percentageLoaded = Math.round((e.loaded / e.total) * 100)
-
-        progressRemainingTime.textContent =
-          percentageLoaded < 100
-            ? `Momentje, de foto('s) worden verzonden. Verwachte resterende tijd: ${estimatedRemainingMinutes}:${String(
-                estimatedRemainingSeconds
-              ).padStart(2, '0')}`
-            : 'De upload is geslaagd. Je gaat nu terug naar het taken overzicht.'
-        progressPercentage.style.width = `${percentageLoaded}%`
-      }
-    })
     request.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
         window.location.replace('/taken/')

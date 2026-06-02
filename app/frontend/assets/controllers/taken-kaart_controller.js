@@ -2,7 +2,6 @@ import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 import 'proj4leaflet'
 import { getStoredMapLayerState, setStoredMapLayerState } from './helpers/mapLayerStorage'
-
 const KaartModus = Object.freeze({
   TOON_ALLES: 'toon_alles',
   VOLGEN: 'volgen',

@@ -100,6 +100,10 @@ fieldset {
         &::-webkit-search-cancel-button {
             cursor: pointer;
         }
+
+        &:focus {
+            box-shadow: none;
+        }
     }
 }
 
