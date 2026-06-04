@@ -536,7 +536,11 @@ def taak_afhandelen(request, uuid):
                 vervolg_taaktypes=vervolg_taaktypes,
                 groep=getattr(request.user.groups.first(), "name", None),
                 reden_afwijzing=form.cleaned_data.get("reden_afwijzing"),
-                reden_afwijzing_toelichting=form.cleaned_data.get("anders_namelijk"),
+                reden_afwijzing_toelichting=(
+                    form.cleaned_data.get("omschrijving_intern")
+                    if form.cleaned_data.get("reden_afwijzing") == "anders"
+                    else None
+                ),
             )
             if request.headers.get("x-requested-with") == "XMLHttpRequest":
                 return HttpResponse(status=200)
