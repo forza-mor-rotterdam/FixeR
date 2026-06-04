@@ -7,7 +7,6 @@ export default class extends Controller {
     'newTask',
     'form',
     'submitContainer',
-    'charCounter',
     'confirmPopup',
     'redenAfwijzing',
     'reasonHelptext',
@@ -32,13 +31,14 @@ export default class extends Controller {
       this.onResolutionTrue()
     }
 
-    if (this.hasInternalTextTarget) {
-      this.internalTextArea = this.internalTextTarget.querySelector('textarea')
-      if (this.internalTextArea) {
-        this.internalTextArea.addEventListener('input', this.updateCharacterCounter.bind(this))
-        this.updateCharacterCounter()
-      }
-    }
+    this.textAreasWithMaxLength = this.formTarget
+      ? Array.from(this.formTarget.querySelectorAll('textarea[maxlength]'))
+      : []
+    this.onTextAreaInput = this.updateCharacterCounters.bind(this)
+    this.textAreasWithMaxLength.forEach((textArea) => {
+      textArea.addEventListener('input', this.onTextAreaInput)
+    })
+    this.updateCharacterCounters()
 
     if (this.hasRedenAfwijzingTarget) {
       this.redenAfwijzingTarget.addEventListener('change', (event) => {
@@ -81,14 +81,40 @@ export default class extends Controller {
     document.querySelector('body').style.pointerEvents = 'none'
   }
 
-  updateCharacterCounter() {
-    if (!this.hasCharCounterTarget || !this.internalTextArea) {
+  disconnect() {
+    if (this.textAreasWithMaxLength && this.onTextAreaInput) {
+      this.textAreasWithMaxLength.forEach((textArea) => {
+        textArea.removeEventListener('input', this.onTextAreaInput)
+      })
+    }
+  }
+
+  updateCharacterCounters() {
+    if (!this.textAreasWithMaxLength || this.textAreasWithMaxLength.length === 0) {
       return
     }
 
-    const currentLength = this.internalTextArea.value.length
-    const maxLength = parseInt(this.internalTextArea.getAttribute('maxlength') || '200', 10)
-    this.charCounterTarget.textContent = `${currentLength}/${maxLength}`
+    this.textAreasWithMaxLength.forEach((textArea) => {
+      const maxLength = parseInt(textArea.getAttribute('maxlength') || '0', 10)
+      if (!maxLength || Number.isNaN(maxLength)) {
+        return
+      }
+
+      const counterElement = this.findOrCreateCounterElement(textArea)
+      counterElement.textContent = `${textArea.value.length}/${maxLength}`
+    })
+  }
+
+  findOrCreateCounterElement(textArea) {
+    let counterElement = this.formTarget.querySelector(`[data-counter-for="${textArea.name}"]`)
+    if (!counterElement) {
+      counterElement = document.createElement('div')
+      counterElement.classList.add('taak-afhandelen-modal__char-counter')
+      counterElement.setAttribute('data-counter-for', textArea.name)
+      textArea.insertAdjacentElement('afterend', counterElement)
+    }
+
+    return counterElement
   }
 
   onResolutionFalse() {

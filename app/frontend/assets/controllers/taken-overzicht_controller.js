@@ -37,6 +37,7 @@ export default class extends Controller {
     'filterCount',
     'zoekButton',
     'uitklapper',
+    'firstFilterBlock',
   ]
 
   initialize() {
@@ -411,6 +412,11 @@ export default class extends Controller {
     document.body.style.top = `-${scrollPositionForDialog}px`
     document.body.style.position = 'fixed'
     this.filtersheetTarget.showModal()
+    requestAnimationFrame(() => {
+      if (this.hasFirstFilterBlockTarget) {
+        this.firstFilterBlockTarget.focus()
+      }
+    })
     this.filtersheetTarget.addEventListener('click', (event) => {
       if (event.target === event.currentTarget) {
         event.stopPropagation()

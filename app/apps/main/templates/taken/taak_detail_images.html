@@ -8,7 +8,7 @@
 {% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
 {% get_bijlagen melding as bijlagen %}
 {# djlint:off #}
-<section class="section--seperated section--imageslider"
+<section class="section--seperated section--imageslider{% if not bijlagen %} section--imageslider-empty{% endif %}"
          data-testid="detailPhotoviewer"
          {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}
          data-taak-detail-target="sectionimageslider">

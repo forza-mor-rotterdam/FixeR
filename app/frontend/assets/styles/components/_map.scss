@@ -105,22 +105,22 @@
     }
     label {
         @extend .btn;
+        align-items: center;
         text-align: center;
-        line-height: 2.6em !important;
+        justify-content: center;
         padding: 0 10px 0 37px !important;
         height: 40px;
-        display: inline-block;
+        display: inline-flex;
         background-color: $white;
         white-space: nowrap;
         box-sizing: border-box;
         position: relative;
-        border: 1px solid $gray-tint08;
+        border: 1px solid $gray-tint11;
         box-sizing: border-box;
     }
     .active {
         label {
             height: 38px;
-            line-height: 2.4em !important;
             border: 3px solid $gray-tint11;
             padding: 0 10px 0 37px;
         }
@@ -140,25 +140,9 @@
         }
     }
     .fz-large & {
-        label {
-            line-height: 1.8em !important;
-        }
-        .active {
-            label {
-                line-height: 1.6em !important;
-            }
-        }
     }
 
     .fz-xlarge & {
-        label {
-            line-height: 1.3em !important;
-        }
-        .active {
-            label {
-                line-height: 1.1em !important;
-            }
-        }
     }
 }
 .container__map-tools {
