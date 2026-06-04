@@ -10,7 +10,6 @@ export default class extends Controller {
     'confirmPopup',
     'redenAfwijzing',
     'reasonHelptext',
-    'andersNamelijk',
     'submitButton',
   ]
 
@@ -23,9 +22,9 @@ export default class extends Controller {
     const btn = this.element.querySelector('[type="radio"][value="niet_opgelost"]')
     if (btn.checked) {
       this.onResolutionFalse()
-      const andersBtn = this.element.querySelector('[type="radio"][value="anders"]')
-      if (andersBtn && andersBtn.checked && this.hasAndersNamelijkTarget) {
-        this.onChangeRedenAfwijzing({ target: andersBtn })
+      const selectedReason = this.redenAfwijzingTarget?.querySelector('input[type="radio"]:checked')
+      if (selectedReason) {
+        this.onChangeRedenAfwijzing({ target: selectedReason })
       }
     } else {
       this.onResolutionTrue()
@@ -125,13 +124,15 @@ export default class extends Controller {
       this.redenAfwijzingTarget.hidden = false
       this.shouldShowReasonHelptext = false
       this.updateReasonHelptextVisibility()
+      const selectedReason = this.redenAfwijzingTarget.querySelector('input[type="radio"]:checked')
+      this.updateInternalTextRequirement(selectedReason?.value)
     }
   }
 
   onResolutionTrue() {
     if (this.hasInternalTextTarget) {
       this.internalTextTarget.querySelector('label').textContent = this.defaultLabelInternalText
-      this.internalTextTarget.querySelector('textarea').classList.remove('required')
+      this.updateInternalTextRequirement()
     }
     if (this.hasRedenAfwijzingTarget) {
       this.redenAfwijzingTarget.hidden = true
@@ -139,13 +140,6 @@ export default class extends Controller {
     if (this.hasReasonHelptextTarget) {
       this.shouldShowReasonHelptext = false
       this.reasonHelptextTarget.hidden = true
-    }
-    if (this.hasAndersNamelijkTarget) {
-      this.andersNamelijkTarget.hidden = true
-      const andersNamelijkTextarea = this.andersNamelijkTarget.querySelector('textarea')
-      if (andersNamelijkTextarea) {
-        andersNamelijkTextarea.classList.remove('required')
-      }
     }
   }
 
@@ -158,14 +152,37 @@ export default class extends Controller {
     this.clearRedenAfwijzingErrors()
     this.clearReasonMessageNodes()
 
-    if (this.hasAndersNamelijkTarget) {
-      const isAnders = event.target.value === 'anders'
-      this.andersNamelijkTarget.hidden = !isAnders
-      const andersNamelijkTextarea = this.andersNamelijkTarget.querySelector('textarea')
-      if (andersNamelijkTextarea) {
-        andersNamelijkTextarea.classList.toggle('required', isAnders)
-      }
+    this.updateInternalTextRequirement(event.target.value)
+    this.clearInternalTextErrors()
+  }
+
+  updateInternalTextRequirement(reasonValue) {
+    if (!this.hasInternalTextTarget) {
+      return
     }
+
+    const internalTextArea = this.internalTextTarget.querySelector('textarea')
+    if (!internalTextArea) {
+      return
+    }
+
+    const isRequired = ['anders', 'niet_voor_mij'].includes(reasonValue)
+    internalTextArea.classList.toggle('required', isRequired)
+    this.internalTextTarget.classList.toggle('is-required', isRequired)
+  }
+
+  clearInternalTextErrors() {
+    if (!this.hasInternalTextTarget) {
+      return
+    }
+
+    this.internalTextTarget.querySelectorAll('.invalid-text').forEach((errorElement) => {
+      errorElement.textContent = ''
+    })
+
+    this.internalTextTarget.querySelectorAll('.form-row').forEach((rowElement) => {
+      rowElement.classList.remove('is-invalid')
+    })
   }
 
   clearRedenAfwijzingErrors() {
