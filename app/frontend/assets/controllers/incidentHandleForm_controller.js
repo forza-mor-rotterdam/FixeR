@@ -7,11 +7,10 @@ export default class extends Controller {
     'newTask',
     'form',
     'submitContainer',
-    'charCounter',
     'confirmPopup',
     'redenAfwijzing',
     'reasonHelptext',
-    'andersNamelijk',
+    'submitButton',
   ]
 
   connect() {
@@ -23,21 +22,22 @@ export default class extends Controller {
     const btn = this.element.querySelector('[type="radio"][value="niet_opgelost"]')
     if (btn.checked) {
       this.onResolutionFalse()
-      const andersBtn = this.element.querySelector('[type="radio"][value="anders"]')
-      if (andersBtn && andersBtn.checked && this.hasAndersNamelijkTarget) {
-        this.onChangeRedenAfwijzing({ target: andersBtn })
+      const selectedReason = this.redenAfwijzingTarget?.querySelector('input[type="radio"]:checked')
+      if (selectedReason) {
+        this.onChangeRedenAfwijzing({ target: selectedReason })
       }
     } else {
       this.onResolutionTrue()
     }
 
-    if (this.hasInternalTextTarget) {
-      this.internalTextArea = this.internalTextTarget.querySelector('textarea')
-      if (this.internalTextArea) {
-        this.internalTextArea.addEventListener('input', this.updateCharacterCounter.bind(this))
-        this.updateCharacterCounter()
-      }
-    }
+    this.textAreasWithMaxLength = this.formTarget
+      ? Array.from(this.formTarget.querySelectorAll('textarea[maxlength]'))
+      : []
+    this.onTextAreaInput = this.updateCharacterCounters.bind(this)
+    this.textAreasWithMaxLength.forEach((textArea) => {
+      textArea.addEventListener('input', this.onTextAreaInput)
+    })
+    this.updateCharacterCounters()
 
     if (this.hasRedenAfwijzingTarget) {
       this.redenAfwijzingTarget.addEventListener('change', (event) => {
@@ -80,14 +80,40 @@ export default class extends Controller {
     document.querySelector('body').style.pointerEvents = 'none'
   }
 
-  updateCharacterCounter() {
-    if (!this.hasCharCounterTarget || !this.internalTextArea) {
+  disconnect() {
+    if (this.textAreasWithMaxLength && this.onTextAreaInput) {
+      this.textAreasWithMaxLength.forEach((textArea) => {
+        textArea.removeEventListener('input', this.onTextAreaInput)
+      })
+    }
+  }
+
+  updateCharacterCounters() {
+    if (!this.textAreasWithMaxLength || this.textAreasWithMaxLength.length === 0) {
       return
     }
 
-    const currentLength = this.internalTextArea.value.length
-    const maxLength = parseInt(this.internalTextArea.getAttribute('maxlength') || '200', 10)
-    this.charCounterTarget.textContent = `${currentLength}/${maxLength}`
+    this.textAreasWithMaxLength.forEach((textArea) => {
+      const maxLength = parseInt(textArea.getAttribute('maxlength') || '0', 10)
+      if (!maxLength || Number.isNaN(maxLength)) {
+        return
+      }
+
+      const counterElement = this.findOrCreateCounterElement(textArea)
+      counterElement.textContent = `${textArea.value.length}/${maxLength}`
+    })
+  }
+
+  findOrCreateCounterElement(textArea) {
+    let counterElement = this.formTarget.querySelector(`[data-counter-for="${textArea.name}"]`)
+    if (!counterElement) {
+      counterElement = document.createElement('div')
+      counterElement.classList.add('taak-afhandelen-modal__char-counter')
+      counterElement.setAttribute('data-counter-for', textArea.name)
+      textArea.insertAdjacentElement('afterend', counterElement)
+    }
+
+    return counterElement
   }
 
   onResolutionFalse() {
@@ -98,13 +124,15 @@ export default class extends Controller {
       this.redenAfwijzingTarget.hidden = false
       this.shouldShowReasonHelptext = false
       this.updateReasonHelptextVisibility()
+      const selectedReason = this.redenAfwijzingTarget.querySelector('input[type="radio"]:checked')
+      this.updateInternalTextRequirement(selectedReason?.value)
     }
   }
 
   onResolutionTrue() {
     if (this.hasInternalTextTarget) {
       this.internalTextTarget.querySelector('label').textContent = this.defaultLabelInternalText
-      this.internalTextTarget.querySelector('textarea').classList.remove('required')
+      this.updateInternalTextRequirement()
     }
     if (this.hasRedenAfwijzingTarget) {
       this.redenAfwijzingTarget.hidden = true
@@ -112,13 +140,6 @@ export default class extends Controller {
     if (this.hasReasonHelptextTarget) {
       this.shouldShowReasonHelptext = false
       this.reasonHelptextTarget.hidden = true
-    }
-    if (this.hasAndersNamelijkTarget) {
-      this.andersNamelijkTarget.hidden = true
-      const andersNamelijkTextarea = this.andersNamelijkTarget.querySelector('textarea')
-      if (andersNamelijkTextarea) {
-        andersNamelijkTextarea.classList.remove('required')
-      }
     }
   }
 
@@ -131,14 +152,37 @@ export default class extends Controller {
     this.clearRedenAfwijzingErrors()
     this.clearReasonMessageNodes()
 
-    if (this.hasAndersNamelijkTarget) {
-      const isAnders = event.target.value === 'anders'
-      this.andersNamelijkTarget.hidden = !isAnders
-      const andersNamelijkTextarea = this.andersNamelijkTarget.querySelector('textarea')
-      if (andersNamelijkTextarea) {
-        andersNamelijkTextarea.classList.toggle('required', isAnders)
-      }
+    this.updateInternalTextRequirement(event.target.value)
+    this.clearInternalTextErrors()
+  }
+
+  updateInternalTextRequirement(reasonValue) {
+    if (!this.hasInternalTextTarget) {
+      return
     }
+
+    const internalTextArea = this.internalTextTarget.querySelector('textarea')
+    if (!internalTextArea) {
+      return
+    }
+
+    const isRequired = ['anders', 'niet_voor_mij'].includes(reasonValue)
+    internalTextArea.classList.toggle('required', isRequired)
+    this.internalTextTarget.classList.toggle('is-required', isRequired)
+  }
+
+  clearInternalTextErrors() {
+    if (!this.hasInternalTextTarget) {
+      return
+    }
+
+    this.internalTextTarget.querySelectorAll('.invalid-text').forEach((errorElement) => {
+      errorElement.textContent = ''
+    })
+
+    this.internalTextTarget.querySelectorAll('.form-row').forEach((rowElement) => {
+      rowElement.classList.remove('is-invalid')
+    })
   }
 
   clearRedenAfwijzingErrors() {
@@ -239,42 +283,16 @@ export default class extends Controller {
     const form = event.target
     const formData = new FormData(form)
     var request = new XMLHttpRequest()
-    let uploadStart = Date.now()
-
-    self.submitContainerTarget.classList.add('busy')
     document.activeElement.blur()
-    let progressContainer = document.createElement('div')
-    let progressRemainingTime = document.createElement('div')
-    let progressPercentage = document.createElement('div')
-    progressContainer.classList.add('container__progress')
-    progressRemainingTime.classList.add('progress--time')
-    progressPercentage.classList.add('progress--bar')
+    const submitButton = this.hasSubmitButtonTarget
+      ? this.submitButtonTarget
+      : self.submitContainerTarget.querySelector('.btn-action')
+    if (submitButton) {
+      submitButton.disabled = true
+      submitButton.classList.add('is-loading')
+      submitButton.setAttribute('aria-busy', 'true')
+    }
 
-    self.submitContainerTarget.insertBefore(
-      progressContainer,
-      self.submitContainerTarget.querySelector('.btn-action')
-    )
-    progressContainer.insertBefore(progressRemainingTime, null)
-    progressContainer.insertBefore(progressPercentage, null)
-
-    request.upload.addEventListener('progress', function (e) {
-      if (e.lengthComputable) {
-        let duration = Date.now() - uploadStart
-        let estimatedRemainingTotalSeconds = (duration * (e.total / e.loaded) - duration) / 1000
-        let estimatedRemainingSeconds = Math.round(estimatedRemainingTotalSeconds % 60)
-        let estimatedRemainingMinutes =
-          (estimatedRemainingTotalSeconds - (estimatedRemainingTotalSeconds % 60)) / 60
-        let percentageLoaded = Math.round((e.loaded / e.total) * 100)
-
-        progressRemainingTime.textContent =
-          percentageLoaded < 100
-            ? `Momentje, de foto('s) worden verzonden. Verwachte resterende tijd: ${estimatedRemainingMinutes}:${String(
-                estimatedRemainingSeconds
-              ).padStart(2, '0')}`
-            : 'De upload is geslaagd. Je gaat nu terug naar het taken overzicht.'
-        progressPercentage.style.width = `${percentageLoaded}%`
-      }
-    })
     request.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
         window.location.replace('/taken/')

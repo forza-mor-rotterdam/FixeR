@@ -66,20 +66,6 @@ class TaakBehandelForm(forms.Form):
         required=False,
     )
 
-    anders_namelijk = forms.CharField(
-        label="",
-        widget=forms.Textarea(
-            attrs={
-                "class": "form-control",
-                "rows": "3",
-                "placeholder": "Vul hier de reden in",
-                "maxlength": "200",
-                "hideLabel": True,
-            }
-        ),
-        required=False,
-    )
-
     bijlagen = MultipleFileField(
         widget=MultipleFileInput(
             attrs={
@@ -103,6 +89,7 @@ class TaakBehandelForm(forms.Form):
                 "data-testid": "information",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "internalText",
+                "placeholder": "Type om een opmerking toe te voegen...",
                 "maxlength": "1000",
             }
         ),
@@ -123,24 +110,12 @@ class TaakBehandelForm(forms.Form):
                 choices=volgende_taaktypes,
                 required=False,
             )
-            # Omschrijving nieuwe taak nodig?
-            self.fields["omschrijving_nieuwe_taak"] = forms.CharField(
-                label="Toelichting",
-                help_text="Deze tekst wordt niet naar de melder verstuurd.",
-                widget=forms.Textarea(
-                    attrs={
-                        "class": "form-control",
-                        "rows": "4",
-                    }
-                ),
-                required=False,
-            )
 
     def clean(self):
         cleaned_data = super().clean()
         resolutie = cleaned_data.get("resolutie")
         reden_afwijzing = cleaned_data.get("reden_afwijzing")
-        anders_namelijk = (cleaned_data.get("anders_namelijk") or "").strip()
+        omschrijving_intern = (cleaned_data.get("omschrijving_intern") or "").strip()
 
         if resolutie == Taak.ResolutieOpties.NIET_OPGELOST and not reden_afwijzing:
             self.add_error(
@@ -148,8 +123,8 @@ class TaakBehandelForm(forms.Form):
                 "Maak een keuze uit een van de bovenstaande opties.",
             )
 
-        if reden_afwijzing == "anders" and not anders_namelijk:
-            self.add_error("anders_namelijk", "Dit veld is verplicht.")
+        if reden_afwijzing in {"anders", "niet_voor_mij"} and not omschrijving_intern:
+            self.add_error("omschrijving_intern", "Dit veld is verplicht.")
 
         return cleaned_data
 

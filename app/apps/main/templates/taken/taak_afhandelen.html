@@ -50,11 +50,14 @@
                                          data-incidentHandleForm-target="reasonHelptext"
                                          hidden>Maak een keuze uit een van de bovenstaande opties</p>
                         </div>
-                        <div data-incidentHandleForm-target="andersNamelijk" hidden>
-                            {{ form.anders_namelijk|render_rotterdam_formulier }}
-                        </div>
                     </div>
-                        <div class="taak-afhandelen-modal__heading-row">
+                    <div class="form-control__with-helptext label-strong"
+                         data-incidentHandleForm-target="internalText">
+                        {{ form.omschrijving_intern|render_rotterdam_formulier }}
+                        <div class="taak-afhandelen-modal__char-counter"
+                             data-counter-for="omschrijving_intern">0/1000</div>
+                    </div>
+                    <div class="taak-afhandelen-modal__heading-row">
                         <h3 class="taak-afhandelen-modal__resolutie-title">Foto’s toevoegen</h3>
                         <span class="taak-afhandelen-modal__optional">Optioneel</span>
                     </div>
@@ -81,16 +84,11 @@
                                 </div>
                             {% endif %} {% endcomment %}
                         </div>
-                        <div class="form-control__with-helptext label-strong"
-                             data-incidentHandleForm-target="internalText">
-                            {{ form.omschrijving_intern|render_rotterdam_formulier }}
-                            <div class="taak-afhandelen-modal__char-counter"
-                                 data-incidentHandleForm-target="charCounter">0/1000</div>
-                        </div>
                     </div>
                     <div class="form-row" data-incidentHandleForm-target="submitContainer">
                         <button type="submit"
                                 class="btn btn-action"
+                                data-incidentHandleForm-target="submitButton"
                                 data-action="incidentHandleForm#onSubmit">
                             <span>Afronden</span>
                         </button>
